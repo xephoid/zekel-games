@@ -1,5 +1,5 @@
 // End-to-end check: start examples/serve.mjs (the real @zekel/mcp server with
-// all six games) and, through the MCP tools, play an easy all-AI game of each
+// all seven games) and, through the MCP tools, play an easy all-AI game of each
 // to the end, read Warble Way Galaxy's lore, and check a human seat is asked
 // for its setup. Build first:  pnpm build && pnpm smoke
 
@@ -48,12 +48,12 @@ child.stdin.write(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initia
 
 const listed = (await tool('list_games', {})).body;
 const ids = (listed.games ?? listed).map((g) => g.game_id ?? g.id).sort();
-const expected = ['adventurer-olympics', 'cybernoir-2127', 'fractured-fist', 'neither-guts-nor-gears', 'sweetlands-imperium', 'warble-way-galaxy'];
-check(JSON.stringify(ids) === JSON.stringify(expected), `list_games shows the six games (${ids.join(', ')})`);
+const expected = ['8-bit-demon-hunter', 'adventurer-olympics', 'cybernoir-2127', 'fractured-fist', 'neither-guts-nor-gears', 'sweetlands-imperium', 'warble-way-galaxy'];
+check(JSON.stringify(ids) === JSON.stringify(expected), `list_games shows the seven games (${ids.join(', ')})`);
 
 for (const game_id of expected) {
   const players =
-    game_id === 'warble-way-galaxy'
+    game_id === 'warble-way-galaxy' || game_id === '8-bit-demon-hunter'
       ? [{ player_id: 'p1', kind: 'ai', difficulty: 'easy' }]
       : [{ player_id: 'p1', kind: 'ai', difficulty: 'easy' }, { player_id: 'p2', kind: 'ai', difficulty: 'easy' }];
   const created = await tool('create_session', { game_id, players, options: { seed: 11 } });
@@ -61,7 +61,7 @@ for (const game_id of expected) {
   const sid = created.body.session_id;
   let moves = 0;
   let status = created.body.next_step?.status;
-  for (let i = 0; i < 20 && status === 'ai_to_move'; i++) {
+  for (let i = 0; i < 40 && status === 'ai_to_move'; i++) {
     const turn = await tool('run_ai_turn', { session_id: sid, player_id: created.body.next_step.active_player_id ?? 'p1' });
     if (turn.isError) { check(false, `${game_id}: run_ai_turn (${JSON.stringify(turn.body).slice(0, 200)})`); break; }
     moves += turn.body.moves?.length ?? 0;
@@ -82,6 +82,18 @@ for (const game_id of ['fractured-fist', 'sweetlands-imperium', 'cybernoir-2127'
   });
   const step = created.body.next_step ?? {};
   check(!created.isError && typeof step.status === 'string', `${game_id}: a human seat gets a directive (${step.status}, ${String(step.instruction ?? '').slice(0, 50)}…)`);
+}
+
+{
+  const created = await tool('create_session', {
+    game_id: '8-bit-demon-hunter',
+    players: [{ player_id: 'p1', kind: 'human', name: 'Zeke' }],
+    options: { seed: 5 },
+  });
+  const step = created.body.next_step ?? {};
+  check(!created.isError && step.status === 'human_to_move', `8-bit-demon-hunter: a human seat gets a directive (${step.status}, ${String(step.instruction ?? '').slice(0, 50)}…)`);
+  const lore = await tool('get_demon_hunter_lore', {});
+  check(!lore.isError && lore.body.topics?.length >= 5, `get_demon_hunter_lore lists ${lore.body.topics?.length} 8-bit Demon Hunter topics`);
 }
 
 console.log(failed ? 'SMOKE FAILED' : 'SMOKE OK');
