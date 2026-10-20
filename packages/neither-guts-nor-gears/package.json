@@ -1,0 +1,32 @@
+{
+  "name": "@zekel/neither-guts-nor-gears",
+  "version": "0.1.0",
+  "description": "Neither Guts nor Gears, a Zekel Games board game, as a game module for the zekel MCP server.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "rules"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@zekel/game-kit": "^0.1.0"
+  },
+  "devDependencies": {
+    "@zekel/game-kit": "link:../../../zekel-mcp/packages/game-kit"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

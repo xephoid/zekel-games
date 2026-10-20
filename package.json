@@ -1,0 +1,30 @@
+{
+  "name": "zekel-games-workspace",
+  "private": true,
+  "type": "module",
+  "description": "Zekel Games' own board games as zekel game modules, one package each, built on @zekel/game-kit.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "tsc -b packages/* && node scripts/copy-assets.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "node scripts/smoke.mjs",
+    "clean": "rm -rf packages/*/dist packages/*/tsconfig.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "@zekel/game-kit": "link:../zekel-mcp/packages/game-kit",
+    "@zekel/mcp": "link:../zekel-mcp/packages/mcp",
+    "@zekel/adventurer-olympics": "workspace:*",
+    "@zekel/cybernoir-2127": "workspace:*",
+    "@zekel/fractured-fist": "workspace:*",
+    "@zekel/neither-guts-nor-gears": "workspace:*",
+    "@zekel/sweetlands-imperium": "workspace:*",
+    "@zekel/warble-way-galaxy": "workspace:*",
+    "jsdom": "^30.0.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  },
+  "engines": { "node": ">=22.13.0" }
+}
