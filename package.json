@@ -15,6 +15,7 @@
     "@types/node": "^22.13.0",
     "@zekel/game-kit": "^0.1.0",
     "@zekel/mcp": "^0.1.0",
+    "@zekel/8-bit-demon-hunter": "workspace:*",
     "@zekel/adventurer-olympics": "workspace:*",
     "@zekel/cybernoir-2127": "workspace:*",
     "@zekel/fractured-fist": "workspace:*",
