@@ -39,12 +39,10 @@ pnpm test       # every game's tests
 pnpm smoke      # serves all six and plays each through the real MCP tools
 ```
 
-For now `@zekel/game-kit` and `@zekel/mcp` are not on npm yet, so this repo expects a checkout of [zekel-mcp](https://github.com/xephoid/zekel-mcp) next to it (`../zekel-mcp`), built with `pnpm build`. Once they are published, the links in the `package.json` files become ordinary version numbers.
-
 ## Not done yet
 
 - The screens that draw these games in the Zekel web app still live in that app's repo; they move here later.
-- `@zekel/game-kit` and `@zekel/mcp` are not published to npm yet (see above).
+- The games themselves are not published to npm yet.
 
 ## Licence
 

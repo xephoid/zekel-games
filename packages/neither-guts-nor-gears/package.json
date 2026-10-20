@@ -24,7 +24,7 @@
     "@zekel/game-kit": "^0.1.0"
   },
   "devDependencies": {
-    "@zekel/game-kit": "link:../../../zekel-mcp/packages/game-kit"
+    "@zekel/game-kit": "^0.1.0"
   },
   "engines": {
     "node": ">=22.13.0"

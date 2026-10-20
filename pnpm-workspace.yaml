@@ -2,3 +2,6 @@ packages:
   - packages/*
 allowBuilds:
   esbuild: set this to true or false
+minimumReleaseAgeExclude:
+  - '@zekel/game-kit@0.1.0'
+  - '@zekel/mcp@0.1.0'
