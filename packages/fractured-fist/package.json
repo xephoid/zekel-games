@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "description": "Fractured Fist, a Zekel Games board game, as a game module for the zekel MCP server.",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xephoid/zekel-games.git",
+    "directory": "packages/fractured-fist"
+  },
+  "homepage": "https://github.com/xephoid/zekel-games#readme",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,7 +20,8 @@
   },
   "files": [
     "dist",
-    "LICENSE"
+    "LICENSE",
+    "README.md"
   ],
   "publishConfig": {
     "access": "public"
