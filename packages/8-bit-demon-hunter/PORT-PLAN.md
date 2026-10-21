@@ -71,6 +71,12 @@ task asks for completes it on the spot (no `found_you`); any other action ends
 the current conversation by itself (no goodbye needed); `claim_reward` may
 name the giver and then talks and claims in one move. The six-move find
 flow is two moves: talk to the target, claim from the giver.
+Playtest 3 (seed 44, 2026-10-21): the demon (Lauren the Merchant of
+Placington) was found by two secrets (has a Bird; is a Merchant) and the
+contradiction check; the arena was lost at once with no bindings (Q11).
+Fixes: the demon's name no longer doubles "The"; a confessed minion's card
+says `confessed_minion`; level-ups are offered mid-conversation; the
+Carpenter's "not in" clue is filed as a certainty (special), not a rumour.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.

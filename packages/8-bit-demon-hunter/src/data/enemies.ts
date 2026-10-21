@@ -71,7 +71,7 @@ export const ENEMIES: readonly EnemyDef[] = [
   { id: 'evil_eye', name: 'Evil Eye', plural: 'Evil Eyes', hp: 8, xp: 8, speed: 2.5, damage: 2, range: 5, max: 6, templeOnly: true, minHops: 0, behaviour: 'temple' },
   { id: 'fire_skull', name: 'Fire Skull', plural: 'Fire Skulls', hp: 5, xp: 5, speed: 14.0, damage: 2, range: 1, max: 8, templeOnly: true, minHops: 0, behaviour: 'temple' },
   // --- The finale (hp is computed from bindings × strength; see finale) ---
-  { id: 'demon', name: 'The Demon', plural: 'Demons', hp: 20, xp: 0, speed: 8, damage: 2, range: 3, max: 1, templeOnly: true, minHops: 0, behaviour: 'boss' },
+  { id: 'demon', name: 'Demon', plural: 'Demons', hp: 20, xp: 0, speed: 8, damage: 2, range: 3, max: 1, templeOnly: true, minHops: 0, behaviour: 'boss' },
 ];
 
 export const ENEMY_BY_ID: Readonly<Record<EnemyType, EnemyDef>> = Object.fromEntries(

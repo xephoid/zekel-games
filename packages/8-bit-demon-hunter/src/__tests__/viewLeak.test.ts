@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { ENEMY_BY_ID } from '../data/enemies.js';
 import { RIDDLES } from '../data/riddles.js';
 import { getView } from '../views.js';
 import { getLegalMoves } from '../legalMoves.js';
@@ -85,5 +86,14 @@ describe('the player view hides the mystery', () => {
       expect(card.rumour).toBeUndefined();
       expect(card.knows_the_truth).toBeUndefined();
     }
+  });
+
+  it('an unconfessed minion is never marked; the demon reads as "the Demon" in combat', () => {
+    const s = fresh(6);
+    for (const p of s.towns[0]!.people) p.hasMet = true;
+    const text = JSON.stringify(getView(s));
+    expect(text).not.toContain('confessed_minion');
+    expect(text).not.toContain('isMinion');
+    expect(ENEMY_BY_ID.demon.name).toBe('Demon');
   });
 });

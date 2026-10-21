@@ -4,6 +4,7 @@ import { buyPrice, sellPrice } from '../data/resources.js';
 import type { DemonHunterState, Person } from '../types.js';
 import { apply, applyText, demon, fresh } from './support.js';
 import { getLegalMoves } from '../legalMoves.js';
+import { getView } from '../views.js';
 
 // PORT-PLAN §6.
 
@@ -96,6 +97,12 @@ describe('talking to townsfolk', () => {
     expect(r.summary).toContain('MINIONS');
     expect(r.state.player.activeTasks).not.toContain(minion.id);
     expect(person(r.state, minion.id).taskCompleted).toBe(true);
+    expect(person(r.state, minion.id).confessed).toBe(true);
+    const card = (getView(r.state) as { here: { people: { id: string; confessed_minion?: boolean }[] } }).here.people.find((x) => x.id === minion.id)!;
+    expect(card.confessed_minion).toBe(true);
+    expect(getLegalMoves(r.state).some((m) => m.move_id.startsWith('level_up:'))).toBe(false);
+    r.state.player.xp = 1000;
+    expect(getLegalMoves(r.state).some((m) => m.move_id.startsWith('level_up:'))).toBe(true); // offered mid-conversation too
   });
 
   it('find tasks: the matching person says "you found me"', () => {

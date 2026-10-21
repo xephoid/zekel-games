@@ -96,6 +96,7 @@ export function talk(state: DemonHunterState, personId: string, lines: string[])
       if (person.isMinion) {
         // A minion reveals itself instead of paying (the original minionReveal).
         person.taskCompleted = true;
+        person.confessed = true;
         p.activeTasks = p.activeTasks.filter((id) => id !== person.id);
         state.dialogue = { personId: person.id, stage: 'closing' };
         lines.push(`"Ah, you caught me, but you will not find my master!" ${person.name} is one of the demon's MINIONS.`);
@@ -285,8 +286,8 @@ function occupationPower(state: DemonHunterState, person: Person, lines: string[
       const choice = pick(candidates, state.seed);
       state.seed = choice.nextSeed;
       const text = `The demon is not in ${choice.value.name}`;
-      addClue(state, { text, isGood: false, relatedAttribute: { key: 'townId', value: choice.value.id } });
-      lines.push(`"${text}." (Added to your clue book.)`);
+      addClue(state, { text, isGood: false, isSpecial: true, relatedAttribute: { key: 'townId', value: choice.value.id } });
+      lines.push(`"${text}." (Added to your clue book as a certainty: a Carpenter's word is good.)`);
       return;
     }
     case 'Locksmith':

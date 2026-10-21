@@ -23,6 +23,8 @@ export interface PersonView {
   item?: string;
   rumour?: string;
   knows_the_truth?: boolean;
+  /** They confessed to serving the demon when their task was finished. */
+  confessed_minion?: boolean;
   /** Eye of Truth only. */
   lying?: boolean;
   task?: { description: string; progress: string; completed: boolean; reward_claimed: boolean; why?: string };
@@ -46,6 +48,7 @@ export function personView(state: DemonHunterState, p: Person): PersonView {
     suspect: state.player.suspects.includes(p.id),
     house_searched: state.player.searchedHouses.includes(p.id),
     travelling_with_you: state.player.followers.includes(p.id),
+    ...(p.confessed ? { confessed_minion: true } : {}),
   };
   if (!p.hasMet) return base;
   const itemName = p.attributes.item === 'None' ? 'nothing' : (state.items.find((i) => i.id === p.attributes.item)?.name ?? p.attributes.item);

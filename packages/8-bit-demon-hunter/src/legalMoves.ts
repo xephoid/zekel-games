@@ -62,6 +62,7 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
         break;
     }
     add('goodbye', `Say goodbye to ${person.name} (or just do something else: talk to someone, ask around, the inn, leave)`, { type: 'goodbye' });
+    levelUps();
     return out;
   }
 

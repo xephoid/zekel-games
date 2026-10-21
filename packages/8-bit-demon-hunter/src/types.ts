@@ -123,6 +123,9 @@ export interface Person {
   task: GameTask;
   hasMet: boolean;
   taskCompleted: boolean;
+  /** They confessed to being a minion when their task was finished: the
+   *  player knows, so the card says so. */
+  confessed: boolean;
   /** A game tip (starting town) or a lore line (every other town): their story. */
   tip: string;
   /** How the GM voices them (seeded, independent of the mystery). */

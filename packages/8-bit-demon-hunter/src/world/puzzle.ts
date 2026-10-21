@@ -64,6 +64,7 @@ export function generatePeople(towns: Town[], seed: number): number {
         task: seedTask(id),
         hasMet: false,
         taskCompleted: false,
+        confessed: false,
         tip: '',
         persona: { temperament: '', manner: '', quirk: '', worry: '', taskReason: '', loreHooks: [] },
       });
