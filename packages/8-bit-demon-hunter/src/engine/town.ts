@@ -267,7 +267,7 @@ function occupationPower(state: DemonHunterState, person: Person, lines: string[
     }
     case 'Mayor':
       p.resources.gold++;
-      lines.push(`The Mayor hands you a piece of gold (${p.resources.gold}).`);
+      lines.push(`The Mayor hands you a piece of gold: 1 Gold (${p.resources.gold} in all).`);
       return;
     case 'Merchant':
       p.shuckles += MERCHANT_SHUCKLES;

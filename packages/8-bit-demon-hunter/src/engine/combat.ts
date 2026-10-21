@@ -315,10 +315,10 @@ export function killEnemy(state: DemonHunterState, enemy: Enemy, lines: string[]
   // enemies except bandits → demon powder.
   if (TEMPLE_ENEMY_TYPES.includes(def.id)) {
     state.player.resources.demon_ichor++;
-    lines.push(`You collect Demon Ichor (${state.player.resources.demon_ichor}).`);
+    lines.push(`You collect 1 Demon Ichor (${state.player.resources.demon_ichor} in all).`);
   } else if (def.id !== 'dude_bandit' && def.id !== 'lady_bandit') {
     state.player.resources.demon_powder++;
-    lines.push(`You collect Demon Powder (${state.player.resources.demon_powder}).`);
+    lines.push(`You collect 1 Demon Powder (${state.player.resources.demon_powder} in all).`);
   }
 
   // Kill-task progress: every accepted task that wants this kind of monster.

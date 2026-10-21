@@ -109,10 +109,10 @@ export function bomb(state: DemonHunterState, confirm: boolean | undefined, line
     state.seed = roll.nextSeed;
     if (roll.value < GOLD_DROP_CHANCE) {
       p.resources.gold++;
-      lines.push(`Something glints in the rubble: Gold (${p.resources.gold}).`);
+      lines.push(`Something glints in the rubble: 1 Gold (${p.resources.gold} in all).`);
     } else if (roll.value < GOLD_DROP_CHANCE + IRON_DROP_CHANCE) {
       p.resources.iron_ore++;
-      lines.push(`You dig Iron Ore out of the rubble (${p.resources.iron_ore}).`);
+      lines.push(`You dig 1 Iron Ore out of the rubble (${p.resources.iron_ore} in all).`);
     } else {
       lines.push('Nothing but rubble.');
     }
