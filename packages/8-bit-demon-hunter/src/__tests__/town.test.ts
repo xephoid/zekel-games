@@ -164,6 +164,63 @@ describe('talking to townsfolk', () => {
   });
 });
 
+describe('asking around town', () => {
+  it('names who fits a pet, colour, trade, item, task or truth without meeting them', () => {
+    const s = fresh(1);
+    const town = s.towns[0]!;
+    const purple = town.people.filter((p) => p.attributes.color === 'Purple');
+    let r = applyText(s, { type: 'search_town', color: 'purple' });
+    if (purple.length === 0) expect(r.summary).toContain('Nobody here fits');
+    else for (const p of purple) expect(r.summary).toContain(`${p.name} the ${p.attributes.occupation}`);
+    expect(r.state.towns[0]!.people.every((p) => !p.hasMet)).toBe(true);
+    const truth = town.people.find((p) => p.clues.good)!;
+    r = applyText(s, { type: 'search_town', truth: true });
+    expect(r.summary).toContain(`${truth.name} the ${truth.attributes.occupation}`);
+    expect(r.summary).toContain('[not yet met]');
+    const killer = town.people.find((p) => p.task.type === 'KILL');
+    if (killer) {
+      const monster = killer.task.description.replace(/^Kill \d+ /, '');
+      r = applyText(s, { type: 'search_town', task: monster });
+      expect(r.summary).toContain(killer.name);
+      expect(r.summary).toContain(killer.task.description.toLowerCase());
+    }
+    const someone = town.people[3]!;
+    const itemName = s.items.find((i) => i.id === someone.attributes.item)!.name;
+    r = applyText(s, { type: 'search_town', item: itemName });
+    expect(r.summary).toContain(someone.name);
+    r = applyText(s, { type: 'search_town', occupation: 'Mayor', pet: town.people.find((p) => p.attributes.occupation === 'Mayor')!.attributes.pet });
+    expect(r.summary).toContain('the Mayor');
+    r = applyText(s, { type: 'search_town' });
+    expect(r.summary).toContain('Ask about something');
+    expect(() => apply(apply(s, { type: 'leave' }), { type: 'search_town', pet: 'dog' })).toThrow(/in a town/);
+  });
+
+  it('finds the rumours that contradict a secret and names who said them', () => {
+    let s = fresh(2);
+    const d = demon(s);
+    // a secret about the demon's trade, as if earned
+    s.player.knownClues.push({ text: `The demon is a ${d.attributes.occupation}`, isGood: true, relatedAttribute: { key: 'occupation', value: d.attributes.occupation } });
+    let r = applyText(s, { type: 'search_town', contradictions: true });
+    expect(r.summary).toContain('None of them contradicts');
+    // a liar whose lie is exactly that negation
+    const liar = s.towns[0]!.people.find((p) => p.id !== d.id)!;
+    liar.clues.bad = { text: `The demon is not a ${d.attributes.occupation}`, isGood: false, relatedAttribute: { key: 'occupation', value: d.attributes.occupation } };
+    s = apply(s, { type: 'talk', person: liar.id });
+    s = apply(s, { type: 'goodbye' });
+    r = applyText(s, { type: 'search_town', contradictions: true });
+    expect(r.summary).toContain(`said by ${liar.name} the ${liar.attributes.occupation}`);
+    expect(r.summary).toContain('was lying');
+    // works outdoors too
+    r = applyText(apply(s, { type: 'leave' }), { type: 'search_town', contradictions: true });
+    expect(r.summary).toContain('was lying');
+  });
+
+  it('without a secret, says why nothing can contradict', () => {
+    const r = applyText(fresh(3), { type: 'search_town', contradictions: true });
+    expect(r.summary).toContain('Without a demon secret');
+  });
+});
+
 describe('escorts', () => {
   it('the escorted person travels with you and moves house on arrival; escorting the demon moves the location clues', () => {
     let s = fresh(4);

@@ -139,6 +139,13 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
 
   // ---- Town ----
   {
+    id: 'ask-around',
+    description: 'What to ask around town for: a pet, colour, trade, item, a task, who knows the truth, or contradictions in your clue book',
+    owner: 'player',
+    when: 'in-game',
+    resolvedBy: ['search_town'],
+  },
+  {
     id: 'whom-to-talk-to',
     description: 'Which townsperson you talk to',
     owner: 'player',

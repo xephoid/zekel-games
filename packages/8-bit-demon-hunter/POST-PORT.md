@@ -195,6 +195,7 @@ marked out-of-scope.
 | Temples are mysterious: "a treasure awaits", guardians named only as they appear, no counts, the item named at the chest (2026-10-21) | `eng/temple.ts enterTemple`; `combat.ts killEnemy` gauntlet lines; `views.ts`; `nextStep.ts`; rules "Temples" | temple suite; viewCompleteness "temple and riddle…" |
 | Enemies have no numbers in anything the GM reads: condition words and behaviour only (2026-10-21) | `helpers.ts condition`; `combat.ts`; `describe.ts`; `views.ts`; `legalMoves.ts`; `nextStep.ts`; rules "Enemies"; guidance §6b; reference data | viewCompleteness combat/outdoors (no hp/speed/range/damage keys); combat suite strings |
 | The black market is a secret: nothing states it, buying offered only after talking to a Lady Bandit (2026-10-21) | `player.blackMarketKnown`; `eng/items.ts talkBandit`; `legalMoves.ts`; rules; guidance §4c; lore `monsters`, conversation guide | legalMoves "outdoors…" (buy hidden before, offered after); movement Lady Bandit test |
+| Asking around town: `search_town` names who fits a pet/colour/trade/item/task/truth without meeting them, and `contradictions` compares the clue book against held secrets and names the liars (2026-10-21) | `eng/town.ts searchTown, contradictions`; `legalMoves.ts`; rules "People, rumours and secrets"; guidance §2c | town "asking around town" (3 tests) |
 | Never give hints unless asked | `guidance.ts SESSION_START_GUIDANCE` §3; every `nextStep.ts` instruction ends with the rule | lore "the guidance forbids hints…"; summaries suite (facts lint) |
 | Conversations are played, not read (designer, 2026-10-20 evening): every person has a seeded persona and a task reason; `talk` returns a GM BRIEF plus "Gist:" lines; the GM improvises, facts stay exact; talking records nothing | `data/personas.ts`; `w/puzzle.ts generatePuzzle` step 6; `eng/town.ts characterBrief`; `nextStep.ts` conversation directive; guidance §2b; lore `running-a-conversation`, `what-nobody-knows` | personas suite (4 tests) |
 | The GM never learns the demon | view stripping (§2) | viewLeak suite; sweep (§13) |
@@ -272,6 +273,7 @@ row has a `why`, and every named move type exists.
 | Fight or flee (or aura) | player | `fight`, `flee`, `aura` | flee only when about to die, running frees it (no blocker or mushroom crowd) and it can pay for a bed; otherwise fight | — |
 | Level-up stat | player | `level_up {stat}` whenever earned | strength → health → agility → range | — |
 | Continue after death | player | `continue` | always | — |
+| What to ask around town for | player | `search_town {pet|color|occupation|item|task|truth|contradictions}` | never | — |
 | Whom to talk to; accept/decline; clue vs power; "I found you"; goodbye | player | `talk {person}`, `accept_task`/`decline`, `claim_reward {reward}`, `found_you`, `goodbye` | accepts when free; takes the clue | — |
 | Inn services | player | `inn`, `sleep`, `train`, `ride {town}`, `buy`/`sell {resource}`, `leave_inn` | sleep when hurt, sell everything, pay for training until strong | — |
 | Which house to search (+ lockpick confirm) | player | `search_house {person, confirm}` (needs a key) | never | — |

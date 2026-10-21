@@ -6,7 +6,8 @@ import { INN_RIDE_COST, INN_SLEEP_COST, INN_TRAIN_COST, INN_TRAIN_XP, MERCHANT_S
 import { BINDING_NAMES } from '../data/registries.js';
 import { buyPrice, RESOURCE_DISPLAY_NAME, RESOURCE_TYPES, sellPrice, type ResourceType } from '../data/resources.js';
 import { pick, randomInt, shuffle } from '../rng.js';
-import type { DemonHunterState, Person } from '../types.js';
+import type { Clue, DemonHunterState, Person } from '../types.js';
+import type { DemonHunterMove } from './moves.js';
 import { refuse } from './errors.js';
 import { activeTasks, addClue, allPeople, currentTown, gainXp, hasMagicItem, healToFull, personOf } from './helpers.js';
 import { arriveInTown, requireNoCombat } from './movement.js';
@@ -417,4 +418,111 @@ export function searchHouse(state: DemonHunterState, personId: string, confirm: 
   } else {
     lines.push('Nothing of note here.');
   }
+}
+
+// ---------------------------------------------------------------------------
+// Asking around town
+// ---------------------------------------------------------------------------
+
+type SearchMove = Extract<DemonHunterMove, { type: 'search_town' }>;
+
+const norm = (x: string): string => x.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+
+/** `search_town`: townsfolk know each other, so the player can ask who here
+ *  fits a description instead of talking to everyone. It reveals names and the
+ *  thing asked about, nothing else, and nobody counts as met. */
+export function searchTown(state: DemonHunterState, q: SearchMove, lines: string[]): void {
+  requireNoCombat(state);
+  if (state.innOpen) refuse('Leave the inn first.');
+  const asked = ['pet', 'color', 'occupation', 'item', 'task', 'truth', 'contradictions'].filter((k) => (q as Record<string, unknown>)[k] !== undefined && (q as Record<string, unknown>)[k] !== '' && (q as Record<string, unknown>)[k] !== false);
+  if (asked.length === 0) {
+    lines.push('Ask about something: a pet, a colour, a trade, an item, a task (by the monster or a word of it), who knows the truth, or which clues contradict each other.');
+    return;
+  }
+
+  if (q.contradictions) {
+    contradictions(state, lines);
+    if (asked.length === 1) return;
+  }
+
+  if (state.player.inside !== 'town') refuse('You must be in a town to ask around it.');
+  const town = currentTown(state);
+  const itemName = (id: string): string => (id === 'None' ? 'nothing' : (state.items.find((i) => i.id === id)?.name ?? id));
+  const want: string[] = [];
+  let people = town.people;
+  if (q.pet) {
+    const v = norm(q.pet);
+    people = people.filter((p) => norm(p.attributes.pet) === v || norm(p.attributes.pet) + 's' === v);
+    want.push(`keeps a ${q.pet}`);
+  }
+  if (q.color) {
+    const v = norm(q.color);
+    people = people.filter((p) => norm(p.attributes.color) === v);
+    want.push(`likes ${q.color}`);
+  }
+  if (q.occupation) {
+    const v = norm(q.occupation);
+    people = people.filter((p) => norm(p.attributes.occupation) === v);
+    want.push(`is a ${q.occupation}`);
+  }
+  if (q.item) {
+    const v = norm(q.item).replace(/^(a|an|the) /, '');
+    people = people.filter((p) => norm(itemName(p.attributes.item)).replace(/^(a|an|the) /, '') === v);
+    want.push(`has ${q.item}`);
+  }
+  if (q.task) {
+    const v = norm(q.task).replace(/s$/, '');
+    people = people.filter((p) => {
+      const d = norm(p.task.description);
+      const t = p.task.type.toLowerCase();
+      return d.includes(v) || d.includes(v + 's') || (v === 'escort' && t === 'escort') || (v === 'find' && (t === 'find_person' || t === 'find_item')) || (v === 'kill' && t === 'kill');
+    });
+    want.push(`wants help with "${q.task}"`);
+  }
+  if (q.truth) {
+    people = people.filter((p) => !!p.clues.good);
+    want.push('says they know the truth');
+  }
+  if (want.length === 0) return;
+  const whom = want.join(' and ');
+  if (people.length === 0) {
+    lines.push(`You ask around ${town.name} for anyone who ${whom}. Nobody here fits.`);
+    return;
+  }
+  const described = people.map((p) => {
+    const bits: string[] = [];
+    if (q.pet) bits.push(`keeps a ${p.attributes.pet}`);
+    if (q.color) bits.push(`likes ${p.attributes.color}`);
+    if (q.item) bits.push(`has ${itemName(p.attributes.item)}`);
+    if (q.task) bits.push(`asks: ${p.task.description.toLowerCase()}`);
+    if (q.truth) bits.push('claims to know the truth');
+    return `${p.name} the ${p.attributes.occupation}${bits.length > 0 ? ` (${bits.join('; ')})` : ''}${p.hasMet ? '' : ' [not yet met]'}`;
+  });
+  lines.push(`You ask around ${town.name} for anyone who ${whom}: ${described.join('; ')}.`);
+}
+
+/** Known rumours that cannot be true alongside a secret you hold: a
+ *  negation of exactly what a truth-knower told you. Lists who said them. */
+function contradictions(state: DemonHunterState, lines: string[]): void {
+  const known = state.player.knownClues;
+  const secrets = known.filter((c) => c.isGood && c.relatedAttribute);
+  if (secrets.length === 0) {
+    lines.push('You compare the rumours in your clue book. Without a demon secret to measure them against, none of them contradicts another: every rumour is a "not", and "nots" never clash.');
+    return;
+  }
+  const people = allPeople(state);
+  const speakers = (clue: Clue): string[] =>
+    people.filter((p) => p.hasMet && p.clues.bad?.text === clue.text).map((p) => `${p.name} the ${p.attributes.occupation} of ${state.towns.find((t) => t.id === p.attributes.townId)?.name}`);
+  const found: string[] = [];
+  for (const s of secrets) {
+    for (const c of known) {
+      if (c.isGood || !c.relatedAttribute) continue;
+      if (c.relatedAttribute.key === s.relatedAttribute!.key && c.relatedAttribute.value === s.relatedAttribute!.value) {
+        const who = speakers(c);
+        found.push(`"${c.text}" (said by ${who.length > 0 ? who.join(' and ') : 'someone you have not written down'}) contradicts the secret "${s.text}"`);
+      }
+    }
+  }
+  if (found.length === 0) lines.push(`You compare the rumours in your clue book against your ${secrets.length} secret${secrets.length === 1 ? '' : 's'}. None of them contradicts a secret.`);
+  else lines.push(`You compare your clue book: ${found.join('; ')}. Whoever told you a rumour that contradicts a secret was lying.`);
 }

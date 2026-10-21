@@ -28,6 +28,19 @@ export type DemonHunterMove =
   | { type: 'stab'; person: string }
   | { type: 'continue' }
   // --- town ---
+  | {
+      type: 'search_town';
+      pet?: string;
+      color?: string;
+      occupation?: string;
+      item?: string;
+      /** A task by what it asks for: a monster ("slimes"), "escort", "find", or a word of its description. */
+      task?: string;
+      /** Who here says they know the truth. */
+      truth?: boolean;
+      /** Which known rumours contradict a secret you hold (uses your clue book; works anywhere). */
+      contradictions?: boolean;
+    }
   | { type: 'talk'; person: string }
   | { type: 'found_you' }
   | { type: 'accept_task' }
@@ -53,7 +66,7 @@ export type MoveType = DemonHunterMove['type'];
 export const MOVE_TYPES: readonly MoveType[] = [
   'look', 'move', 'enter', 'leave', 'attack', 'bomb', 'talk_bandit', 'buy_from_bandit', 'fly', 'land', 'aura', 'teleport',
   'fight', 'flee', 'level_up', 'mark_suspect', 'unmark_suspect', 'stab', 'continue',
-  'talk', 'found_you', 'accept_task', 'decline', 'claim_reward', 'goodbye',
+  'search_town', 'talk', 'found_you', 'accept_task', 'decline', 'claim_reward', 'goodbye',
   'inn', 'sleep', 'train', 'ride', 'buy', 'sell', 'leave_inn', 'search_house',
   'gauntlet', 'next_fight', 'riddle', 'answer_riddle',
 ];

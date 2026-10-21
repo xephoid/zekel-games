@@ -24,6 +24,7 @@ import {
   innSleep,
   innTrain,
   searchHouse,
+  searchTown,
   talk,
 } from './town.js';
 import { stab } from './finale.js';
@@ -130,6 +131,9 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       break;
     case 'stab':
       stab(state, move_.person, lines);
+      break;
+    case 'search_town':
+      searchTown(state, move_, lines);
       break;
     case 'talk':
       talk(state, move_.person, lines);

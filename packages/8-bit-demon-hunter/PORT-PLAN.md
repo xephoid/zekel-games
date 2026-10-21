@@ -34,6 +34,11 @@ range or damage, only its condition in words and its behaviour; the **Lady
 Bandits' black market is a secret** to discover: nothing states it, townsfolk
 may only pass it on as a rumour, and buying is offered only after the player
 has talked to a Lady Bandit and heard her offer.
+Ruling 2026-10-21 (third): **asking around town** (`search_town`): who here
+keeps a pet, likes a colour, follows a trade, owns an item, wants help with
+something, or claims to know the truth; and a **contradictions** check that
+compares the clue book's rumours against the secrets held and names who
+said what. Asking around tells names, not rumours; nobody counts as met.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.
