@@ -95,7 +95,8 @@ Ruling 2026-10-21 (eleventh): **a secret way**. In the lair the player may
 `say` anything to the demon; a sentence containing the word "love" undoes it
 (the songs about Chineera were right). Anything else costs the demon's next
 action; said to a minion or to the air, nothing. No GM-facing text names the
-word; the lore and the rumours carry it.
+word; the lore and the rumours carry it, and two casual lines in the lore pool
+(`LORE_LINES`) say outright that the demon fears love.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.
