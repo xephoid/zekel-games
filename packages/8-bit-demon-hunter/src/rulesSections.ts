@@ -143,8 +143,8 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     text:
       'Stab the demon and the town falls away: you stand in its lair. The demon has 48 HP, less 8 for every binding and every artifact you hold (never below 4), speed 8, range 3 and damage 2. ' +
       'At two thirds of its HP it retreats and summons up to three monsters, one fewer for every two bindings or artifacts you hold, which you fight one at a time before it returns. At one third it attacks twice per action. ' +
-      'Kill it to win. If it kills you, the knife turns time back: you wake in the last town as after any death, the demon still wearing its face in its town, and you may stab it again when you are readier.',
-    tags: { move_types: ['stab', 'fight'], phases: ['lair'] },
+      'You may also say anything to it (say); whether it listens is for you to find out. Kill it to win. If it kills you, the knife turns time back: you wake in the last town as after any death, the demon still wearing its face in its town, and you may stab it again when you are readier.',
+    tags: { move_types: ['stab', 'fight', 'say'], phases: ['lair'] },
   },
 ];
 

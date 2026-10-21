@@ -5,6 +5,8 @@ import { getView } from '../views.js';
 import { getLegalMoves } from '../legalMoves.js';
 import { describeNextStep } from '../nextStep.js';
 import { apply, fresh, outsideStart } from './support.js';
+import { SESSION_START_GUIDANCE } from '../guidance.js';
+import { DEMON_HUNTER_RULE_SECTIONS, renderRules } from '../rulesSections.js';
 
 // Nothing hidden may reach the player view, the legal moves or next_step:
 // the demon's identity, minion flags, unearned secrets, riddle answers.
@@ -95,5 +97,18 @@ describe('the player view hides the mystery', () => {
     expect(text).not.toContain('confessed_minion');
     expect(text).not.toContain('isMinion');
     expect(ENEMY_BY_ID.demon.name).toBe('Demon');
+  });
+
+  it('nothing GM-facing names the word that undoes the demon', () => {
+    let s = fresh(2);
+    const d = s.towns.flatMap((t) => t.people).find((x) => x.id === s.demonId)!;
+    s.player.at = s.towns.find((t) => t.id === d.attributes.townId)!.nodeId;
+    s.player.inside = 'town';
+    s.player.maxHp = 10;
+    s.player.hp = 10;
+    s.player.bindings = ['a'];
+    s = apply(s, { type: 'stab', person: d.id });
+    const text = JSON.stringify([getLegalMoves(s), describeNextStep(s, 'p1'), SESSION_START_GUIDANCE, renderRules(DEMON_HUNTER_RULE_SECTIONS)]);
+    expect(text.toLowerCase()).not.toMatch(/\blove\b/);
   });
 });

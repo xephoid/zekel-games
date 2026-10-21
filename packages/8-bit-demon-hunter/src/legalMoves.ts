@@ -42,6 +42,7 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
     const d = ENEMY_BY_ID[e.type];
     if (!(p.flying && p.range < 3)) add('fight', `Attack the ${d.name}`, { type: 'fight' });
     if (!state.lair) add('flee', `Run away from the ${d.name}${d.behaviour === 'hunter' ? ' (it gets one attack as you go)' : ''}`, { type: 'flee' });
+    if (state.lair) add('say', `Say something to the ${d.name} (fill in text: the player's words, verbatim)`, { type: 'say', text: '' });
     if (hasMagicItem(state, 'earth') && !state.lair) add('aura', 'Aura of Protection: leave the fight untouched', { type: 'aura' });
     levelUps();
     return out;

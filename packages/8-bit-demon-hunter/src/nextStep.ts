@@ -63,7 +63,7 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
       status: 'human_to_move',
       active_player_id: playerId,
       instruction:
-        `COMBAT: the player's action is owed against ${d.name}. Relay the player's HP exactly and describe the enemy by how it looks and acts (never its numbers), then ask: fight or ${lair ? 'nothing else (there is no fleeing the lair)' : 'flee'}` +
+        `COMBAT: the player's action is owed against ${d.name}. Relay the player's HP exactly and describe the enemy by how it looks and acts (never its numbers), then ask: fight or ${lair ? 'say something to it (there is no fleeing the lair; if they speak to it, submit say with their exact words and never suggest any)' : 'flee'}` +
         (p.magicItems.includes('earth') && !lair ? ', or the Aura of Protection to walk away untouched' : '') +
         '. Submit fight or flee. Never resolve attacks yourself; the server does. ' + NEVER_HINT,
       human_response: { ask: 'fight or run away', example: 'I fight', records_as: 'fight (attack) or flee (run away)' },

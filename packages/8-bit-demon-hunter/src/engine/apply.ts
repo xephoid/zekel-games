@@ -2,7 +2,7 @@
 // state and a plain-words summary. Rule violations throw RuleError.
 
 import type { DemonHunterState } from '../types.js';
-import { lairContinue, auraEscape, playerFight, playerFlee, startCombat } from './combat.js';
+import { lairContinue, auraEscape, playerFight, playerFlee, say, startCombat } from './combat.js';
 import { lookText } from './describe.js';
 import { refuse, RuleError } from './errors.js';
 import { clone, hasMagicItem, hereNode } from './helpers.js';
@@ -57,6 +57,9 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       break;
     case 'travel':
       travel(state, move_, lines);
+      break;
+    case 'say':
+      say(state, move_.text, lines);
       break;
     case 'enter': {
       requireNoCombat(state);

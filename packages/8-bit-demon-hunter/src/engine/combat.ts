@@ -155,6 +155,46 @@ function playerHits(state: DemonHunterState, attacks: number, lines: string[]): 
   }
 }
 
+function winLair(state: DemonHunterState, summary: string, lines: string[]): void {
+  state.phase = 'won';
+  state.combat = null;
+  state.lair = null;
+  for (const e of Object.values(state.enemies)) if (e.at === LAIR_NODE_ID) delete state.enemies[e.id];
+  state.result = { winner: 'player', summary };
+  lines.push(summary);
+}
+
+/** `say {text}`: words spoken aloud. In the lair, to the demon's face, one
+ *  word undoes it (the songs were right); anything else costs you its next
+ *  action. Elsewhere, nothing answers. The GM-facing texts never name the
+ *  word; the rumours and the lore do (ruling 2026-10-21). */
+export function say(state: DemonHunterState, text: string, lines: string[]): void {
+  const spoken = (text ?? '').trim();
+  if (spoken === '') refuse('Say what? Give the words.');
+  if (!state.combat) {
+    lines.push(`You say it aloud: "${spoken}". Nothing answers.`);
+    return;
+  }
+  const enemy = combatEnemy(state);
+  const def = defOf(enemy);
+  if (def.behaviour !== 'boss') {
+    lines.push(`You say it: "${spoken}". The ${def.name} does not care for words.`);
+    enemyAction(state, lines);
+    return;
+  }
+  if (/\blove\b/i.test(spoken)) {
+    lines.push(
+      `You say it: "${spoken}". The word hangs in the dark. The Demon stops mid-stride, and something in the grin breaks. ` +
+      `"She said that," it says, and for a moment the face it wears is no mask at all. The black pillars crack from floor to vault. ` +
+      'Whatever Chineera did to it long ago, you have done again: it comes apart like smoke in a draught, and the lair with it.',
+    );
+    winLair(state, 'The Demon is undone by the word Chineera once said to it. The land is free, and the hunt is over: you win!', lines);
+    return;
+  }
+  lines.push(`You say it: "${spoken}". The Demon laughs, and the laugh goes on too long.`);
+  enemyAction(state, lines);
+}
+
 /** Between lair fights: the next minion, then the demon again, or victory. */
 export function lairContinue(state: DemonHunterState, lines: string[]): void {
   // A foe can die to the opening attack of its own fight; keep going until a
@@ -167,11 +207,7 @@ function lairStep(state: DemonHunterState, lines: string[]): void {
   const lair = state.lair;
   if (!lair || state.combat || state.phase !== 'lair') return;
   if (!state.enemies[lair.demonEnemyId]) {
-    state.phase = 'won';
-    state.lair = null;
-    for (const e of Object.values(state.enemies)) if (e.at === LAIR_NODE_ID) delete state.enemies[e.id];
-    state.result = { winner: 'player', summary: 'The Demon is destroyed. The land is free, and the hunt is over: you win!' };
-    lines.push(state.result.summary);
+    winLair(state, 'The Demon is destroyed. The land is free, and the hunt is over: you win!', lines);
     return;
   }
   const next = lair.minionQueue.find((id) => state.enemies[id]);

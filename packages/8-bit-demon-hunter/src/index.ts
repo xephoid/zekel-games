@@ -71,7 +71,7 @@ const moveSchema = {
     resource: { enum: Object.keys(RESOURCE_BASE_VALUE), description: 'buy / sell' },
     amount: { anyOf: [{ type: 'integer', minimum: 1 }, { enum: ['all'] }], description: 'buy / sell / buy_from_bandit: how many (default 1). "all" = everything you hold (sell), or as many as the stock and your shuckles allow (buy).' },
     confirm: { type: 'boolean', description: 'search_house: true to spend a lockpick; bomb: true to set off a bomb that would kill you' },
-    text: { type: 'string', description: "answer_riddle: the player's answer, verbatim" },
+    text: { type: 'string', description: "answer_riddle: the player's answer, verbatim; say: the player's words, verbatim" },
   },
   description: 'One action. get_legal_moves lists exactly which are possible now, with filled-in ids.',
 } as const;

@@ -91,6 +91,11 @@ favours): fewest weakenings to win on 5 seeds: fresh (0 picks) never, early
 Nothing wins with none. The constants live in `data/progression.ts LAIR`. A confessed minion's house needs no lockpick. Death in the lair
 turns time back through the knife: the usual death, the demon keeps its face
 and town, the player keeps the knowledge; it does not re-hide. Resolves Q11.
+Ruling 2026-10-21 (eleventh): **a secret way**. In the lair the player may
+`say` anything to the demon; a sentence containing the word "love" undoes it
+(the songs about Chineera were right). Anything else costs the demon's next
+action; said to a minion or to the air, nothing. No GM-facing text names the
+word; the lore and the rumours carry it.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.

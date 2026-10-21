@@ -274,6 +274,15 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
     dependsOn: 'a gauntlet under way',
   },
   {
+    id: 'words-for-the-demon',
+    description: 'What, if anything, to say to the demon in its lair, in your own words',
+    owner: 'player',
+    when: 'in-game',
+    resolvedBy: ['say'],
+    distinguishedBy: 'text',
+    dependsOn: 'standing in the lair',
+  },
+  {
     id: 'riddle-answer',
     description: 'Your answer to the riddle, in your own words',
     owner: 'player',

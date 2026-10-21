@@ -72,6 +72,16 @@ function stage(name: string): DemonHunterState {
       s = apply(s, { type: 'fly' });
       return s;
     }
+    case 'lair': {
+      let s = fresh(2);
+      const d = s.towns.flatMap((t) => t.people).find((x) => x.id === s.demonId)!;
+      s.player.at = s.towns.find((t) => t.id === d.attributes.townId)!.nodeId;
+      s.player.inside = 'town';
+      s.player.maxHp = 10;
+      s.player.hp = 10;
+      s.player.bindings = ['a'];
+      return apply(s, { type: 'stab', person: d.id });
+    }
     case 'combat': {
       let s = outsideStart(1);
       s.player.maxHp = 10;
@@ -103,7 +113,7 @@ function stage(name: string): DemonHunterState {
   }
 }
 
-const STAGES = ['town', 'offer', 'reward', 'reward-here', 'inn', 'outdoors', 'flying', 'combat', 'temple-choice', 'gauntlet', 'riddle', 'dead'];
+const STAGES = ['town', 'offer', 'reward', 'reward-here', 'inn', 'outdoors', 'flying', 'combat', 'temple-choice', 'gauntlet', 'riddle', 'lair', 'dead'];
 
 describe('choice catalog coverage', () => {
   it('names only real move types (or session options)', () => {
@@ -128,7 +138,7 @@ describe('choice catalog coverage', () => {
     for (const row of DEMON_HUNTER_CHOICES.filter((r) => r.owner === 'player')) {
       const moves = row.resolvedBy.filter((m) => !m.startsWith('options.'));
       for (const m of moves) expect(offered.has(m), `${row.id}: ${m} is offered somewhere`).toBe(true);
-      if (row.distinguishedBy && !moves.includes('answer_riddle')) {
+      if (row.distinguishedBy && !moves.includes('answer_riddle') && !moves.includes('say')) {
         const carried = moves.some((m) => offered.get(m)!.has(row.distinguishedBy!));
         expect(carried, `${row.id}: some offered move carries ${row.distinguishedBy}`).toBe(true);
       }

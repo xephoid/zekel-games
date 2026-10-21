@@ -138,4 +138,31 @@ describe('the knife', () => {
     }
     expect(s.phase).toBe('won');
   });
+
+  it('a word undoes the demon; other words cost its next action; minions and the open air do not care', () => {
+    let s = fresh(9);
+    s.player.agility = 8; // the demon's pace: one attack per action
+    s.player.maxHp = 10;
+    s.player.hp = 10;
+    s.player.at = s.towns.find((t) => t.id === demon(s).attributes.townId)!.nodeId;
+    s.player.inside = 'town';
+    expect(applyText(s, { type: 'say', text: 'love' }).summary).toContain('Nothing answers');
+    s = apply(s, { type: 'stab', person: demon(s).id });
+    expect(s.phase).toBe('lair');
+    expect(() => apply(s, { type: 'say', text: '  ' })).toThrow(/Say what/);
+    let r = applyText(s, { type: 'say', text: 'Surrender, fiend!' });
+    expect(r.summary).toContain('laughs');
+    expect(r.summary).toContain('Demon attacks');
+    expect(r.state.phase).toBe('lair');
+    expect(r.state.player.hp).toBeLessThan(s.player.hp);
+    r = applyText(s, { type: 'say', text: 'I came here with love, Memlax.' });
+    expect(r.summary).toContain('She said that');
+    expect(r.state.phase).toBe('won');
+    expect(r.state.result?.summary).toContain('Chineera');
+    expect(r.state.lair).toBeNull();
+    expect(r.state.combat).toBeNull();
+    // "lovely" is not the word; a minion does not care either
+    r = applyText(s, { type: 'say', text: 'What a lovely lair.' });
+    expect(r.state.phase).toBe('lair');
+  });
 });

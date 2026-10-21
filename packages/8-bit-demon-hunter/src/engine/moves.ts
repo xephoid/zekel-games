@@ -23,6 +23,8 @@ export type DemonHunterMove =
   | { type: 'attack'; target: string }
   /** `confirm` is needed only when the blast would kill you. */
   | { type: 'bomb'; confirm?: boolean }
+  /** Say something aloud: to the demon in its lair, or to the air. The words are the player's, verbatim. */
+  | { type: 'say'; text: string }
   | { type: 'talk_bandit' }
   | { type: 'buy_from_bandit'; item: 'bomb' | 'lockpick'; amount?: number | 'all' }
   | { type: 'fly' }
@@ -79,7 +81,7 @@ export type MoveType = DemonHunterMove['type'];
 export const MOVE_TYPES: readonly MoveType[] = [
   'look', 'move', 'travel', 'enter', 'leave', 'attack', 'bomb', 'talk_bandit', 'buy_from_bandit', 'fly', 'land', 'aura', 'teleport',
   'fight', 'flee', 'level_up', 'mark_suspect', 'unmark_suspect', 'stab', 'continue',
-  'search_town', 'talk', 'accept_task', 'decline', 'claim_reward', 'goodbye',
+  'say', 'search_town', 'talk', 'accept_task', 'decline', 'claim_reward', 'goodbye',
   'inn', 'sleep', 'train', 'ride', 'buy', 'sell', 'leave_inn', 'search_house',
   'gauntlet', 'next_fight', 'riddle', 'answer_riddle',
 ];
