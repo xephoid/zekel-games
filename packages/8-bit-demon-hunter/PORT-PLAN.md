@@ -102,6 +102,9 @@ seeds 60% of minions had a find a townmate satisfied, or an escort, so a
 playthrough caught six minions by running errands and won the lair without
 a fight. Now every minion who is not a Merchant (Merchants always escort)
 gets a kill task three times in four, never slimes, else a temple find.
+Ruling 2026-10-21 (thirteenth): **gauntlets are four guardians** long
+(`GAUNTLET_LENGTH`), not the kind's full five to eight: with no healing between
+fights the full count was a cliff, damage-free or death.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.

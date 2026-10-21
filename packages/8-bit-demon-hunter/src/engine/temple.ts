@@ -1,7 +1,8 @@
 // Temples (PORT-PLAN §7): the gauntlet or the riddle.
 
+import { GAUNTLET_LENGTH } from '../data/progression.js';
 import { ENEMY_BY_ID } from '../data/enemies.js';
-import { MAGIC_ITEMS, TEMPLE_GUARDIAN } from '../data/magicItems.js';
+import { MAGIC_ITEMS, TEMPLE_GUARDIAN, type TempleType } from '../data/magicItems.js';
 import { isRiddleAnswerCorrect, RIDDLES } from '../data/riddles.js';
 import type { DemonHunterState } from '../types.js';
 import { startCombat } from './combat.js';
@@ -10,6 +11,11 @@ import { clearTempleEnemiesAt, enemiesAt, hereNode } from './helpers.js';
 import { makeEnemy } from '../world/populate.js';
 import { requireNoCombat } from './movement.js';
 import { grantMagicItem } from './rewards.js';
+
+/** How many guardians a temple's gauntlet sends: never more than the kind exists. */
+export function gauntletLength(temple: TempleType): number {
+  return Math.min(GAUNTLET_LENGTH, ENEMY_BY_ID[TEMPLE_GUARDIAN[temple]].max);
+}
 
 export function enterTemple(state: DemonHunterState, lines: string[]): void {
   const here = hereNode(state);
@@ -23,7 +29,7 @@ export function enterTemple(state: DemonHunterState, lines: string[]): void {
     lines.push(`You enter the ${here.name}. Its chest stands open and empty: you already took what it held, the ${MAGIC_ITEMS[temple].name}.`);
     return;
   }
-  state.temple = { temple, mode: 'choice', remaining: ENEMY_BY_ID[TEMPLE_GUARDIAN[temple]].max };
+  state.temple = { temple, mode: 'choice', remaining: gauntletLength(temple) };
   lines.push(
     `You enter the ${here.name}. It is ancient, and something in it is awake. Two ways lead to its heart: a gauntlet, where whatever guards this place will come at you one at a time, ` +
       'or a sealed door carved with a riddle, that opens only to the right answer. A treasure awaits whoever reaches the heart.',
@@ -63,7 +69,7 @@ export function startRiddle(state: DemonHunterState, lines: string[]): void {
   if (state.temple!.mode === 'gauntlet') {
     // Switching to the riddle abandons the gauntlet (it resets anyway on leaving).
     clearGuardians(state);
-    state.temple!.remaining = ENEMY_BY_ID[TEMPLE_GUARDIAN[state.temple!.temple]].max;
+    state.temple!.remaining = gauntletLength(state.temple!.temple);
   }
   state.temple!.mode = 'riddle';
   lines.push(`Words are carved over the sealed door: "${RIDDLES[state.temple!.temple].text}" Give your answer.`);

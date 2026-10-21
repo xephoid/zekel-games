@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { GAUNTLET_LENGTH } from '../data/progression.js';
 import { ENEMY_BY_ID } from '../data/enemies.js';
 import { TEMPLE_GUARDIAN } from '../data/magicItems.js';
 import type { DemonHunterState } from '../types.js';
@@ -53,7 +54,8 @@ describe('temples', () => {
     s = apply(s, { type: 'enter' });
     s = apply(s, { type: 'gauntlet' });
     expect(s.temple?.mode).toBe('gauntlet');
-    const total = ENEMY_BY_ID[TEMPLE_GUARDIAN.fire].max;
+    const total = Math.min(GAUNTLET_LENGTH, ENEMY_BY_ID[TEMPLE_GUARDIAN.fire].max);
+    expect(total).toBe(4);
     expect(s.temple?.remaining).toBe(total);
     let r = applyText(s, { type: 'next_fight' });
     s = r.state;

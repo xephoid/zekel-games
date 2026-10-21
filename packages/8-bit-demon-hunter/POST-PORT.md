@@ -178,7 +178,7 @@ marked out-of-scope.
 
 | Rule | Code | Test |
 |---|---|---|
-| Enter: gauntlet (guardian count, one at a time) or riddle; chest → item + find-item task; already taken → empty hall | `eng/temple.ts enterTemple:14, startGauntlet:39, nextFight:46, startRiddle:62, answerRiddle:73`; `eng/rewards.ts grantMagicItem:7` | temple "entering offers gauntlet or riddle…", "the gauntlet is the guardian count…", "a find-item task completes when the chest is opened" |
+| Enter: gauntlet (four guardians, one at a time; was the kind's full count) or riddle; chest → item + find-item task; already taken → empty hall | `eng/temple.ts enterTemple:14, startGauntlet:39, nextFight:46, startRiddle:62, answerRiddle:73`; `eng/rewards.ts grantMagicItem:7` | temple "entering offers gauntlet or riddle…", "the gauntlet is the guardian count…", "a find-item task completes when the chest is opened" |
 | Leaving mid-gauntlet resets it (ruling); a fled guardian waits | `eng/movement.ts leaveInterior:110`; `nextFight` | temple gauntlet test; "a fled guardian is still there…" |
 | Riddle: normalised answer match; wrong answer free (ruling); answers never shown | `data/riddles.ts`; `answerRiddle` | riddles suite; viewLeak "never contains a riddle answer" |
 | Wrong stab → loss; right → lair at once (no escape, no aura) | `eng/finale.ts stab`; `combat.ts playerFlee/auraEscape` lair refusals | finale suite |

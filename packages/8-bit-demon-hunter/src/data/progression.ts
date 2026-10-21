@@ -39,6 +39,11 @@ export const BOMB_COST = 10;
 export const LOCKPICK_COST = 200;
 export const BOMB_DAMAGE = 5;
 
+/** Guardians faced in a temple gauntlet, one at a time (ruling 2026-10-21: the
+ *  original's full count, five to eight, was a cliff: a hunter either killed
+ *  each before it acted or died, with no healing between). */
+export const GAUNTLET_LENGTH = 4;
+
 /** The lair fight, in one place so it can be tuned (ruling 2026-10-21).
  *  Flat HP: strength shortens the fight; every binding and every artifact
  *  held takes `perWeakening` off, never below `minHp`. At two thirds the

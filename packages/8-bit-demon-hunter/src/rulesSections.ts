@@ -131,7 +131,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     id: 'temples',
     title: 'Temples and magic items',
     text:
-      'The five temples are ancient and deadly. Each holds a treasure at its heart behind two doors: a gauntlet, where whatever guards the place comes at you one at a time, or a riddle door that opens to the right answer. ' +
+      'The five temples are ancient and deadly. Each holds a treasure at its heart behind two doors: a gauntlet, where four of whatever guards the place come at you one at a time, or a riddle door that opens to the right answer. ' +
       'Nobody can tell you what guards a temple or what it holds; you find out by going in. A wrong answer costs nothing; you may try again or take the gauntlet. Leaving a temple mid-gauntlet resets it. ' +
       'The five treasures, once found, are the five artifacts of legend: ' + itemRows.join(' ') +
       ' (Flying: only enemies that can strike from afar reach you in the air; you can attack from the air only with range 3 or more.)',
