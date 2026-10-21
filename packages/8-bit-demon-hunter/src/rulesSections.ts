@@ -37,10 +37,11 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     id: 'goal',
     title: 'The goal',
     text:
-      'A demon hides as an ordinary person in one of five towns. Find out who it is, accuse it, and destroy it. ' +
-      'You may accuse anyone you have met, from anywhere. Accusing the wrong person loses the game at once. ' +
-      'Accusing the right one drags you into the demon\'s arena for the final fight.',
-    tags: { move_types: ['accuse'], phases: ['playing'] },
+      'A demon hides as an ordinary person in one of five towns. Find out who it is and put the demon-killing knife in it. ' +
+      'You carry the knife from the start. It works only face to face: you must be inside the town with the person. ' +
+      'Stab the wrong person and you have killed an innocent in front of their town; the townspeople turn on you and the game is lost at once. ' +
+      'Stab the right one and the disguise comes off: the demon drags you into its arena for the final fight.',
+    tags: { move_types: ['stab'], phases: ['playing'] },
   },
   {
     id: 'people-and-clues',
@@ -122,7 +123,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     text:
       'Plants (1 HP) and trees (4 HP) are harvested by attacking them: each swing does your strength, and each swing has a one in ten chance of drawing an aggressive enemy at the place into a fight. A plant gives plant fiber, a tree gives wood. ' +
       'Monsters drop demon powder (bandits drop nothing); temple guardians drop demon ichor. ' +
-      `Ore deposits must be bombed: a bomb destroys the deposit and yields gold one time in ten, iron ore four times in ten, else nothing. A bomb also hurts every enemy at the place by 5. A Lady Bandit you have not attacked sells bombs for ${BOMB_COST} shuckles and lockpicks for ${LOCKPICK_COST}, then leaves. The Fire Bombs give you unlimited bombs.`,
+      `A bomb hits everything where you stand: every enemy is hurt by 5, every ore deposit shatters (each yields gold one time in ten, iron ore four times in ten, else nothing), every plant and tree burns to nothing, and the Sky Temple's stone ring opens if you are beside it. A Lady Bandit you have not attacked sells bombs for ${BOMB_COST} shuckles and lockpicks for ${LOCKPICK_COST}, then leaves. The Fire Bombs give you unlimited bombs.`,
     tags: { move_types: ['attack', 'bomb', 'talk_bandit', 'buy_from_bandit'], phases: ['outdoors'] },
   },
   {
@@ -140,10 +141,10 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     id: 'the-finale',
     title: 'The finale',
     text:
-      'Accuse the demon and the town falls away: you stand in its arena. The demon has (20 − 3 per binding, at least 1) × your strength HP, speed 8, range 3 and damage 2. ' +
+      'Stab the demon and the town falls away: you stand in its arena. The demon has (20 − 3 per binding, at least 1) × your strength HP, speed 8, range 3 and damage 2. ' +
       'At two thirds of its HP it retreats and summons three monsters of 10 HP each, which you fight one at a time before it returns. At one third it attacks twice more per action. ' +
-      'Kill it to win. Dying in the arena is a death like any other; you may accuse it again.',
-    tags: { move_types: ['accuse', 'fight'], phases: ['arena'] },
+      'Kill it to win. Dying in the arena is a death like any other; you may stab it again.',
+    tags: { move_types: ['stab', 'fight'], phases: ['arena'] },
   },
 ];
 

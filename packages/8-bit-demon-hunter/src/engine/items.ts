@@ -12,7 +12,7 @@ import type { DemonHunterState } from '../types.js';
 import { edgeBetween, neighborsOf } from '../world/graph.js';
 import { killEnemy, startCombat } from './combat.js';
 import { refuse } from './errors.js';
-import { aggressiveAt, canLevelUp, enemiesAt, enemyName, hasMagicItem, healToFull, hereNode, statIsMaxed } from './helpers.js';
+import { aggressiveAt, canLevelUp, enemiesAt, enemyName, hasMagicItem, healToFull, hereNode, resourcesAt, statIsMaxed } from './helpers.js';
 import { arriveInTown, requireNoCombat, requireOutdoors } from './movement.js';
 
 /** `attack {target}` on a plant or tree. */
@@ -46,35 +46,17 @@ export function harvest(state: DemonHunterState, resourceId: string, lines: stri
   }
 }
 
-/** `bomb {target?}` outdoors: hurts every enemy here by 5; a targeted ore
- *  deposit is destroyed and rolls ore; with no target next to the walled Sky
- *  Temple edge, the wall opens and rolls ore. */
-export function bomb(state: DemonHunterState, target: string | undefined, lines: string[]): void {
+/** `bomb` outdoors: everything on the node takes the blast. Every enemy is
+ *  hurt by 5, every ore deposit shatters and rolls ore, every plant and tree
+ *  is burnt (no yield), and if the node touches the Sky Temple's stone ring
+ *  the ring opens (with an ore roll of its own). */
+export function bomb(state: DemonHunterState, lines: string[]): void {
   requireNoCombat(state);
   requireOutdoors(state);
   const p = state.player;
   const unlimited = hasMagicItem(state, 'fire');
   if (!unlimited && p.bombs <= 0) refuse('You have no bombs.');
   const here = hereNode(state);
-
-  let ore = false;
-  if (target !== undefined) {
-    const r = state.resources[target];
-    if (!r || r.at !== here.id) refuse(`There is no "${target}" here to bomb.`);
-    if (r.kind !== 'ore') refuse(`Bombs are for ore deposits and the Sky Temple wall; a ${RESOURCE_NODE[r.kind].name} can simply be attacked.`);
-    delete state.resources[r.id];
-    ore = true;
-    lines.push('The ore deposit shatters.');
-  } else {
-    const wall = neighborsOf(state.graph, here.id, { includeWalled: true })
-      .map((n) => edgeBetween(state.graph, here.id, n)!)
-      .find((e) => e.walled);
-    if (wall) {
-      wall.walled = false;
-      ore = true;
-      lines.push('The blast tears a hole in the stone ring. The way to the Sky Temple is open.');
-    }
-  }
 
   if (!unlimited) {
     p.bombs--;
@@ -84,6 +66,16 @@ export function bomb(state: DemonHunterState, target: string | undefined, lines:
   }
   lines.push('BOOM!');
 
+  let oreRolls = 0;
+  const wall = neighborsOf(state.graph, here.id, { includeWalled: true })
+    .map((n) => edgeBetween(state.graph, here.id, n)!)
+    .find((e) => e.walled);
+  if (wall) {
+    wall.walled = false;
+    oreRolls++;
+    lines.push('The blast tears a hole in the stone ring. The way to the Sky Temple is open.');
+  }
+
   for (const e of enemiesAt(state, here.id)) {
     e.hp -= BOMB_DAMAGE;
     e.attacked = true;
@@ -91,7 +83,17 @@ export function bomb(state: DemonHunterState, target: string | undefined, lines:
     else lines.push(`The blast hurts the ${enemyName(e)} (${e.hp}/${e.maxHp} HP left).`);
   }
 
-  if (ore) {
+  let burnt = 0;
+  for (const r of resourcesAt(state, here.id)) {
+    delete state.resources[r.id];
+    if (r.kind === 'ore') {
+      oreRolls++;
+      lines.push('An ore deposit shatters.');
+    } else burnt++;
+  }
+  if (burnt > 0) lines.push(`${burnt} plant${burnt === 1 ? '' : 's'} or tree${burnt === 1 ? '' : 's'} here burn to nothing.`);
+
+  for (let k = 0; k < oreRolls; k++) {
     const roll = randomFloat(state.seed);
     state.seed = roll.nextSeed;
     if (roll.value < GOLD_DROP_CHANCE) {

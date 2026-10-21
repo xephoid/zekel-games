@@ -146,14 +146,15 @@ describe('view completeness', () => {
     expect((getView(s) as AnyView).inn_open).toBe(true);
     s = apply(s, { type: 'leave_inn' });
     const d = s.towns.flatMap((t) => t.people).find((x) => x.id === s.demonId)!;
-    d.hasMet = true;
+    s.player.at = s.towns.find((t) => t.id === d.attributes.townId)!.nodeId;
+    s.player.inside = 'town';
     s.player.strength = 5;
     s.player.agility = 20;
     s.player.range = 5;
     s.player.maxHp = 10;
     s.player.hp = 10;
     s.player.bindings = ['a', 'b', 'c', 'd', 'e', 'f']; // (20 - 18) × 5 = 10 HP
-    s = apply(s, { type: 'accuse', person: d.id });
+    s = apply(s, { type: 'stab', person: d.id });
     v = getView(s) as AnyView;
     expect(v.phase).toBe('arena');
     // the opening attack (range 5 > 3) already knocks it to 5/10: phase two, three minions queued

@@ -16,6 +16,7 @@ Players ask open questions. These are the ones this world has no answer to. When
 - **Who forged the five artifacts, and when.** "Long ago", "at the barren places", "by the rebellion", "by Chineera herself": every town has a version.
 - **Why the temples stand where they do,** and who built the gauntlets and the riddle doors.
 - **Whether the monsters can be driven off for good.** They came with the demon; the hope is they leave with it.
-- **Anything about the player's own past.** The player is a stranger who came to hunt the demon. Townsfolk may wonder aloud why; they do not know.
+- **What lives in the temples and what the artifacts do.** Townsfolk know the temples are ancient and deadly and that the five artifacts are legend. Nothing by name, nothing specific.
+- **Anything about the player's own past,** or where the demon-killing knife came from. The player is a stranger who came to hunt the demon. Townsfolk may wonder aloud why; they do not know.
 
 When a player presses for one of these, the right answer is a shrug, a legend offered as a legend, or a different person who "might know more", never a fact.

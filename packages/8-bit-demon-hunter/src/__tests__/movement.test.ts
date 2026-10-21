@@ -185,13 +185,15 @@ describe('moving around', () => {
     expect(drawn).toBeLessThan(30);
   });
 
-  it('bombs: need a bomb unless you hold Fire Bombs; hurt everyone here by 5; open the sky wall; shatter ore', () => {
+  it('bombs: need a bomb unless you hold Fire Bombs; hit everything here: enemies by 5, every ore deposit, plants and trees, the sky wall', () => {
     let s = outsideStart();
     clearAllEnemies(s);
+    for (const r of Object.values(s.resources)) if (r.at === s.player.at) delete s.resources[r.id];
     expect(() => apply(s, { type: 'bomb' })).toThrow(/no bombs/);
     s.player.bombs = 2;
     place(s, 'wizard', s.player.at, 'wiz_1');
     place(s, 'undead_knight', s.player.at, 'knight_1');
+    s.resources['plant_z'] = { id: 'plant_z', kind: 'plant', at: s.player.at, hp: 1 };
     let r = applyText(s, { type: 'bomb' });
     s = r.state;
     expect(s.player.bombs).toBe(1);
@@ -199,23 +201,25 @@ describe('moving around', () => {
     expect(s.enemies['knight_1']!.hp).toBe(15);
     expect(s.enemies['knight_1']!.attacked).toBe(true);
     expect(s.player.xp).toBe(3);
-    // the sky wall
+    expect(s.resources['plant_z']).toBeUndefined(); // burnt, no fiber
+    expect(s.player.resources.plant_fiber).toBe(0);
+    expect(r.summary).toContain('burn to nothing');
+    // the sky wall, and two deposits at once
     const clearing = neighborsOf(s.graph, 'temple_sky', { includeWalled: true })[0]!;
     s.player.at = clearing;
-    clearNode(s, clearing);
+    clearNode(s, clearing, true);
+    s.resources['ore_x'] = { id: 'ore_x', kind: 'ore', at: clearing, hp: 0 };
+    s.resources['ore_y'] = { id: 'ore_y', kind: 'ore', at: clearing, hp: 0 };
     r = applyText(s, { type: 'bomb' });
     s = r.state;
     expect(r.summary).toContain('way to the Sky Temple is open');
     expect(s.graph.edges.find((e) => e.walled)).toBeUndefined();
+    expect(s.resources['ore_x']).toBeUndefined();
+    expect(s.resources['ore_y']).toBeUndefined();
+    expect((r.summary.match(/rubble/g) ?? []).length).toBe(3); // wall + two deposits, one roll each
     expect(() => apply(s, { type: 'bomb' })).toThrow(/no bombs/);
     s.player.magicItems.push('fire');
-    // ore
-    s.resources['ore_x'] = { id: 'ore_x', kind: 'ore', at: clearing, hp: 0 };
-    s.resources['plant_z'] = { id: 'plant_z', kind: 'plant', at: clearing, hp: 1 };
-    expect(() => apply(s, { type: 'bomb', target: 'plant_z' })).toThrow(/simply be attacked/);
-    r = applyText(s, { type: 'bomb', target: 'ore_x' });
-    expect(r.summary).toContain('ore deposit shatters');
-    expect(r.state.resources['ore_x']).toBeUndefined();
+    r = applyText(s, { type: 'bomb' });
     expect(r.state.player.bombs).toBe(0); // unlimited: none consumed
     // ore odds over many seeds: ~10% gold, ~40% iron
     let gold = 0;
@@ -223,9 +227,10 @@ describe('moving around', () => {
     for (let seed = 1; seed <= 200; seed++) {
       const t = outsideStart(seed);
       clearAllEnemies(t);
+      for (const x of Object.values(t.resources)) if (x.at === t.player.at) delete t.resources[x.id];
       t.player.magicItems.push('fire');
       t.resources['ore_y'] = { id: 'ore_y', kind: 'ore', at: t.player.at, hp: 0 };
-      const rt = apply(t, { type: 'bomb', target: 'ore_y' });
+      const rt = apply(t, { type: 'bomb' });
       gold += rt.player.resources.gold;
       iron += rt.player.resources.iron_ore;
     }

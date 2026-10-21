@@ -1,16 +1,16 @@
 ---
 title: The Five Artifacts
-summary: Five magical items forged to fight evil, now hidden in the temples; the barren places where they were made; the boot in the river.
-tags: artifacts, temples, magic items
+summary: Legend says five magical things were forged long ago to fight evil, then lost; the barren places where they were made; the boot in the river.
+tags: artifacts, legend, temples
 ---
 
-**The five.** Winged Boots that carry their wearer over the ground; an Aura of Protection nothing can break; a Cape of Teleportation that takes you to any town you know; an Eye of Truth that shows a lie for what it is; and Fire Bombs that never run out. Forged to fight evil, long ago. The stories cannot agree on seven or two, but five is the number the pedestals in the ruins agree with, and five is the number of the barren places.
+**The legend.** Long ago, five great magical things were forged to fight evil. Nobody in the towns can tell you what they were or what they did; the stories cannot even agree on five, "maybe seven, could've been two", though five is the number the empty pedestals in the ruins agree with, and five is the number of the barren places. They are lost: hidden, buried with their makers, or, the boldest legend says, inside the old temples.
 
 **Where they were made.** There are five spots in the region where nothing grows: not a blade of grass, not a weed, as long as anyone remembers. Some say that is where the weapons were forged. Farmers say it is bad soil.
 
-**Where they are now.** Legend puts them in the five temples, each guarded. Nobody who went in has told the tale. A farmer's cousin swears he found one at the bottom of a river, and that it was a boot; nobody believes him, and he has not got it any more.
+**The boot.** A farmer's cousin swears he found one of the five at the bottom of a river, and that it was a boot. Nobody believes him, and he has not got it any more.
 
-**What is not known.** Who forged them, whether Chineera used them, and why the pedestals are empty. The last person who used one, a stranger once warned, did not come back.
+**What townsfolk cannot tell you.** The artifacts' names. What any of them does. Which temple holds which, or whether the temples hold them at all. A stranger once warned that the last person who used one did not come back; that is as specific as anyone gets.
 
 What the townsfolk say:
 

@@ -137,7 +137,7 @@ marked out-of-scope.
 | All ten occupation powers as the original | `occupationPower:205` | town "each occupation power does what the original did" |
 | Eye of Truth flags demon/minions when talking | `personCard:35`; `views.ts personView` | town "the Eye of Truth flags liars"; viewLeak "with the Eye of Truth…" |
 | Escort completes on entering the target town by any means; person moves house | `arriveInTown:84`; `w/puzzle.ts movePersonToTown:405` | town escorts test (via teleport); inn ride uses the same path |
-| Accuse only someone met (clue-book rule) | `eng/finale.ts accuse:19` | finale "a wrong accusation loses the game" (refusal first) |
+| The knife: `stab` only inside a town, on someone there; the wrong person dies and the town turns on you (loss) | `eng/finale.ts stab` | finale "stabbing an innocent loses the game; the knife only works face to face in town" |
 
 ### Inn, black market, houses, bindings
 
@@ -171,7 +171,7 @@ marked out-of-scope.
 | Rule | Code | Test |
 |---|---|---|
 | Plant 1 HP / tree 4 HP harvested by attacking (strength per swing); yields; 10% per swing to draw an aggressive enemy | `eng/items.ts harvest:19` | movement "harvesting: a plant in one swing, a tree in four, with a seeded chance of trouble" |
-| Bombs: need one unless Fire Bombs; hurt every enemy here by 5; a targeted ore deposit shatters and rolls 10% gold / 40% iron; no target next to the walled edge opens the ring and rolls ore | `bomb:52` | movement "bombs: need a bomb unless you hold Fire Bombs…" |
+| Bombs: need one unless Fire Bombs; hit everything on the node: every enemy by 5, every ore deposit shatters (10% gold / 40% iron each), every plant and tree burns, the walled Sky edge opens | `eng/items.ts bomb` | movement "bombs: need a bomb unless you hold Fire Bombs; hit everything here…" |
 | XP curve 4…1024, max level 10; +1 strength/range/health (full heal) or +4 agility; caps 5/5/10/20; Blacksmith free pick | `levelUp:111`; `helpers.ts canLevelUp:84` | combat "levelling: xp past the curve…" |
 | Winged Boots fly/land; Aura (escape in combat / pass blockers once outdoors; no attacking); Cape (visited towns, heals, Q7); Eye; Fire Bombs | `eng/movement.ts fly:127, land:136, auraOutdoors:143, teleport:151`; `eng/combat.ts auraEscape:114` | movement aura/cape tests; combat "refuses to attack … while the aura is up" |
 
@@ -182,13 +182,14 @@ marked out-of-scope.
 | Enter: gauntlet (guardian count, one at a time) or riddle; chest → item + find-item task; already taken → empty hall | `eng/temple.ts enterTemple:14, startGauntlet:39, nextFight:46, startRiddle:62, answerRiddle:73`; `eng/rewards.ts grantMagicItem:7` | temple "entering offers gauntlet or riddle…", "the gauntlet is the guardian count…", "a find-item task completes when the chest is opened" |
 | Leaving mid-gauntlet resets it (ruling); a fled guardian waits | `eng/movement.ts leaveInterior:110`; `nextFight` | temple gauntlet test; "a fled guardian is still there…" |
 | Riddle: normalised answer match; wrong answer free (ruling); answers never shown | `data/riddles.ts`; `answerRiddle` | riddles suite; viewLeak "never contains a riddle answer" |
-| Wrong accusation → loss; right → arena at once (no escape, no aura) | `eng/finale.ts accuse:19`; `combat.ts playerFlee/auraEscape` arena refusals | finale suite |
+| Wrong stab → loss; right → arena at once (no escape, no aura) | `eng/finale.ts stab`; `combat.ts playerFlee/auraEscape` arena refusals | finale suite |
 | Arena: demon speed 8 / range 3 / dmg 2; phase 2 at ⅔ HP summons 3 random overworld types at 10 HP fought one at a time; phase 3 at ⅓ HP +2 attacks; kill → win | `combat.ts playerHits` phase-2 block, `arenaContinue:157`, `enemyAction` boss line | finale "the right accusation starts the arena; the demon summons minions at two thirds; killing it wins" |
 
 ### The GM (notes "Important notes for the LLM")
 
 | Rule | Code | Test |
 |---|---|---|
+| Townsfolk know nothing specific about temples, their creatures or the items (designer, 2026-10-21) | lore `the-temples` (GM-only section), `the-five-artifacts`, `monsters`; guidance §4b; conversation guide | lore suite; personas suite |
 | Never give hints unless asked | `guidance.ts SESSION_START_GUIDANCE` §3; every `nextStep.ts` instruction ends with the rule | lore "the guidance forbids hints…"; summaries suite (facts lint) |
 | Conversations are played, not read (designer, 2026-10-20 evening): every person has a seeded persona and a task reason; `talk` returns a GM BRIEF plus "Gist:" lines; the GM improvises, facts stay exact; talking records nothing | `data/personas.ts`; `w/puzzle.ts generatePuzzle` step 6; `eng/town.ts characterBrief`; `nextStep.ts` conversation directive; guidance §2b; lore `running-a-conversation`, `what-nobody-knows` | personas suite (4 tests) |
 | The GM never learns the demon | view stripping (§2) | viewLeak suite; sweep (§13) |
@@ -203,7 +204,7 @@ marked out-of-scope.
    offers at least one other move (summaries suite asserts >1 over 12 full
    games). Dead → `continue`; game over → none by design.
 3. **Simultaneous game-end**: impossible — `won`/`lost` are set by exactly one
-   path each (`arenaContinue`, `accuse`); later moves are refused (`GAME_OVER`).
+   path each (`arenaContinue`, `stab`); later moves are refused (`GAME_OVER`).
 4. **Empty zones**: a node with no enemies/resources renders "No enemies
    here"; a temple with no guardians left opens the chest at once; a Barber
    with nobody unmet introduces 0 people; a Carpenter with no town left says so.
@@ -241,7 +242,7 @@ Evil Eye have range 1 (Q2); 8 ore deposits (Q3); nothing roams on its own
 (Q4); one deposit per bomb (Q6); the cape heals (Q7, the original does);
 enemy counts unchanged (Q8); hunters' parting shot is ONE attack, not a full
 speed-multiplied action; a wizard never counter-attacks; find tasks never
-self-conflict; accuse requires having met the person; escort relocates the
+self-conflict; the knife works only face to face in town; escort relocates the
 demon's town clues (the original's design doc, not its code).
 
 ## 6. Choice catalog
@@ -258,9 +259,9 @@ row has a `why`, and every named move type exists.
 |---|---|---|---|---|
 | World seed / clearings | player | `options.seed`, `options.clearings` | — | `world_seed` |
 | Where to go | player | `move {to}` per path (walled paths withheld with a reason in next_step) | nearest safe prey, else the demon's town | — |
-| Enter / leave a town or temple | player | `enter`, `leave` | heals and accuses in towns; skips temples | — |
+| Enter / leave a town or temple | player | `enter`, `leave` | heals and stabs in towns; skips temples | — |
 | Whom to attack / harvest | player | `attack {target}` per enemy, plant, tree | weakest survivable slime/mushroom on a node it can leave again; cuts plants/trees to pay for a bed when hurt and broke | — |
-| Bomb, and what | player | `bomb`, `bomb {ore}` (needs a bomb) | bombs a node whose blockers it cannot afford to fight | — |
+| Bomb here | player | `bomb` (needs a bomb; hits everything on the node) | bombs a node whose blockers it cannot afford to fight | — |
 | Black market | player | `talk_bandit`, `buy_from_bandit {item}` | buys a bomb when it needs to break out of such a node | — |
 | Fly / land; raise the aura; teleport where | player | `fly`/`land`, `aura`, `teleport {town}` (need the item) | never | — |
 | Fight or flee (or aura) | player | `fight`, `flee`, `aura` | flee only when about to die, running frees it (no blocker or mushroom crowd) and it can pay for a bed; otherwise fight | — |
@@ -270,15 +271,15 @@ row has a `why`, and every named move type exists.
 | Inn services | player | `inn`, `sleep`, `train`, `ride {town}`, `buy`/`sell {resource}`, `leave_inn` | sleep when hurt, sell everything, pay for training until strong | — |
 | Which house to search (+ lockpick confirm) | player | `search_house {person, confirm}` (needs a key) | never | — |
 | Suspects | player | `mark_suspect`/`unmark_suspect {person}` | never | — |
-| The accusation | player | `accuse {person}` for anyone met | the demon (it cheats) | — |
+| The knife | player | `stab {person}` for anyone in the town you stand in | the demon (it cheats) | — |
 | Gauntlet or riddle; next guardian; the riddle answer | player | `gauntlet`/`riddle`, `next_fight`, `answer_riddle {text}` | never | — |
 | **Auto, justified:** which blocker fights first (all must be fought; id order) · enemy actions and their dice (rule-scripted, server dice) · Barber's introductions and Carpenter's town (the original randomises them) · binding name (cosmetic, registry order) · the demon's three minions (the original randomises) | auto | — | — | — |
 
 ## 7. Turn-action structure
 
 Exactly one action per `apply_move`. Outdoors: move / enter / attack / bomb /
-trade / items / accuse, any order. In a town: talk (a conversation is a
-short pending with its own replies), inn (a menu pending), houses, accuse,
+trade / items, any order. In a town: talk (a conversation is a
+short pending with its own replies), inn (a menu pending), houses, the knife,
 leave. In a temple: gauntlet or riddle, then leave. Combat interrupts
 everything and owes `fight`/`flee` until it ends. Death owes `continue`. The
 arena is continuous combat. Stated in `getSessionStartGuidance` §9 and
@@ -294,18 +295,18 @@ clear path:
 |---|---|---|
 | `phase === 'dead'` (`combat.ts die`) | "DEAD … submit continue" | `continue` |
 | `combat` (`startCombat` from attack / leaving / harvest / gauntlet / arena / flying) | "COMBAT … fight or flee" | enemy dies (`playerHits`), player flees/aura, snake/wizard flee, player dies, phase-2 withdrawal |
-| `dialogue` (`talk`) | "TALKING to X … options" | `goodbye`, `accuse`, `continue`, `talk` to someone else |
-| `innOpen` (`inn`) | "AT THE INN" | `leave_inn`, `ride`, `accuse`, `continue` |
-| `inside === 'town'` (`enter`, ride, cape, respawn) | "INSIDE town" | `leave`, `accuse`, `teleport` |
-| `temple` (`enterTemple`) choice / gauntlet / riddle | one directive each | `leave`, chest, `accuse`, `teleport`, `continue` |
-| `arena` (`accuse`) | the combat directive with "no way out" | win, death |
+| `dialogue` (`talk`) | "IN CONVERSATION with X" | `goodbye`, `stab`, `continue`, `talk` to someone else |
+| `innOpen` (`inn`) | "AT THE INN" | `leave_inn`, `ride`, `stab`, `continue` |
+| `inside === 'town'` (`enter`, ride, cape, respawn) | "INSIDE town" | `leave`, `stab`, `teleport` |
+| `temple` (`enterTemple`) choice / gauntlet / riddle | one directive each | `leave`, chest, `teleport`, `continue` |
+| `arena` (`stab`) | the combat directive with "no way out" | win, death |
 | outdoors (default) | "OUTDOORS at X" with paths/enemies/resources | — |
 | `won`/`lost` | `game_over` | — |
 
 Withheld-move legibility: next_step `facts.notes` state why a move the player
 might expect is absent (flying with range < 3, aura up, no boots/cape, no
 bomb for an ore deposit or the ring, locked houses without a key, nobody met
-to accuse); every refusal message says the reason in words.
+for the knife); every refusal message says the reason in words.
 
 Verified by the summaries suite (every step of 12 full games is
 `human_to_move` with a `human_response`, facts contain no tool names) and by

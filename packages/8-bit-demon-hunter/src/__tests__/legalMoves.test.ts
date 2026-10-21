@@ -29,7 +29,7 @@ describe('legal moves', () => {
     expect(ids).toContain('inn');
     expect(ids).toContain('leave');
     expect(ids.filter((i) => i.startsWith('talk:'))).toHaveLength(10);
-    expect(ids.some((i) => i.startsWith('accuse:'))).toBe(false); // nobody met yet
+    expect(ids.filter((i) => i.startsWith('stab:'))).toHaveLength(10); // the knife works on anyone here
     expect(ids.some((i) => i.startsWith('search_house:'))).toBe(false); // no key
     allAccepted(s);
   });
@@ -46,7 +46,6 @@ describe('legal moves', () => {
     expect(ids).toContain('enter');
     expect(ids).toContain('attack:slime_a');
     expect(ids).toContain('bomb');
-    expect(ids).toContain('bomb:ore_a');
     expect(ids).toContain('talk_bandit');
     expect(ids).toContain('buy_from_bandit:lockpick');
     expect(ids.some((i) => i.startsWith('move:'))).toBe(true);
@@ -97,12 +96,10 @@ describe('legal moves', () => {
     allAccepted(w);
   });
 
-  it('after a wrong accusation nothing is legal and next_step is game_over', () => {
+  it('after stabbing an innocent nothing is legal and next_step is game_over', () => {
     let s = fresh();
-    s = apply(s, { type: 'talk', person: s.towns[0]!.people[0]!.id });
-    s = apply(s, { type: 'goodbye' });
     const innocent = s.towns[0]!.people.find((p) => p.id !== s.demonId)!;
-    s = apply(s, { type: 'accuse', person: innocent.id });
+    s = apply(s, { type: 'stab', person: innocent.id });
     expect(getLegalMoves(s)).toEqual([]);
     expect(describeNextStep(s, 'p1').status).toBe('game_over');
   });

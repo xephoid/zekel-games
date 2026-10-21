@@ -26,7 +26,7 @@ import {
   searchHouse,
   talk,
 } from './town.js';
-import { accuse } from './finale.js';
+import { stab } from './finale.js';
 
 export interface ApplyResult {
   newState: DemonHunterState;
@@ -77,7 +77,7 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       break;
     }
     case 'bomb':
-      bomb(state, move_.target, lines);
+      bomb(state, lines);
       break;
     case 'talk_bandit':
       talkBandit(state, lines);
@@ -127,8 +127,8 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       state.player.suspects = state.player.suspects.filter((p) => p !== move_.person);
       lines.push('Suspect mark removed.');
       break;
-    case 'accuse':
-      accuse(state, move_.person, lines);
+    case 'stab':
+      stab(state, move_.person, lines);
       break;
     case 'talk':
       talk(state, move_.person, lines);

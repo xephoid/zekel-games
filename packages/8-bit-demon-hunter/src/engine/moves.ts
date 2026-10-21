@@ -11,7 +11,7 @@ export type DemonHunterMove =
   | { type: 'enter' }
   | { type: 'leave' }
   | { type: 'attack'; target: string }
-  | { type: 'bomb'; target?: string }
+  | { type: 'bomb' }
   | { type: 'talk_bandit' }
   | { type: 'buy_from_bandit'; item: 'bomb' | 'lockpick' }
   | { type: 'fly' }
@@ -25,7 +25,7 @@ export type DemonHunterMove =
   | { type: 'level_up'; stat: StatId }
   | { type: 'mark_suspect'; person: string }
   | { type: 'unmark_suspect'; person: string }
-  | { type: 'accuse'; person: string }
+  | { type: 'stab'; person: string }
   | { type: 'continue' }
   // --- town ---
   | { type: 'talk'; person: string }
@@ -52,7 +52,7 @@ export type MoveType = DemonHunterMove['type'];
 
 export const MOVE_TYPES: readonly MoveType[] = [
   'look', 'move', 'enter', 'leave', 'attack', 'bomb', 'talk_bandit', 'buy_from_bandit', 'fly', 'land', 'aura', 'teleport',
-  'fight', 'flee', 'level_up', 'mark_suspect', 'unmark_suspect', 'accuse', 'continue',
+  'fight', 'flee', 'level_up', 'mark_suspect', 'unmark_suspect', 'stab', 'continue',
   'talk', 'found_you', 'accept_task', 'decline', 'claim_reward', 'goodbye',
   'inn', 'sleep', 'train', 'ride', 'buy', 'sell', 'leave_inn', 'search_house',
   'gauntlet', 'next_fight', 'riddle', 'answer_riddle',

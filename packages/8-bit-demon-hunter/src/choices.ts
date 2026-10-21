@@ -52,12 +52,11 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
     distinguishedBy: 'target',
   },
   {
-    id: 'bomb-target',
-    description: 'Whether to use a bomb here, and whether it goes on an ore deposit or the Sky Temple wall',
+    id: 'bomb-here',
+    description: 'Whether to set off a bomb where you stand (it hits everything on the node)',
     owner: 'player',
     when: 'in-game',
     resolvedBy: ['bomb'],
-    distinguishedBy: 'target',
     dependsOn: 'holding a bomb or the Fire Bombs',
   },
   {
@@ -211,11 +210,11 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
     distinguishedBy: 'person',
   },
   {
-    id: 'the-accusation',
-    description: 'Whom you accuse of being the demon, and when',
+    id: 'the-knife',
+    description: 'Whom you stab with the demon-killing knife, face to face in their town, and when',
     owner: 'player',
     when: 'in-game',
-    resolvedBy: ['accuse'],
+    resolvedBy: ['stab'],
     distinguishedBy: 'person',
   },
   {

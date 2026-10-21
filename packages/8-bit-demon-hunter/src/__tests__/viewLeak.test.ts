@@ -30,7 +30,7 @@ describe('the player view hides the mystery', () => {
       for (const p of state.towns.flatMap((t) => t.people)) {
         if (p.clues.good) expect(text, `${p.id}'s secret ${p.clues.good.text}`).not.toContain(p.clues.good.text);
       }
-      // the demon id appears only as an ordinary person id (talk/accuse targets), never flagged
+      // the demon id appears only as an ordinary person id (talk/stab targets), never flagged
       const demon = state.towns.flatMap((t) => t.people).find((p) => p.id === state.demonId)!;
       const view = getView(state) as { here: { people: { id: string; name: string }[] } };
       const card = view.here.people.find((x) => x.id === demon.id) as Record<string, unknown> | undefined;

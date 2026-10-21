@@ -97,6 +97,7 @@ export function getView(state: DemonHunterState): Record<string, unknown> {
     bombs: hasMagicItem(state, 'fire') ? 'unlimited (Fire Bombs)' : p.bombs,
     lockpicks: p.lockpicks,
     locksmith_favours: p.locksmithCharges,
+    knife: 'the demon-killing knife (stab someone face to face in their town; the wrong person dies and the town turns on you)',
     magic_items: p.magicItems.map((t) => MAGIC_ITEMS[t].name),
     bindings: [...p.bindings],
     active_task: task && giver ? { giver: giver.name, giver_id: giver.id, town: state.towns.find((t) => t.id === giver.attributes.townId)?.name, description: task.description, progress: `${task.currentAmount}/${task.amount}`, completed: task.isCompleted } : null,

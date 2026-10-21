@@ -1,10 +1,10 @@
 ---
 title: The monsters
-summary: What the townsfolk know of the creatures that came with the demon, and how each one behaves.
+summary: What the townsfolk know of the creatures that came with the demon and roam outside the walls, and how each one behaves.
 tags: monsters, enemies, danger
 ---
 
-The land was not always like this. The monsters appeared about when the rumours of the demon did, and people say it summoned them. They keep to the clearings and the edges of towns; the towns themselves are safe inside their walls.
+The land was not always like this. The monsters appeared about when the rumours of the demon did, and people say it summoned them. They keep to the clearings and the edges of towns; the towns themselves are safe inside their walls. Farmers, soldiers and anyone who travels know these by sight:
 
 - **Slimes** ooze about harmlessly and only fight when poked. Farmers' children throw stones at them.
 - **Mushrooms** walk. They are harmless alone and follow travellers out of curiosity or hunger; a crowd of five or more will not let you leave. The warning "watch out for the mushrooms" is about the crowds.
@@ -14,6 +14,6 @@ The land was not always like this. The monsters appeared about when the rumours 
 - **Bandits** work in pairs, a man and a woman, and hold up anyone leaving their patch. The women run a black market on the side: bombs and lockpicks for shuckles, as long as you have not raised a hand against them.
 - **Undead Knights** are the worst thing on the roads: fast, tireless, and found only in the far clearings. Nobody sensible fights one unprepared.
 
-In the temples live other things: Bees, Man Eater Flowers, Arachne, floating Eyes and Fire Skulls, one kind to each temple.
+Whatever lives inside the temples is another matter: nobody who could describe it has come back to.
 
-Monsters leave demon powder behind when they die, a grey ash the inns buy. Temple creatures leave demon ichor. Some say the land will heal when the demon is gone and the monsters go with it; nobody knows.
+Monsters leave demon powder behind when they die, a grey ash the inns buy. Some say the land will heal when the demon is gone and the monsters go with it; nobody knows.

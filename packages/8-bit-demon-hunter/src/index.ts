@@ -54,11 +54,11 @@ const moveSchema = {
   properties: {
     type: { enum: [...MOVE_TYPES] },
     to: { type: 'string', description: 'move: the id of an adjacent place' },
-    target: { type: 'string', description: 'attack / bomb: an enemy, plant, tree or ore deposit id from look' },
+    target: { type: 'string', description: 'attack: an enemy, plant or tree id from look' },
     item: { enum: ['bomb', 'lockpick'], description: 'buy_from_bandit' },
     town: { type: 'string', description: 'teleport / ride: a town id or name' },
     stat: { enum: ['strength', 'agility', 'health', 'range'], description: 'level_up' },
-    person: { type: 'string', description: 'talk / search_house / accuse / mark_suspect: a person id (or name, in town)' },
+    person: { type: 'string', description: 'talk / search_house / stab / mark_suspect: a person id (or name, in town)' },
     reward: { enum: ['clue', 'power'], description: 'claim_reward' },
     resource: { enum: Object.keys(RESOURCE_BASE_VALUE), description: 'buy / sell' },
     confirm: { type: 'boolean', description: 'search_house: true to spend a lockpick' },
@@ -96,7 +96,7 @@ export class EightBitDemonHunterGame implements Game<DemonHunterState, DemonHunt
   readonly description =
     'A solo text detective RPG: a demon hides as an ordinary person in one of five towns. Talk to townsfolk, do their tasks for ' +
     'clues, fight monsters across a map of clearings and temples, gather the five magic items, find the demon\'s bindings, ' +
-    'and accuse it. Accuse the wrong person and you lose. The server runs the whole world; the LLM client is the game master.';
+    'and put the demon-killing knife in it. Stab the wrong person and the town turns on you. The server runs the whole world; the LLM client is the game master.';
   readonly minPlayers = 1;
   readonly maxPlayers = 1;
   readonly supportsAI = true; // the harness bot only (it may read the hidden demon)

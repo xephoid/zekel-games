@@ -1,7 +1,7 @@
 ---
 title: The Demon
-summary: What is known of the demon that hides among the townsfolk, what it wants, and the monsters that came with it.
-tags: demon, monsters, minions, history
+summary: What is known of the demon that hides among the townsfolk, the stranger with the demon-killing knife, and the monsters that came with it.
+tags: demon, monsters, minions, the knife
 ---
 
 Nobody has seen the demon's true face. It hides as an ordinary person in one of the five towns, with a trade, a pet, a favourite colour and an item like anyone else, and it has minions in every town who lie for it. It is the same demon the old stories tell of: the one that took the wizard Memlax, ruled through him, and was pushed out, not killed, by his wife Chineera and her followers. Now it is pushing back.
@@ -10,7 +10,7 @@ Nobody has seen the demon's true face. It hides as an ordinary person in one of 
 
 **Its lie.** Ask the demon about the demon and it tells you, sincerely, something false. That is its one tell, and its minions share it.
 
-**The hunt.** A stranger has come to find it. Townsfolk trade rumours, favours and old stories; some hold real secrets, earned by doing them a service. Accuse the wrong person and the demon is gone for good, laughing. Accuse the right one and the town falls away into its arena: black pillars, a thing with too wide a grin, and three monsters it calls when it is hurt.
+**The knife.** A stranger has come to the towns carrying a demon-killing knife, the only thing that can end it. The hunt is to find out which face the demon wears and put the knife in it. The knife does not know the difference: stab the wrong person and you have murdered a neighbour in front of their town, and the town will not forgive it. Stab the right one and the disguise comes off.
 
 What the townsfolk say:
 

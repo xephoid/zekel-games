@@ -6,8 +6,8 @@
 // stand on nodes it can leave again; otherwise grind — cut plants and trees
 // on safe nodes, sell everything at an inn, and pay for training — until it is
 // strong enough to walk through bandits to the demon's town, meet the demon
-// and accuse it. After three deaths it gives up by accusing an innocent it has
-// met, which ends the game. Fully deterministic: it never draws randomness.
+// and stab it. After three deaths it gives up by stabbing an innocent, which
+// ends the game. Fully deterministic: it never draws randomness.
 
 import { ENEMY_BY_ID } from './data/enemies.js';
 import { BOMB_COST, BOMB_DAMAGE, INN_SLEEP_COST, INN_TRAIN_COST, STAT_MAX } from './data/progression.js';
@@ -256,13 +256,12 @@ export function chooseMove(state: DemonHunterState, difficulty?: string): BotCho
     }
     if (givingUp) {
       const someone = state.towns.flatMap((t) => t.people).find((x) => x.hasMet && x.id !== d.id);
-      if (someone) return { move: { type: 'accuse', person: someone.id }, reasoning: 'giving up after three deaths' };
+      void someone;
       const stranger = town.people.find((x) => x.id !== d.id)!;
-      return { move: { type: 'talk', person: stranger.id }, reasoning: 'giving up: meet someone to accuse' };
+      return { move: { type: 'stab', person: stranger.id }, reasoning: 'giving up after three deaths' };
     }
     if (ready) {
-      if (d.hasMet) return { move: { type: 'accuse', person: d.id }, reasoning: 'accuse the demon' };
-      if (d.attributes.townId === town.id) return { move: { type: 'talk', person: d.id }, reasoning: 'meet the demon first' };
+      if (d.attributes.townId === town.id) return { move: { type: 'stab', person: d.id }, reasoning: 'stab the demon' };
     }
     return { move: { type: 'leave' }, reasoning: ready ? "off to the demon's town" : 'back out to hunt' };
   }
@@ -308,7 +307,7 @@ export function chooseMove(state: DemonHunterState, difficulty?: string): BotCho
 
   if (ready) {
     const target = demonTownNode(state);
-    if (here.id === target || (d.hasMet && here.kind === 'town')) return { move: { type: 'enter' }, reasoning: 'into town to accuse' };
+    if (here.id === target) return { move: { type: 'enter' }, reasoning: "into the demon's town" };
     const goal = (id: string): boolean => id === target;
     const next = nextHopTo(state, here.id, goal, true) ?? nextHopTo(state, here.id, goal, (id) => noKnights(state, id)) ?? nextHopTo(state, here.id, goal, false);
     if (next) return { move: { type: 'move', to: next }, reasoning: "towards the demon's town" };

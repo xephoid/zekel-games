@@ -16,6 +16,12 @@ Ruling 2026-10-20 (later the same day): clearings may hold up to **4** major
 connections and every town attaches to a clearing (Q1 accepted).
 Ruling 2026-10-20 (evening): the player starts at **speed 4** (agility picks
 then run 4, 8, 12, 16, 20; cap 20). This answers most of Q9.
+Rulings 2026-10-21 (after the designer's playtest): townsfolk know nothing
+specific about the temples, the creatures inside or the magic items, only
+that temples are very old and dangerous; the accusation is a **demon-killing
+knife** (`stab`): face to face in the person's town, the wrong person dies and
+the townspeople turn on you (loss); a **bomb hits everything** on the node it
+is set off in.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.
@@ -53,7 +59,7 @@ packages/8-bit-demon-hunter/
       town.ts                  talk, tasks, powers, inn, houses, bindings
       temple.ts                gauntlet, riddle, chest, sky wall
       items.ts                 bombs, harvest, magic items, level up, death
-      finale.ts                accuse, arena, demon phases
+      finale.ts                the knife, arena, demon phases
     legalMoves.ts
     views.ts                   player view (hidden data stripped), clue book
     nextStep.ts                describeNextStep per pending kind
@@ -201,11 +207,11 @@ The player stands at a major node, outside or inside it. Moves:
 - `enter` / `leave` — town or temple interior.
 - `attack {target}` — start combat with an enemy node, or harvest a resource.
 - `talk_bandit`, `buy_from_bandit {item}` — Lady Bandit trade (§6).
-- `bomb {target?}` — §8.
+- `bomb` — §8.
 - `fly` / `land`, `teleport {town}`, `aura` — §9.
 - `level_up {stat}` — any time a level is pending.
 - `mark_suspect {person}` / `unmark_suspect`, `clue_book` (read-only view).
-- `accuse {person}` — any time, like the original clue book.
+- `stab {person}` — the demon-killing knife; only inside a town, on someone there (§6).
 
 **Leaving a node** (on `move`), in this order:
 
@@ -275,7 +281,7 @@ XP 0, strength/agility/range 1, max HP 3, full HP, clears pending level-ups,
 ends combat/temple/arena, and respawns inside `lastTown`. Everything else is
 kept (clues, items, shuckles, resources, bindings, magic items, task progress,
 follower). Identical to the original's Continue button. Dying in the arena
-returns to the world; accusing again later starts a fresh arena.
+returns to the world; stabbing it again later starts a fresh arena.
 
 ---
 
@@ -328,9 +334,10 @@ confirm, which becomes a `confirm: true` field). A minion's house yields the
 next binding name from `bindingNameRegistry`; others "nothing of note". A
 searched house stays searched.
 
-Accuse: `accuse {person}` from anywhere, for anyone the player has met (the
-original accuses from the clue book, which lists met people). Wrong →
-`lost`, game over. Right → arena (§9).
+The knife: `stab {person}`, inside a town, on anyone there (or the follower).
+The wrong person dies in front of their town and the townspeople turn on you:
+`lost`, game over. The right one drops its disguise: arena (§9). (Replaces
+the original's clue-book accusation, designer ruling 2026-10-21.)
 
 Escorting the demon: the original's design doc says location clues must
 update but its code never did; the port rewrites every town clue when the
@@ -371,15 +378,15 @@ walled; bomb it from the adjacent clearing first (§8).
 Bombs: Lady Bandit sells them (10 shuckles) and lockpicks (200); after any
 purchase she leaves the node (original removes her). Attacking a Lady Bandit
 ends trading with her. Fire Bombs (fire temple) = unlimited. `bomb` is legal
-only outdoors at a major node, one per action:
+only outdoors at a major node, one per action, and hits everything there
+(ruling 2026-10-21):
 
-- Damages every enemy at the node by 5 (the original's blast; kills wizards
-  and slimes outright).
-- `target` an ore deposit at the node: it is destroyed and rolls ore (10%
-  gold, 40% iron ore, else nothing) — the original's rock-wall roll. One
-  deposit per bomb (Q6).
-- At the clearing next to the Sky Temple with no target: opens the walled
-  edge and rolls ore once.
+- Every enemy at the node takes 5 (kills wizards and slimes outright).
+- Every ore deposit at the node shatters, each rolling ore (10% gold, 40%
+  iron ore, else nothing) — the original's rock-wall roll.
+- Every plant and tree at the node burns to nothing (no yield).
+- At the clearing next to the Sky Temple: the walled edge opens, with an ore
+  roll of its own.
 
 Harvest: `attack {plant|tree}` deals `strength` per action; at 0 HP it yields
 its resource. Each harvest action has a 10% chance to pull one aggressive enemy
@@ -411,7 +418,7 @@ likes. +1 strength (cap 5), +1 range (cap 5), +1 max HP with full heal (cap
 10), agility +4 (starts 4: 8, 12, 16, 20; cap after 4 picks). Blacksmith gives a free
 pick without consuming a level.
 
-Finale: correct accusation → phase `arena`, pending `combat_turn` against The
+Finale: stabbing the demon → phase `arena`, pending `combat_turn` against The
 Demon: HP `max(1, 20 − 3 × bindings) × strength`, speed 8, range 3, damage 2.
 Phase 2 at ≤ 2/3 HP (once): three random overworld enemy types at 10 HP each
 are fought one at a time, then the demon resumes. Phase 3 at ≤ 1/3 HP: the
@@ -456,7 +463,7 @@ the inn for training; spend levels keeping health within two of strength; when
 a node's blockers cost too much, buy a bomb from the Lady Bandit and bomb them;
 march on the demon's town only once a real fight estimate says it survives a
 bandit pair, avoiding undead knights; when nothing safe is left or it is strong enough,
-walk to the demon's town, meet it and accuse it; after three deaths it accuses
+walk to the demon's town and stab it; after three deaths it stabs
 a met innocent, ending the game. It exists so `scripts/smoke.mjs` and the
 harness can run the game to `game_over`; on the 12 test seeds it loses every
 time at level 1, which is a statement about early-game lethality (Q9), not
@@ -478,7 +485,7 @@ a goal of the bot.
 - `movement.test.ts`: blockers, mushroom following and the 5+ rule, flying
   exceptions, walled edge, world-cleared bonus.
 - `town.test.ts`: every dialogue branch, each occupation power, inn pricing
-  and stock, houses and bindings, accuse outcomes.
+  and stock, houses and bindings, knife outcomes.
 - `temple.test.ts`: gauntlet reset on leave, riddle normalisation, chest and
   task completion, sky wall.
 - `viewLeak.test.ts`, `nextStepFacts.test.ts`, `solvability.test.ts` (bot
@@ -498,7 +505,7 @@ a goal of the bot.
 5. Range free attack: once at the start of combat (stat text) or every round
    (loop text)? And does an enemy with higher range (skeleton, eye, demon) get
    the same free attack against the player?
-6. One ore deposit per bomb?
+6. ~~One ore deposit per bomb?~~ Superseded: a bomb hits everything on the node (ruling 2026-10-21).
 7. Keep the original's full heal on cape teleport?
 8. Enemy counts stay the original's (~95 overworld enemies over ~11 major
    nodes, 8–9 per node; generated worlds show up to ~18 on the farthest
@@ -545,7 +552,7 @@ symmetric, Q6 yes, Q7 yes, Q8 keep, Q9 as is, Q10 as built.
    tests for §3 invariants and the puzzle. (Can start before game-kit lands.)
 2. **Core loop**: state, look/move/enter/leave, combat resolver, leaving-node
    reactions, harvest, death; views and next_step for these.
-3. **Towns**: dialogue, tasks, powers, escort, inn, houses, bindings, accuse.
+3. **Towns**: dialogue, tasks, powers, escort, inn, houses, bindings, the knife.
 4. **Temples, items, finale**: gauntlet, riddles, chest, bombs and sky wall,
    magic items, levelling, arena.
 5. **GM layer**: guidance, rules text, lore topics, report voice, reference
@@ -582,7 +589,7 @@ Built, tested and verified through the real server once `@zekel/game-kit`
   get out; `continue` frees them, so not a soft-lock, but worth a look.
 
 Deviations from the original worth knowing (all noted inline): unique person
-names world-wide; find tasks never self-conflict; accuse only met people;
+names world-wide; find tasks never self-conflict; the knife works only face to face in town;
 escort relocates the demon's town clues; hops measured from the start town;
 clearings allow 4 links; combat `attack` includes the first swing; starting
 speed 4.

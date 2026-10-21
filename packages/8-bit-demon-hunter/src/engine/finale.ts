@@ -16,18 +16,27 @@ export function demonHp(state: DemonHunterState): number {
   return Math.max(1, DEMON_BASE_HP - BINDING_HP_PENALTY * state.player.bindings.length) * state.player.strength;
 }
 
-export function accuse(state: DemonHunterState, personId: string, lines: string[]): void {
+/** `stab {person}`: the demon-killing knife. You must be in the town with
+ *  them. The wrong person dies and the town turns on you (the game is lost);
+ *  the right one drops its disguise and the arena begins. */
+export function stab(state: DemonHunterState, personId: string, lines: string[]): void {
   requireNoCombat(state);
-  if (state.phase !== 'playing') refuse('You cannot accuse anyone right now.');
-  const person = personOf(state, personId);
-  if (!person.hasMet) refuse(`You have not met ${person.name}; you can only accuse someone from your clue book.`);
-  const town = state.towns.find((t) => t.id === person.attributes.townId)?.name ?? '';
-  lines.push(`You accuse ${person.name} the ${person.attributes.occupation} of ${town} of being the demon!`);
+  if (state.phase !== 'playing') refuse('You cannot use the knife right now.');
+  if (state.player.inside !== 'town') refuse('You must be in a town, face to face with someone, to use the knife.');
+  const town = state.towns.find((t) => t.nodeId === state.player.at)!;
+  const person =
+    town.people.find((x) => x.id === personId || x.name.toLowerCase() === personId.toLowerCase()) ??
+    (state.player.follower === personId ? personOf(state, personId) : null);
+  if (!person) refuse(`There is no one called "${personId}" here in ${town.name}.`);
+  lines.push(`You draw the demon-killing knife and drive it into ${person.name} the ${person.attributes.occupation}.`);
   if (person.id !== state.demonId) {
     state.phase = 'lost';
     state.dialogue = null;
     state.innOpen = false;
-    state.result = { winner: 'demon', summary: `${person.name} was innocent. The real demon slips away laughing; the hunt is lost.` };
+    state.result = {
+      winner: 'demon',
+      summary: `${person.name} was no demon. They die in front of ${town.name} with your knife in them, and the town turns on you. Somewhere, the real demon is laughing. The hunt is lost.`,
+    };
     lines.push(state.result.summary);
     return;
   }
@@ -45,7 +54,7 @@ export function accuse(state: DemonHunterState, personId: string, lines: string[
   state.arena = { demonEnemyId: demon.id, phase2Done: false, minionQueue: [] };
   state.phase = 'arena';
   lines.push(
-    `${person.name}'s face splits into a grin far too wide. The town falls away and you stand in a dark arena of black pillars. ` +
+    `The knife goes in and ${person.name}'s face splits into a grin far too wide. The town falls away and you stand in a dark arena of black pillars. ` +
       `THE DEMON (${hp} HP${state.player.bindings.length > 0 ? `, weakened by ${state.player.bindings.length} binding${state.player.bindings.length === 1 ? '' : 's'}` : ''}) rises before you. There is no way out but through.`,
   );
   startCombat(state, demon.id, 'arena', lines);

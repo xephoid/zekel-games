@@ -119,16 +119,16 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
       status: 'human_to_move',
       active_player_id: playerId,
       instruction:
-        `INSIDE ${town.name}. The player may talk to anyone here, visit the inn, search a house (needs a lockpick or a Locksmith's favour), accuse someone, or leave. ` +
+        `INSIDE ${town.name}. The player may talk to anyone here, visit the inn, search a house (needs a lockpick or a Locksmith's favour), stab someone with the demon-killing knife, or leave. ` +
         `Describe only what the last response showed. ${NEVER_HINT}`,
-      human_response: { ask: 'what they do in town', example: 'Talk to the Baker', records_as: 'talk {person} / inn / search_house {person} / accuse {person} / leave' },
+      human_response: { ask: 'what they do in town', example: 'Talk to the Baker', records_as: 'talk {person} / inn / search_house {person} / stab {person} / leave' },
       facts: {
         phase: `In ${town.name}`,
         notes: [
           `${town.people.filter((x) => x.hasMet).length} of ${town.people.length} people here met.`,
           ...(task ? [`Active task: ${task.description} (${task.currentAmount}/${task.amount})${task.isCompleted ? ', complete' : ''}.`] : ['No active task.']),
           ...(p.lockpicks === 0 && p.locksmithCharges === 0 ? ["Houses are locked: searching one needs a lockpick or a Locksmith's favour."] : []),
-          ...(town.people.every((x) => !x.hasMet) ? ['You can only accuse someone you have met.'] : []),
+          'The demon-killing knife works only face to face, here in town: the wrong person dies and the town turns on you.',
           ...levelNote,
         ],
       },
@@ -184,8 +184,8 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
     active_player_id: playerId,
     instruction:
       `OUTDOORS at ${v.name}. Relay what is here exactly (paths, enemies with counts, resources, a trader) from the last look or move, then ask what the player does: ` +
-      'move somewhere, enter, attack something, harvest, bomb, trade with a Lady Bandit, use a magic item, accuse. ' + NEVER_HINT,
-    human_response: { ask: 'what they do', example: 'Go to the Old Crossroads', records_as: 'move {to} / enter / attack {target} / bomb / talk_bandit / fly / land / aura / teleport {town} / accuse {person}' },
+      'move somewhere, enter, attack something, harvest, bomb, trade with a Lady Bandit, use a magic item. ' + NEVER_HINT,
+    human_response: { ask: 'what they do', example: 'Go to the Old Crossroads', records_as: 'move {to} / enter / attack {target} / bomb / talk_bandit / fly / land / aura / teleport {town}' },
     facts: {
       phase: `${v.name} (${v.kind})`,
       notes: [
@@ -195,6 +195,7 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
         ...(v.trader ? ['A Lady Bandit here will trade.'] : []),
         ...(p.flying ? ['You are flying.'] : []),
         ...(v.resources.some((g) => g.kind === 'ore') && !p.magicItems.includes('fire') && p.bombs === 0 ? ['Ore deposits need a bomb; you have none.'] : []),
+        ...((p.bombs > 0 || p.magicItems.includes('fire')) && v.resources.length > 0 ? ['A bomb here would also burn the plants and trees.'] : []),
         ...(v.paths.some((x) => x.walled) && !p.magicItems.includes('fire') && p.bombs === 0 ? ['The stone ring needs a bomb; you have none.'] : []),
         ...levelNote,
         ...gateNotes,

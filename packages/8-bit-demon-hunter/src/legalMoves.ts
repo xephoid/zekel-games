@@ -95,7 +95,6 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
     }
     const people = state.towns.flatMap((t) => t.people).filter((x) => x.hasMet);
     for (const x of people) {
-      add(`accuse:${x.id}`, `ACCUSE ${x.name} the ${x.attributes.occupation} of being the demon (wrong = you lose)`, { type: 'accuse', person: x.id });
       if (p.suspects.includes(x.id)) add(`unmark_suspect:${x.id}`, `Unmark ${x.name} as a suspect`, { type: 'unmark_suspect', person: x.id });
       else if (p.suspects.length < state.towns.length * 2) add(`mark_suspect:${x.id}`, `Mark ${x.name} as a suspect`, { type: 'mark_suspect', person: x.id });
     }
@@ -104,6 +103,7 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
   if (p.inside === 'town') {
     const town = currentTown(state);
     for (const x of town.people) add(`talk:${x.id}`, `Talk to ${x.name} the ${x.attributes.occupation}${x.hasMet ? '' : ' (not yet met)'}`, { type: 'talk', person: x.id });
+    for (const x of town.people) add(`stab:${x.id}`, `STAB ${x.name} the ${x.attributes.occupation} with the demon-killing knife (an innocent dies and you lose)`, { type: 'stab', person: x.id });
     add('inn', 'Go to the inn', { type: 'inn' });
     if (p.locksmithCharges > 0 || p.lockpicks > 0) {
       for (const x of town.people) {
@@ -147,8 +147,9 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
   const canBomb = hasMagicItem(state, 'fire') || p.bombs > 0;
   if (canBomb) {
     const wall = neighborsOf(state.graph, here.id, { includeWalled: true }).some((n) => edgeBetween(state.graph, here.id, n)!.walled);
-    add('bomb', wall ? 'Bomb: blow a hole in the stone ring (and hurt every enemy here)' : 'Bomb: hurt every enemy here by 5', { type: 'bomb' }, hasMagicItem(state, 'fire') ? 'free' : 'one bomb');
-    for (const r of resourcesAt(state, here.id)) if (r.kind === 'ore') add(`bomb:${r.id}`, `Bomb the ore deposit ${r.id}`, { type: 'bomb', target: r.id }, hasMagicItem(state, 'fire') ? 'free' : 'one bomb');
+    const ore = resourcesAt(state, here.id).filter((r) => r.kind === 'ore').length;
+    const what = ['hurt every enemy here by 5', ...(ore > 0 ? [`shatter ${ore} ore deposit${ore === 1 ? '' : 's'}`] : []), ...(wall ? ['blow a hole in the stone ring'] : []), 'burn every plant and tree here'];
+    add('bomb', `Bomb this place: ${what.join(', ')}`, { type: 'bomb' }, hasMagicItem(state, 'fire') ? 'free' : 'one bomb');
   }
   if (enemiesAt(state, here.id).some((e) => e.type === 'lady_bandit' && !e.attacked)) {
     add('talk_bandit', 'Talk to the Lady Bandit (black market)', { type: 'talk_bandit' });
