@@ -43,7 +43,6 @@ pnpm smoke      # serves all seven and plays each through the real MCP tools
 ## Not done yet
 
 - The screens that draw these games in the Zekel web app still live in that app's repo; they move here later.
-- The games themselves are not published to npm yet.
 
 ## Licence
 
