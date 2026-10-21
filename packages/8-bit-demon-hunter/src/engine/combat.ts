@@ -49,7 +49,7 @@ export function startCombat(state: DemonHunterState, enemyId: string, cause: Com
     leaving: `The ${def.name} attacks as you try to leave!`,
     harvest: `Your noise draws the ${def.name} to you!`,
     gauntlet: `A ${def.name} comes at you.`,
-    lair: `${def.name} rises to meet you.`,
+    lair: `The ${def.name} rises to meet you.`,
     flying: `The ${def.name} fires at you as you fly past!`,
     resume: `${def.name} comes at you again.`,
   };
