@@ -83,7 +83,7 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       break;
     }
     case 'bomb':
-      bomb(state, lines);
+      bomb(state, move_.confirm, lines);
       break;
     case 'talk_bandit':
       talkBandit(state, lines);

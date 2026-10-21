@@ -21,7 +21,8 @@ export type DemonHunterMove =
   | { type: 'enter' }
   | { type: 'leave' }
   | { type: 'attack'; target: string }
-  | { type: 'bomb' }
+  /** `confirm` is needed only when the blast would kill you. */
+  | { type: 'bomb'; confirm?: boolean }
   | { type: 'talk_bandit' }
   | { type: 'buy_from_bandit'; item: 'bomb' | 'lockpick'; amount?: number | 'all' }
   | { type: 'fly' }

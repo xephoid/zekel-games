@@ -5,6 +5,7 @@ import { TEMPLE_NAME } from '../data/magicItems.js';
 import type { DemonHunterState } from '../types.js';
 import { edgeBetween, neighborsOf } from '../world/graph.js';
 import { startCombat } from './combat.js';
+import { whatIsHere } from './describe.js';
 import { refuse } from './errors.js';
 import { movePersonToTown } from '../world/puzzle.js';
 import { activeTasks, clearTempleEnemiesAt, defOf, enemiesAt, hasMagicItem, healToFull, hereNode, learnSurroundings, nodeOf, personOf, respawnOverworld, townAtNode } from './helpers.js';
@@ -20,7 +21,7 @@ export function requireNoCombat(state: DemonHunterState): void {
 }
 
 /** `move {to}`. Returns true when the player actually moved. */
-export function move(state: DemonHunterState, to: string, lines: string[]): boolean {
+export function move(state: DemonHunterState, to: string, lines: string[], opts: { quiet?: boolean } = {}): boolean {
   requireNoCombat(state);
   requireOutdoors(state);
   const here = hereNode(state);
@@ -69,6 +70,7 @@ export function move(state: DemonHunterState, to: string, lines: string[]): bool
     for (const m of mushrooms) m.at = to;
     lines.push(`${mushrooms.length === 1 ? 'A Mushroom follows' : `${mushrooms.length} Mushrooms follow`} you.`);
   }
+  if (!opts.quiet) lines.push(whatIsHere(state));
   return true;
 }
 
@@ -128,6 +130,7 @@ export function leaveInterior(state: DemonHunterState, lines: string[]): void {
   // overworld on every exit): the monsters, plants and trees are back.
   respawnOverworld(state);
   lines.push(`You step out of ${here.name}.`);
+  lines.push(whatIsHere(state));
 }
 
 export function fly(state: DemonHunterState, lines: string[]): void {

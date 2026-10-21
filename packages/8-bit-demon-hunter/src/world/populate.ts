@@ -67,7 +67,11 @@ export function populateEnemies(graph: WorldGraph, seed: number): { enemies: Rec
     if (def.id === 'dude_bandit' || def.id === 'lady_bandit') continue;
     const nodes = spawnNodesFor(graph, def);
     for (let i = 0; i < def.max; i++) {
-      const p = pick(nodes, s);
+      // One per place where the type says so: pick among places still free;
+      // fewer places than the count means fewer of them.
+      const free = def.onePerNode ? nodes.filter((id) => !Object.values(enemies).some((e) => e.type === def.id && e.at === id)) : nodes;
+      if (free.length === 0) break;
+      const p = pick(free, s);
       s = p.nextSeed;
       add(def, p.value);
     }

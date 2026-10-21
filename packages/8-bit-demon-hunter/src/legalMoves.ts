@@ -2,7 +2,7 @@
 // plain-words description. Fill-in moves (a riddle answer) carry a template.
 
 import { ENEMY_BY_ID } from './data/enemies.js';
-import { INN_RIDE_COST, INN_SLEEP_COST, INN_TRAIN_COST, STAT_BASE, type StatId } from './data/progression.js';
+import { BOMB_SELF_DAMAGE, INN_RIDE_COST, INN_SLEEP_COST, INN_TRAIN_COST, STAT_BASE, type StatId } from './data/progression.js';
 import { buyPrice, RESOURCE_DISPLAY_NAME, RESOURCE_NODE, RESOURCE_TYPES, sellPrice } from './data/resources.js';
 import type { DemonHunterMove } from './engine/moves.js';
 import { canLevelUp, condition, currentTown, enemiesAt, hasMagicItem, hereNode, resourcesAt, statIsMaxed } from './engine/helpers.js';
@@ -153,7 +153,8 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
     const wall = neighborsOf(state.graph, here.id, { includeWalled: true }).some((n) => edgeBetween(state.graph, here.id, n)!.walled);
     const ore = resourcesAt(state, here.id).filter((r) => r.kind === 'ore').length;
     const what = ['hurt every enemy here by 5', ...(ore > 0 ? [`shatter ${ore} ore deposit${ore === 1 ? '' : 's'}`] : []), ...(wall ? ['blow a hole in the stone ring'] : []), 'burn every plant and tree here'];
-    add('bomb', `Bomb this place: ${what.join(', ')}`, { type: 'bomb' }, hasMagicItem(state, 'fire') ? 'free' : 'one bomb');
+    const lethal = p.hp <= BOMB_SELF_DAMAGE;
+    add('bomb', `Bomb this place: ${what.join(', ')}. The blast hits you for ${BOMB_SELF_DAMAGE} too${lethal ? ` (THAT WOULD KILL YOU at ${p.hp} HP: needs confirm: true)` : ''}`, lethal ? { type: 'bomb', confirm: true } : { type: 'bomb' }, hasMagicItem(state, 'fire') ? 'free' : 'one bomb');
   }
   if (enemiesAt(state, here.id).some((e) => e.type === 'lady_bandit' && !e.attacked)) {
     add('talk_bandit', 'Talk to the Lady Bandit', { type: 'talk_bandit' });

@@ -47,6 +47,32 @@ export function describeNode(state: DemonHunterState, nodeId: string = state.pla
   };
 }
 
+/** The enemies (by count, with ids) and resources where the player stands:
+ *  said on every arrival outdoors, so nobody has to look each time
+ *  (designer, 2026-10-21). */
+export function whatIsHere(state: DemonHunterState, nodeId: string = state.player.at): string {
+  const v = describeNode(state, nodeId);
+  const parts: string[] = [];
+  if (v.enemies.length === 0) parts.push('No enemies here.');
+  else {
+    parts.push(
+      'Enemies: ' +
+        v.enemies
+          .map((g) => {
+            const def = ENEMY_BY_ID[g.type as keyof typeof ENEMY_BY_ID];
+            const hurt = g.condition.filter((c) => c !== 'unhurt').length;
+            return `${g.count} ${g.count === 1 ? def.name : def.plural} [${g.ids.join(', ')}]${hurt > 0 ? ` (${hurt} of them hurt)` : ''}`;
+          })
+          .join('; ') +
+        '.',
+    );
+  }
+  if (v.resources.length > 0) {
+    parts.push('Resources: ' + v.resources.map((g) => `${g.count} ${g.count === 1 ? g.name : RESOURCE_NODE[g.kind as keyof typeof RESOURCE_NODE].plural} [${g.ids.join(', ')}]`).join('; ') + '.');
+  }
+  return parts.join(' ');
+}
+
 export function lookText(state: DemonHunterState): string {
   const p = state.player;
   const here = hereNode(state);
@@ -66,23 +92,7 @@ export function lookText(state: DemonHunterState): string {
       v.paths.map((x) => `${x.name} (${x.kind}${x.walled ? ', blocked by a ring of stone wall' : ''})`).join(', ') +
       '.',
   );
-  if (v.enemies.length === 0) parts.push('No enemies here.');
-  else {
-    parts.push(
-      'Enemies: ' +
-        v.enemies
-          .map((g) => {
-            const def = ENEMY_BY_ID[g.type as keyof typeof ENEMY_BY_ID];
-            const hurt = g.condition.filter((c) => c !== 'unhurt').length;
-            return `${g.count} ${g.count === 1 ? def.name : def.plural} [${g.ids.join(', ')}]${hurt > 0 ? ` (${hurt} of them hurt)` : ''}`;
-          })
-          .join('; ') +
-        '.',
-    );
-  }
-  if (v.resources.length > 0) {
-    parts.push('Resources: ' + v.resources.map((g) => `${g.count} ${g.count === 1 ? g.name : RESOURCE_NODE[g.kind as keyof typeof RESOURCE_NODE].plural} [${g.ids.join(', ')}]`).join('; ') + '.');
-  }
+  parts.push(whatIsHere(state));
   const followers = p.followers.map((id) => state.towns.flatMap((t) => t.people).find((x) => x.id === id)?.name ?? id);
   if (followers.length > 0) parts.push(`${followers.join(' and ')} ${followers.length === 1 ? 'is' : 'are'} travelling with you.`);
   return parts.join(' ');

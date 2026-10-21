@@ -184,7 +184,7 @@ function walkLegs(state: DemonHunterState, legs: string[], finalId: string, line
       }
     }
     if (next === pressOn) lines.push(`You press on into ${state.graph.nodes[next]!.name}.`);
-    const moved = move(state, next, lines);
+    const moved = move(state, next, lines, { quiet: next !== finalId });
     if (!moved) return false; // a fight on the way out of where you stood
   }
   const node = state.graph.nodes[p.at]!;

@@ -38,6 +38,9 @@ export const INN_RIDE_COST = 50;
 export const BOMB_COST = 10;
 export const LOCKPICK_COST = 200;
 export const BOMB_DAMAGE = 5;
+/** The blast catches you too (ruling 2026-10-21); a bomb that would kill
+ *  you needs `confirm`. */
+export const BOMB_SELF_DAMAGE = 2;
 export const MINIONS_PER_TOWN = 2;
 export const PEOPLE_PER_TOWN = 10;
 export const TOWN_COUNT = 5;

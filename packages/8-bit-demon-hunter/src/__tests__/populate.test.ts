@@ -99,4 +99,14 @@ describe('populating the world', () => {
     expect(s.temple).toBeNull();
     expect(s.arena).toBeNull();
   });
+
+  it('undead knights never share a clearing (200 seeds)', () => {
+    for (let seed = 1; seed <= 200; seed++) {
+      const s = generateWorld(seed);
+      const at = Object.values(s.enemies).filter((e) => e.type === 'undead_knight').map((e) => e.at);
+      expect(new Set(at).size, `seed ${seed}`).toBe(at.length);
+      expect(at.length).toBeGreaterThan(0);
+      expect(at.length).toBeLessThanOrEqual(5);
+    }
+  });
 });

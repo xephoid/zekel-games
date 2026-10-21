@@ -124,7 +124,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     text:
       'Plants (1 HP) and trees (4 HP) are harvested by attacking them: each swing does your strength, and each swing has a one in ten chance of drawing an aggressive enemy at the place into a fight. A plant gives plant fiber, a tree gives wood. ' +
       'Monsters drop demon powder (bandits drop nothing); temple guardians drop demon ichor. ' +
-      `A bomb hits everything where you stand: every enemy is hurt by 5, every ore deposit shatters (each yields gold one time in ten, iron ore four times in ten, else nothing), every plant and tree burns to nothing, and the Sky Temple's stone ring opens if you are beside it. Where bombs and lockpicks come from is for you to find out; there are rumours. The Fire Bombs give you unlimited bombs.`,
+      `A bomb hits everything where you stand, you included: you take 2 damage from the blast (the game warns you first if that would kill you), every enemy is hurt by 5, every ore deposit shatters (each yields gold one time in ten, iron ore four times in ten, else nothing), every plant and tree burns to nothing, and the Sky Temple's stone ring opens if you are beside it. Where bombs and lockpicks come from is for you to find out; there are rumours. The Fire Bombs give you unlimited bombs.`,
     tags: { move_types: ['attack', 'bomb', 'talk_bandit', 'buy_from_bandit'], phases: ['outdoors'] },
   },
   {

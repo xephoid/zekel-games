@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { neighborsOf } from '../world/graph.js';
+import { getLegalMoves } from '../legalMoves.js';
 import { apply, applyText, clearAllEnemies, clearNode, fresh, outsideStart, place, startClearing } from './support.js';
 
 // PORT-PLAN §4, §8, §9 (movement items).
@@ -199,6 +200,10 @@ describe('moving around', () => {
     expect(s.player.bombs).toBe(1);
     expect(s.enemies['wiz_1']).toBeUndefined();
     expect(s.enemies['knight_1']!.hp).toBe(15);
+    expect(s.player.hp).toBe(s.player.maxHp - 2); // the blast catches you too
+    expect(r.summary).toContain('The blast catches you too: 2 damage');
+    s.player.maxHp = 20;
+    s.player.hp = 20; // the rest of this test is about what the blast hits, not about dying
     expect(s.enemies['knight_1']!.attacked).toBe(true);
     expect(s.player.xp).toBe(3);
     expect(s.resources['plant_z']).toBeUndefined(); // burnt, no fiber
@@ -264,5 +269,50 @@ describe('moving around', () => {
     const lady = place(t, 'lady_bandit', t.player.at, 'lady_2');
     lady.attacked = true;
     expect(() => apply(t, { type: 'talk_bandit' })).toThrow(/no Lady Bandit/);
+  });
+
+  it('a bomb that would kill you is refused with a warning until confirmed; confirmed, it kills you', () => {
+    let s = outsideStart(9);
+    clearAllEnemies(s);
+    s.player.bombs = 2;
+    s.player.hp = 2;
+    let r = applyText(s, { type: 'bomb' });
+    expect(r.summary).toContain('That bomb would kill you');
+    expect(r.state.player.bombs).toBe(2);
+    expect(r.state.player.hp).toBe(2);
+    expect(getLegalMoves(r.state).find((m) => m.move_id === 'bomb')?.description).toContain('WOULD KILL YOU');
+    r = applyText(r.state, { type: 'bomb', confirm: true });
+    expect(r.state.phase).toBe('dead');
+    expect(r.state.player.bombs).toBe(1);
+    expect(r.summary).toContain('your own bomb');
+    // at 3 HP no warning, and you live
+    s.player.hp = 3;
+    r = applyText(s, { type: 'bomb' });
+    expect(r.summary).not.toContain('would kill you');
+    expect(r.state.player.hp).toBe(1);
+    expect(r.state.phase).toBe('playing');
+  });
+
+  it('every arrival outdoors says what is here: a move, stepping out, the end of a travel', () => {
+    let s = fresh(10);
+    const clearing = startClearing(s);
+    let r = applyText(s, { type: 'leave' });
+    s = r.state;
+    expect(r.summary).toMatch(/No enemies here\.|Enemies: /);
+    clearAllEnemies(s);
+    place(s, 'slime', clearing, 'slime_a');
+    place(s, 'slime', clearing, 'slime_b');
+    place(s, 'snake', clearing, 'snake_a');
+    r = applyText(s, { type: 'move', to: clearing });
+    expect(r.summary).toContain('You travel to');
+    expect(r.summary).toContain('2 Slimes [slime_a, slime_b]');
+    expect(r.summary).toContain('1 Snake [snake_a]');
+    s = r.state;
+    const beyond = neighborsOf(s.graph, clearing).find((n) => n !== s.graph.startNodeId)!;
+    place(s, 'slime', beyond, 'slime_c');
+    r = applyText(s, { type: 'travel', to: beyond });
+    expect(r.summary).toContain('You arrive at');
+    expect(r.summary).toContain('1 Slime [slime_c]');
+    expect(r.summary).not.toContain('slime_a'); // the hop through the first clearing stays brief
   });
 });

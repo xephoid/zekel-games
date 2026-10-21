@@ -1,7 +1,7 @@
 // Harvesting, bombs, levelling, death and the Lady Bandit's black market
 // (PORT-PLAN §8–§9).
 
-import { BOMB_COST, BOMB_DAMAGE, LOCKPICK_COST, STAT_BASE, STAT_MAX, STAT_STEP, type StatId } from '../data/progression.js';
+import { BOMB_COST, BOMB_DAMAGE, BOMB_SELF_DAMAGE, LOCKPICK_COST, STAT_BASE, STAT_MAX, STAT_STEP, type StatId } from '../data/progression.js';
 import { GOLD_DROP_CHANCE, HARVEST_AGGRO_CHANCE, IRON_DROP_CHANCE, RESOURCE_DISPLAY_NAME, RESOURCE_NODE } from '../data/resources.js';
 import { ENEMY_BY_ID } from '../data/enemies.js';
 import { chance, pick, randomFloat } from '../rng.js';
@@ -10,7 +10,7 @@ import type { Enemy } from '../types.js';
 const defOfEnemy = (e: Enemy) => ENEMY_BY_ID[e.type];
 import type { DemonHunterState } from '../types.js';
 import { edgeBetween, neighborsOf } from '../world/graph.js';
-import { killEnemy, startCombat } from './combat.js';
+import { die, killEnemy, startCombat } from './combat.js';
 import { refuse } from './errors.js';
 import { aggressiveAt, canLevelUp, enemiesAt, enemyName, hasMagicItem, healToFull, hereNode, resourcesAt, statIsMaxed } from './helpers.js';
 import { arriveInTown, requireNoCombat, requireOutdoors } from './movement.js';
@@ -50,13 +50,18 @@ export function harvest(state: DemonHunterState, resourceId: string, lines: stri
  *  hurt by 5, every ore deposit shatters and rolls ore, every plant and tree
  *  is burnt (no yield), and if the node touches the Sky Temple's stone ring
  *  the ring opens (with an ore roll of its own). */
-export function bomb(state: DemonHunterState, lines: string[]): void {
+export function bomb(state: DemonHunterState, confirm: boolean | undefined, lines: string[]): void {
   requireNoCombat(state);
   requireOutdoors(state);
   const p = state.player;
   const unlimited = hasMagicItem(state, 'fire');
   if (!unlimited && p.bombs <= 0) refuse('You have no bombs.');
   const here = hereNode(state);
+  // The blast catches you too. Warn before a bomb that would be the end of you.
+  if (p.hp <= BOMB_SELF_DAMAGE && !confirm) {
+    lines.push(`Careful: the blast would hit you for ${BOMB_SELF_DAMAGE} and you have only ${p.hp} HP. That bomb would kill you. Bomb again with confirm set to true to do it anyway.`);
+    return;
+  }
 
   if (!unlimited) {
     p.bombs--;
@@ -65,6 +70,12 @@ export function bomb(state: DemonHunterState, lines: string[]): void {
     lines.push('You conjure a Fire Bomb.');
   }
   lines.push('BOOM!');
+  p.hp -= BOMB_SELF_DAMAGE;
+  lines.push(`The blast catches you too: ${BOMB_SELF_DAMAGE} damage (HP ${Math.max(0, p.hp)}/${p.maxHp}).`);
+  if (p.hp <= 0) {
+    die(state, 'your own bomb', lines);
+    return;
+  }
 
   let oreRolls = 0;
   const wall = neighborsOf(state.graph, here.id, { includeWalled: true })

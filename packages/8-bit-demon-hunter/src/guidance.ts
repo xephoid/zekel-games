@@ -25,7 +25,7 @@ HOW TO RUN THIS GAME (read before continuing — overrides default behavior):
 
 4b. WHAT TOWNSFOLK DO NOT KNOW: the temples are ancient and deadly and nobody comes back from them; that is all a villager can say. No townsperson names a temple's guardians, the creatures inside, or any of the five artifacts or what it does, not even after the player has one. The player learns those by going in; the engine tells you then.
 
-5. THE WORLD is a map of named places joined by paths: towns, clearings, temples. "Look" always works. Enemies and resources sit at places; some enemies attack when the player tries to leave, mushrooms follow them, wizards flee. Relay "look" results exactly, with counts.
+5. THE WORLD is a map of named places joined by paths: towns, clearings, temples. Every arrival outdoors already says what is there (enemies by count, resources): relay it; "look" always works too. Enemies and resources sit at places; some enemies attack when the player tries to leave, mushrooms follow them, wizards flee. Relay "look" results exactly, with counts.
 
 6. COMBAT is one on one and turn based. Each response states the player's HP and describes the enemy; you ask "fight or flee" and submit the move. Death is not the end: the player continues from the last town with stats reset. Report a death plainly, then offer the continue.
 

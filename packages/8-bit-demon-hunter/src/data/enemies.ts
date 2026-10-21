@@ -45,6 +45,8 @@ export interface EnemyDef {
   toKill?: number;
   templeOnly?: boolean;
   clearingsOnly?: boolean;
+  /** Never two on one place (undead knights, ruling 2026-10-21). */
+  onePerNode?: boolean;
   /** Minimum graph distance from the starting town (its node is 0, its clearing 1).
    *  Replaces the original's tile distance from the spawn: slime 10, mushroom 15,
    *  snake 20, bandits 30, wizard 35, skeleton 40, knight 45 on a 200-tile map,
@@ -61,7 +63,7 @@ export const ENEMIES: readonly EnemyDef[] = [
   { id: 'skeleton', name: 'Skeleton', plural: 'Skeletons', hp: 6, xp: 6, speed: 2.0, damage: 1, range: 4, max: 5, toKill: 2, clearingsOnly: true, minHops: 2, behaviour: 'hunter' },
   { id: 'dude_bandit', name: 'Dude Bandit', plural: 'Dude Bandits', hp: 7, xp: 4, speed: 6.0, damage: 1, range: 1, max: 10, toKill: 3, minHops: 2, behaviour: 'blocker' },
   { id: 'lady_bandit', name: 'Lady Bandit', plural: 'Lady Bandits', hp: 7, xp: 4, speed: 6.0, damage: 1, range: 1, max: 10, toKill: 4, minHops: 2, behaviour: 'blocker' },
-  { id: 'undead_knight', name: 'Undead Knight', plural: 'Undead Knights', hp: 20, xp: 15, speed: 8, damage: 1, range: 1, max: 5, toKill: 1, clearingsOnly: true, minHops: 3, behaviour: 'hunter' },
+  { id: 'undead_knight', name: 'Undead Knight', plural: 'Undead Knights', hp: 20, xp: 15, speed: 8, damage: 1, range: 1, max: 5, toKill: 1, clearingsOnly: true, onePerNode: true, minHops: 3, behaviour: 'hunter' },
   // --- Temple enemies (one type per temple) ---
   { id: 'bee', name: 'Bee', plural: 'Bees', hp: 6, xp: 5, speed: 16.0, damage: 1, range: 1, max: 8, templeOnly: true, minHops: 0, behaviour: 'temple' },
   { id: 'man_eater_flower', name: 'Man Eater Flower', plural: 'Man Eater Flowers', hp: 7, xp: 6, speed: 14.0, damage: 2, range: 1, max: 6, templeOnly: true, minHops: 0, behaviour: 'temple' },

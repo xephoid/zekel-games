@@ -56,6 +56,12 @@ tedious: `buy`, `sell` and `buy_from_bandit` take an `amount` (default 1,
 or `all`), bounded by the stock, the purse and the pack; an amount past the
 bound is refused with the bound. A Lady Bandit still vanishes after her one
 deal, however large.
+Rulings 2026-10-21 (seventh): a **bomb hurts you by 2** as well, and one that
+would kill you is refused with a warning until sent with `confirm`; every
+arrival outdoors (a move, stepping out of a town or temple, the end of a
+travel) **says what is here** (enemies by count with ids, resources) so
+nobody has to look each time; **undead knights spawn one per clearing**
+(`onePerNode`), so a map with fewer eligible clearings has fewer knights.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.

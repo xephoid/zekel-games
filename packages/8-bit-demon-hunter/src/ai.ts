@@ -10,7 +10,7 @@
 // ends the game. Fully deterministic: it never draws randomness.
 
 import { ENEMY_BY_ID } from './data/enemies.js';
-import { BOMB_COST, BOMB_DAMAGE, INN_SLEEP_COST, INN_TRAIN_COST, STAT_MAX } from './data/progression.js';
+import { BOMB_COST, BOMB_DAMAGE, BOMB_SELF_DAMAGE, INN_SLEEP_COST, INN_TRAIN_COST, STAT_MAX } from './data/progression.js';
 import { RESOURCE_TYPES } from './data/resources.js';
 import type { DemonHunterMove } from './engine/moves.js';
 import { activeTasks, attacksPerAction, canLevelUp, enemiesAt, hereNode, resourcesAt, townAtNode } from './engine/helpers.js';
@@ -304,7 +304,7 @@ export function chooseMove(state: DemonHunterState, difficulty?: string): BotCho
       if (!p.blackMarketKnown) return { move: { type: 'talk_bandit' }, reasoning: 'see what the Lady Bandit wants' };
       return { move: { type: 'buy_from_bandit', item: 'bomb' }, reasoning: 'buy a bomb to break out' };
     }
-    if (hasBomb(state) && clearCost(state, here.id, true) < p.hp) return { move: { type: 'bomb' }, reasoning: 'bomb the blockers' };
+    if (hasBomb(state) && p.hp > BOMB_SELF_DAMAGE && clearCost(state, here.id, true) < p.hp - BOMB_SELF_DAMAGE) return { move: { type: 'bomb' }, reasoning: 'bomb the blockers' };
   }
 
   // Strong: rest only when the whole march ahead costs more HP than it has
