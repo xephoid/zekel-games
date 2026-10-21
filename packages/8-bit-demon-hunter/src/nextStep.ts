@@ -86,7 +86,7 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
     const person = state.towns.flatMap((t) => t.people).find((x) => x.id === state.dialogue!.personId)!;
     const stage = state.dialogue.stage;
     const options =
-      stage === 'found' ? ['I found you', 'goodbye'] : stage === 'reward' ? [...(person.clues.good ? ['clue'] : []), 'power', 'goodbye'] : stage === 'offer' ? ['accept', 'decline', 'goodbye'] : ['goodbye'];
+      stage === 'reward' ? [...(person.clues.good ? ['clue'] : []), 'power', 'goodbye'] : stage === 'offer' ? ['accept', 'decline', 'goodbye'] : ['goodbye'];
     return {
       status: 'human_to_move',
       active_player_id: playerId,
@@ -117,9 +117,9 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
       status: 'human_to_move',
       active_player_id: playerId,
       instruction:
-        `INSIDE ${town.name}. The player may travel in one go to any place they know of or back to a quest giver (travel: it stops at the edge of danger), talk to anyone here, ask around town for someone who fits a description (search_town: a pet, colour, trade, item, a task by what it asks for, who claims to know the truth, or which rumours contradict their secrets), visit the inn, search a house (needs a lockpick or a Locksmith's favour), stab someone with the demon-killing knife, or leave. ` +
+        `INSIDE ${town.name}. The player may travel in one go to any place they know of or back to a quest giver (travel: it stops at the edge of danger), talk to anyone here (meeting the person a find task asks for completes it), claim a reward from a giver here in one move (claim_reward with their id), ask around town for someone who fits a description (search_town: a pet, colour, trade, item, a task by what it asks for, who claims to know the truth, or which rumours contradict their secrets), visit the inn, search a house (needs a lockpick or a Locksmith's favour), stab someone with the demon-killing knife, or leave. ` +
         `Describe only what the last response showed. ${NEVER_HINT}`,
-      human_response: { ask: 'what they do in town', example: 'Ask around for anyone who likes purple', records_as: 'talk {person} / search_town {…} / travel {to|person|nearest} / inn / search_house {person} / stab {person} / leave' },
+      human_response: { ask: 'what they do in town', example: 'Ask around for anyone who likes purple', records_as: 'talk {person} / claim_reward {person, reward} / search_town {…} / travel {to|person|nearest} / inn / search_house {person} / stab {person} / leave' },
       facts: {
         phase: `In ${town.name}`,
         notes: [

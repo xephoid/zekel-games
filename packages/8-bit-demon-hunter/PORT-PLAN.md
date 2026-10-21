@@ -66,6 +66,11 @@ Playtest 2 (seed 33, 2026-10-21) fixes: the bomb no longer prints enemy HP;
 an edge stop part-way says where you stand; a stop is forgotten by any other
 action (no stale "press on"); arrival text leads with the place; a cart from
 the town you stand in enters once; the inn offers level-ups; "an Undead Knight".
+Ruling 2026-10-21 (eighth): **short quest flows**. Meeting the person a find
+task asks for completes it on the spot (no `found_you`); any other action ends
+the current conversation by itself (no goodbye needed); `claim_reward` may
+name the giver and then talks and claims in one move. The six-move find
+flow is two moves: talk to the target, claim from the giver.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.

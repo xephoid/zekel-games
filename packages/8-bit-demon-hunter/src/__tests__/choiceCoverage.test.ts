@@ -38,15 +38,15 @@ function stage(name: string): DemonHunterState {
       s.towns[0]!.people.find((p) => p.id === holder.id)!.task.isCompleted = true;
       return apply(s, { type: 'talk', person: holder.id });
     }
-    case 'found': {
+    case 'reward-here': {
       let s = fresh(1);
       const giver = s.towns[0]!.people[0]!;
       const target = s.towns[0]!.people[1]!;
       giver.task = { ...giver.task, type: 'FIND_PERSON', targetId: target.attributes.pet, targetName: target.attributes.pet, amount: 1, currentAmount: 0, description: 'Find', isCompleted: false };
       s = apply(s, { type: 'talk', person: giver.id });
       s = apply(s, { type: 'accept_task' });
-      s = apply(s, { type: 'goodbye' });
-      return apply(s, { type: 'talk', person: target.id });
+      s = apply(s, { type: 'talk', person: target.id }); // found: the task completes
+      return apply(s, { type: 'goodbye' });
     }
     case 'inn': {
       const s = fresh(1);
@@ -103,7 +103,7 @@ function stage(name: string): DemonHunterState {
   }
 }
 
-const STAGES = ['town', 'offer', 'reward', 'found', 'inn', 'outdoors', 'flying', 'combat', 'temple-choice', 'gauntlet', 'riddle', 'dead'];
+const STAGES = ['town', 'offer', 'reward', 'reward-here', 'inn', 'outdoors', 'flying', 'combat', 'temple-choice', 'gauntlet', 'riddle', 'dead'];
 
 describe('choice catalog coverage', () => {
   it('names only real move types (or session options)', () => {

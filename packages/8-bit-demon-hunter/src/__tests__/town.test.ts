@@ -3,6 +3,7 @@ import { INN_RIDE_COST, INN_SLEEP_COST, INN_TRAIN_COST, INN_TRAIN_XP, MERCHANT_S
 import { buyPrice, sellPrice } from '../data/resources.js';
 import type { DemonHunterState, Person } from '../types.js';
 import { apply, applyText, demon, fresh } from './support.js';
+import { getLegalMoves } from '../legalMoves.js';
 
 // PORT-PLAN §6.
 
@@ -28,7 +29,7 @@ describe('talking to townsfolk', () => {
     expect(s.player.knownClues.map((c) => c.text)).toContain(p.clues.bad!.text);
     expect(person(s, p.id).hasMet).toBe(true);
     expect(s.dialogue?.stage).toBe('offer');
-    expect(() => apply(s, { type: 'leave' })).toThrow(/say goodbye/);
+    expect(applyText(s, { type: 'leave' }).summary).toContain('You take your leave of'); // no goodbye needed
     s = apply(s, { type: 'decline' });
     expect(s.dialogue?.stage).toBe('closing');
     s = apply(s, { type: 'goodbye' });
@@ -107,8 +108,53 @@ describe('talking to townsfolk', () => {
     s = apply(s, { type: 'goodbye' });
     const r = applyText(s, { type: 'talk', person: target.id });
     expect(r.summary).toContain('You found me');
-    s = apply(r.state, { type: 'found_you' });
+    expect(r.summary).toContain(`Claim the reward from ${giver.name}`);
+    s = r.state;
     expect(person(s, giver.id).task.isCompleted).toBe(true);
+  });
+
+  it('the short quest flow: talk to the target straight from the giver, then claim in one move', () => {
+    let s = fresh();
+    const giver = townPeople(s)[0]!;
+    const target = townPeople(s).find((x) => x.id !== giver.id)!;
+    giver.task = { ...giver.task, type: 'FIND_PERSON', targetId: target.attributes.pet, targetName: target.attributes.pet, amount: 1, currentAmount: 0, description: `Find someone with a ${target.attributes.pet}`, isCompleted: false };
+    s = apply(s, { type: 'talk', person: giver.id });
+    s = apply(s, { type: 'accept_task' });
+    // no goodbye: talking to the target ends the giver's conversation and completes the find
+    let r = applyText(s, { type: 'talk', person: target.id });
+    expect(r.summary).toContain(`(You take your leave of ${giver.name}.)`);
+    expect(r.summary).toContain('Task complete');
+    s = r.state;
+    const ids = getLegalMoves(s).map((m) => m.move_id);
+    expect(ids).toContain('goodbye');
+    // claim in one move, mid-conversation with the target
+    r = applyText(s, { type: 'claim_reward', person: giver.id, reward: 'power' });
+    expect(r.summary).toContain(`(You take your leave of ${target.name}.)`);
+    expect(r.summary).toContain('You did it');
+    s = r.state;
+    expect(person(s, giver.id).taskCompleted).toBe(true);
+    expect(s.player.activeTasks).not.toContain(giver.id);
+    // and the town list offered that claim before we took it
+    const before = apply(apply(fresh(), { type: 'talk', person: giver.id }), { type: 'goodbye' });
+    expect(getLegalMoves(before).map((m) => m.move_id)).not.toContain(`claim_reward:${giver.id}:power`);
+  });
+
+  it('claiming from a giver who owes nothing yet just talks to them; the inn, leaving and asking around end a conversation by themselves', () => {
+    let s = fresh();
+    const giver = townPeople(s)[0]!;
+    s = apply(s, { type: 'talk', person: giver.id });
+    s = apply(s, { type: 'accept_task' });
+    let r = applyText(s, { type: 'claim_reward', person: giver.id, reward: 'power' });
+    expect(r.summary).toContain('Please hurry');
+    expect(r.state.dialogue?.stage).toBe('closing');
+    r = applyText(r.state, { type: 'inn' });
+    expect(r.summary).toContain('You take your leave of');
+    expect(r.state.dialogue).toBeNull();
+    s = apply(r.state, { type: 'leave_inn' });
+    s = apply(s, { type: 'talk', person: giver.id });
+    r = applyText(s, { type: 'leave' });
+    expect(r.summary).toContain('You take your leave of');
+    expect(r.state.player.inside).toBeNull();
   });
 
   it('each occupation power does what the original did', () => {

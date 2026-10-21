@@ -8,7 +8,7 @@ import { startCombat } from './combat.js';
 import { whatIsHere } from './describe.js';
 import { refuse } from './errors.js';
 import { movePersonToTown } from '../world/puzzle.js';
-import { activeTasks, clearTempleEnemiesAt, defOf, enemiesAt, hasMagicItem, healToFull, hereNode, learnSurroundings, nodeOf, personOf, respawnOverworld, townAtNode } from './helpers.js';
+import { activeTasks, clearTempleEnemiesAt, defOf, enemiesAt, endDialogue, hasMagicItem, healToFull, hereNode, learnSurroundings, nodeOf, personOf, respawnOverworld, townAtNode } from './helpers.js';
 import { relocateDemonClues } from './clues.js';
 
 export function requireOutdoors(state: DemonHunterState): void {
@@ -115,7 +115,7 @@ export function arriveInTown(state: DemonHunterState, townId: string, lines: str
 export function leaveInterior(state: DemonHunterState, lines: string[]): void {
   requireNoCombat(state);
   if (state.player.inside === null) refuse('You are already outdoors.');
-  if (state.dialogue) refuse('Finish the conversation first (say goodbye).');
+  endDialogue(state, lines);
   if (state.innOpen) refuse('Leave the inn first.');
   const here = hereNode(state);
   if (state.player.inside === 'temple') {
@@ -160,7 +160,8 @@ export function auraOutdoors(state: DemonHunterState, lines: string[]): void {
 export function teleport(state: DemonHunterState, townId: string, lines: string[]): void {
   requireNoCombat(state);
   if (!hasMagicItem(state, 'space')) refuse('You have no Cape of Teleportation.');
-  if (state.dialogue || state.innOpen) refuse('Finish what you are doing first.');
+  if (state.innOpen) refuse('Leave the inn first.');
+  endDialogue(state, lines);
   const town = state.towns.find((t) => t.id === townId || t.name.toLowerCase() === townId.toLowerCase());
   if (!town) refuse(`There is no town "${townId}".`);
   if (!state.player.visitedTowns.includes(town.id)) refuse(`You have never been to ${town.name}; the cape only knows places you have visited.`);

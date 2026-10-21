@@ -50,9 +50,6 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
   if (state.dialogue) {
     const person = state.towns.flatMap((t) => t.people).find((x) => x.id === state.dialogue!.personId)!;
     switch (state.dialogue.stage) {
-      case 'found':
-        add('found_you', `Tell ${person.name} "I found you"`, { type: 'found_you' });
-        break;
       case 'reward':
         if (person.clues.good) add('claim_reward:clue', `Take ${person.name}'s demon secret (clue)`, { type: 'claim_reward', reward: 'clue' });
         add('claim_reward:power', `Take ${person.name}'s ability (power)`, { type: 'claim_reward', reward: 'power' });
@@ -64,7 +61,7 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
       default:
         break;
     }
-    add('goodbye', `Say goodbye to ${person.name}`, { type: 'goodbye' });
+    add('goodbye', `Say goodbye to ${person.name} (or just do something else: talk to someone, ask around, the inn, leave)`, { type: 'goodbye' });
     return out;
   }
 
@@ -106,6 +103,13 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
 
   if (p.inside === 'town') {
     const town = currentTown(state);
+    // Givers here who owe a reward: claim it in one move, no talk needed first.
+    for (const x of town.people) {
+      if (p.activeTasks.includes(x.id) && x.task.isCompleted && !x.taskCompleted) {
+        if (x.clues.good) add(`claim_reward:${x.id}:clue`, `Claim ${x.name}'s reward: their demon secret (clue)`, { type: 'claim_reward', person: x.id, reward: 'clue' });
+        add(`claim_reward:${x.id}:power`, `Claim ${x.name}'s reward: their favour (power)`, { type: 'claim_reward', person: x.id, reward: 'power' });
+      }
+    }
     for (const x of town.people) add(`talk:${x.id}`, `Talk to ${x.name} the ${x.attributes.occupation}${x.hasMet ? '' : ' (not yet met)'}`, { type: 'talk', person: x.id });
     add('search_town', 'Ask around town; whoever fits counts as met (fill in what you are looking for: a pet, colour, trade or item; a task by its monster or a word of it; truth = who claims to know the truth; contradictions = which rumours clash with your secrets)', { type: 'search_town' });
     for (const x of town.people) add(`stab:${x.id}`, `STAB ${x.name} the ${x.attributes.occupation} with the demon-killing knife (an innocent dies and you lose)`, { type: 'stab', person: x.id });

@@ -140,6 +140,16 @@ export function knowsPlace(state: DemonHunterState, nodeId: string): boolean {
   return state.player.knownPlaces.includes(nodeId);
 }
 
+/** Doing anything else ends the conversation you were in (the player simply
+ *  walks away; nothing needs a goodbye first). Ruling 2026-10-21: quest
+ *  flows were six moves long. */
+export function endDialogue(state: DemonHunterState, lines: string[]): void {
+  if (!state.dialogue) return;
+  const who = allPeople(state).find((x) => x.id === state.dialogue!.personId);
+  lines.push(`(You take your leave of ${who?.name ?? 'them'}.)`);
+  state.dialogue = null;
+}
+
 export function respawnOverworld(state: DemonHunterState): void {
   state.enemies = structuredClone(state.initialEnemies);
   for (const [id, r] of Object.entries(state.initialResources)) {

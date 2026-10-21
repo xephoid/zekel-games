@@ -14,7 +14,6 @@ import {
   acceptTask,
   claimReward,
   declineTask,
-  foundYou,
   goodbye,
   innBuy,
   innLeave,
@@ -145,9 +144,6 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
     case 'talk':
       talk(state, move_.person, lines);
       break;
-    case 'found_you':
-      foundYou(state, lines);
-      break;
     case 'accept_task':
       acceptTask(state, lines);
       break;
@@ -155,7 +151,7 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       declineTask(state, lines);
       break;
     case 'claim_reward':
-      claimReward(state, move_.reward, lines);
+      claimReward(state, move_.reward, move_.person, lines);
       break;
     case 'goodbye':
       goodbye(state, lines);

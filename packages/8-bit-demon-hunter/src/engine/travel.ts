@@ -13,7 +13,7 @@ import type { DemonHunterState, MajorNode } from '../types.js';
 import { hopDistances, neighborsOf } from '../world/graph.js';
 import { refuse } from './errors.js';
 import { whatIsHere } from './describe.js';
-import { enemiesAt, hereNode, knowsPlace, personOf } from './helpers.js';
+import { endDialogue, enemiesAt, hereNode, knowsPlace, personOf } from './helpers.js';
 import { arriveInTown, leaveInterior, move, requireNoCombat } from './movement.js';
 
 export interface TravelRequest {
@@ -84,8 +84,8 @@ function describeDanger(names: string[]): string {
 
 export function travel(state: DemonHunterState, q: TravelRequest, lines: string[]): void {
   requireNoCombat(state);
-  if (state.dialogue) refuse('Finish the conversation first (say goodbye).');
   if (state.innOpen) refuse('Leave the inn first.');
+  endDialogue(state, lines);
   const p = state.player;
 
   // Where to.

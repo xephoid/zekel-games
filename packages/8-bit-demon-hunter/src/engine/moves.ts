@@ -53,10 +53,10 @@ export type DemonHunterMove =
       contradictions?: boolean;
     }
   | { type: 'talk'; person: string }
-  | { type: 'found_you' }
   | { type: 'accept_task' }
   | { type: 'decline' }
-  | { type: 'claim_reward'; reward: 'clue' | 'power' }
+  /** `person` (the giver, in their town) talks to them and claims in one move. */
+  | { type: 'claim_reward'; reward: 'clue' | 'power'; person?: string }
   | { type: 'goodbye' }
   | { type: 'inn' }
   | { type: 'sleep' }
@@ -79,7 +79,7 @@ export type MoveType = DemonHunterMove['type'];
 export const MOVE_TYPES: readonly MoveType[] = [
   'look', 'move', 'travel', 'enter', 'leave', 'attack', 'bomb', 'talk_bandit', 'buy_from_bandit', 'fly', 'land', 'aura', 'teleport',
   'fight', 'flee', 'level_up', 'mark_suspect', 'unmark_suspect', 'stab', 'continue',
-  'search_town', 'talk', 'found_you', 'accept_task', 'decline', 'claim_reward', 'goodbye',
+  'search_town', 'talk', 'accept_task', 'decline', 'claim_reward', 'goodbye',
   'inn', 'sleep', 'train', 'ride', 'buy', 'sell', 'leave_inn', 'search_house',
   'gauntlet', 'next_fight', 'riddle', 'answer_riddle',
 ];

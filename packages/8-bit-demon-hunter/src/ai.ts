@@ -234,8 +234,6 @@ export function chooseMove(state: DemonHunterState, difficulty?: string): BotCho
   if (state.dialogue) {
     const person = state.towns.flatMap((t) => t.people).find((x) => x.id === state.dialogue!.personId)!;
     switch (state.dialogue.stage) {
-      case 'found':
-        return { move: { type: 'found_you' }, reasoning: 'found the target' };
       case 'reward':
         return { move: { type: 'claim_reward', reward: person.clues.good ? 'clue' : 'power' }, reasoning: 'claim the reward' };
       case 'offer':

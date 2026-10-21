@@ -43,7 +43,7 @@ describe('many tasks at once', () => {
     }
     const r = applyText(s, { type: 'talk', person: target!.id });
     expect(r.summary).toContain('Find pet; Find colour');
-    s = apply(r.state, { type: 'found_you' });
+    s = r.state;
     expect(s.towns[0]!.people.find((x) => x.id === g1!.id)!.task.isCompleted).toBe(true);
     expect(s.towns[0]!.people.find((x) => x.id === g2!.id)!.task.isCompleted).toBe(true);
   });

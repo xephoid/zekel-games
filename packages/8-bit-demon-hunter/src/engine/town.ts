@@ -9,7 +9,7 @@ import { pick, randomInt, shuffle } from '../rng.js';
 import type { Clue, DemonHunterState, Person } from '../types.js';
 import type { DemonHunterMove } from './moves.js';
 import { refuse } from './errors.js';
-import { activeTasks, addClue, allPeople, currentTown, gainXp, hasMagicItem, healToFull, personOf } from './helpers.js';
+import { activeTasks, addClue, allPeople, currentTown, endDialogue, gainXp, hasMagicItem, healToFull, personOf } from './helpers.js';
 import { arriveInTown, requireNoCombat } from './movement.js';
 
 // ---------------------------------------------------------------------------
@@ -64,6 +64,7 @@ export function talk(state: DemonHunterState, personId: string, lines: string[])
     town.people.find((p) => p.id === personId || p.name.toLowerCase() === personId.toLowerCase()) ??
     (state.player.followers.includes(personId) ? personOf(state, personId) : null);
   if (!person) refuse(`There is no one called "${personId}" in ${town.name}.`);
+  if (state.dialogue && state.dialogue.personId !== person.id) endDialogue(state, lines);
 
   person.hasMet = true;
   if (person.clues.bad && addClue(state, person.clues.bad)) lines.push('(Rumour added to your clue book.)');
@@ -73,10 +74,18 @@ export function talk(state: DemonHunterState, personId: string, lines: string[])
   const p = state.player;
 
   // 0. The person IS the target of an accepted find task (any of them).
+  // Meeting them IS finding them: the task completes on the spot.
   const found = findTasksMatching(state, person);
   if (found.length > 0) {
-    state.dialogue = { personId: person.id, stage: 'found' };
-    lines.push(`Gist: "You found me! I am indeed the one you are looking for (${found.map((t) => t.description).join('; ')})." The player may tell them "I found you", or say goodbye.`);
+    const givers: string[] = [];
+    for (const task of found) {
+      task.currentAmount = task.amount;
+      task.isCompleted = true;
+      const giver = allPeople(state).find((x) => x.task === task);
+      if (giver) givers.push(`${giver.name} (${giver.id}) in ${state.towns.find((t) => t.id === giver.attributes.townId)?.name ?? '?'}`);
+    }
+    state.dialogue = { personId: person.id, stage: 'closing' };
+    lines.push(`Gist: "You found me! I am indeed the one you are looking for." Task complete: ${found.map((t) => t.description).join('; ')}. Claim the reward from ${givers.join(' and ')} when you are in their town (claim_reward with their id and your choice of reward; no need to talk first).`);
     return;
   }
 
@@ -147,20 +156,6 @@ function powerOffer(person: Person): string {
   return POWER_OFFER[person.attributes.occupation] ?? 'I can use my ability';
 }
 
-export function foundYou(state: DemonHunterState, lines: string[]): void {
-  requireTown(state);
-  const person = dialoguePerson(state);
-  if (state.dialogue!.stage !== 'found') refuse(`${person.name} is not who you are looking for.`);
-  const done: string[] = [];
-  for (const task of findTasksMatching(state, person)) {
-    task.currentAmount = task.amount;
-    task.isCompleted = true;
-    done.push(task.description);
-  }
-  state.dialogue = { personId: person.id, stage: 'closing' };
-  lines.push(`"Thanks for finding me. Please let the quest giver know." Task complete: ${done.join('; ')}.`);
-}
-
 export function acceptTask(state: DemonHunterState, lines: string[]): void {
   requireTown(state);
   const person = dialoguePerson(state);
@@ -196,8 +191,18 @@ export function goodbye(state: DemonHunterState, lines: string[]): void {
   lines.push(`You say goodbye to ${person.name}.`);
 }
 
-export function claimReward(state: DemonHunterState, reward: 'clue' | 'power', lines: string[]): void {
+export function claimReward(state: DemonHunterState, reward: 'clue' | 'power', personId: string | undefined, lines: string[]): void {
   requireTown(state);
+  // Naming the giver talks to them first (their card, brief and answer appear);
+  // if they owe nothing yet, or confess as a minion, that answer stands.
+  if (personId) {
+    const target = currentTown(state).people.find((x) => x.id === personId || x.name.toLowerCase() === personId.toLowerCase());
+    if (!target) refuse(`There is no one called "${personId}" in ${currentTown(state).name}.`);
+    if (!state.dialogue || state.dialogue.personId !== target.id || state.dialogue.stage !== 'reward') {
+      talk(state, target.id, lines);
+      if (!state.dialogue || state.dialogue.stage !== 'reward') return;
+    }
+  }
   const person = dialoguePerson(state);
   if (state.dialogue!.stage !== 'reward') refuse(`${person.name} owes you no reward right now.`);
   if (reward === 'clue' && !person.clues.good) refuse(`${person.name} has no demon secret; claim the power instead.`);
@@ -300,7 +305,7 @@ function occupationPower(state: DemonHunterState, person: Person, lines: string[
 export function innOpen(state: DemonHunterState, lines: string[]): void {
   requireNoCombat(state);
   if (state.player.inside !== 'town') refuse('You are not inside a town.');
-  if (state.dialogue) refuse('Finish the conversation first (say goodbye).');
+  endDialogue(state, lines);
   const town = currentTown(state);
   state.innOpen = true;
   lines.push(innMenu(state, town.id));
@@ -410,7 +415,7 @@ export function innLeave(state: DemonHunterState, lines: string[]): void {
 
 export function searchHouse(state: DemonHunterState, personId: string, confirm: boolean, lines: string[]): void {
   requireTown(state);
-  if (state.dialogue) refuse('Finish the conversation first (say goodbye).');
+  endDialogue(state, lines);
   const town = currentTown(state);
   const owner = town.people.find((p) => p.id === personId || p.name.toLowerCase() === personId.toLowerCase());
   if (!owner) refuse(`No one called "${personId}" has a house in ${town.name}.`);
@@ -454,6 +459,7 @@ const norm = (x: string): string => x.toLowerCase().replace(/[^a-z0-9 ]/g, '').t
 export function searchTown(state: DemonHunterState, q: SearchMove, lines: string[]): void {
   requireNoCombat(state);
   if (state.innOpen) refuse('Leave the inn first.');
+  endDialogue(state, lines);
   const asked = ['pet', 'color', 'occupation', 'item', 'task', 'truth', 'contradictions'].filter((k) => (q as Record<string, unknown>)[k] !== undefined && (q as Record<string, unknown>)[k] !== '' && (q as Record<string, unknown>)[k] !== false);
   if (asked.length === 0) {
     lines.push('Ask about something: a pet, a colour, a trade, an item, a task (by the monster or a word of it), who knows the truth, or which clues contradict each other.');

@@ -60,7 +60,7 @@ const moveSchema = {
     item: { type: 'string', description: 'buy_from_bandit: "bomb" or "lockpick"; search_town: who owns this item' },
     town: { type: 'string', description: 'teleport / ride: a town id or name' },
     stat: { enum: ['strength', 'agility', 'health', 'range'], description: 'level_up' },
-    person: { type: 'string', description: 'talk / search_house / stab / mark_suspect: a person id (or name, in town)' },
+    person: { type: 'string', description: 'talk / claim_reward / search_house / stab / mark_suspect: a person id (or name, in town); claim_reward: the giver, talked to and claimed from in one move' },
     pet: { type: 'string', description: 'search_town: who keeps this pet' },
     color: { type: 'string', description: 'search_town: who likes this colour' },
     occupation: { type: 'string', description: 'search_town: who follows this trade' },

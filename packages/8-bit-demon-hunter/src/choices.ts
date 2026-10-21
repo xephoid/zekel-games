@@ -185,12 +185,13 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
     dependsOn: 'having completed a task',
   },
   {
-    id: 'i-found-you',
-    description: 'Telling the person you were sent to find that you found them',
+    id: 'claim-in-one-move',
+    description: 'Claiming a reward from a giver in their town without talking first (claim_reward with their id)',
     owner: 'player',
     when: 'in-game',
-    resolvedBy: ['found_you'],
-    dependsOn: 'an active find task whose target you are talking to',
+    resolvedBy: ['claim_reward'],
+    distinguishedBy: 'person',
+    dependsOn: 'a completed task whose giver is in this town',
   },
   {
     id: 'end-the-conversation',

@@ -224,7 +224,7 @@ export interface TempleRun {
  *  which replies are legal. */
 export interface DialogueState {
   personId: string;
-  stage: 'found' | 'reward' | 'offer' | 'closing';
+  stage: 'reward' | 'offer' | 'closing';
 }
 
 export interface ArenaState {
