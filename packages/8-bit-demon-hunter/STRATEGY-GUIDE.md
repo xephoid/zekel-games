@@ -54,9 +54,20 @@ all you learned. Dying outside is the same. Death costs tempo, not the game.
   **range to 2** (you strike first against most early enemies) and
   **strength**. Agility comes later. Raising health also heals you fully.
 - Farm the nearest clearings: slimes, mushrooms and lone bandits are safe
-  experience. Sell harvests in bulk at the inn; buy nothing but a sleep when
-  low and, later, lockpicks and bombs.
+  experience. **Clear a whole clearing before you go back**: kill every slime
+  and mushroom there, harvest its plants and trees, then move to the next
+  clearing, and only return to town when your HP is low or your pockets are
+  full. Walking home to sell one Demon Powder is the slowest thing you can
+  do. Sell in bulk (sell "all"); buy nothing but a sleep when low and, later,
+  lockpicks and bombs.
+- **Never move between clearings or back to town at 1 HP.** Bandits attack
+  as you leave and that is how early hunters die. You cannot heal outside
+  town, so plan the trip home while you still have 3 HP. If you are already
+  at 1 HP, finish the wounded enemy in front of you rather than walk out past
+  unhurt bandits.
 - Leave the town only with full HP. Sleep at the inn when below half.
+- Dying resets your level and stats. Six deaths at level 1 means the loop is
+  wrong, not unlucky: change what you do.
 
 ## Mid-game habits
 
