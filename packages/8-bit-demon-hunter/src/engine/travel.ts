@@ -13,7 +13,7 @@ import type { DemonHunterState, MajorNode } from '../types.js';
 import { hopDistances, neighborsOf } from '../world/graph.js';
 import { refuse } from './errors.js';
 import { whatIsHere } from './describe.js';
-import { endDialogue, enemiesAt, hereNode, knowsPlace, personOf } from './helpers.js';
+import { endDialogue, enemiesAt, hereNode, knowsPlace, personOf, withArticle } from './helpers.js';
 import { arriveInTown, leaveInterior, move, requireNoCombat } from './movement.js';
 
 export interface TravelRequest {
@@ -79,7 +79,7 @@ function dangerAt(state: DemonHunterState, nodeId: string, tail: number): string
 function describeDanger(names: string[]): string {
   const counts = new Map<string, number>();
   for (const n of names) counts.set(n, (counts.get(n) ?? 0) + 1);
-  return Array.from(counts, ([n, c]) => (c > 1 ? `${c} ${n}s` : n.startsWith('a crowd') ? n : `${/^[aeiou]/i.test(n) ? 'an' : 'a'} ${n}`)).join(', ');
+  return Array.from(counts, ([n, c]) => (c > 1 ? `${c} ${n}s` : n.startsWith('a crowd') ? n : withArticle(n))).join(', ');
 }
 
 export function travel(state: DemonHunterState, q: TravelRequest, lines: string[]): void {

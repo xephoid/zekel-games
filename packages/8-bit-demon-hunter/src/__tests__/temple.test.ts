@@ -59,7 +59,7 @@ describe('temples', () => {
     expect(s.temple?.remaining).toBe(total);
     let r = applyText(s, { type: 'next_fight' });
     s = r.state;
-    expect(r.summary).toContain('Fire Skull');
+    expect(r.summary).toContain('A Fire Skull comes at you.');
     // strength 5 vs 5 HP: dead in one hit (opening by range)
     expect(s.combat).toBeNull();
     expect(s.temple?.remaining).toBe(total - 1);
@@ -113,5 +113,19 @@ describe('temples', () => {
     // the player is standing at the temple node but arrived by fiat; the engine
     // only guards the edge, so check the edge
     expect(s.graph.edges.find((e) => e.walled)).toBeDefined();
+  });
+
+  it('a guardian whose name starts with a vowel gets "An"', () => {
+    let s = atTemple('space');
+    s.player.strength = 5;
+    s.player.agility = 17;
+    s.player.range = 5;
+    s.player.maxHp = 10;
+    s.player.hp = 10;
+    s = apply(s, { type: 'enter' });
+    s = apply(s, { type: 'gauntlet' });
+    const r = applyText(s, { type: 'next_fight' });
+    expect(r.summary).toContain('An Arachne comes at you.');
+    expect(r.summary).not.toContain('A Arachne');
   });
 });

@@ -69,6 +69,13 @@ export function personOf(state: DemonHunterState, personId: string): Person {
   return p;
 }
 
+/** "an Arachne", "a Bee": the indefinite article by the first letter;
+ *  capitalised at the start of a sentence. */
+export function withArticle(name: string, sentenceStart = false): string {
+  const an = /^[aeiou]/i.test(name);
+  return `${sentenceStart ? (an ? 'An' : 'A') : an ? 'an' : 'a'} ${name}`;
+}
+
 export function enemyName(enemy: Enemy): string {
   return defOf(enemy).name;
 }

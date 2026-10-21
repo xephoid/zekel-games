@@ -18,7 +18,7 @@ export const LAIR_NODE_ID = 'lair';
 import type { DemonHunterState, Enemy } from '../types.js';
 import { neighborsOf } from '../world/graph.js';
 import { refuse } from './errors.js';
-import { activeTasks, attacksPerAction, condition, defOf, enemyName, gainXp, overworldEnemiesLeft } from './helpers.js';
+import { activeTasks, attacksPerAction, condition, defOf, enemyName, gainXp, overworldEnemiesLeft, withArticle } from './helpers.js';
 import { grantMagicItem } from './rewards.js';
 
 export type CombatCause = 'attack' | 'leaving' | 'harvest' | 'gauntlet' | 'lair' | 'flying' | 'resume';
@@ -48,7 +48,7 @@ export function startCombat(state: DemonHunterState, enemyId: string, cause: Com
     attack: `You go for the ${def.name}.`,
     leaving: `The ${def.name} attacks as you try to leave!`,
     harvest: `Your noise draws the ${def.name} to you!`,
-    gauntlet: `A ${def.name} comes at you.`,
+    gauntlet: `${withArticle(def.name, true)} comes at you.`,
     lair: `The ${def.name} rises to meet you.`,
     flying: `The ${def.name} fires at you as you fly past!`,
     resume: `The ${def.name} comes at you again.`,
@@ -370,6 +370,6 @@ export function die(state: DemonHunterState, killerName: string, lines: string[]
     lines.push('Say "continue" to wake up in the last town you visited, before any of it happened. Your level and stats reset; everything you carry and know is kept, and you still know the demon\'s face.');
     return;
   }
-  lines.push(`You were killed by ${/^[aeiou]/i.test(killerName) ? 'an' : 'a'} ${killerName}.`);
+  lines.push(`You were killed by ${withArticle(killerName)}.`);
   lines.push('Say "continue" to wake up in the last town you visited. Your level and stats reset; everything you carry and know is kept.');
 }
