@@ -12,6 +12,7 @@ import { INN_RIDE_COST } from '../data/progression.js';
 import type { DemonHunterState, MajorNode } from '../types.js';
 import { hopDistances, neighborsOf } from '../world/graph.js';
 import { refuse } from './errors.js';
+import { whatIsHere } from './describe.js';
 import { enemiesAt, hereNode, knowsPlace, personOf } from './helpers.js';
 import { arriveInTown, leaveInterior, move, requireNoCombat } from './movement.js';
 
@@ -78,7 +79,7 @@ function dangerAt(state: DemonHunterState, nodeId: string, tail: number): string
 function describeDanger(names: string[]): string {
   const counts = new Map<string, number>();
   for (const n of names) counts.set(n, (counts.get(n) ?? 0) + 1);
-  return Array.from(counts, ([n, c]) => (c > 1 ? `${c} ${n}s` : n.startsWith('a crowd') ? n : `a ${n}`)).join(', ');
+  return Array.from(counts, ([n, c]) => (c > 1 ? `${c} ${n}s` : n.startsWith('a crowd') ? n : `${/^[aeiou]/i.test(n) ? 'an' : 'a'} ${n}`)).join(', ');
 }
 
 export function travel(state: DemonHunterState, q: TravelRequest, lines: string[]): void {
@@ -118,9 +119,6 @@ export function travel(state: DemonHunterState, q: TravelRequest, lines: string[
     refuse(`You are already at ${target.name}.`);
   }
 
-  // Step outdoors first (the wild resets, as always when you leave).
-  if (p.inside !== null) leaveInterior(state, lines);
-
   // Route: walking, or (quietly) a paid cart between towns when it is shorter.
   const walk = pathBetween(state, p.at, target.id);
   if (!walk) refuse(`No path leads to ${target.name} from here${state.graph.edges.some((e) => e.walled) ? ' (a ring of stone wall may be in the way)' : ''}.`);
@@ -144,6 +142,11 @@ export function travel(state: DemonHunterState, q: TravelRequest, lines: string[
     }
   }
 
+  // Step outdoors first (the wild resets, as always when you leave), unless
+  // the cart leaves from the very town you are standing in.
+  const cartFromHere = plan.ride !== null && plan.ride.from === p.at && p.inside === 'town';
+  if (p.inside !== null && !cartFromHere) leaveInterior(state, lines);
+
   const stepsBefore = plan.legs.length;
   lines.push(`You set out for ${target.name}${plan.ride ? ` by way of a cart from ${state.graph.nodes[plan.ride.from]!.name}` : ''}.`);
 
@@ -154,7 +157,7 @@ export function travel(state: DemonHunterState, q: TravelRequest, lines: string[
   if (plan.ride) {
     const from = state.graph.nodes[plan.ride.from]!;
     const to = state.graph.nodes[plan.ride.to]!;
-    arriveInTown(state, from.townId!, lines);
+    if (p.inside !== 'town') arriveInTown(state, from.townId!, lines);
     p.shuckles -= INN_RIDE_COST;
     lines.push(`At the ${from.name} inn you pay ${INN_RIDE_COST} shuckles for a cart to ${to.name} (${p.shuckles} left).`);
     arriveInTown(state, to.townId!, lines);
@@ -173,6 +176,7 @@ function walkLegs(state: DemonHunterState, legs: string[], finalId: string, line
   // Travelling again from the spot of the last edge stop, the same way, means "go through".
   const pressOn = p.lastEdgeStop && p.lastEdgeStop.from === p.at && legs[0] === p.lastEdgeStop.next ? p.lastEdgeStop.next : null;
   p.lastEdgeStop = null;
+  let walked = 0;
   for (const next of legs) {
     const tail = enemiesAt(state, p.at).filter((e) => e.type === 'mushroom').length;
     if (next !== finalId && next !== pressOn) {
@@ -180,15 +184,18 @@ function walkLegs(state: DemonHunterState, legs: string[], finalId: string, line
       if (danger.length > 0) {
         p.lastEdgeStop = { from: p.at, next };
         lines.push(`You stop at the edge of ${state.graph.nodes[next]!.name}: ${describeDanger(danger)} ${danger.length === 1 && !danger[0]!.startsWith('a crowd') ? 'waits' : 'wait'} there and would not let you pass. Travel on to go through, or go another way.`);
+        if (walked > 0) lines.push(`You are at ${state.graph.nodes[p.at]!.name}. ${whatIsHere(state)}`);
         return false;
       }
     }
-    if (next === pressOn) lines.push(`You press on into ${state.graph.nodes[next]!.name}.`);
-    const moved = move(state, next, lines, { quiet: next !== finalId });
+    if (next === pressOn && dangerAt(state, next, tail).length > 0) lines.push(`You press on into ${state.graph.nodes[next]!.name}.`);
+    const moved = move(state, next, lines, { quiet: true });
     if (!moved) return false; // a fight on the way out of where you stood
+    walked++;
   }
   const node = state.graph.nodes[p.at]!;
-  if (p.at === finalId && node.kind === 'town') arriveInTown(state, node.townId!, lines);
-  else if (p.at === finalId) lines.push(`You arrive at ${node.name}.`);
+  if (p.at === finalId && node.kind === 'town') {
+    if (p.inside !== 'town') arriveInTown(state, node.townId!, lines);
+  } else if (p.at === finalId) lines.push(`You arrive at ${node.name}. ${whatIsHere(state)}`);
   return true;
 }

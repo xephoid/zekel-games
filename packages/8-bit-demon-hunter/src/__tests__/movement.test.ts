@@ -200,6 +200,8 @@ describe('moving around', () => {
     expect(s.player.bombs).toBe(1);
     expect(s.enemies['wiz_1']).toBeUndefined();
     expect(s.enemies['knight_1']!.hp).toBe(15);
+    expect(r.summary).toContain('The blast hurts the Undead Knight; it is');
+    expect(r.summary).not.toMatch(/\d+\/\d+ HP/);
     expect(s.player.hp).toBe(s.player.maxHp - 2); // the blast catches you too
     expect(r.summary).toContain('The blast catches you too: 2 damage');
     s.player.maxHp = 20;
@@ -311,8 +313,7 @@ describe('moving around', () => {
     const beyond = neighborsOf(s.graph, clearing).find((n) => n !== s.graph.startNodeId)!;
     place(s, 'slime', beyond, 'slime_c');
     r = applyText(s, { type: 'travel', to: beyond });
-    expect(r.summary).toContain('You arrive at');
-    expect(r.summary).toContain('1 Slime [slime_c]');
+    expect(r.summary).toMatch(/You arrive at .*\. Enemies: 1 Slime \[slime_c\]/);
     expect(r.summary).not.toContain('slime_a'); // the hop through the first clearing stays brief
   });
 });

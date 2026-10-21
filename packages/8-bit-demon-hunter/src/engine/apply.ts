@@ -46,6 +46,9 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
     refuse('You are dead. Say "continue" to wake up in the last town you visited.');
   }
 
+  // An edge stop is only "pressed on" by travelling again at once: any other
+  // action (a fight, a look, a harvest) forgets it, so a later travel starts clean.
+  if (move_.type !== 'travel' && move_.type !== 'look') state.player.lastEdgeStop = null;
   switch (move_.type) {
     case 'look':
       lines.push(lookText(state));

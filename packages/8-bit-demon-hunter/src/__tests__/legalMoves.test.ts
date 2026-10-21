@@ -107,4 +107,12 @@ describe('legal moves', () => {
     expect(getLegalMoves(s)).toEqual([]);
     expect(describeNextStep(s, 'p1').status).toBe('game_over');
   });
+
+  it('the inn offers a level-up when one is earned', () => {
+    let s = fresh(3);
+    s = apply(s, { type: 'inn' });
+    s.player.xp = 1000;
+    const ids = getLegalMoves(s).map((m) => m.move_id);
+    expect(ids.some((id) => id.startsWith('level_up:'))).toBe(true);
+  });
 });

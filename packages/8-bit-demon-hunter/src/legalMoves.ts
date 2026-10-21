@@ -81,6 +81,7 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
       if (p.resources[r] > 0) add(`sell:${r}`, `Sell ${RESOURCE_DISPLAY_NAME[r]} for ${sellPrice(r, town.prices[r])} shuckles each (fill in amount: up to ${p.resources[r]}, or "all")`, { type: 'sell', resource: r });
     }
     add('leave_inn', 'Leave the inn', { type: 'leave_inn' });
+    levelUps();
     return out;
   }
 

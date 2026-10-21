@@ -60,8 +60,11 @@ describe('travel', () => {
     expect(r.summary).toContain(`You stop at the edge of ${s.graph.nodes[clearing]!.name}: a Dude Bandit waits there`);
     expect(s.player.at).toBe(s.graph.startNodeId);
     expect(s.player.inside).toBeNull();
+    // a look in between does not forget the stop; a harvest or a fight would
+    s = apply(s, { type: 'look' });
     // going on: walks in, the bandit jumps you on the way out
     r = applyText(s, { type: 'travel', to: beyond });
+    expect(r.summary).toContain('You press on into');
     s = r.state;
     expect(r.summary).toContain('attacks as you try to leave');
     expect(s.combat?.enemyId).toBe('dude_1');
@@ -163,5 +166,35 @@ describe('travel', () => {
       const t = applyText(s, { type: 'travel', to: nowKnown });
       expect(t.state.player.at).toBe(nowKnown);
     }
+  });
+
+  it('an edge stop part-way says where you are; a stop is forgotten after another action; a cart from where you stand enters once', () => {
+    let s = fresh(8);
+    clearWorld(s);
+    s.player.knownPlaces = Object.keys(s.graph.nodes);
+    const clearing = startClearing(s);
+    const beyond = neighborsOf(s.graph, clearing).find((n) => n !== s.graph.startNodeId && s.graph.nodes[n]!.kind === 'clearing')!;
+    const further = neighborsOf(s.graph, beyond).find((n) => n !== clearing)!;
+    s = apply(s, { type: 'leave' });
+    place(s, 'undead_knight', beyond, 'knight_x');
+    place(s, 'slime', clearing, 'slime_x');
+    let r = applyText(s, { type: 'travel', to: further });
+    s = r.state;
+    expect(r.summary).toContain('an Undead Knight waits');
+    expect(r.summary).toMatch(/You are at .*\. Enemies: 1 Slime \[slime_x\]/);
+    expect(s.player.at).toBe(clearing);
+    // another action forgets the stop: travelling again stops again rather than pressing on
+    s = apply(s, { type: 'attack', target: 'slime_x' });
+    r = applyText(s, { type: 'travel', to: further });
+    expect(r.summary).toContain('You stop at the edge');
+    expect(r.summary).not.toContain('press on');
+    // the cart from the town you stand in
+    const t = fresh(8);
+    clearWorld(t);
+    t.player.shuckles = INN_RIDE_COST;
+    const far = t.towns[4]!;
+    const ride = applyText(t, { type: 'travel', to: far.name, via_inn: true });
+    expect((ride.summary.match(/You enter /g) ?? []).length).toBe(1);
+    expect(ride.state.player.at).toBe(far.nodeId);
   });
 });

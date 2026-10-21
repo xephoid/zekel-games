@@ -12,7 +12,7 @@ import type { DemonHunterState } from '../types.js';
 import { edgeBetween, neighborsOf } from '../world/graph.js';
 import { die, killEnemy, startCombat } from './combat.js';
 import { refuse } from './errors.js';
-import { aggressiveAt, canLevelUp, enemiesAt, enemyName, hasMagicItem, healToFull, hereNode, resourcesAt, statIsMaxed } from './helpers.js';
+import { aggressiveAt, canLevelUp, condition, enemiesAt, enemyName, hasMagicItem, healToFull, hereNode, resourcesAt, statIsMaxed } from './helpers.js';
 import { arriveInTown, requireNoCombat, requireOutdoors } from './movement.js';
 
 /** `attack {target}` on a plant or tree. */
@@ -91,7 +91,7 @@ export function bomb(state: DemonHunterState, confirm: boolean | undefined, line
     e.hp -= BOMB_DAMAGE;
     e.attacked = true;
     if (e.hp <= 0) killEnemy(state, e, lines);
-    else lines.push(`The blast hurts the ${enemyName(e)} (${e.hp}/${e.maxHp} HP left).`);
+    else lines.push(`The blast hurts the ${enemyName(e)}; it is ${condition(e)}.`);
   }
 
   let burnt = 0;

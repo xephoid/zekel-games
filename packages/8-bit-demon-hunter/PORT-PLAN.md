@@ -62,6 +62,10 @@ arrival outdoors (a move, stepping out of a town or temple, the end of a
 travel) **says what is here** (enemies by count with ids, resources) so
 nobody has to look each time; **undead knights spawn one per clearing**
 (`onePerNode`), so a map with fewer eligible clearings has fewer knights.
+Playtest 2 (seed 33, 2026-10-21) fixes: the bomb no longer prints enemy HP;
+an edge stop part-way says where you stand; a stop is forgotten by any other
+action (no stale "press on"); arrival text leads with the place; a cart from
+the town you stand in enters once; the inn offers level-ups; "an Undead Knight".
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.
