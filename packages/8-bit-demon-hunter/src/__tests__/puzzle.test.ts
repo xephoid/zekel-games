@@ -94,6 +94,12 @@ describe('the mystery', () => {
         }
       }
       for (const m of all.filter((p) => p.attributes.occupation === 'Merchant')) expect(m.task.type).toBe('ESCORT');
+      // minions ask for hard things: kill tasks (never slimes) or a temple find; Merchants excepted
+      const minionTasks = all.filter((p) => p.isMinion && p.attributes.occupation !== 'Merchant').map((p) => p.task);
+      for (const t of minionTasks) {
+        expect(['KILL', 'FIND_ITEM']).toContain(t.type);
+        if (t.type === 'KILL') expect(t.targetId).not.toBe('slime');
+      }
       const goodWithMagic = all.filter((p) => p.clues.good && p.task.type === 'FIND_ITEM');
       expect(goodWithMagic).toHaveLength(1);
     }
@@ -128,5 +134,17 @@ describe('the mystery', () => {
   it('is deterministic per seed', () => {
     expect(generateWorld(77)).toEqual(generateWorld(77));
     expect(generateWorld(77).demonId === generateWorld(78).demonId && JSON.stringify(generateWorld(77)) === JSON.stringify(generateWorld(78))).toBe(false);
+  });
+
+  it('minions mostly ask for kills (200 seeds)', () => {
+    let kill = 0, item = 0;
+    for (let seed = 1; seed <= 200; seed++) {
+      for (const p of people(generateWorld(seed)).filter((x) => x.isMinion && x.attributes.occupation !== 'Merchant')) {
+        if (p.task.type === 'KILL') kill++;
+        else item++;
+      }
+    }
+    expect(kill / (kill + item)).toBeGreaterThan(0.7);
+    expect(item).toBeGreaterThan(0);
   });
 });

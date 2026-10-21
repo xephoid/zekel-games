@@ -97,6 +97,11 @@ Ruling 2026-10-21 (eleventh): **a secret way**. In the lair the player may
 action; said to a minion or to the air, nothing. No GM-facing text names the
 word; the lore and the rumours carry it, and two casual lines in the lore pool
 (`LORE_LINES`) say outright that the demon fears love.
+Ruling 2026-10-21 (twelfth): **minions ask for hard things.** Across 300
+seeds 60% of minions had a find a townmate satisfied, or an escort, so a
+playthrough caught six minions by running errands and won the lair without
+a fight. Now every minion who is not a Merchant (Merchants always escort)
+gets a kill task three times in four, never slimes, else a temple find.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.
