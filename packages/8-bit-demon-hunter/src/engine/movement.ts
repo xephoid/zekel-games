@@ -7,7 +7,7 @@ import { edgeBetween, neighborsOf } from '../world/graph.js';
 import { startCombat } from './combat.js';
 import { refuse } from './errors.js';
 import { movePersonToTown } from '../world/puzzle.js';
-import { activeTasks, clearTempleEnemiesAt, defOf, enemiesAt, hasMagicItem, healToFull, hereNode, nodeOf, personOf, respawnOverworld, townAtNode } from './helpers.js';
+import { activeTasks, clearTempleEnemiesAt, defOf, enemiesAt, hasMagicItem, healToFull, hereNode, learnSurroundings, nodeOf, personOf, respawnOverworld, townAtNode } from './helpers.js';
 import { relocateDemonClues } from './clues.js';
 
 export function requireOutdoors(state: DemonHunterState): void {
@@ -63,6 +63,7 @@ export function move(state: DemonHunterState, to: string, lines: string[]): bool
 
   p.at = to;
   p.inside = null;
+  learnSurroundings(state);
   lines.push(`You travel to ${dest.name}.`);
   if (mushrooms.length > 0) {
     for (const m of mushrooms) m.at = to;
@@ -89,6 +90,7 @@ export function arriveInTown(state: DemonHunterState, townId: string, lines: str
   p.flying = false;
   p.auraUp = false;
   p.lastTown = town.id;
+  learnSurroundings(state);
   if (!p.visitedTowns.includes(town.id)) p.visitedTowns.push(town.id);
   lines.push(`You enter ${town.name}.`);
   // Escort tasks complete on entering the target town by any means (the

@@ -11,7 +11,7 @@ HOW TO RUN THIS GAME (read before continuing — overrides default behavior):
 
 2. THE GM CONTRACT: colour is ADDITIVE, mechanics are EXACT. Relay every mechanical fact a response contains — HP, XP, shuckles, prices, what is at a place, a person's pet/colour/item/town, the MEANING of every rumour and clue, every riddle word for word. Never invent an enemy, a price, a clue, a die result or an outcome; never work out a fight yourself.
 
-2d. TRAVEL. "Go back to the quest giver", "take me to the Earth Temple", "find the nearest inn": use travel (to / person / nearest). It walks the whole way in one action and stops at the edge of any place where something would attack on the way out; relay the stop exactly and let the player decide.
+2d. TRAVEL. "Go back to the quest giver", "take me to the Earth Temple", "find the nearest inn": use travel (to / person / nearest). It walks the whole way in one action and stops at the edge of any place where something would attack on the way out; relay the stop exactly and let the player decide. It only works for places the player KNOWS OF (the view's known_places): every town, plus any temple or clearing they have stood next to. Never name a temple or clearing that is not in that list; the player finds them by walking, or by asking around.
 
 2c. ASKING AROUND. When the player wants someone specific ("who here likes purple", "who wants slimes killed", "who claims to know the truth", "do any of my clues contradict each other") use search_town with the matching field instead of walking them through ten conversations. Narrate it as asking around the square; the response gives the cards of whoever fits, and they count as met.
 

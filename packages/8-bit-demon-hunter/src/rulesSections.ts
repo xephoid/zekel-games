@@ -83,7 +83,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     text:
       'The world is a map of named places joined by paths: five towns, five temples and a handful of clearings between them. "Look" always tells you where you are, which paths lead on, and which enemies and resources are here. ' +
       'Towns and temples are entered from their door; you must leave a town or temple before travelling on. ' +
-      'You may also travel in one go: to a place by name, back to the town of someone whose task you are on, or to the nearest inn. The journey follows the same rules as walking, hop by hop, and stops at the edge of any place where something would attack you on the way out, so you can decide: go through, or go another way. ' +
+      'You may also travel in one go: to a place you know of, back to the town of someone whose task you are on, or to the nearest inn. You know every town from the start (they are marked on every map); a temple or clearing you know once you have stood somewhere a path leads to it. The journey follows the same rules as walking, hop by hop, and stops at the edge of any place where something would attack you on the way out, so you can decide: go through, or go another way. ' +
       'When you try to leave a place: bandits, skeletons and undead knights attack you; mushrooms follow you, and five or more block your way; everything else lets you go. ' +
       'Whenever you step out of a town or a temple the wild has reset: every monster, plant and tree is back where it was when the world began (ore deposits you blew open stay open). ' +
       'The Sky Temple sits inside a ring of stone wall: bomb it from the next clearing before you can enter.',

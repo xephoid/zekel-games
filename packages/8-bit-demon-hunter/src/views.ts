@@ -186,9 +186,13 @@ export function getView(state: DemonHunterState): Record<string, unknown> {
       bindings: [...p.bindings],
     },
     towns: state.towns.map((t) => ({ id: t.id, name: t.name, node: t.nodeId, visited: p.visitedTowns.includes(t.id) })),
+    // Only temples the player has found: the GM must not name the rest.
     temples: Object.values(state.graph.nodes)
-      .filter((n) => n.kind === 'temple')
+      .filter((n) => n.kind === 'temple' && p.knownPlaces.includes(n.id))
       .map((n) => ({ id: n.id, name: n.name, completed: n.templeType ? p.magicItems.includes(n.templeType) : false, treasure: n.templeType && p.magicItems.includes(n.templeType) ? MAGIC_ITEMS[n.templeType].name : 'unknown' })),
+    known_places: p.knownPlaces
+      .map((id) => state.graph.nodes[id]!)
+      .map((n) => ({ id: n.id, name: n.name, kind: n.kind, been_there: n.kind === 'town' ? p.visitedTowns.includes(n.townId!) : undefined })),
     result: state.result,
   };
 }

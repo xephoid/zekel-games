@@ -3,6 +3,7 @@
 import { ENEMY_BY_ID, isAggressive, type EnemyDef } from '../data/enemies.js';
 import { MAX_LEVEL, STAT_MAX, XP_CURVE } from '../data/progression.js';
 import { RESOURCE_NODE } from '../data/resources.js';
+import { neighborsOf } from '../world/graph.js';
 import type { Clue, DemonHunterState, Enemy, GameTask, MajorNode, Person, ResourceNode, Town } from '../types.js';
 import { refuse } from './errors.js';
 
@@ -126,6 +127,19 @@ export function condition(e: Enemy): string {
 /** The overworld as it was generated comes back (the original reloaded its
  *  stored overworld every time the player left a town or temple). Ore
  *  deposits and the opened Sky ring stay as they are. */
+/** Standing somewhere, the player learns it and every place a path leads to
+ *  from it (a walled temple included: the wall is in plain sight). */
+export function learnSurroundings(state: DemonHunterState): void {
+  const p = state.player;
+  for (const id of [p.at, ...neighborsOf(state.graph, p.at, { includeWalled: true })]) {
+    if (!p.knownPlaces.includes(id)) p.knownPlaces.push(id);
+  }
+}
+
+export function knowsPlace(state: DemonHunterState, nodeId: string): boolean {
+  return state.player.knownPlaces.includes(nodeId);
+}
+
 export function respawnOverworld(state: DemonHunterState): void {
   state.enemies = structuredClone(state.initialEnemies);
   for (const [id, r] of Object.entries(state.initialResources)) {

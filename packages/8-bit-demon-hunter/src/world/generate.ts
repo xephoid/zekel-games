@@ -6,7 +6,7 @@ import { TOWN_NAMES } from '../data/registries.js';
 import { RESOURCE_TYPES, type ResourceType } from '../data/resources.js';
 import { shuffle } from '../rng.js';
 import type { DemonHunterOptions, DemonHunterState, PlayerState, Town } from '../types.js';
-import { buildGraph } from './graph.js';
+import { buildGraph, neighborsOf } from './graph.js';
 import { populateEnemies, populateInns, populateResources } from './populate.js';
 import { generatePeople, generatePuzzle } from './puzzle.js';
 
@@ -73,6 +73,7 @@ export function generateWorld(seed: number, options: DemonHunterOptions = {}): D
     locksmithCharges: 0,
     bindings: [],
     visitedTowns: [startTown.id],
+    knownPlaces: Array.from(new Set([...towns.map((t) => t.nodeId), startTown.nodeId, ...neighborsOf(built.graph, startTown.nodeId, { includeWalled: true })])),
     lastTown: startTown.id,
     worldCleared: false,
     blackMarketKnown: false,

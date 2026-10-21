@@ -3,7 +3,8 @@
 // of any place whose occupants would attack you on the way out (bandits,
 // skeletons, undead knights, or a mushroom crowd your tail would complete).
 // Nothing is skipped: the player decides at every stop. Travelling again goes
-// on. With `via_inn` (not advertised) and the shuckles, the route may pay for
+// on. Only KNOWN places can be named (player.knownPlaces): towns always, a
+// temple or clearing once the player has stood somewhere a path leads to it. With `via_inn` (not advertised) and the shuckles, the route may pay for
 // an inn cart between towns when that is shorter than walking.
 
 import { ENEMY_BY_ID } from '../data/enemies.js';
@@ -11,7 +12,7 @@ import { INN_RIDE_COST } from '../data/progression.js';
 import type { DemonHunterState, MajorNode } from '../types.js';
 import { hopDistances, neighborsOf } from '../world/graph.js';
 import { refuse } from './errors.js';
-import { enemiesAt, hereNode, personOf } from './helpers.js';
+import { enemiesAt, hereNode, knowsPlace, personOf } from './helpers.js';
 import { arriveInTown, leaveInterior, move, requireNoCombat } from './movement.js';
 
 export interface TravelRequest {
@@ -97,8 +98,11 @@ export function travel(state: DemonHunterState, q: TravelRequest, lines: string[
     target = towns[0]!;
     if (p.inside === 'town') refuse(`You are already in ${hereNode(state).name}, which has an inn.`);
   } else if (q.to) {
+    // Only places the player knows of: towns always, anything else once
+    // they have stood somewhere a path leads to it. An unknown place and a
+    // place that does not exist get the same answer, so nothing is given away.
     const n = findNode(state, q.to);
-    if (!n) refuse(`There is no place called "${q.to}".`);
+    if (!n || !knowsPlace(state, n.id)) refuse(`You know of no place called "${q.to}" yet. Explore, or ask around; the paths out of every place you reach tell you where they lead.`);
     target = n;
   } else {
     lines.push('Travel where? Name a place, a person (to reach their town), or the nearest inn.');

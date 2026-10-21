@@ -178,6 +178,11 @@ export interface PlayerState {
   locksmithCharges: number;
   bindings: string[];
   visitedTowns: string[];
+  /** Places the player knows of (node ids): every town (the map shows
+   *  them, as the original's minimap did), everywhere they have stood, and
+   *  everywhere a path led from there. Temples and clearings are found, not
+   *  given; travel and the view are gated on this (ruling 2026-10-21). */
+  knownPlaces: string[];
   lastTown: string;
   worldCleared: boolean;
   /** The player has talked to a Lady Bandit and heard her offer (ruling

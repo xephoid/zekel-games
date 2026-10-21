@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { INN_RIDE_COST } from '../data/progression.js';
 import { apply, applyText, clearAllEnemies, fresh, place, startClearing } from './support.js';
+import { getView } from '../views.js';
 import { hopDistances, neighborsOf } from '../world/graph.js';
 
 // Ruling 2026-10-21: travel in one go, edge stop before anything that attacks
@@ -46,6 +47,7 @@ describe('travel', () => {
   it('stops at the edge of a place whose occupants would attack on the way out, then goes through when asked again', () => {
     let s = fresh(3);
     clearWorld(s);
+    s.player.knownPlaces = Object.keys(s.graph.nodes); // this test is about edge stops, not discovery
     const clearing = startClearing(s);
     const beyond = neighborsOf(s.graph, clearing).find((n) => n !== s.graph.startNodeId && s.graph.nodes[n]!.kind === 'clearing')!;
     s = apply(s, { type: 'leave' }); // step out first: leaving resets the wild
@@ -75,6 +77,7 @@ describe('travel', () => {
   it('a mushroom tail that would make a crowd stops you; slimes and snakes never do; the destination itself is never an edge stop', () => {
     let s = fresh(4);
     clearWorld(s);
+    s.player.knownPlaces = Object.keys(s.graph.nodes); // this test is about edge stops, not discovery
     const clearing = startClearing(s);
     const beyond = neighborsOf(s.graph, clearing).find((n) => n !== s.graph.startNodeId)!;
     s = apply(s, { type: 'leave' });
@@ -117,12 +120,48 @@ describe('travel', () => {
   it('refuses nonsense and the Sky Temple behind its wall; leaves a town by itself', () => {
     const s = fresh(6);
     clearWorld(s);
-    expect(() => apply(s, { type: 'travel', to: 'Narnia' })).toThrow(/no place called/);
+    s.player.knownPlaces = Object.keys(s.graph.nodes);
+    expect(() => apply(s, { type: 'travel', to: 'Narnia' })).toThrow(/no place called "Narnia" yet/);
     expect(applyText(s, { type: 'travel' }).summary).toContain('Travel where');
     expect(() => apply(s, { type: 'travel', to: 'temple_sky' })).toThrow(/No path leads/);
     const r = applyText(s, { type: 'travel', to: 'temple_earth' });
     expect(r.summary).toContain('You step out of');
     expect(r.state.player.at).toBe('temple_earth');
     expect(r.state.player.inside).toBeNull();
+  });
+
+  it('only known places can be named: towns always, the rest once you have stood next to them; the view lists only those temples', () => {
+    let s = fresh(7);
+    clearWorld(s);
+    const known = () => s.player.knownPlaces;
+    // Every town, the start node and its neighbours; nothing else.
+    for (const t of s.towns) expect(known()).toContain(t.nodeId);
+    for (const n of neighborsOf(s.graph, s.graph.startNodeId, { includeWalled: true })) expect(known()).toContain(n);
+    const unknown = Object.keys(s.graph.nodes).filter((id) => !known().includes(id));
+    expect(unknown.length).toBeGreaterThan(0);
+    const unknownTemple = unknown.find((id) => s.graph.nodes[id]!.kind === 'temple');
+    const unknownClearing = unknown.find((id) => s.graph.nodes[id]!.kind === 'clearing');
+    for (const id of [unknownTemple, unknownClearing]) {
+      if (!id) continue;
+      const name = s.graph.nodes[id]!.name;
+      expect(() => apply(s, { type: 'travel', to: name })).toThrow(/no place called/);
+      expect(() => apply(s, { type: 'travel', to: id })).toThrow(/no place called/);
+      expect(JSON.stringify(getView(s))).not.toContain(name);
+    }
+    // A far town is known by name even though the way there is not.
+    const far = s.towns[4]!;
+    const r = applyText(s, { type: 'travel', to: far.name });
+    expect(r.state.player.at).toBe(far.nodeId);
+    // Walking somewhere teaches you everywhere a path leads from there.
+    s = apply(s, { type: 'leave' });
+    const clearing = startClearing(s);
+    s = apply(s, { type: 'move', to: clearing });
+    for (const n of neighborsOf(s.graph, clearing, { includeWalled: true })) expect(known()).toContain(n);
+    const nowKnown = neighborsOf(s.graph, clearing, { includeWalled: true }).find((n) => unknown.includes(n));
+    if (nowKnown) {
+      expect(JSON.stringify(getView(s))).toContain(s.graph.nodes[nowKnown]!.name);
+      const t = applyText(s, { type: 'travel', to: nowKnown });
+      expect(t.state.player.at).toBe(nowKnown);
+    }
   });
 });

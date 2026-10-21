@@ -105,7 +105,13 @@ describe('view completeness', () => {
     expect(v.towns.map((t: AnyView) => t.id).sort()).toEqual(s.towns.map((t) => t.id).sort());
     expect(v.towns.find((t: AnyView) => t.id === s.towns[0]!.id).visited).toBe(true);
     expect(v.towns.find((t: AnyView) => t.id === s.towns[1]!.id).visited).toBe(false);
-    expect(v.temples.map((t: AnyView) => t.id).sort()).toEqual(['temple_earth', 'temple_fire', 'temple_light', 'temple_sky', 'temple_space']);
+    s.player.knownPlaces = Object.keys(s.graph.nodes); // found them all
+    const v2 = getView(s) as AnyView;
+    expect(v2.temples.map((t: AnyView) => t.id).sort()).toEqual(['temple_earth', 'temple_fire', 'temple_light', 'temple_sky', 'temple_space']);
+    expect(v2.known_places.map((k: AnyView) => k.id).sort()).toEqual(Object.keys(s.graph.nodes).sort());
+    expect(v2.known_places.find((k: AnyView) => k.id === s.towns[0]!.nodeId).been_there).toBe(true);
+    expect(v2.known_places.find((k: AnyView) => k.id === s.towns[1]!.nodeId).been_there).toBe(false);
+    Object.assign(v, v2);
     expect(v.temples.find((t: AnyView) => t.id === 'temple_light').completed).toBe(true);
     expect(v.temples.find((t: AnyView) => t.id === 'temple_light').treasure).toBe('Eye of Truth');
     expect(v.temples.find((t: AnyView) => t.id === 'temple_fire').treasure).toBe('unknown');

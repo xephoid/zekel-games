@@ -53,7 +53,7 @@ const moveSchema = {
   required: ['type'],
   properties: {
     type: { enum: [...MOVE_TYPES] },
-    to: { type: 'string', description: 'move: the id of an adjacent place; travel: any place by name or id' },
+    to: { type: 'string', description: 'move: the id of an adjacent place; travel: a place the player knows of (see known_places in the view), by name or id' },
     nearest: { enum: ['inn', 'town'], description: 'travel: the nearest town (every town has an inn)' },
     via_inn: { type: 'boolean', description: 'travel: may pay an inn cart between towns when shorter' },
     target: { type: 'string', description: 'attack: an enemy, plant or tree id from look' },

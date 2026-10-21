@@ -117,7 +117,7 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
       status: 'human_to_move',
       active_player_id: playerId,
       instruction:
-        `INSIDE ${town.name}. The player may travel in one go to any place or back to a quest giver (travel: it stops at the edge of danger), talk to anyone here, ask around town for someone who fits a description (search_town: a pet, colour, trade, item, a task by what it asks for, who claims to know the truth, or which rumours contradict their secrets), visit the inn, search a house (needs a lockpick or a Locksmith's favour), stab someone with the demon-killing knife, or leave. ` +
+        `INSIDE ${town.name}. The player may travel in one go to any place they know of or back to a quest giver (travel: it stops at the edge of danger), talk to anyone here, ask around town for someone who fits a description (search_town: a pet, colour, trade, item, a task by what it asks for, who claims to know the truth, or which rumours contradict their secrets), visit the inn, search a house (needs a lockpick or a Locksmith's favour), stab someone with the demon-killing knife, or leave. ` +
         `Describe only what the last response showed. ${NEVER_HINT}`,
       human_response: { ask: 'what they do in town', example: 'Ask around for anyone who likes purple', records_as: 'talk {person} / search_town {…} / travel {to|person|nearest} / inn / search_house {person} / stab {person} / leave' },
       facts: {

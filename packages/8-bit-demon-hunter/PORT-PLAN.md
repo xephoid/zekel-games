@@ -45,6 +45,12 @@ before any place whose occupants would attack on the way out (bandits,
 skeletons, undead knights, a mushroom crowd the tail would complete); travel
 again to go through. Quietly, `via_inn` with the shuckles lets the route pay
 an inn cart between towns when that is shorter; it is not advertised.
+Ruling 2026-10-21 (fifth): **known places**. Travel only accepts places the
+player knows of, and the view lists only those temples: every town from the
+start, as the original's minimap showed them, plus everywhere the player has
+stood and everywhere a path leads from there. The Sky Temple behind its wall
+counts as seen from the next clearing. Unknown and non-existent names get
+the same refusal, so a refusal gives nothing away.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.
