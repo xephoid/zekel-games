@@ -46,8 +46,8 @@ export const BOMB_DAMAGE = 5;
  *  `weakeningsPerMinionLost` weakenings (the bindings bind its servants too);
  *  in its last third it fires `phase3ExtraAttacks` more per action. */
 export const LAIR = {
-  baseHp: 40,
-  perWeakening: 7,
+  baseHp: 48,
+  perWeakening: 8,
   minHp: 4,
   minionCount: 3,
   minionHp: 6,
