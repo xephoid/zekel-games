@@ -73,7 +73,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     id: 'the-inn',
     title: 'The inn',
     text:
-      `Every town has an inn. It buys and sells plant fiber, wood, demon powder, demon ichor, iron ore and gold at its own prices (each town sets a multiplier of 1 to 6 per resource: sell for base × multiplier, buy for one and a half times that, rounded up) while its stock lasts. ` +
+      `Every town has an inn. It buys and sells plant fiber, wood, demon powder, demon ichor, iron ore and gold at its own prices (each town sets a multiplier of 1 to 6 per resource: sell for base × multiplier, buy for one and a half times that, rounded up) while its stock lasts, in any amount at once: as many as you hold, or as many as the stock and your shuckles allow. ` +
       `Sleep heals you to full for ${INN_SLEEP_COST} shuckles. Training costs ${INN_TRAIN_COST} and gives ${INN_TRAIN_XP} XP. A cart to any town costs ${INN_RIDE_COST}.`,
     tags: { move_types: ['inn', 'sleep', 'train', 'ride', 'buy', 'sell', 'leave_inn'], phases: ['town'] },
   },

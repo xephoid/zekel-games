@@ -51,6 +51,11 @@ start, as the original's minimap showed them, plus everywhere the player has
 stood and everywhere a path leads from there. The Sky Temple behind its wall
 counts as seen from the next clearing. Unknown and non-existent names get
 the same refusal, so a refusal gives nothing away.
+Ruling 2026-10-21 (sixth): **amounts**. Buying and selling one at a time was
+tedious: `buy`, `sell` and `buy_from_bandit` take an `amount` (default 1,
+or `all`), bounded by the stock, the purse and the pack; an amount past the
+bound is refused with the bound. A Lady Bandit still vanishes after her one
+deal, however large.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.

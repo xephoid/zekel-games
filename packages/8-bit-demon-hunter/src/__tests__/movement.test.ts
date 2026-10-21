@@ -251,8 +251,10 @@ describe('moving around', () => {
     expect(r.state.player.blackMarketKnown).toBe(true);
     expect(s.player.blackMarketKnown).toBe(false);
     expect(() => apply(s, { type: 'buy_from_bandit', item: 'lockpick' })).toThrow(/costs 200/);
-    s = apply(s, { type: 'buy_from_bandit', item: 'bomb' });
-    expect(s.player.bombs).toBe(1);
+    expect(() => apply(s, { type: 'buy_from_bandit', item: 'bomb', amount: 2 })).toThrow(/can afford 1 bomb /);
+    s.player.shuckles = 35;
+    s = apply(s, { type: 'buy_from_bandit', item: 'bomb', amount: 'all' }); // one deal, as many as she can sell you
+    expect(s.player.bombs).toBe(3);
     expect(s.player.shuckles).toBe(5);
     expect(s.enemies['lady_1']).toBeUndefined();
     expect(() => apply(s, { type: 'talk_bandit' })).toThrow(/no Lady Bandit/);

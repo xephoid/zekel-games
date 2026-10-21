@@ -165,17 +165,26 @@ export function talkBandit(state: DemonHunterState, lines: string[]): void {
   lines.push(`The Lady Bandit looks you over, then lowers her voice. "You're not here to fight, are you. Good. I deal, if you've got coin: a bomb for ${BOMB_COST} shuckles, a lockpick for ${LOCKPICK_COST}. You have ${state.player.shuckles}."`);
 }
 
-export function buyFromBandit(state: DemonHunterState, item: 'bomb' | 'lockpick', lines: string[]): void {
+export function buyFromBandit(state: DemonHunterState, item: 'bomb' | 'lockpick', amount: number | 'all' | undefined, lines: string[]): void {
   requireNoCombat(state);
   requireOutdoors(state);
   const lady = findTrader(state);
   if (!lady) refuse('There is no Lady Bandit here willing to trade.');
   const cost = item === 'bomb' ? BOMB_COST : LOCKPICK_COST;
   if (state.player.shuckles < cost) refuse(`A ${item} costs ${cost} shuckles; you have ${state.player.shuckles}.`);
-  state.player.shuckles -= cost;
-  if (item === 'bomb') state.player.bombs++;
-  else state.player.lockpicks++;
-  lines.push(`You buy a ${item} for ${cost} shuckles (${state.player.shuckles} left; bombs ${state.player.bombs}, lockpicks ${state.player.lockpicks}).`);
+  const affordable = Math.floor(state.player.shuckles / cost);
+  // One deal, any amount you can pay for (designer, 2026-10-21); then she is gone.
+  let n = 1;
+  if (amount === 'all') n = affordable;
+  else if (amount !== undefined) {
+    if (!Number.isInteger(amount) || amount < 1) refuse('How many? Give a whole number of at least 1, or "all".');
+    if (amount > affordable) refuse(`At ${cost} shuckles each you can afford ${affordable} ${item}${affordable === 1 ? '' : 's'} with ${state.player.shuckles} shuckles.`);
+    n = amount;
+  }
+  state.player.shuckles -= cost * n;
+  if (item === 'bomb') state.player.bombs += n;
+  else state.player.lockpicks += n;
+  lines.push(`You buy ${n === 1 ? `a ${item}` : `${n} ${item}s`} for ${cost * n} shuckles (${state.player.shuckles} left; bombs ${state.player.bombs}, lockpicks ${state.player.lockpicks}).`);
   // After a sale she slips away (the original removes her).
   delete state.enemies[lady.id];
   lines.push('The Lady Bandit pockets your coins and vanishes into the trees.');

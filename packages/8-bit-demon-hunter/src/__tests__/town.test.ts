@@ -322,4 +322,41 @@ describe('houses and bindings', () => {
     expect(r.summary).toContain('Nothing of note');
     expect(r.state.player.locksmithCharges).toBe(0);
   });
+
+  it('buys and sells in any valid amount, or all; past the bound it refuses and names it', () => {
+    let s = fresh(8);
+    const town = s.towns[0]!;
+    s = apply(s, { type: 'inn' });
+    s.towns[0]!.stock.wood = 5; // on the state the inn move returned, not the copy it was cloned from
+    s.player.shuckles = 100;
+    const buy = buyPrice('wood', town.prices.wood);
+    const sell = sellPrice('wood', town.prices.wood);
+    expect(() => apply(s, { type: 'buy', resource: 'wood', amount: 6 })).toThrow(/only 5 in stock|can afford/);
+    expect(() => apply(s, { type: 'buy', resource: 'wood', amount: 0 })).toThrow(/How many/);
+    expect(() => apply(s, { type: 'buy', resource: 'wood', amount: 1.5 })).toThrow(/How many/);
+    const r = applyText(s, { type: 'buy', resource: 'wood', amount: 3 });
+    expect(r.summary).toContain(`You buy 3 Wood for ${buy * 3}`);
+    s = r.state;
+    expect(s.player.resources.wood).toBe(3);
+    expect(s.player.shuckles).toBe(100 - buy * 3);
+    expect(s.towns[0]!.stock.wood).toBe(2);
+    // all = as many as stock and purse allow
+    s = apply(s, { type: 'buy', resource: 'wood', amount: 'all' });
+    expect(s.player.resources.wood).toBe(5);
+    expect(s.towns[0]!.stock.wood).toBe(0);
+    expect(() => apply(s, { type: 'buy', resource: 'wood', amount: 'all' })).toThrow(/no Wood in stock/);
+    // a purse that only stretches so far
+    s.player.shuckles = buy * 2 - 1;
+    s.towns[0]!.stock.wood = 9;
+    s = apply(s, { type: 'buy', resource: 'wood', amount: 'all' });
+    expect(s.player.resources.wood).toBe(6);
+    expect(() => apply(s, { type: 'sell', resource: 'wood', amount: 7 })).toThrow(/only 6/);
+    s = apply(s, { type: 'sell', resource: 'wood', amount: 4 });
+    expect(s.player.resources.wood).toBe(2);
+    const before = s.player.shuckles;
+    s = apply(s, { type: 'sell', resource: 'wood', amount: 'all' });
+    expect(s.player.resources.wood).toBe(0);
+    expect(s.player.shuckles).toBe(before + sell * 2);
+    expect(() => apply(s, { type: 'sell', resource: 'wood', amount: 'all' })).toThrow(/no Wood to sell/);
+  });
 });

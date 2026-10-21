@@ -23,7 +23,7 @@ export type DemonHunterMove =
   | { type: 'attack'; target: string }
   | { type: 'bomb' }
   | { type: 'talk_bandit' }
-  | { type: 'buy_from_bandit'; item: 'bomb' | 'lockpick' }
+  | { type: 'buy_from_bandit'; item: 'bomb' | 'lockpick'; amount?: number | 'all' }
   | { type: 'fly' }
   | { type: 'land' }
   | { type: 'aura' }
@@ -61,8 +61,10 @@ export type DemonHunterMove =
   | { type: 'sleep' }
   | { type: 'train' }
   | { type: 'ride'; town: string }
-  | { type: 'buy'; resource: ResourceType }
-  | { type: 'sell'; resource: ResourceType }
+  /** Any amount the stock and your purse allow (default 1; 'all' = as many as you can). */
+  | { type: 'buy'; resource: ResourceType; amount?: number | 'all' }
+  /** Any amount you hold (default 1; 'all' = everything of it). */
+  | { type: 'sell'; resource: ResourceType; amount?: number | 'all' }
   | { type: 'leave_inn' }
   | { type: 'search_house'; person: string; confirm?: boolean }
   // --- temple ---

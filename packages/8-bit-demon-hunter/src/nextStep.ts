@@ -105,7 +105,7 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
       status: 'human_to_move',
       active_player_id: playerId,
       instruction: 'AT THE INN. Relay the prices and services exactly as given, then ask what the player does: sleep, train, ride to a town, buy or sell a resource, or leave. ' + NEVER_HINT,
-      human_response: { ask: 'what they do at the inn', example: 'Sleep', records_as: 'sleep / train / ride {town} / buy {resource} / sell {resource} / leave_inn' },
+      human_response: { ask: 'what they do at the inn', example: 'Sleep', records_as: 'sleep / train / ride {town} / buy {resource, amount} / sell {resource, amount|"all"} / leave_inn' },
       facts: { phase: 'The inn', notes: [`${p.shuckles} shuckles.`, `HP ${p.hp}/${p.maxHp}.`, ...levelNote] },
     };
   }

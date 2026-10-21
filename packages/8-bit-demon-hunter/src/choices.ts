@@ -201,7 +201,7 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
   },
   {
     id: 'inn-services',
-    description: 'At the inn: sleep, train, ride to a town (which one), buy or sell a resource (which one), or leave',
+    description: 'At the inn: sleep, train, ride to a town (which one), buy or sell a resource (which one, how many), or leave',
     owner: 'player',
     when: 'in-game',
     resolvedBy: ['inn', 'sleep', 'train', 'ride', 'buy', 'sell', 'leave_inn'],

@@ -354,29 +354,48 @@ export function innRide(state: DemonHunterState, townId: string, lines: string[]
   arriveInTown(state, town.id, lines);
 }
 
-export function innBuy(state: DemonHunterState, resource: ResourceType, lines: string[]): void {
-  requireInn(state);
-  const town = currentTown(state);
-  if (!RESOURCE_TYPES.includes(resource)) refuse(`"${resource}" is not a resource.`);
-  const price = buyPrice(resource, town.prices[resource]);
-  if (town.stock[resource] <= 0) refuse(`The inn has no ${RESOURCE_DISPLAY_NAME[resource]} in stock.`);
-  if (state.player.shuckles < price) refuse(`${RESOURCE_DISPLAY_NAME[resource]} costs ${price}; you have ${state.player.shuckles}.`);
-  state.player.shuckles -= price;
-  town.stock[resource]--;
-  state.player.resources[resource]++;
-  lines.push(`You buy ${RESOURCE_DISPLAY_NAME[resource]} for ${price} (you have ${state.player.resources[resource]}; ${state.player.shuckles} shuckles left).`);
+/** How many of something: a whole number of at least one, or 'all' = `most`.
+ *  Trading one at a time was tedious (designer, 2026-10-21): any valid amount goes. */
+function howMany(amount: number | 'all' | undefined, most: number, what: string, limit: string): number {
+  if (amount === 'all') {
+    if (most <= 0) refuse(`${what}: ${limit}.`);
+    return most;
+  }
+  const n = amount === undefined ? 1 : amount;
+  if (!Number.isInteger(n) || n < 1) refuse(`How many? Give a whole number of at least 1, or "all".`);
+  if (n > most) refuse(`${what}: ${limit}${most > 0 ? ` (up to ${most})` : ''}.`);
+  return n;
 }
 
-export function innSell(state: DemonHunterState, resource: ResourceType, lines: string[]): void {
+export function innBuy(state: DemonHunterState, resource: ResourceType, amount: number | 'all' | undefined, lines: string[]): void {
   requireInn(state);
   const town = currentTown(state);
   if (!RESOURCE_TYPES.includes(resource)) refuse(`"${resource}" is not a resource.`);
-  if (state.player.resources[resource] <= 0) refuse(`You have no ${RESOURCE_DISPLAY_NAME[resource]} to sell.`);
+  const name = RESOURCE_DISPLAY_NAME[resource];
+  const price = buyPrice(resource, town.prices[resource]);
+  if (town.stock[resource] <= 0) refuse(`The inn has no ${name} in stock.`);
+  if (state.player.shuckles < price) refuse(`${name} costs ${price}; you have ${state.player.shuckles}.`);
+  const affordable = Math.floor(state.player.shuckles / price);
+  const most = Math.min(town.stock[resource], affordable);
+  const n = howMany(amount, most, `Buying ${name}`, town.stock[resource] < affordable ? `the inn has only ${town.stock[resource]} in stock` : `at ${price} each you can afford ${affordable} with ${state.player.shuckles} shuckles`);
+  state.player.shuckles -= price * n;
+  town.stock[resource] -= n;
+  state.player.resources[resource] += n;
+  lines.push(`You buy ${n} ${name} for ${price * n}${n > 1 ? ` (${price} each)` : ''}; you have ${state.player.resources[resource]} and ${state.player.shuckles} shuckles left.`);
+}
+
+export function innSell(state: DemonHunterState, resource: ResourceType, amount: number | 'all' | undefined, lines: string[]): void {
+  requireInn(state);
+  const town = currentTown(state);
+  if (!RESOURCE_TYPES.includes(resource)) refuse(`"${resource}" is not a resource.`);
+  const name = RESOURCE_DISPLAY_NAME[resource];
+  if (state.player.resources[resource] <= 0) refuse(`You have no ${name} to sell.`);
   const price = sellPrice(resource, town.prices[resource]);
-  state.player.resources[resource]--;
-  town.stock[resource]++;
-  state.player.shuckles += price;
-  lines.push(`You sell ${RESOURCE_DISPLAY_NAME[resource]} for ${price} (${state.player.resources[resource]} left; ${state.player.shuckles} shuckles).`);
+  const n = howMany(amount, state.player.resources[resource], `Selling ${name}`, `you have only ${state.player.resources[resource]}`);
+  state.player.resources[resource] -= n;
+  town.stock[resource] += n;
+  state.player.shuckles += price * n;
+  lines.push(`You sell ${n} ${name} for ${price * n}${n > 1 ? ` (${price} each)` : ''}; ${state.player.resources[resource]} left and ${state.player.shuckles} shuckles.`);
 }
 
 export function innLeave(state: DemonHunterState, lines: string[]): void {

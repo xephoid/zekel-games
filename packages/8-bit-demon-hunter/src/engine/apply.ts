@@ -89,7 +89,7 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       talkBandit(state, lines);
       break;
     case 'buy_from_bandit':
-      buyFromBandit(state, move_.item, lines);
+      buyFromBandit(state, move_.item, move_.amount, lines);
       break;
     case 'fly':
       fly(state, lines);
@@ -170,10 +170,10 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       innRide(state, move_.town, lines);
       break;
     case 'buy':
-      innBuy(state, move_.resource, lines);
+      innBuy(state, move_.resource, move_.amount, lines);
       break;
     case 'sell':
-      innSell(state, move_.resource, lines);
+      innSell(state, move_.resource, move_.amount, lines);
       break;
     case 'leave_inn':
       innLeave(state, lines);

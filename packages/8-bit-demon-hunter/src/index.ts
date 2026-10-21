@@ -69,6 +69,7 @@ const moveSchema = {
     contradictions: { type: 'boolean', description: 'search_town: which rumours in the clue book contradict a secret (works anywhere)' },
     reward: { enum: ['clue', 'power'], description: 'claim_reward' },
     resource: { enum: Object.keys(RESOURCE_BASE_VALUE), description: 'buy / sell' },
+    amount: { anyOf: [{ type: 'integer', minimum: 1 }, { enum: ['all'] }], description: 'buy / sell / buy_from_bandit: how many (default 1). "all" = everything you hold (sell), or as many as the stock and your shuckles allow (buy).' },
     confirm: { type: 'boolean', description: 'search_house: true to spend a lockpick' },
     text: { type: 'string', description: "answer_riddle: the player's answer, verbatim" },
   },

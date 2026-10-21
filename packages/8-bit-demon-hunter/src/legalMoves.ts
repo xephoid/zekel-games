@@ -77,8 +77,8 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
     }
     for (const r of RESOURCE_TYPES) {
       const buy = buyPrice(r, town.prices[r]);
-      if (town.stock[r] > 0 && p.shuckles >= buy) add(`buy:${r}`, `Buy ${RESOURCE_DISPLAY_NAME[r]}`, { type: 'buy', resource: r }, `${buy} shuckles`);
-      if (p.resources[r] > 0) add(`sell:${r}`, `Sell ${RESOURCE_DISPLAY_NAME[r]} for ${sellPrice(r, town.prices[r])} shuckles`, { type: 'sell', resource: r });
+      if (town.stock[r] > 0 && p.shuckles >= buy) add(`buy:${r}`, `Buy ${RESOURCE_DISPLAY_NAME[r]} (fill in amount: up to ${Math.min(town.stock[r], Math.floor(p.shuckles / buy))}, or "all")`, { type: 'buy', resource: r }, `${buy} shuckles each`);
+      if (p.resources[r] > 0) add(`sell:${r}`, `Sell ${RESOURCE_DISPLAY_NAME[r]} for ${sellPrice(r, town.prices[r])} shuckles each (fill in amount: up to ${p.resources[r]}, or "all")`, { type: 'sell', resource: r });
     }
     add('leave_inn', 'Leave the inn', { type: 'leave_inn' });
     return out;
@@ -159,8 +159,8 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
     add('talk_bandit', 'Talk to the Lady Bandit', { type: 'talk_bandit' });
     // Her wares are a secret until the player has heard her offer.
     if (p.blackMarketKnown) {
-      add('buy_from_bandit:bomb', 'Buy a bomb from the Lady Bandit', { type: 'buy_from_bandit', item: 'bomb' }, '10 shuckles');
-      add('buy_from_bandit:lockpick', 'Buy a lockpick from the Lady Bandit', { type: 'buy_from_bandit', item: 'lockpick' }, '200 shuckles');
+      add('buy_from_bandit:bomb', 'Buy bombs from the Lady Bandit (fill in amount; one deal, then she is gone)', { type: 'buy_from_bandit', item: 'bomb' }, '10 shuckles each');
+      add('buy_from_bandit:lockpick', 'Buy lockpicks from the Lady Bandit (fill in amount; one deal, then she is gone)', { type: 'buy_from_bandit', item: 'lockpick' }, '200 shuckles each');
     }
   }
   if (hasMagicItem(state, 'sky')) {
