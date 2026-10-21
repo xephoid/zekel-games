@@ -247,7 +247,9 @@ describe('moving around', () => {
     place(s, 'dude_bandit', s.player.at, 'dude_1');
     s.player.shuckles = 15;
     const r = applyText(s, { type: 'talk_bandit' });
-    expect(r.summary).toContain("Black market's open");
+    expect(r.summary).toContain('I deal, if you');
+    expect(r.state.player.blackMarketKnown).toBe(true);
+    expect(s.player.blackMarketKnown).toBe(false);
     expect(() => apply(s, { type: 'buy_from_bandit', item: 'lockpick' })).toThrow(/costs 200/);
     s = apply(s, { type: 'buy_from_bandit', item: 'bomb' });
     expect(s.player.bombs).toBe(1);

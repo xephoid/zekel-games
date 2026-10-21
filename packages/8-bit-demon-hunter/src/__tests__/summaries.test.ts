@@ -17,7 +17,7 @@ describe('summaries and next_step over whole games', () => {
     for (let seed = 1; seed <= 12; seed++) {
       let s = fresh(seed);
       let moves = 0;
-      while (s.phase !== 'won' && s.phase !== 'lost' && moves < 600) {
+      while (s.phase !== 'won' && s.phase !== 'lost' && moves < 1500) {
         const ns = describeNextStep(s, 'p1');
         expect(ns.status, `seed ${seed} move ${moves}`).toBe('human_to_move');
         expect(ns.active_player_id).toBe('p1');

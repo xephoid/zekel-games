@@ -35,6 +35,7 @@ export interface ApplyResult {
 
 export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): ApplyResult {
   const state = clone(prev);
+  state.turn++;
   const lines: string[] = [];
   if (state.phase === 'won' || state.phase === 'lost') {
     throw new RuleError('GAME_OVER', 'The game is over.');

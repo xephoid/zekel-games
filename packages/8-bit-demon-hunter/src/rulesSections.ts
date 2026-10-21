@@ -3,9 +3,9 @@
 // @zekel/game-kit's renderRulesText in index.ts) so the two cannot drift.
 // Every move type is tagged to at least one section (rulesSections.test.ts).
 
-import { ENEMIES, OVERWORLD_ENEMIES } from './data/enemies.js';
-import { MAGIC_ITEMS, TEMPLE_GUARDIAN, TEMPLE_TYPES } from './data/magicItems.js';
-import { BOMB_COST, INN_RIDE_COST, INN_SLEEP_COST, INN_TRAIN_COST, INN_TRAIN_XP, LOCKPICK_COST, MAX_LEVEL, STAT_BASE, STAT_MAX, WORLD_CLEARED_XP, XP_CURVE } from './data/progression.js';
+import { OVERWORLD_ENEMIES } from './data/enemies.js';
+import { MAGIC_ITEMS, TEMPLE_TYPES } from './data/magicItems.js';
+import { INN_RIDE_COST, INN_SLEEP_COST, INN_TRAIN_COST, INN_TRAIN_XP, MAX_LEVEL, STAT_BASE, STAT_MAX, WORLD_CLEARED_XP, XP_CURVE } from './data/progression.js';
 
 export interface RuleSectionShape {
   id: string;
@@ -23,14 +23,9 @@ const behaviourWords: Record<string, string> = {
   hunter: 'attacks when you try to leave its place, and gets one attack as you run from it',
 };
 
-const enemyRows = OVERWORLD_ENEMIES.map(
-  (e) => `${e.name}: ${e.hp} HP, speed ${e.speed}, range ${e.range}, damage ${e.damage}, ${e.xp} XP; ${behaviourWords[e.behaviour]}${e.clearingsOnly ? '; found only in clearings' : ''}.`,
-);
+const enemyRows = OVERWORLD_ENEMIES.map((e) => `${e.name}: ${behaviourWords[e.behaviour]}${e.clearingsOnly ? '; found only in the wild clearings' : ''}.`);
 
-const templeRows = TEMPLE_TYPES.map((t) => {
-  const g = ENEMIES.find((e) => e.id === TEMPLE_GUARDIAN[t])!;
-  return `${MAGIC_ITEMS[t].templeName}: ${MAGIC_ITEMS[t].name} (${MAGIC_ITEMS[t].description}) behind ${g.max} ${g.plural} (${g.hp} HP, speed ${g.speed}, range ${g.range}, damage ${g.damage}, ${g.xp} XP each).`;
-});
+const itemRows = TEMPLE_TYPES.map((t) => `${MAGIC_ITEMS[t].name}: ${MAGIC_ITEMS[t].description}`);
 
 export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
   {
@@ -60,7 +55,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     title: 'Tasks and favours',
     text:
       'Everyone has a task for you: kill a number of one kind of monster, find someone by trade, pet or colour, escort them to another town, or find one of the five magic items. ' +
-      'You hold one task at a time; accepting another sets the first aside (its progress is kept). An escorted person travels with you and the task completes when you enter the destination town by any means; they then live there. ' +
+      'You may accept as many tasks as you like; all of them are active at once, and tasks that overlap progress and complete together (five slimes killed count for everyone who asked for slimes). An escorted person travels with you and the task completes when you enter the destination town by any means; they then live there. ' +
       'Finishing a task and returning to the giver earns a reward. A truth-knower lets you choose their demon secret or their favour; anyone else gives their favour. A minion whose task you finish confesses instead of paying. ' +
       'Favours by trade: Farmer, whether you have already met the demon; Musician, how many minions are in this town; Barber, introductions to one to five people and their rumours; Tailor, whether anyone in this town is lying; Mayor, a piece of gold; Merchant, 50 shuckles; Soldier, 20 XP; Blacksmith, one free stat improvement; Carpenter, a town the demon is not in; Locksmith, the favour of opening one house.',
     tags: { move_types: ['accept_task', 'decline', 'claim_reward', 'found_you'], phases: ['town'] },
@@ -69,7 +64,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     id: 'houses-and-bindings',
     title: 'Houses and demon bindings',
     text:
-      `Every house is locked. A lockpick (${LOCKPICK_COST} shuckles from a Lady Bandit) or a Locksmith's favour opens one house, once. ` +
+      "Every house is locked. A lockpick or a Locksmith's favour opens one house, once. " +
       'A minion\'s house holds a demon binding; anyone else\'s holds nothing. Each binding you hold takes 3 off the demon\'s base HP of 20 (never below 1); the result is multiplied by your strength.',
     tags: { move_types: ['search_house'], phases: ['town'] },
   },
@@ -88,13 +83,17 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
       'The world is a map of named places joined by paths: five towns, five temples and a handful of clearings between them. "Look" always tells you where you are, which paths lead on, and which enemies and resources are here. ' +
       'Towns and temples are entered from their door; you must leave a town or temple before travelling on. ' +
       'When you try to leave a place: bandits, skeletons and undead knights attack you; mushrooms follow you, and five or more block your way; everything else lets you go. ' +
+      'Whenever you step out of a town or a temple the wild has reset: every monster, plant and tree is back where it was when the world began (ore deposits you blew open stay open). ' +
       'The Sky Temple sits inside a ring of stone wall: bomb it from the next clearing before you can enter.',
     tags: { move_types: ['move', 'enter', 'leave', 'look'], phases: ['outdoors'] },
   },
   {
     id: 'enemies',
     title: 'Enemies',
-    text: enemyRows.join(' '),
+    text:
+      'You learn an enemy by watching it. The game never tells you its numbers: how hurt it is comes as words (unhurt, barely scratched, hurt, badly wounded, barely able to stand), ' +
+      'and whether it is faster than you or strikes from further away shows in how a fight opens. ' +
+      enemyRows.join(' '),
     tags: { move_types: ['attack'], phases: ['outdoors'] },
   },
   {
@@ -123,18 +122,17 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     text:
       'Plants (1 HP) and trees (4 HP) are harvested by attacking them: each swing does your strength, and each swing has a one in ten chance of drawing an aggressive enemy at the place into a fight. A plant gives plant fiber, a tree gives wood. ' +
       'Monsters drop demon powder (bandits drop nothing); temple guardians drop demon ichor. ' +
-      `A bomb hits everything where you stand: every enemy is hurt by 5, every ore deposit shatters (each yields gold one time in ten, iron ore four times in ten, else nothing), every plant and tree burns to nothing, and the Sky Temple's stone ring opens if you are beside it. A Lady Bandit you have not attacked sells bombs for ${BOMB_COST} shuckles and lockpicks for ${LOCKPICK_COST}, then leaves. The Fire Bombs give you unlimited bombs.`,
+      `A bomb hits everything where you stand: every enemy is hurt by 5, every ore deposit shatters (each yields gold one time in ten, iron ore four times in ten, else nothing), every plant and tree burns to nothing, and the Sky Temple's stone ring opens if you are beside it. Where bombs and lockpicks come from is for you to find out; there are rumours. The Fire Bombs give you unlimited bombs.`,
     tags: { move_types: ['attack', 'bomb', 'talk_bandit', 'buy_from_bandit'], phases: ['outdoors'] },
   },
   {
     id: 'temples',
     title: 'Temples and magic items',
     text:
-      'Each temple guards one magic item behind two doors: a gauntlet of guardians fought one at a time, or a riddle door that opens to the right answer. A wrong answer costs nothing; you may try again or take the gauntlet. Leaving a temple mid-gauntlet resets it. ' +
-      templeRows.join(' ') +
-      ' The items: Winged Boots let you fly (only enemies with range 3 or more can reach you; you can attack from the air only with range 3 or more, and then only enemies with range 3 or more hit back). ' +
-      'The Aura of Protection makes you invulnerable but unable to attack: in a fight it ends the fight untouched; outdoors it lets your next move pass every enemy here. ' +
-      'The Cape of Teleportation takes you to any town you have visited and heals you. The Eye of Truth shows who is lying. The Fire Bombs are unlimited bombs.',
+      'The five temples are ancient and deadly. Each holds a treasure at its heart behind two doors: a gauntlet, where whatever guards the place comes at you one at a time, or a riddle door that opens to the right answer. ' +
+      'Nobody can tell you what guards a temple or what it holds; you find out by going in. A wrong answer costs nothing; you may try again or take the gauntlet. Leaving a temple mid-gauntlet resets it. ' +
+      'The five treasures, once found, are the five artifacts of legend: ' + itemRows.join(' ') +
+      ' (Flying: only enemies that can strike from afar reach you in the air; you can attack from the air only with range 3 or more.)',
     tags: { move_types: ['gauntlet', 'next_fight', 'riddle', 'answer_riddle', 'fly', 'land', 'aura', 'teleport'], phases: ['temple'] },
   },
   {

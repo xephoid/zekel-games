@@ -20,14 +20,13 @@ export function enterTemple(state: DemonHunterState, lines: string[]): void {
   state.player.auraUp = false;
   if (state.player.magicItems.includes(temple)) {
     state.temple = null;
-    lines.push(`You enter the ${here.name}. Its chest stands open and empty: you already carry the ${MAGIC_ITEMS[temple].name}.`);
+    lines.push(`You enter the ${here.name}. Its chest stands open and empty: you already took what it held, the ${MAGIC_ITEMS[temple].name}.`);
     return;
   }
-  const guardian = ENEMY_BY_ID[TEMPLE_GUARDIAN[temple]];
-  state.temple = { temple, mode: 'choice', remaining: guardian.max };
+  state.temple = { temple, mode: 'choice', remaining: ENEMY_BY_ID[TEMPLE_GUARDIAN[temple]].max };
   lines.push(
-    `You enter the ${here.name}. Two ways lead to its heart: a gauntlet of ${guardian.max} ${guardian.plural}, fought one at a time (gauntlet), ` +
-      'or a sealed door that opens to the right answer (riddle).',
+    `You enter the ${here.name}. It is ancient, and something in it is awake. Two ways lead to its heart: a gauntlet, where whatever guards this place will come at you one at a time, ` +
+      'or a sealed door carved with a riddle, that opens only to the right answer. A treasure awaits whoever reaches the heart.',
   );
 }
 
@@ -40,7 +39,7 @@ export function startGauntlet(state: DemonHunterState, lines: string[]): void {
   requireTemple(state);
   if (state.temple!.mode === 'gauntlet') refuse('The gauntlet is already under way: say "next fight".');
   state.temple!.mode = 'gauntlet';
-  lines.push(`You step into the gauntlet. ${state.temple!.remaining} guardians stand between you and the chest. Say "next fight" to face the first.`);
+  lines.push('You step into the gauntlet. Somewhere ahead, something moves. Say "next fight" to face it.');
 }
 
 export function nextFight(state: DemonHunterState, lines: string[]): void {

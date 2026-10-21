@@ -14,10 +14,10 @@ Five temples stand in the wild places between the towns, each at the end of a pa
 
 **For the GM only. No townsperson knows any of this; use it to narrate once the player is inside.**
 
-- *Sky Temple*: inside a ring of stone wall with no gate. Guarded by bees the size of dogs that come straight at you. Holds the Winged Boots.
-- *Earth Temple*: low and dark, its hall choked with Man Eater Flowers that lie still until you are close. Holds the Aura of Protection.
-- *Space Temple*: cold, its walls scratched with star maps nobody can read. Arachne nest in its corners. Holds the Cape of Teleportation.
-- *Light Temple*: bright even at night. Floating Eyes drift its corridors and see you long before you see them. Holds the Eye of Truth.
-- *Fire Temple*: warm to the touch from outside. Fire Skulls race its halls. Holds the Fire Bombs.
+- *Sky Temple*: inside a ring of stone wall with no gate. Guarded by bees the size of dogs that come straight at you.
+- *Earth Temple*: low and dark, its hall choked with Man Eater Flowers that lie still until you are close.
+- *Space Temple*: cold, its walls scratched with star maps nobody can read. Arachne nest in its corners.
+- *Light Temple*: bright even at night. Floating Eyes drift its corridors and see you long before you see them.
+- *Fire Temple*: warm to the touch from outside. Fire Skulls race its halls.
 
-Each temple has two ways to its heart: a gauntlet where its guardians come one at a time, and a sealed door carved with a riddle. The guardians drop demon ichor. A gauntlet left half done is full again on return. The player learns all of this by going in; the engine's responses state it.
+Each temple has two ways to its heart: a gauntlet where its guardians come one at a time, and a sealed door carved with a riddle. The guardians drop demon ichor. A gauntlet left half done is full again on return. What the chest holds is told by the engine only when it opens; until then, to the player, a treasure awaits. Name a guardian only as it appears, and never say how many there are.

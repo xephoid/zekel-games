@@ -160,8 +160,9 @@ export function talkBandit(state: DemonHunterState, lines: string[]): void {
   requireNoCombat(state);
   requireOutdoors(state);
   const lady = findTrader(state);
-  if (!lady) refuse('There is no Lady Bandit here willing to trade.');
-  lines.push(`The Lady Bandit looks you over. "Black market's open. Bomb, ${BOMB_COST} shuckles. Lockpick, ${LOCKPICK_COST}. You have ${state.player.shuckles}."`);
+  if (!lady) refuse('There is no Lady Bandit here willing to talk.');
+  state.player.blackMarketKnown = true;
+  lines.push(`The Lady Bandit looks you over, then lowers her voice. "You're not here to fight, are you. Good. I deal, if you've got coin: a bomb for ${BOMB_COST} shuckles, a lockpick for ${LOCKPICK_COST}. You have ${state.player.shuckles}."`);
 }
 
 export function buyFromBandit(state: DemonHunterState, item: 'bomb' | 'lockpick', lines: string[]): void {

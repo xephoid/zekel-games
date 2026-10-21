@@ -22,6 +22,18 @@ that temples are very old and dangerous; the accusation is a **demon-killing
 knife** (`stab`): face to face in the person's town, the wrong person dies and
 the townspeople turn on you (loss); a **bomb hits everything** on the node it
 is set off in.
+Rulings 2026-10-21 (second playtest): the player holds **any number of
+accepted tasks** at once and overlapping ones progress and complete together;
+**the wild respawns** (enemies, plants, trees as generated) whenever the
+player steps out of a town or temple, as the original's reload did; **temple
+nodes get enemies and resources** like clearings; **temples are mysterious**:
+entering says only that a treasure awaits, guardians are named only as they
+appear, their count is never given, the item is named when the chest opens;
+**enemies have no numbers**: nothing the GM reads states an enemy's HP, speed,
+range or damage, only its condition in words and its behaviour; the **Lady
+Bandits' black market is a secret** to discover: nothing states it, townsfolk
+may only pass it on as a rumour, and buying is offered only after the player
+has talked to a Lady Bandit and heard her offer.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.

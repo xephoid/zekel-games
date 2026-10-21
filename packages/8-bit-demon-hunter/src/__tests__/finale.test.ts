@@ -43,7 +43,8 @@ describe('the knife', () => {
     let r = applyText(s, { type: 'stab', person: demon(s).id });
     s = r.state;
     expect(s.phase).toBe('arena');
-    expect(r.summary).toContain('THE DEMON (40 HP');
+    expect(r.summary).toContain('THE DEMON rises before you');
+    expect(r.summary).not.toMatch(/\d+ HP\)/);
     expect(s.combat?.enemyId).toBe('demon');
     expect(() => apply(s, { type: 'flee' })).toThrow(/no way out/);
     expect(() => apply(s, { type: 'move', to: 'x' })).toThrow(/in a fight/);

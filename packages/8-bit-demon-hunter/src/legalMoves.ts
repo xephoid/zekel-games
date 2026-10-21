@@ -5,7 +5,7 @@ import { ENEMY_BY_ID } from './data/enemies.js';
 import { INN_RIDE_COST, INN_SLEEP_COST, INN_TRAIN_COST, STAT_BASE, type StatId } from './data/progression.js';
 import { buyPrice, RESOURCE_DISPLAY_NAME, RESOURCE_NODE, RESOURCE_TYPES, sellPrice } from './data/resources.js';
 import type { DemonHunterMove } from './engine/moves.js';
-import { canLevelUp, currentTown, enemiesAt, hasMagicItem, hereNode, resourcesAt, statIsMaxed } from './engine/helpers.js';
+import { canLevelUp, condition, currentTown, enemiesAt, hasMagicItem, hereNode, resourcesAt, statIsMaxed } from './engine/helpers.js';
 import type { DemonHunterState } from './types.js';
 import { edgeBetween, neighborsOf } from './world/graph.js';
 
@@ -58,7 +58,7 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
         add('claim_reward:power', `Take ${person.name}'s ability (power)`, { type: 'claim_reward', reward: 'power' });
         break;
       case 'offer':
-        add('accept_task', `Accept ${person.name}'s task: ${person.task.description}${p.activeTaskGiver ? ' (replaces your current task)' : ''}`, { type: 'accept_task' });
+        add('accept_task', `Accept ${person.name}'s task: ${person.task.description}`, { type: 'accept_task' });
         add('decline', 'No thanks', { type: 'decline' });
         break;
       default:
@@ -139,7 +139,7 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
   if (here.kind === 'town' || here.kind === 'temple') add('enter', `Enter ${here.name}`, { type: 'enter' });
   const canAttack = !p.auraUp && !(p.flying && p.range < 3);
   if (canAttack) {
-    for (const e of enemiesAt(state, here.id)) add(`attack:${e.id}`, `Attack the ${ENEMY_BY_ID[e.type].name} ${e.id} (${e.hp}/${e.maxHp} HP)`, { type: 'attack', target: e.id });
+    for (const e of enemiesAt(state, here.id)) add(`attack:${e.id}`, `Attack the ${ENEMY_BY_ID[e.type].name} ${e.id} (${condition(e)})`, { type: 'attack', target: e.id });
     for (const r of resourcesAt(state, here.id)) {
       if (r.kind !== 'ore') add(`attack:${r.id}`, `Harvest the ${RESOURCE_NODE[r.kind].name} ${r.id}`, { type: 'attack', target: r.id });
     }
@@ -152,9 +152,12 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
     add('bomb', `Bomb this place: ${what.join(', ')}`, { type: 'bomb' }, hasMagicItem(state, 'fire') ? 'free' : 'one bomb');
   }
   if (enemiesAt(state, here.id).some((e) => e.type === 'lady_bandit' && !e.attacked)) {
-    add('talk_bandit', 'Talk to the Lady Bandit (black market)', { type: 'talk_bandit' });
-    add('buy_from_bandit:bomb', 'Buy a bomb from the Lady Bandit', { type: 'buy_from_bandit', item: 'bomb' }, '10 shuckles');
-    add('buy_from_bandit:lockpick', 'Buy a lockpick from the Lady Bandit', { type: 'buy_from_bandit', item: 'lockpick' }, '200 shuckles');
+    add('talk_bandit', 'Talk to the Lady Bandit', { type: 'talk_bandit' });
+    // Her wares are a secret until the player has heard her offer.
+    if (p.blackMarketKnown) {
+      add('buy_from_bandit:bomb', 'Buy a bomb from the Lady Bandit', { type: 'buy_from_bandit', item: 'bomb' }, '10 shuckles');
+      add('buy_from_bandit:lockpick', 'Buy a lockpick from the Lady Bandit', { type: 'buy_from_bandit', item: 'lockpick' }, '200 shuckles');
+    }
   }
   if (hasMagicItem(state, 'sky')) {
     if (p.flying) add('land', 'Land', { type: 'land' });

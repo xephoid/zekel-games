@@ -35,7 +35,7 @@ describe('talking to townsfolk', () => {
     expect(s.dialogue).toBeNull();
     s = apply(s, { type: 'talk', person: p.name.toLowerCase() });
     s = apply(s, { type: 'accept_task' });
-    expect(s.player.activeTaskGiver).toBe(p.id);
+    expect(s.player.activeTasks).toContain(p.id);
   });
 
   it('a truth-knower says so, and the Eye of Truth flags liars', () => {
@@ -74,7 +74,7 @@ describe('talking to townsfolk', () => {
     expect(r.summary).toContain(good.clues.good!.text);
     expect(s.player.knownClues.map((c) => c.text)).toContain(good.clues.good!.text);
     expect(person(s, good.id).taskCompleted).toBe(true);
-    expect(s.player.activeTaskGiver).toBeNull();
+    expect(s.player.activeTasks).not.toContain(good.id);
     s = apply(s, { type: 'goodbye' });
     r = applyText(s, { type: 'talk', person: good.id });
     expect(r.summary).toContain('Thanks again');
@@ -93,7 +93,7 @@ describe('talking to townsfolk', () => {
     const r = applyText(s, { type: 'talk', person: minion.id });
     expect(r.summary).toContain('you will not find my master');
     expect(r.summary).toContain('MINIONS');
-    expect(r.state.player.activeTaskGiver).toBeNull();
+    expect(r.state.player.activeTasks).not.toContain(minion.id);
     expect(person(r.state, minion.id).taskCompleted).toBe(true);
   });
 
@@ -175,7 +175,7 @@ describe('escorts', () => {
     s.player.inside = 'town';
     s = apply(s, { type: 'talk', person: d.id });
     s = apply(s, { type: 'accept_task' });
-    expect(s.player.follower).toBe(d.id);
+    expect(s.player.followers).toContain(d.id);
     s = apply(s, { type: 'goodbye' });
     // a truthful "not in <dest>" clue in the book must flip; the good town clue must follow
     const goodHolder = s.towns.flatMap((t) => t.people).find((p) => p.clues.good?.relatedAttribute?.key === 'townId')!;
@@ -185,7 +185,7 @@ describe('escorts', () => {
     const r = applyText(s, { type: 'teleport', town: dest.id });
     s = r.state;
     expect(r.summary).toContain('will live here now');
-    expect(s.player.follower).toBeNull();
+    expect(s.player.followers).not.toContain(d.id);
     expect(person(s, d.id).attributes.townId).toBe(dest.id);
     expect(s.towns.find((t) => t.id === dest.id)!.people.some((p) => p.id === d.id)).toBe(true);
     expect(s.towns.find((t) => t.id === home.id)!.people.some((p) => p.id === d.id)).toBe(false);

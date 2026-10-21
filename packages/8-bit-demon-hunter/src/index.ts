@@ -224,12 +224,12 @@ export class EightBitDemonHunterGame implements Game<DemonHunterState, DemonHunt
 
   getReferenceData(): unknown {
     return {
-      enemies: ENEMIES.map((e) => ({ id: e.id, name: e.name, hp: e.hp, xp: e.xp, speed: e.speed, damage: e.damage, range: e.range, behaviour: e.behaviour, temple_only: !!e.templeOnly })),
+      // Enemy numbers are deliberately absent: the GM describes enemies by condition and behaviour.
+      enemies: ENEMIES.filter((e) => !e.templeOnly).map((e) => ({ id: e.id, name: e.name, behaviour: e.behaviour })),
       progression: { xp_curve: XP_CURVE, max_level: MAX_LEVEL, stat_caps: STAT_MAX, stat_step: STAT_STEP },
-      magic_items: Object.values(MAGIC_ITEMS).map((m) => ({ temple: m.templeName, name: m.name, description: m.description })),
+      magic_items: Object.values(MAGIC_ITEMS).map((m) => ({ name: m.name, description: m.description })),
       resource_base_values: RESOURCE_BASE_VALUE,
       inn: { sleep: 5, train: 50, train_xp: 20, ride: 50, buy_price: 'ceil(base × town multiplier × 1.5)', sell_price: 'base × town multiplier (1 to 6)' },
-      black_market: { bomb: 10, lockpick: 200 },
       demon: { base_hp: 20, per_binding: -3, min: 1, times: 'your strength', speed: 8, range: 3, damage: 2 },
     };
   }

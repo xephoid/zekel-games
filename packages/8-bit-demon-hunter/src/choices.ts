@@ -61,7 +61,7 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
   },
   {
     id: 'black-market',
-    description: 'Whether to trade with a Lady Bandit, and which of bomb or lockpick to buy',
+    description: 'Whether to talk to a Lady Bandit and, once she has made her offer, which of bomb or lockpick to buy',
     owner: 'player',
     when: 'in-game',
     resolvedBy: ['talk_bandit', 'buy_from_bandit'],
@@ -148,7 +148,7 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
   },
   {
     id: 'take-the-task',
-    description: 'Whether to accept a person\'s task (replacing your current one) or decline',
+    description: 'Whether to accept a person\'s task (any number may be active at once) or decline',
     owner: 'player',
     when: 'in-game',
     resolvedBy: ['accept_task', 'decline'],

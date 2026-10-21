@@ -18,7 +18,7 @@ export const ARENA_MINION_HP = 10;
 import type { DemonHunterState, Enemy } from '../types.js';
 import { neighborsOf } from '../world/graph.js';
 import { refuse } from './errors.js';
-import { activeTask, attacksPerAction, defOf, enemyName, gainXp, hereNode, overworldEnemiesLeft } from './helpers.js';
+import { activeTasks, attacksPerAction, condition, defOf, enemyName, gainXp, overworldEnemiesLeft } from './helpers.js';
 import { grantMagicItem } from './rewards.js';
 
 export type CombatCause = 'attack' | 'leaving' | 'harvest' | 'gauntlet' | 'arena' | 'flying' | 'resume';
@@ -54,19 +54,16 @@ export function startCombat(state: DemonHunterState, enemyId: string, cause: Com
     resume: `${def.name} comes at you again.`,
   };
   lines.push(why[cause]);
-  lines.push(
-    `Combat: you (HP ${p.hp}/${p.maxHp}, speed ${p.agility}, range ${p.range}, strength ${p.strength}) vs ` +
-      `${def.name} (HP ${enemy.hp}/${enemy.maxHp}, speed ${def.speed}, range ${def.range}, damage ${def.damage}).`,
-  );
+  lines.push(`Combat: you (HP ${p.hp}/${p.maxHp}, strength ${p.strength}, speed ${p.agility}, range ${p.range}) vs the ${def.name}, ${condition(enemy)}.`);
 
   // Opening: higher range gets one free attack (not when a fight resumes).
   if (cause === 'resume') {
     // no opening
   } else if (p.range > def.range) {
-    lines.push('Your range is higher: you get a free attack.');
+    lines.push(`You strike before the ${def.name} can close: a free attack.`);
     playerHits(state, 1, lines);
   } else if (def.range > p.range) {
-    lines.push(`The ${def.name}'s range is higher: it gets a free attack.`);
+    lines.push(`The ${def.name} strikes before you can close.`);
     enemyHits(state, 1, lines);
   }
   if (!state.combat) return; // ended during the opening
@@ -76,7 +73,7 @@ export function startCombat(state: DemonHunterState, enemyId: string, cause: Com
     lines.push(`The ${def.name} is faster and acts first.`);
     enemyAction(state, lines);
   } else {
-    lines.push(def.speed === p.agility ? 'Speeds are equal: you act first.' : 'You are faster and act first.');
+    lines.push(def.speed === p.agility ? `You and the ${def.name} move at the same pace: you act first.` : 'You are faster and act first.');
   }
 }
 
@@ -88,7 +85,7 @@ export function playerFight(state: DemonHunterState, lines: string[]): void {
     refuse('You cannot attack from the air with range below 3. Land first.');
   }
   const attacks = attacksPerAction(state.player.agility, def.speed);
-  lines.push(attacks > 1 ? `You attack ${attacks} times (speed ${state.player.agility} vs ${def.speed}).` : 'You attack.');
+  lines.push(attacks > 1 ? `You attack ${attacks} times.` : 'You attack.');
   playerHits(state, attacks, lines);
   if (!state.combat) return;
   enemyAction(state, lines);
@@ -129,7 +126,7 @@ function playerHits(state: DemonHunterState, attacks: number, lines: string[]): 
     enemy.hp -= state.player.strength;
     enemy.attacked = true;
     state.combat!.enemyDamaged = true;
-    lines.push(`You hit the ${def.name} for ${state.player.strength} (${Math.max(0, enemy.hp)}/${enemy.maxHp} HP left).`);
+    lines.push(enemy.hp > 0 ? `You hit the ${def.name} for ${state.player.strength}; it is ${condition(enemy)}.` : `You hit the ${def.name} for ${state.player.strength}.`);
   }
   if (enemy.hp <= 0) {
     killEnemy(state, enemy, lines);
@@ -148,7 +145,7 @@ function playerHits(state: DemonHunterState, attacks: number, lines: string[]): 
       state.enemies[id] = { id, type: d.id, at: ARENA_NODE_ID, hp: ARENA_MINION_HP, maxHp: ARENA_MINION_HP, attacked: false };
       return id;
     });
-    lines.push(`The Demon screams and retreats to the centre of the arena. Three Demon Minions answer its call: ${minions.map((d) => d.name).join(', ')} (${ARENA_MINION_HP} HP each). You must fight them one at a time.`);
+    lines.push(`The Demon screams and retreats to the centre of the arena. Three Demon Minions answer its call: ${minions.map((d) => d.name).join(', ')}. You must fight them one at a time.`);
     endCombat(state);
   }
 }
@@ -224,7 +221,7 @@ function enemyAction(state: DemonHunterState, lines: string[]): void {
   }
   let attacks = attacksPerAction(def.speed, p.agility);
   if (def.behaviour === 'boss' && state.arena && enemy.hp <= Math.floor(enemy.maxHp / 3)) attacks += 2; // phase 3 triple shot
-  lines.push(attacks > 1 ? `The ${def.name} attacks ${attacks} times (speed ${def.speed} vs ${p.agility}).` : `The ${def.name} attacks.`);
+  lines.push(attacks > 1 ? `The ${def.name} attacks ${attacks} times.` : `The ${def.name} attacks.`);
   enemyHits(state, attacks, lines);
   if (state.combat) state.combat.round++;
 }
@@ -276,9 +273,9 @@ export function killEnemy(state: DemonHunterState, enemy: Enemy, lines: string[]
     lines.push(`You collect Demon Powder (${state.player.resources.demon_powder}).`);
   }
 
-  // Kill-task progress.
-  const task = activeTask(state);
-  if (task && !task.isCompleted && task.type === 'KILL' && task.targetId === def.id) {
+  // Kill-task progress: every accepted task that wants this kind of monster.
+  for (const task of activeTasks(state)) {
+    if (task.isCompleted || task.type !== 'KILL' || task.targetId !== def.id) continue;
     task.currentAmount++;
     if (task.currentAmount >= task.amount) {
       task.isCompleted = true;
@@ -293,9 +290,9 @@ export function killEnemy(state: DemonHunterState, enemy: Enemy, lines: string[]
   // Temple gauntlet: one guardian down.
   if (def.templeOnly && state.temple && state.temple.mode === 'gauntlet') {
     state.temple.remaining--;
-    if (state.temple.remaining > 0) lines.push(`${state.temple.remaining} more guardian${state.temple.remaining === 1 ? '' : 's'} to go.`);
+    if (state.temple.remaining > 0) lines.push('Something else stirs deeper in the temple.');
     else {
-      lines.push('The last guardian falls. A chest stands open at the heart of the temple.');
+      lines.push('Silence. Nothing else stirs. At the heart of the temple a chest stands open.');
       grantMagicItem(state, state.temple.temple, lines);
       state.temple = null;
     }

@@ -8,7 +8,7 @@ import { buyPrice, RESOURCE_DISPLAY_NAME, RESOURCE_TYPES, sellPrice, type Resour
 import { pick, randomInt, shuffle } from '../rng.js';
 import type { DemonHunterState, Person } from '../types.js';
 import { refuse } from './errors.js';
-import { activeTask, addClue, allPeople, currentTown, gainXp, hasMagicItem, healToFull, personOf } from './helpers.js';
+import { activeTasks, addClue, allPeople, currentTown, gainXp, hasMagicItem, healToFull, personOf } from './helpers.js';
 import { arriveInTown, requireNoCombat } from './movement.js';
 
 // ---------------------------------------------------------------------------
@@ -61,7 +61,7 @@ export function talk(state: DemonHunterState, personId: string, lines: string[])
   const town = currentTown(state);
   const person =
     town.people.find((p) => p.id === personId || p.name.toLowerCase() === personId.toLowerCase()) ??
-    (state.player.follower === personId ? personOf(state, personId) : null);
+    (state.player.followers.includes(personId) ? personOf(state, personId) : null);
   if (!person) refuse(`There is no one called "${personId}" in ${town.name}.`);
 
   person.hasMet = true;
@@ -69,32 +69,24 @@ export function talk(state: DemonHunterState, personId: string, lines: string[])
   lines.push(personCard(state, person));
   lines.push(characterBrief(state, person));
 
-  const task = activeTask(state);
   const p = state.player;
 
-  // 0. The person IS the target of the active find task.
-  if (task && !task.isCompleted && (task.type === 'FIND_PERSON' || task.type === 'FIND_ITEM')) {
-    const a = person.attributes;
-    const match =
-      task.targetId === person.id ||
-      task.targetId === a.occupation ||
-      task.targetId === a.pet ||
-      task.targetId === a.color ||
-      (task.type === 'FIND_ITEM' && task.targetId === a.item);
-    if (match && person.id !== task.giverId) {
-      state.dialogue = { personId: person.id, stage: 'found' };
-      lines.push(`Gist: "You found me! I am indeed the one you are looking for (${task.description})." The player may tell them "I found you", or say goodbye.`);
-      return;
-    }
+  // 0. The person IS the target of an accepted find task (any of them).
+  const found = findTasksMatching(state, person);
+  if (found.length > 0) {
+    state.dialogue = { personId: person.id, stage: 'found' };
+    lines.push(`Gist: "You found me! I am indeed the one you are looking for (${found.map((t) => t.description).join('; ')})." The player may tell them "I found you", or say goodbye.`);
+    return;
   }
 
-  // 1. The giver of the active task.
-  if (task && p.activeTaskGiver === person.id) {
+  // 1. The giver of an accepted task.
+  const task = p.activeTasks.includes(person.id) ? person.task : null;
+  if (task) {
     if (task.isCompleted) {
       if (person.isMinion) {
         // A minion reveals itself instead of paying (the original minionReveal).
         person.taskCompleted = true;
-        p.activeTaskGiver = null;
+        p.activeTasks = p.activeTasks.filter((id) => id !== person.id);
         state.dialogue = { personId: person.id, stage: 'closing' };
         lines.push(`"Ah, you caught me, but you will not find my master!" ${person.name} is one of the demon's MINIONS.`);
         return;
@@ -118,11 +110,23 @@ export function talk(state: DemonHunterState, personId: string, lines: string[])
   }
   state.dialogue = { personId: person.id, stage: 'offer' };
   const secret = person.clues.good ? ' I also know a demon secret.' : '';
-  if (task) {
-    lines.push(`Gist: "I see you are busy. Could you help me instead? ${person.task.description}. In return ${powerOffer(person)}.${secret}" Accept (this replaces your current task) or decline.`);
-  } else {
-    lines.push(`Gist: "Can you help me: ${person.task.description}. In return ${powerOffer(person)}.${secret}" Accept the task or decline.`);
-  }
+  lines.push(`Gist: "Can you help me: ${person.task.description}. In return ${powerOffer(person)}.${secret}" Accept the task or decline.`);
+}
+
+/** The accepted, unfinished find tasks this person satisfies (never their own). */
+function findTasksMatching(state: DemonHunterState, person: Person) {
+  const a = person.attributes;
+  return activeTasks(state).filter((task) => {
+    if (task.isCompleted || task.giverId === person.id) return false;
+    if (task.type !== 'FIND_PERSON' && task.type !== 'FIND_ITEM') return false;
+    return (
+      task.targetId === person.id ||
+      task.targetId === a.occupation ||
+      task.targetId === a.pet ||
+      task.targetId === a.color ||
+      (task.type === 'FIND_ITEM' && task.targetId === a.item)
+    );
+  });
 }
 
 const POWER_OFFER: Record<string, string> = {
@@ -146,11 +150,14 @@ export function foundYou(state: DemonHunterState, lines: string[]): void {
   requireTown(state);
   const person = dialoguePerson(state);
   if (state.dialogue!.stage !== 'found') refuse(`${person.name} is not who you are looking for.`);
-  const task = activeTask(state)!;
-  task.currentAmount = task.amount;
-  task.isCompleted = true;
+  const done: string[] = [];
+  for (const task of findTasksMatching(state, person)) {
+    task.currentAmount = task.amount;
+    task.isCompleted = true;
+    done.push(task.description);
+  }
   state.dialogue = { personId: person.id, stage: 'closing' };
-  lines.push(`"Thanks for finding me. Please let the quest giver know." Task complete: ${task.description}.`);
+  lines.push(`"Thanks for finding me. Please let the quest giver know." Task complete: ${done.join('; ')}.`);
 }
 
 export function acceptTask(state: DemonHunterState, lines: string[]): void {
@@ -158,19 +165,11 @@ export function acceptTask(state: DemonHunterState, lines: string[]): void {
   const person = dialoguePerson(state);
   if (state.dialogue!.stage !== 'offer') refuse(`${person.name} has not offered you a task.`);
   const p = state.player;
-  if (p.activeTaskGiver && p.activeTaskGiver !== person.id) {
-    const old = personOf(state, p.activeTaskGiver);
-    lines.push(`You set aside ${old.name}'s task.`);
-    if (p.follower === old.id) {
-      p.follower = null;
-      lines.push(`${old.name} heads home.`);
-    }
-  }
-  p.activeTaskGiver = person.id;
+  if (!p.activeTasks.includes(person.id)) p.activeTasks.push(person.id);
   const task = person.task;
-  lines.push(`Task accepted: ${task.description}.`);
+  lines.push(`Task accepted: ${task.description}. (${p.activeTasks.length} task${p.activeTasks.length === 1 ? '' : 's'} on your list.)`);
   if (task.type === 'ESCORT') {
-    p.follower = person.id;
+    if (!p.followers.includes(person.id)) p.followers.push(person.id);
     lines.push(`${person.name} will travel with you.`);
   }
   if (task.type === 'FIND_ITEM' && p.magicItems.includes(task.targetId as never)) {
@@ -203,7 +202,7 @@ export function claimReward(state: DemonHunterState, reward: 'clue' | 'power', l
   if (reward === 'clue' && !person.clues.good) refuse(`${person.name} has no demon secret; claim the power instead.`);
   person.taskCompleted = true;
   person.task.isCompleted = true;
-  state.player.activeTaskGiver = null;
+  state.player.activeTasks = state.player.activeTasks.filter((id) => id !== person.id);
   state.dialogue = { personId: person.id, stage: 'closing' };
   if (reward === 'clue') {
     const good = person.clues.good!;

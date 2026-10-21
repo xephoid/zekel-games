@@ -7,7 +7,7 @@ import { edgeBetween, neighborsOf } from '../world/graph.js';
 import { startCombat } from './combat.js';
 import { refuse } from './errors.js';
 import { movePersonToTown } from '../world/puzzle.js';
-import { activeTask, clearTempleEnemiesAt, defOf, enemiesAt, hasMagicItem, healToFull, hereNode, nodeOf, personOf, townAtNode } from './helpers.js';
+import { activeTasks, clearTempleEnemiesAt, defOf, enemiesAt, hasMagicItem, healToFull, hereNode, nodeOf, personOf, respawnOverworld, townAtNode } from './helpers.js';
 import { relocateDemonClues } from './clues.js';
 
 export function requireOutdoors(state: DemonHunterState): void {
@@ -92,17 +92,18 @@ export function arriveInTown(state: DemonHunterState, townId: string, lines: str
   if (!p.visitedTowns.includes(town.id)) p.visitedTowns.push(town.id);
   lines.push(`You enter ${town.name}.`);
   // Escort tasks complete on entering the target town by any means (the
-  // original checks on every town load). The person now lives here; if it was
-  // the demon, every location clue follows it.
-  const task = activeTask(state);
-  if (task && !task.isCompleted && task.type === 'ESCORT' && task.targetId === town.id && p.follower) {
-    const follower = personOf(state, p.follower);
+  // original checks on every town load). Each delivered person now lives
+  // here; if one was the demon, every location clue follows it.
+  for (const followerId of [...p.followers]) {
+    const follower = personOf(state, followerId);
+    const task = follower.task;
+    if (!p.activeTasks.includes(followerId) || task.isCompleted || task.type !== 'ESCORT' || task.targetId !== town.id) continue;
     const from = follower.attributes.townId;
     movePersonToTown(state.towns, follower.id, town.id);
     if (follower.id === state.demonId) relocateDemonClues(state, from, town.id);
     task.currentAmount = task.amount;
     task.isCompleted = true;
-    p.follower = null;
+    p.followers = p.followers.filter((id) => id !== followerId);
     lines.push(`${follower.name} is safely in ${town.name} and will live here now. Task complete: ${follower.name} owes you a reward.`);
   }
 }
@@ -121,6 +122,9 @@ export function leaveInterior(state: DemonHunterState, lines: string[]): void {
     state.temple = null;
   }
   state.player.inside = null;
+  // The wild resets while you are indoors (the original reloaded its stored
+  // overworld on every exit): the monsters, plants and trees are back.
+  respawnOverworld(state);
   lines.push(`You step out of ${here.name}.`);
 }
 

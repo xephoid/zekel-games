@@ -53,18 +53,17 @@ Classification of every field of `DemonHunterState` and where the view
 | Field | Class | In the view as |
 |---|---|---|
 | `graph.nodes` / `edges` (walled) | public | `here.id/name/kind`, `here.paths[{to,name,kind,walled}]`; every town `towns[{id,name,node,visited}]`; every temple `temples[{id,name,item,completed}]` |
-| `enemies` at the player's node | public | `here.enemies[{type,name,count,ids[],hp[]}]` (ids = the `attack` target language) |
+| `enemies` at the player's node | public, by appearance only | `here.enemies[{type,name,count,ids[],condition[]}]` (ids = the `attack` target language; never hp/speed/range/damage) |
 | `resources` at the node | public | `here.resources[{kind,name,count,ids[]}]` |
-| Lady Bandit trade availability | public (tokenless fact) | `here.trader` |
 | `player.*` (position, inside, flying, auraUp, level, xp, stats, caps, shuckles, resources, bombs, lockpicks, locksmith favours, magic items, bindings, deaths, worldCleared) | private-known | `you.*` (every field) |
-| `activeTaskGiver` + the task's progress | private-known | `you.active_task{giver,giver_id,town,description,progress,completed}` |
-| `follower` | private-known | `you.travelling_with` + `people[].travelling_with_you` |
+| `activeTasks` + each task's progress | private-known | `you.active_tasks[{giver,giver_id,town,description,progress,completed}]` |
+| `followers` | private-known | `you.travelling_with[]` + `people[].travelling_with_you` |
 | `towns[].people` | public (name, trade) / private-known once met (pet, colour, item, town, rumour, task, truth-knower) | `here.people[]` in town; `clue_book.people_met[]` anywhere; unmet cards carry name/trade/met only (`viewLeak.test.ts` "unmet people show only name and occupation") |
 | `towns[].prices` / `stock` (current town) | public | `here.inn.trade[{resource,name,sell_price,buy_price,inn_stock,you_have}]`, `services` |
 | `knownClues`, `suspects`, `bindings` | private-known | `clue_book.{clues[{text,kind}],suspects,max_suspects,bindings}` |
-| `combat` | public | `combat.{enemy{id,name,hp,max_hp,speed,range,damage},round,your_attacks_per_action,its_attacks_per_action,it_can_reach_you,you_can_attack,can_flee}` |
-| `temple` | public | `here.challenge{mode,guardian,guardians_total,guardians_remaining,riddle}` |
-| `arena` | public | `arena{demon_hp,demon_max_hp,minions_summoned,minions_left}` |
+| `combat` | public, enemy by appearance only | `combat.{enemy{id,name,condition},round,your_attacks_per_action,it_is_faster_than_you,it_strikes_from_further_than_you,it_can_reach_you,you_can_attack,can_flee}` |
+| `temple` | public, treasure and guardians hidden until met | `here.challenge{mode,riddle}`, `here.treasure` ('unknown' until taken) |
+| `arena` | public | `arena{demon_condition,minions_summoned,minions_left}` |
 | `dialogue`, `innOpen` | public (tokenless) | `dialogue{with,person_id,stage}`, `inn_open` |
 | `phase`, `result` | public | `phase`, `result` |
 | Eye of Truth verdict | private-known (only with the item) | `people[].lying` (absent without the item) |
@@ -190,6 +189,12 @@ marked out-of-scope.
 | Rule | Code | Test |
 |---|---|---|
 | Townsfolk know nothing specific about temples, their creatures or the items (designer, 2026-10-21) | lore `the-temples` (GM-only section), `the-five-artifacts`, `monsters`; guidance §4b; conversation guide | lore suite; personas suite |
+| Any number of accepted tasks, overlapping ones progress together (2026-10-21) | `types.ts activeTasks/followers`; `eng/town.ts findTasksMatching, acceptTask`; `eng/combat.ts killEnemy`; `eng/movement.ts arriveInTown`; `eng/rewards.ts` | questsAndRespawn "many tasks at once" (3 tests) |
+| The wild respawns on leaving a town or temple; ore and the opened ring stay (2026-10-21) | `helpers.ts respawnOverworld`; `eng/movement.ts leaveInterior`; `state.initialEnemies/initialResources` | questsAndRespawn "the wild respawns" (2 tests) |
+| Temple nodes have enemies and resources (2026-10-21) | `w/populate.ts spawnNodesFor` | questsAndRespawn "temples have company" |
+| Temples are mysterious: "a treasure awaits", guardians named only as they appear, no counts, the item named at the chest (2026-10-21) | `eng/temple.ts enterTemple`; `combat.ts killEnemy` gauntlet lines; `views.ts`; `nextStep.ts`; rules "Temples" | temple suite; viewCompleteness "temple and riddle…" |
+| Enemies have no numbers in anything the GM reads: condition words and behaviour only (2026-10-21) | `helpers.ts condition`; `combat.ts`; `describe.ts`; `views.ts`; `legalMoves.ts`; `nextStep.ts`; rules "Enemies"; guidance §6b; reference data | viewCompleteness combat/outdoors (no hp/speed/range/damage keys); combat suite strings |
+| The black market is a secret: nothing states it, buying offered only after talking to a Lady Bandit (2026-10-21) | `player.blackMarketKnown`; `eng/items.ts talkBandit`; `legalMoves.ts`; rules; guidance §4c; lore `monsters`, conversation guide | legalMoves "outdoors…" (buy hidden before, offered after); movement Lady Bandit test |
 | Never give hints unless asked | `guidance.ts SESSION_START_GUIDANCE` §3; every `nextStep.ts` instruction ends with the rule | lore "the guidance forbids hints…"; summaries suite (facts lint) |
 | Conversations are played, not read (designer, 2026-10-20 evening): every person has a seeded persona and a task reason; `talk` returns a GM BRIEF plus "Gist:" lines; the GM improvises, facts stay exact; talking records nothing | `data/personas.ts`; `w/puzzle.ts generatePuzzle` step 6; `eng/town.ts characterBrief`; `nextStep.ts` conversation directive; guidance §2b; lore `running-a-conversation`, `what-nobody-knows` | personas suite (4 tests) |
 | The GM never learns the demon | view stripping (§2) | viewLeak suite; sweep (§13) |

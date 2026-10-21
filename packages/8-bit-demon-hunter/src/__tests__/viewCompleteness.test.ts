@@ -33,12 +33,13 @@ describe('view completeness', () => {
     const ids = here.enemies.flatMap((g: AnyView) => g.ids).sort();
     expect(ids).toEqual(['lady_a', 'skel_a', 'slime_a']);
     const skel = here.enemies.find((g: AnyView) => g.type === 'skeleton');
-    expect(skel.hp).toEqual([ENEMY_BY_ID.skeleton.hp]);
+    expect(skel.condition).toEqual(['unhurt']);
     expect(skel.count).toBe(1);
+    expect(JSON.stringify(here.enemies)).not.toMatch(/"hp"|"speed"|"range"|"damage"/);
     expect(here.resources.map((g: AnyView) => g.ids).flat().sort()).toEqual(['ore_a', 'tree_a']);
-    expect(here.trader).toBe(true);
+    expect(here.trader).toBeUndefined(); // the black market is a secret
+    expect(JSON.stringify(here)).not.toMatch(/trade/i);
     lady.attacked = true;
-    expect((getView(s) as AnyView).here.trader).toBe(false);
   });
 
   it('the player: every stat, cap, resource, item, binding, task and follower', () => {
@@ -62,9 +63,9 @@ describe('view completeness', () => {
     expect(v.you.bombs).toBe('unlimited (Fire Bombs)');
     expect(v.you.magic_items).toEqual([MAGIC_ITEMS.sky.name, MAGIC_ITEMS.fire.name]);
     expect(v.you.bindings).toEqual(['Orb of Flesh']);
-    expect(v.you.active_task).toMatchObject({ giver: giver.name, giver_id: giver.id, description: giver.task.description, progress: '0/' + giver.task.amount, completed: false });
-    if (giver.task.type === 'ESCORT') expect(v.you.travelling_with).toBe(giver.name);
-    else expect(v.you.travelling_with).toBeNull();
+    expect(v.you.active_tasks[0]).toMatchObject({ giver: giver.name, giver_id: giver.id, description: giver.task.description, progress: '0/' + giver.task.amount, completed: false });
+    if (giver.task.type === 'ESCORT') expect(v.you.travelling_with).toEqual([giver.name]);
+    else expect(v.you.travelling_with).toEqual([]);
   });
 
   it('in town: every person by id with met flag; met people with pet, colour, item, town, rumour, task; the inn with prices and stock', () => {
@@ -106,29 +107,32 @@ describe('view completeness', () => {
     expect(v.towns.find((t: AnyView) => t.id === s.towns[1]!.id).visited).toBe(false);
     expect(v.temples.map((t: AnyView) => t.id).sort()).toEqual(['temple_earth', 'temple_fire', 'temple_light', 'temple_sky', 'temple_space']);
     expect(v.temples.find((t: AnyView) => t.id === 'temple_light').completed).toBe(true);
+    expect(v.temples.find((t: AnyView) => t.id === 'temple_light').treasure).toBe('Eye of Truth');
+    expect(v.temples.find((t: AnyView) => t.id === 'temple_fire').treasure).toBe('unknown');
   });
 
-  it('combat: the enemy by id with HP, speed, range, damage; attacks per action both ways; reach and flee flags', () => {
+  it('combat: the enemy by id and condition only (no numbers); your attacks per action; reach and flee flags', () => {
     let s = outsideStart(7);
     s.player.maxHp = 10;
     s.player.hp = 10;
     place(s, 'undead_knight', s.player.at, 'knight_a');
     s = apply(s, { type: 'attack', target: 'knight_a' });
     const v = getView(s) as AnyView;
-    expect(v.combat.enemy).toMatchObject({ id: 'knight_a', name: 'Undead Knight', max_hp: 20, speed: 8, range: 1, damage: 1 });
-    expect(v.combat.enemy.hp).toBe(s.enemies['knight_a']!.hp);
-    expect(v.combat).toMatchObject({ your_attacks_per_action: 1, its_attacks_per_action: 2, it_can_reach_you: true, you_can_attack: true, can_flee: true });
+    expect(v.combat.enemy).toEqual({ id: 'knight_a', name: 'Undead Knight', condition: 'barely scratched' });
+    expect(v.combat).toMatchObject({ your_attacks_per_action: 1, it_is_faster_than_you: true, it_strikes_from_further_than_you: false, it_can_reach_you: true, you_can_attack: true, can_flee: true });
+    expect(JSON.stringify(v.combat)).not.toMatch(/"hp"|"speed"|"range"|"damage"/);
   });
 
-  it('temple and riddle: the challenge mode, guardians remaining, the riddle text', () => {
+  it('temple and riddle: the challenge mode and the riddle text, never the guardians or the treasure', () => {
     let s = outsideStart(8);
     clearAllEnemies(s);
     s.player.at = 'temple_space';
     s = apply(s, { type: 'enter' });
     s = apply(s, { type: 'gauntlet' });
     let v = getView(s) as AnyView;
-    expect(v.here).toMatchObject({ temple: 'Space Temple', item: MAGIC_ITEMS.space.name, already_taken: false });
-    expect(v.here.challenge).toMatchObject({ mode: 'gauntlet', guardian: 'Arachne', guardians_total: 5, guardians_remaining: 5 });
+    expect(v.here).toMatchObject({ temple: 'Space Temple', already_taken: false });
+    expect(v.here.challenge).toEqual({ mode: 'gauntlet' });
+    expect(JSON.stringify(v.here)).not.toMatch(/Arachne|Cape of Teleportation|guardians_/);
     s = apply(s, { type: 'riddle' });
     v = getView(s) as AnyView;
     expect(v.here.challenge.mode).toBe('riddle');
@@ -158,8 +162,7 @@ describe('view completeness', () => {
     v = getView(s) as AnyView;
     expect(v.phase).toBe('arena');
     // the opening attack (range 5 > 3) already knocks it to 5/10: phase two, three minions queued
-    expect(v.arena).toMatchObject({ demon_max_hp: 10, minions_summoned: true, minions_left: 3 });
-    expect(v.arena.demon_hp).toBe(s.enemies['demon']!.hp);
+    expect(v.arena).toMatchObject({ demon_condition: 'hurt', minions_summoned: true, minions_left: 3 });
     let guard = 0;
     while (s.phase === 'arena' && guard++ < 40) s = apply(s, { type: 'fight' });
     v = getView(s) as AnyView;

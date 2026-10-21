@@ -106,10 +106,31 @@ export function gainXp(state: DemonHunterState, amount: number, lines: string[])
   if (!before && canLevelUp(state)) lines.push(`You can level up! (level ${state.player.level + 1} is ready: choose a stat to raise.)`);
 }
 
-export function activeTask(state: DemonHunterState): GameTask | null {
-  const giver = state.player.activeTaskGiver;
-  if (!giver) return null;
-  return allPeople(state).find((p) => p.id === giver)?.task ?? null;
+/** Every accepted task, in acceptance order. */
+export function activeTasks(state: DemonHunterState): GameTask[] {
+  const people = allPeople(state);
+  return state.player.activeTasks.map((giver) => people.find((p) => p.id === giver)?.task).filter((t): t is GameTask => !!t);
+}
+
+/** How an enemy looks, in words: the GM never sees its numbers. */
+export function condition(e: Enemy): string {
+  if (e.hp <= 0) return 'dead';
+  const f = e.hp / e.maxHp;
+  if (f >= 1) return 'unhurt';
+  if (f >= 0.75) return 'barely scratched';
+  if (f >= 0.5) return 'hurt';
+  if (f >= 0.25) return 'badly wounded';
+  return 'barely able to stand';
+}
+
+/** The overworld as it was generated comes back (the original reloaded its
+ *  stored overworld every time the player left a town or temple). Ore
+ *  deposits and the opened Sky ring stay as they are. */
+export function respawnOverworld(state: DemonHunterState): void {
+  state.enemies = structuredClone(state.initialEnemies);
+  for (const [id, r] of Object.entries(state.initialResources)) {
+    if (!state.resources[id]) state.resources[id] = structuredClone(r);
+  }
 }
 
 export function addClue(state: DemonHunterState, clue: Clue): boolean {

@@ -66,8 +66,8 @@ export function generateWorld(seed: number, options: DemonHunterOptions = {}): D
     flying: false,
     auraUp: false,
     knownClues: [],
-    activeTaskGiver: null,
-    follower: null,
+    activeTasks: [],
+    followers: [],
     suspects: [],
     searchedHouses: [],
     locksmithCharges: 0,
@@ -75,11 +75,13 @@ export function generateWorld(seed: number, options: DemonHunterOptions = {}): D
     visitedTowns: [startTown.id],
     lastTown: startTown.id,
     worldCleared: false,
+    blackMarketKnown: false,
     deaths: 0,
   };
 
   return {
     seed: s,
+    turn: 0,
     phase: 'playing',
     graph: built.graph,
     towns,
@@ -87,6 +89,8 @@ export function generateWorld(seed: number, options: DemonHunterOptions = {}): D
     items: puzzle.puzzle.items,
     enemies: enemies.enemies,
     resources: resources.resources,
+    initialEnemies: structuredClone(enemies.enemies),
+    initialResources: Object.fromEntries(Object.entries(resources.resources).filter(([, r]) => r.kind !== 'ore')),
     player,
     combat: null,
     temple: null,

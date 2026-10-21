@@ -61,6 +61,7 @@ function stage(name: string): DemonHunterState {
       place(s, 'slime', s.player.at, 'slime_a');
       place(s, 'lady_bandit', s.player.at, 'lady_a');
       s.player.bombs = 1;
+      s.player.blackMarketKnown = true;
       s.player.magicItems.push('sky', 'earth');
       s.resources['ore_a'] = { id: 'ore_a', kind: 'ore', at: s.player.at, hp: 0 };
       return s;

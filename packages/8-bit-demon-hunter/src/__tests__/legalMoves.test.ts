@@ -42,6 +42,10 @@ describe('legal moves', () => {
     s.player.bombs = 1;
     s.player.shuckles = 300;
     s.resources['ore_a'] = { id: 'ore_a', kind: 'ore', at: s.player.at, hp: 0 };
+    const before = getLegalMoves(s).map((m) => m.move_id);
+    expect(before).toContain('talk_bandit');
+    expect(before.some((i) => i.startsWith('buy_from_bandit'))).toBe(false); // a secret until she offers
+    s.player.blackMarketKnown = true;
     const ids = getLegalMoves(s).map((m) => m.move_id);
     expect(ids).toContain('enter');
     expect(ids).toContain('attack:slime_a');

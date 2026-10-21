@@ -26,7 +26,7 @@ export function stab(state: DemonHunterState, personId: string, lines: string[])
   const town = state.towns.find((t) => t.nodeId === state.player.at)!;
   const person =
     town.people.find((x) => x.id === personId || x.name.toLowerCase() === personId.toLowerCase()) ??
-    (state.player.follower === personId ? personOf(state, personId) : null);
+    (state.player.followers.includes(personId) ? personOf(state, personId) : null);
   if (!person) refuse(`There is no one called "${personId}" here in ${town.name}.`);
   lines.push(`You draw the demon-killing knife and drive it into ${person.name} the ${person.attributes.occupation}.`);
   if (person.id !== state.demonId) {
@@ -47,15 +47,14 @@ export function stab(state: DemonHunterState, personId: string, lines: string[])
   state.player.inside = null;
   state.player.flying = false;
   state.player.auraUp = false;
-  state.player.follower = null;
-  const hp = demonHp(state);
-  const demon = makeEnemy('demon', ENEMY_BY_ID.demon, ARENA_NODE_ID, hp);
+  state.player.followers = [];
+  const demon = makeEnemy('demon', ENEMY_BY_ID.demon, ARENA_NODE_ID, demonHp(state));
   state.enemies[demon.id] = demon;
   state.arena = { demonEnemyId: demon.id, phase2Done: false, minionQueue: [] };
   state.phase = 'arena';
   lines.push(
     `The knife goes in and ${person.name}'s face splits into a grin far too wide. The town falls away and you stand in a dark arena of black pillars. ` +
-      `THE DEMON (${hp} HP${state.player.bindings.length > 0 ? `, weakened by ${state.player.bindings.length} binding${state.player.bindings.length === 1 ? '' : 's'}` : ''}) rises before you. There is no way out but through.`,
+      `THE DEMON rises before you${state.player.bindings.length > 0 ? `, moving stiffly: your ${state.player.bindings.length} binding${state.player.bindings.length === 1 ? '' : 's'} weigh on it` : ''}. There is no way out but through.`,
   );
   startCombat(state, demon.id, 'arena', lines);
 }

@@ -31,4 +31,4 @@ Each world has five towns, drawn from eighteen that people know by name. Every t
 - **Bakersburg** — bread you can smell from the clearing.
 - **Smithton** — forges day and night; the Blacksmith here is famous.
 
-What the townsfolk say of daily life: prices differ town to town; heal at the inn, five shuckles is a bargain; someone bought a bomb off a Lady Bandit; rocks can be blown open for ore; watch out for the mushrooms; people here act as if the old days were just stories, but stories come from somewhere.
+What the townsfolk say of daily life: prices differ town to town; heal at the inn, five shuckles is a bargain; someone says they bought a bomb off a Lady Bandit, though nobody can swear to it; rocks can be blown open for ore; watch out for the mushrooms; people here act as if the old days were just stories, but stories come from somewhere.

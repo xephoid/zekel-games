@@ -167,10 +167,12 @@ export interface PlayerState {
   /** Aura of Protection is up outdoors: the next move ignores blockers. */
   auraUp: boolean;
   knownClues: Clue[];
-  /** The person whose task is active; its progress lives on their `task`. */
-  activeTaskGiver: string | null;
-  /** Person being escorted. */
-  follower: string | null;
+  /** Every task the player has accepted (giver ids); progress lives on each
+   *  giver's `task`. All of them are active at once; overlapping ones
+   *  progress and complete together (ruling 2026-10-21). */
+  activeTasks: string[];
+  /** People being escorted. */
+  followers: string[];
   suspects: string[];
   searchedHouses: string[];
   locksmithCharges: number;
@@ -178,6 +180,10 @@ export interface PlayerState {
   visitedTowns: string[];
   lastTown: string;
   worldCleared: boolean;
+  /** The player has talked to a Lady Bandit and heard her offer (ruling
+   *  2026-10-21: the black market is a secret to discover; nothing states it
+   *  before then, and buying is only offered once it is known). */
+  blackMarketKnown: boolean;
   /** Times the player has died (scoreboard; the harness bot gives up after three). */
   deaths: number;
 }
@@ -234,6 +240,8 @@ export interface DemonHunterOptions {
 
 export interface DemonHunterState {
   seed: number;
+  /** Moves applied so far (scoreboard; the harness bot gives up after many). */
+  turn: number;
   phase: Phase;
   graph: WorldGraph;
   towns: Town[];
@@ -242,6 +250,10 @@ export interface DemonHunterState {
   items: Item[];
   enemies: Record<string, Enemy>;
   resources: Record<string, ResourceNode>;
+  /** The overworld as generated: leaving a town or temple restores enemies,
+   *  plants and trees to this (the original reloaded its stored overworld). */
+  initialEnemies: Record<string, Enemy>;
+  initialResources: Record<string, ResourceNode>;
   player: PlayerState;
   combat: Combat | null;
   temple: TempleRun | null;

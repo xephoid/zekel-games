@@ -20,6 +20,9 @@ describe('temples', () => {
     s = r.state;
     expect(r.summary).toContain('gauntlet');
     expect(r.summary).toContain('riddle');
+    expect(r.summary).toContain('A treasure awaits');
+    expect(r.summary).not.toContain('Aura of Protection');
+    expect(r.summary).not.toContain('Flower');
     expect(s.temple?.mode).toBe('choice');
     expect(() => apply(s, { type: 'answer_riddle', text: 'Memlax' })).toThrow(/Say "riddle" first/);
     r = applyText(s, { type: 'riddle' });
@@ -36,7 +39,7 @@ describe('temples', () => {
     // leaving and re-entering: already taken
     s = apply(s, { type: 'leave' });
     r = applyText(s, { type: 'enter' });
-    expect(r.summary).toContain('already carry');
+    expect(r.summary).toContain('already took');
     expect(r.state.temple).toBeNull();
   });
 
@@ -80,7 +83,7 @@ describe('temples', () => {
     s = apply(s, { type: 'gauntlet' });
     let r = applyText(s, { type: 'next_fight' });
     s = r.state;
-    expect(r.summary).toContain("Evil Eye's range is higher");
+    expect(r.summary).toContain('Evil Eye strikes before you can close');
     const eye = Object.values(s.enemies).find((e) => e.type === 'evil_eye')!;
     expect(s.combat?.enemyId).toBe(eye.id);
     s = apply(s, { type: 'fight' });
@@ -95,7 +98,7 @@ describe('temples', () => {
     let s = atTemple('space', 2);
     const giver = s.towns[0]!.people[0]!;
     giver.task = { ...giver.task, type: 'FIND_ITEM', targetId: 'space', targetName: 'Cape of Teleportation', amount: 1, currentAmount: 0, description: 'Find the Cape of Teleportation', isCompleted: false };
-    s.player.activeTaskGiver = giver.id;
+    s.player.activeTasks = [giver.id];
     s = apply(s, { type: 'enter' });
     s = apply(s, { type: 'riddle' });
     const r = applyText(s, { type: 'answer_riddle', text: 'Chineera' });

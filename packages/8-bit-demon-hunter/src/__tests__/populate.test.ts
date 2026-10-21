@@ -6,7 +6,7 @@ import { generateWorld } from '../world/generate.js';
 import { spawnNodesFor } from '../world/populate.js';
 
 describe('populating the world', () => {
-  it('spawns the original counts, bandits in pairs, clearing-only types in clearings, nothing in temples', () => {
+  it('spawns the original counts, bandits in pairs, clearing-only types in clearings or around temples', () => {
     for (let seed = 1; seed <= 40; seed++) {
       const s = generateWorld(seed);
       const enemies = Object.values(s.enemies);
@@ -15,8 +15,7 @@ describe('populating the world', () => {
         expect(ofType, `${def.id} count`).toHaveLength(def.max);
         for (const e of ofType) {
           const node = s.graph.nodes[e.at]!;
-          expect(node.kind).not.toBe('temple');
-          if (def.clearingsOnly) expect(node.kind).toBe('clearing');
+          if (def.clearingsOnly) expect(['clearing', 'temple']).toContain(node.kind);
           expect(e.hp).toBe(def.hp);
           expect(e.attacked).toBe(false);
         }
@@ -37,7 +36,7 @@ describe('populating the world', () => {
         for (const e of Object.values(s.enemies).filter((e) => e.type === def.id)) {
           expect(allowed.has(e.at), `${e.id} on an allowed node`).toBe(true);
         }
-        const kinds = def.clearingsOnly ? ['clearing'] : ['town', 'clearing'];
+        const kinds = def.clearingsOnly ? ['clearing', 'temple'] : ['town', 'clearing', 'temple'];
         const farEnough = Object.values(s.graph.nodes).filter((n) => kinds.includes(n.kind) && n.hops >= def.minHops);
         if (farEnough.length > 0) {
           for (const e of Object.values(s.enemies).filter((e) => e.type === def.id)) {
@@ -57,7 +56,7 @@ describe('populating the world', () => {
     }
   });
 
-  it('places plants and trees on towns and clearings, ore only on clearings', () => {
+  it('places plants and trees anywhere, ore only in the wild (clearings and around temples)', () => {
     const s = generateWorld(2);
     const res = Object.values(s.resources);
     expect(res.filter((r) => r.kind === 'plant')).toHaveLength(PLANT_COUNT);
@@ -65,8 +64,7 @@ describe('populating the world', () => {
     expect(res.filter((r) => r.kind === 'ore')).toHaveLength(ORE_DEPOSIT_COUNT);
     for (const r of res) {
       const node = s.graph.nodes[r.at]!;
-      expect(node.kind).not.toBe('temple');
-      if (r.kind === 'ore') expect(node.kind).toBe('clearing');
+      if (r.kind === 'ore') expect(['clearing', 'temple']).toContain(node.kind);
       if (r.kind === 'plant') expect(r.hp).toBe(1);
       if (r.kind === 'tree') expect(r.hp).toBe(4);
     }

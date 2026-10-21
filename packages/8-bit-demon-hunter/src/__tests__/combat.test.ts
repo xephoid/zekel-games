@@ -42,7 +42,7 @@ describe('combat', () => {
     const skel = place(s, 'skeleton', s.player.at);
     const r = applyText(s, { type: 'attack', target: skel.id });
     s = r.state;
-    expect(r.summary).toContain("Skeleton's range is higher");
+    expect(r.summary).toContain('Skeleton strikes before you can close');
     expect(r.summary).toContain('is faster and acts first');
     // opening 1 + its first action (2 attacks: speed 2 vs 1) + your swing + its reply (2)
     expect(s.player.hp).toBe(10 - 1 - 2 - 2);
@@ -54,7 +54,7 @@ describe('combat', () => {
     s.player.range = 2;
     const slime = place(s, 'slime', s.player.at);
     const r = applyText(s, { type: 'attack', target: slime.id });
-    expect(r.summary).toContain('Your range is higher');
+    expect(r.summary).toContain('You strike before the Slime can close');
     s = r.state;
     // opening hit + first action hit = 2 damage: dead before it acts
     expect(s.enemies[slime.id]).toBeUndefined();
@@ -212,7 +212,7 @@ describe('combat', () => {
     let s = outsideStart();
     const giver = s.towns[0]!.people.find((p) => p.task.type === 'KILL' && p.task.targetId === 'slime') ?? s.towns[0]!.people[0]!;
     giver.task = { ...giver.task, type: 'KILL', targetId: 'slime', targetName: 'SLIME', amount: 2, currentAmount: 0, description: 'Kill 2 Slimes', isCompleted: false };
-    s.player.activeTaskGiver = giver.id;
+    s.player.activeTasks = [giver.id];
     s.player.strength = 2;
     for (let i = 0; i < 2; i++) {
       const slime = place(s, 'slime', s.player.at, `slime_t${i}`);

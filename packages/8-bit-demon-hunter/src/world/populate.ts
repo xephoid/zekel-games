@@ -24,11 +24,12 @@ function majorNodes(graph: WorldGraph, kinds: readonly ('town' | 'clearing' | 't
     .map((n) => n.id);
 }
 
-/** Nodes an enemy type may spawn on: clearings (and towns unless
- *  clearingsOnly), at least minHops from the start town; if none qualify,
- *  the farthest eligible nodes. Never temples. */
+/** Nodes an enemy type may spawn on: clearings and temple surroundings (and
+ *  towns unless clearingsOnly), at least minHops from the start town; if none
+ *  qualify, the farthest eligible nodes. (Temple nodes count as wild ground:
+ *  ruling 2026-10-21, after a temple was found with nothing around it.) */
 export function spawnNodesFor(graph: WorldGraph, def: EnemyDef): string[] {
-  const kinds: ('town' | 'clearing')[] = def.clearingsOnly ? ['clearing'] : ['town', 'clearing'];
+  const kinds: ('town' | 'clearing' | 'temple')[] = def.clearingsOnly ? ['clearing', 'temple'] : ['town', 'clearing', 'temple'];
   const eligible = majorNodes(graph, kinds);
   const far = eligible.filter((id) => graph.nodes[id]!.hops >= def.minHops);
   if (far.length > 0) return far;
@@ -83,8 +84,8 @@ export function populateResources(graph: WorldGraph, seed: number): { resources:
     const id = `${kind}_${n}`;
     resources[id] = { id, kind, at, hp: RESOURCE_NODE[kind].hp };
   };
-  const open = majorNodes(graph, ['town', 'clearing']);
-  const clearings = majorNodes(graph, ['clearing']);
+  const open = majorNodes(graph, ['town', 'clearing', 'temple']);
+  const clearings = majorNodes(graph, ['clearing', 'temple']);
   for (let i = 0; i < PLANT_COUNT; i++) {
     const p = pick(open, s);
     s = p.nextSeed;
