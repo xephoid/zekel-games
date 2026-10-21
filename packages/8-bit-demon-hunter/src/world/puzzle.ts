@@ -102,12 +102,14 @@ export function generatePuzzle(towns: Town[], seed: number): { puzzle: PuzzleTow
   const demon = demonPick.value;
   demon.isDemon = true;
 
-  // Minions: towns × MINIONS_PER_TOWN, drawn from everyone else (the original
-  // does not force them to spread across towns).
-  const minionCount = towns.length * MINIONS_PER_TOWN;
-  const candidates = shuffle(people.filter((p) => !p.isDemon), s);
-  s = candidates.nextSeed;
-  for (let i = 0; i < Math.min(minionCount, candidates.items.length); i++) candidates.items[i]!.isMinion = true;
+  // Minions: exactly MINIONS_PER_TOWN in every town, drawn from that town's
+  // people other than the demon (ruling 2026-10-21; the Musician's count and
+  // the rules text both say two per town).
+  for (const town of towns) {
+    const candidates = shuffle(town.people.filter((p) => !p.isDemon), s);
+    s = candidates.nextSeed;
+    for (let i = 0; i < Math.min(MINIONS_PER_TOWN, candidates.items.length); i++) candidates.items[i]!.isMinion = true;
+  }
 
   // 2. Items: one unique item per person.
   const itemNames = shuffle(ITEM_NAMES, s);

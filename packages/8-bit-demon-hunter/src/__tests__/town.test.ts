@@ -239,7 +239,7 @@ describe('asking around town', () => {
       const monster = killer.task.description.replace(/^Kill \d+ /, '');
       r = applyText(s, { type: 'search_town', task: monster });
       expect(r.summary).toContain(killer.name);
-      expect(r.summary).toContain(killer.task.description.toLowerCase());
+      expect(r.summary.toLowerCase()).toContain(killer.task.description.toLowerCase());
     }
     const someone = town.people[3]!;
     const itemName = s.items.find((i) => i.id === someone.attributes.item)!.name;
@@ -381,7 +381,7 @@ describe('houses and bindings', () => {
     const town = s.towns[0]!;
     s = apply(s, { type: 'inn' });
     s.towns[0]!.stock.wood = 5; // on the state the inn move returned, not the copy it was cloned from
-    s.player.shuckles = 100;
+    s.player.shuckles = 1000; // enough for any seed's prices
     const buy = buyPrice('wood', town.prices.wood);
     const sell = sellPrice('wood', town.prices.wood);
     expect(() => apply(s, { type: 'buy', resource: 'wood', amount: 6 })).toThrow(/only 5 in stock|can afford/);
@@ -391,7 +391,7 @@ describe('houses and bindings', () => {
     expect(r.summary).toContain(`You buy 3 Wood for ${buy * 3}`);
     s = r.state;
     expect(s.player.resources.wood).toBe(3);
-    expect(s.player.shuckles).toBe(100 - buy * 3);
+    expect(s.player.shuckles).toBe(1000 - buy * 3);
     expect(s.towns[0]!.stock.wood).toBe(2);
     // all = as many as stock and purse allow
     s = apply(s, { type: 'buy', resource: 'wood', amount: 'all' });

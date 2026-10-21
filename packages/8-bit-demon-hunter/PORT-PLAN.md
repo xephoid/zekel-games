@@ -77,6 +77,9 @@ contradiction check; the arena was lost at once with no bindings (Q11).
 Fixes: the demon's name no longer doubles "The"; a confessed minion's card
 says `confessed_minion`; level-ups are offered mid-conversation; the
 Carpenter's "not in" clue is filed as a certainty (special), not a rumour.
+Ruling 2026-10-21 (ninth): **exactly two minions in every town**, drawn from
+that town's people other than the demon (before, ten were drawn across all
+towns, so a town could hold three or one).
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.

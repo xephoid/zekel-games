@@ -31,6 +31,7 @@ describe('the mystery', () => {
       expect(s.towns).toHaveLength(TOWN_COUNT);
       expect(all.filter((p) => p.isDemon)).toHaveLength(1);
       expect(all.filter((p) => p.isMinion)).toHaveLength(TOWN_COUNT * MINIONS_PER_TOWN);
+      for (const t of s.towns) expect(t.people.filter((p) => p.isMinion), `seed ${seed}: ${t.name}`).toHaveLength(MINIONS_PER_TOWN); // two in every town
       expect(demonOf(s).isMinion).toBe(false);
       for (const town of s.towns) {
         expect(town.people).toHaveLength(PEOPLE_PER_TOWN);
