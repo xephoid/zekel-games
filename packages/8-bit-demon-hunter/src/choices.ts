@@ -37,6 +37,13 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
     distinguishedBy: 'to',
   },
   {
+    id: 'where-to-travel',
+    description: 'Where to travel in one go (a place, a quest giver\'s town, the nearest inn), and whether to press on past a stop at the edge of danger',
+    owner: 'player',
+    when: 'in-game',
+    resolvedBy: ['travel'],
+  },
+  {
     id: 'enter-or-pass',
     description: 'Whether to go into a town or temple you stand outside, and when to leave it',
     owner: 'player',
@@ -52,17 +59,16 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
     distinguishedBy: 'target',
   },
   {
-    id: 'bomb-target',
-    description: 'Whether to use a bomb here, and whether it goes on an ore deposit or the Sky Temple wall',
+    id: 'bomb-here',
+    description: 'Whether to set off a bomb where you stand (it hits everything on the node)',
     owner: 'player',
     when: 'in-game',
     resolvedBy: ['bomb'],
-    distinguishedBy: 'target',
     dependsOn: 'holding a bomb or the Fire Bombs',
   },
   {
     id: 'black-market',
-    description: 'Whether to trade with a Lady Bandit, and which of bomb or lockpick to buy',
+    description: 'Whether to talk to a Lady Bandit and, once she has made her offer, which of bomb or lockpick to buy',
     owner: 'player',
     when: 'in-game',
     resolvedBy: ['talk_bandit', 'buy_from_bandit'],
@@ -140,6 +146,13 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
 
   // ---- Town ----
   {
+    id: 'ask-around',
+    description: 'What to ask around town for: a pet, colour, trade, item, a task, who knows the truth, or contradictions in your clue book',
+    owner: 'player',
+    when: 'in-game',
+    resolvedBy: ['search_town'],
+  },
+  {
     id: 'whom-to-talk-to',
     description: 'Which townsperson you talk to',
     owner: 'player',
@@ -149,7 +162,7 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
   },
   {
     id: 'take-the-task',
-    description: 'Whether to accept a person\'s task (replacing your current one) or decline',
+    description: 'Whether to accept a person\'s task (any number may be active at once) or decline',
     owner: 'player',
     when: 'in-game',
     resolvedBy: ['accept_task', 'decline'],
@@ -172,12 +185,13 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
     dependsOn: 'having completed a task',
   },
   {
-    id: 'i-found-you',
-    description: 'Telling the person you were sent to find that you found them',
+    id: 'claim-in-one-move',
+    description: 'Claiming a reward from a giver in their town without talking first (claim_reward with their id)',
     owner: 'player',
     when: 'in-game',
-    resolvedBy: ['found_you'],
-    dependsOn: 'an active find task whose target you are talking to',
+    resolvedBy: ['claim_reward'],
+    distinguishedBy: 'person',
+    dependsOn: 'a completed task whose giver is in this town',
   },
   {
     id: 'end-the-conversation',
@@ -188,7 +202,7 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
   },
   {
     id: 'inn-services',
-    description: 'At the inn: sleep, train, ride to a town (which one), buy or sell a resource (which one), or leave',
+    description: 'At the inn: sleep, train, ride to a town (which one), buy or sell a resource (which one, how many), or leave',
     owner: 'player',
     when: 'in-game',
     resolvedBy: ['inn', 'sleep', 'train', 'ride', 'buy', 'sell', 'leave_inn'],
@@ -211,11 +225,11 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
     distinguishedBy: 'person',
   },
   {
-    id: 'the-accusation',
-    description: 'Whom you accuse of being the demon, and when',
+    id: 'the-knife',
+    description: 'Whom you stab with the demon-killing knife, face to face in their town, and when',
     owner: 'player',
     when: 'in-game',
-    resolvedBy: ['accuse'],
+    resolvedBy: ['stab'],
     distinguishedBy: 'person',
   },
   {
@@ -260,6 +274,15 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
     dependsOn: 'a gauntlet under way',
   },
   {
+    id: 'words-for-the-demon',
+    description: 'What, if anything, to say to the demon in its lair, in your own words',
+    owner: 'player',
+    when: 'in-game',
+    resolvedBy: ['say'],
+    distinguishedBy: 'text',
+    dependsOn: 'standing in the lair',
+  },
+  {
     id: 'riddle-answer',
     description: 'Your answer to the riddle, in your own words',
     owner: 'player',
@@ -271,7 +294,7 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
 
   // ---- The finale ----
   {
-    id: 'arena-minions',
+    id: 'lair-minions',
     description: 'Which three monsters the demon summons',
     owner: 'auto',
     when: 'in-game',

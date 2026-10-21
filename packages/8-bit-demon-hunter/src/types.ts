@@ -123,6 +123,9 @@ export interface Person {
   task: GameTask;
   hasMet: boolean;
   taskCompleted: boolean;
+  /** They confessed to being a minion when their task was finished: the
+   *  player knows, so the card says so. */
+  confessed: boolean;
   /** A game tip (starting town) or a lore line (every other town): their story. */
   tip: string;
   /** How the GM voices them (seeded, independent of the mystery). */
@@ -167,17 +170,31 @@ export interface PlayerState {
   /** Aura of Protection is up outdoors: the next move ignores blockers. */
   auraUp: boolean;
   knownClues: Clue[];
-  /** The person whose task is active; its progress lives on their `task`. */
-  activeTaskGiver: string | null;
-  /** Person being escorted. */
-  follower: string | null;
+  /** Every task the player has accepted (giver ids); progress lives on each
+   *  giver's `task`. All of them are active at once; overlapping ones
+   *  progress and complete together (ruling 2026-10-21). */
+  activeTasks: string[];
+  /** People being escorted. */
+  followers: string[];
   suspects: string[];
   searchedHouses: string[];
   locksmithCharges: number;
   bindings: string[];
   visitedTowns: string[];
+  /** Places the player knows of (node ids): every town (the map shows
+   *  them, as the original's minimap did), everywhere they have stood, and
+   *  everywhere a path led from there. Temples and clearings are found, not
+   *  given; travel and the view are gated on this (ruling 2026-10-21). */
+  knownPlaces: string[];
   lastTown: string;
   worldCleared: boolean;
+  /** The player has talked to a Lady Bandit and heard her offer (ruling
+   *  2026-10-21: the black market is a secret to discover; nothing states it
+   *  before then, and buying is only offered once it is known). */
+  blackMarketKnown: boolean;
+  /** Where the last travel stopped at the edge of danger: travelling the same
+   *  way again presses on through it. */
+  lastEdgeStop: { from: string; next: string } | null;
   /** Times the player has died (scoreboard; the harness bot gives up after three). */
   deaths: number;
 }
@@ -185,7 +202,7 @@ export interface PlayerState {
 export type Stat = StatId;
 
 // ---------------------------------------------------------------------------
-// Combat / temple / arena
+// Combat / temple / lair
 // ---------------------------------------------------------------------------
 
 export interface Combat {
@@ -210,10 +227,10 @@ export interface TempleRun {
  *  which replies are legal. */
 export interface DialogueState {
   personId: string;
-  stage: 'found' | 'reward' | 'offer' | 'closing';
+  stage: 'reward' | 'offer' | 'closing';
 }
 
-export interface ArenaState {
+export interface LairState {
   demonEnemyId: string;
   phase2Done: boolean;
   /** Phase 2 minions still to fight before the demon resumes. */
@@ -224,7 +241,7 @@ export interface ArenaState {
 // Session state
 // ---------------------------------------------------------------------------
 
-export type Phase = 'playing' | 'dead' | 'arena' | 'won' | 'lost';
+export type Phase = 'playing' | 'dead' | 'lair' | 'won' | 'lost';
 
 export interface DemonHunterOptions {
   seed?: number;
@@ -234,6 +251,8 @@ export interface DemonHunterOptions {
 
 export interface DemonHunterState {
   seed: number;
+  /** Moves applied so far (scoreboard; the harness bot gives up after many). */
+  turn: number;
   phase: Phase;
   graph: WorldGraph;
   towns: Town[];
@@ -242,10 +261,14 @@ export interface DemonHunterState {
   items: Item[];
   enemies: Record<string, Enemy>;
   resources: Record<string, ResourceNode>;
+  /** The overworld as generated: leaving a town or temple restores enemies,
+   *  plants and trees to this (the original reloaded its stored overworld). */
+  initialEnemies: Record<string, Enemy>;
+  initialResources: Record<string, ResourceNode>;
   player: PlayerState;
   combat: Combat | null;
   temple: TempleRun | null;
-  arena: ArenaState | null;
+  lair: LairState | null;
   dialogue: DialogueState | null;
   innOpen: boolean;
   result: { winner: 'player' | 'demon'; summary: string } | null;

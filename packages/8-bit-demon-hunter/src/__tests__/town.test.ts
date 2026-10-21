@@ -3,6 +3,8 @@ import { INN_RIDE_COST, INN_SLEEP_COST, INN_TRAIN_COST, INN_TRAIN_XP, MERCHANT_S
 import { buyPrice, sellPrice } from '../data/resources.js';
 import type { DemonHunterState, Person } from '../types.js';
 import { apply, applyText, demon, fresh } from './support.js';
+import { getLegalMoves } from '../legalMoves.js';
+import { getView } from '../views.js';
 
 // PORT-PLAN §6.
 
@@ -28,14 +30,14 @@ describe('talking to townsfolk', () => {
     expect(s.player.knownClues.map((c) => c.text)).toContain(p.clues.bad!.text);
     expect(person(s, p.id).hasMet).toBe(true);
     expect(s.dialogue?.stage).toBe('offer');
-    expect(() => apply(s, { type: 'leave' })).toThrow(/say goodbye/);
+    expect(applyText(s, { type: 'leave' }).summary).toContain('You take your leave of'); // no goodbye needed
     s = apply(s, { type: 'decline' });
     expect(s.dialogue?.stage).toBe('closing');
     s = apply(s, { type: 'goodbye' });
     expect(s.dialogue).toBeNull();
     s = apply(s, { type: 'talk', person: p.name.toLowerCase() });
     s = apply(s, { type: 'accept_task' });
-    expect(s.player.activeTaskGiver).toBe(p.id);
+    expect(s.player.activeTasks).toContain(p.id);
   });
 
   it('a truth-knower says so, and the Eye of Truth flags liars', () => {
@@ -74,7 +76,7 @@ describe('talking to townsfolk', () => {
     expect(r.summary).toContain(good.clues.good!.text);
     expect(s.player.knownClues.map((c) => c.text)).toContain(good.clues.good!.text);
     expect(person(s, good.id).taskCompleted).toBe(true);
-    expect(s.player.activeTaskGiver).toBeNull();
+    expect(s.player.activeTasks).not.toContain(good.id);
     s = apply(s, { type: 'goodbye' });
     r = applyText(s, { type: 'talk', person: good.id });
     expect(r.summary).toContain('Thanks again');
@@ -93,8 +95,36 @@ describe('talking to townsfolk', () => {
     const r = applyText(s, { type: 'talk', person: minion.id });
     expect(r.summary).toContain('you will not find my master');
     expect(r.summary).toContain('MINIONS');
-    expect(r.state.player.activeTaskGiver).toBeNull();
+    expect(r.state.player.activeTasks).not.toContain(minion.id);
     expect(person(r.state, minion.id).taskCompleted).toBe(true);
+    expect(person(r.state, minion.id).confessed).toBe(true);
+    const card = (getView(r.state) as { here: { people: { id: string; confessed_minion?: boolean }[] } }).here.people.find((x) => x.id === minion.id)!;
+    expect(card.confessed_minion).toBe(true);
+    expect(getLegalMoves(r.state).some((m) => m.move_id.startsWith('level_up:'))).toBe(false);
+    r.state.player.xp = 1000;
+    expect(getLegalMoves(r.state).some((m) => m.move_id.startsWith('level_up:'))).toBe(true); // offered mid-conversation too
+  });
+
+  it("a confessed minion's house needs no lockpick and yields its binding", () => {
+    let s = fresh(3);
+    const minion = s.towns.flatMap((t) => t.people).find((x) => x.isMinion)!;
+    const town = s.towns.find((t) => t.id === minion.attributes.townId)!;
+    s.player.at = town.nodeId;
+    s.player.inside = 'town';
+    s = apply(s, { type: 'talk', person: minion.id });
+    s = apply(s, { type: 'accept_task' });
+    person(s, minion.id).task.isCompleted = true;
+    s = apply(s, { type: 'talk', person: minion.id }); // confesses
+    s = apply(s, { type: 'goodbye' });
+    expect(s.player.lockpicks).toBe(0);
+    expect(getLegalMoves(s).map((m) => m.move_id)).toContain(`search_house:${minion.id}`);
+    const r = applyText(s, { type: 'search_house', person: minion.id });
+    expect(r.summary).toContain('confessed to serving the demon');
+    expect(r.summary).toContain('found a demon binding');
+    expect(r.state.player.bindings).toHaveLength(1);
+    // anyone else's door is still locked without a pick
+    const other = town.people.find((x) => !x.isMinion && x.id !== s.demonId)!;
+    expect(() => apply(r.state, { type: 'search_house', person: other.id })).toThrow(/locked/);
   });
 
   it('find tasks: the matching person says "you found me"', () => {
@@ -107,8 +137,75 @@ describe('talking to townsfolk', () => {
     s = apply(s, { type: 'goodbye' });
     const r = applyText(s, { type: 'talk', person: target.id });
     expect(r.summary).toContain('You found me');
-    s = apply(r.state, { type: 'found_you' });
+    expect(r.summary).toContain(`Claim the reward from ${giver.name}`);
+    expect(r.summary).toContain('Can you help me'); // and their own offer, in the same breath
+    expect(r.state.dialogue?.stage).toBe('offer');
+    s = apply(r.state, { type: 'accept_task' });
+    expect(s.player.activeTasks).toContain(target.id);
     expect(person(s, giver.id).task.isCompleted).toBe(true);
+  });
+
+  it('the short quest flow: talk to the target straight from the giver, then claim in one move', () => {
+    let s = fresh();
+    const giver = townPeople(s)[0]!;
+    const target = townPeople(s).find((x) => x.id !== giver.id)!;
+    giver.task = { ...giver.task, type: 'FIND_PERSON', targetId: target.attributes.pet, targetName: target.attributes.pet, amount: 1, currentAmount: 0, description: `Find someone with a ${target.attributes.pet}`, isCompleted: false };
+    s = apply(s, { type: 'talk', person: giver.id });
+    s = apply(s, { type: 'accept_task' });
+    // no goodbye: talking to the target ends the giver's conversation and completes the find
+    let r = applyText(s, { type: 'talk', person: target.id });
+    expect(r.summary).toContain(`(You take your leave of ${giver.name}.)`);
+    expect(r.summary).toContain('Task complete');
+    s = r.state;
+    const ids = getLegalMoves(s).map((m) => m.move_id);
+    expect(ids).toContain('goodbye');
+    // claim in one move, mid-conversation with the target
+    r = applyText(s, { type: 'claim_reward', person: giver.id, reward: 'power' });
+    expect(r.summary).toContain(`(You take your leave of ${target.name}.)`);
+    expect(r.summary).toContain('You did it');
+    s = r.state;
+    expect(person(s, giver.id).taskCompleted).toBe(true);
+    expect(s.player.activeTasks).not.toContain(giver.id);
+    // and the town list offered that claim before we took it
+    const before = apply(apply(fresh(), { type: 'talk', person: giver.id }), { type: 'goodbye' });
+    expect(getLegalMoves(before).map((m) => m.move_id)).not.toContain(`claim_reward:${giver.id}:power`);
+  });
+
+  it('claiming from a giver who also completes someone else\'s find goes on to the reward', () => {
+    let s = fresh();
+    const people = townPeople(s);
+    const giver = people[0]!;
+    const other = people[1]!;
+    const target = people.find((x) => x.id !== giver.id && x.id !== other.id && x.attributes.occupation !== giver.attributes.occupation)!;
+    giver.task = { ...giver.task, type: 'FIND_PERSON', targetId: target.attributes.pet, targetName: target.attributes.pet, amount: 1, currentAmount: 0, description: `Find someone with a ${target.attributes.pet}`, isCompleted: false };
+    other.task = { ...other.task, type: 'FIND_PERSON', targetId: giver.attributes.occupation, targetName: giver.attributes.occupation, amount: 1, currentAmount: 0, description: `Find a ${giver.attributes.occupation}`, isCompleted: false };
+    s = apply(s, { type: 'talk', person: giver.id });
+    s = apply(s, { type: 'accept_task' });
+    s = apply(s, { type: 'talk', person: other.id }); // wants a person of the giver's trade
+    s = apply(s, { type: 'accept_task' });
+    s = apply(s, { type: 'talk', person: target.id }); // the giver's find is done
+    const r = applyText(s, { type: 'claim_reward', person: giver.id, reward: 'power' });
+    expect(r.summary).toContain(`Task complete: Find a ${giver.attributes.occupation}`); // meeting the giver finished the other find
+    expect(person(r.state, giver.id).taskCompleted || person(r.state, giver.id).confessed).toBe(true); // and the claim still went through
+    expect(r.state.player.activeTasks).not.toContain(giver.id);
+  });
+
+  it('claiming from a giver who owes nothing yet just talks to them; the inn, leaving and asking around end a conversation by themselves', () => {
+    let s = fresh();
+    const giver = townPeople(s)[0]!;
+    s = apply(s, { type: 'talk', person: giver.id });
+    s = apply(s, { type: 'accept_task' });
+    let r = applyText(s, { type: 'claim_reward', person: giver.id, reward: 'power' });
+    expect(r.summary).toContain('Please hurry');
+    expect(r.state.dialogue?.stage).toBe('closing');
+    r = applyText(r.state, { type: 'inn' });
+    expect(r.summary).toContain('You take your leave of');
+    expect(r.state.dialogue).toBeNull();
+    s = apply(r.state, { type: 'leave_inn' });
+    s = apply(s, { type: 'talk', person: giver.id });
+    r = applyText(s, { type: 'leave' });
+    expect(r.summary).toContain('You take your leave of');
+    expect(r.state.player.inside).toBeNull();
   });
 
   it('each occupation power does what the original did', () => {
@@ -164,6 +261,67 @@ describe('talking to townsfolk', () => {
   });
 });
 
+describe('asking around town', () => {
+  it('names who fits a pet, colour, trade, item, task or truth, and they count as met', () => {
+    const s = fresh(1);
+    const town = s.towns[0]!;
+    const purple = town.people.filter((p) => p.attributes.color === 'Purple');
+    let r = applyText(s, { type: 'search_town', color: 'purple' });
+    if (purple.length === 0) expect(r.summary).toContain('Nobody here fits');
+    else for (const p of purple) expect(r.summary).toContain(`${p.name} the ${p.attributes.occupation}`);
+    for (const p of purple) {
+      expect(r.state.towns[0]!.people.find((x) => x.id === p.id)!.hasMet).toBe(true);
+      if (p.clues.bad) expect(r.state.player.knownClues.map((c) => c.text)).toContain(p.clues.bad.text);
+    }
+    const truth = town.people.find((p) => p.clues.good)!;
+    r = applyText(s, { type: 'search_town', truth: true });
+    expect(r.summary).toContain(`${truth.name} the ${truth.attributes.occupation}`);
+    expect(r.summary).toContain('I know the truth!');
+    expect(r.state.towns[0]!.people.find((x) => x.id === truth.id)!.hasMet).toBe(true);
+    const killer = town.people.find((p) => p.task.type === 'KILL');
+    if (killer) {
+      const monster = killer.task.description.replace(/^Kill \d+ /, '');
+      r = applyText(s, { type: 'search_town', task: monster });
+      expect(r.summary).toContain(killer.name);
+      expect(r.summary.toLowerCase()).toContain(killer.task.description.toLowerCase());
+    }
+    const someone = town.people[3]!;
+    const itemName = s.items.find((i) => i.id === someone.attributes.item)!.name;
+    r = applyText(s, { type: 'search_town', item: itemName });
+    expect(r.summary).toContain(someone.name);
+    r = applyText(s, { type: 'search_town', occupation: 'Mayor', pet: town.people.find((p) => p.attributes.occupation === 'Mayor')!.attributes.pet });
+    expect(r.summary).toContain('the Mayor');
+    r = applyText(s, { type: 'search_town' });
+    expect(r.summary).toContain('Ask about something');
+    expect(() => apply(apply(s, { type: 'leave' }), { type: 'search_town', pet: 'dog' })).toThrow(/in a town/);
+  });
+
+  it('finds the rumours that contradict a secret and names who said them', () => {
+    let s = fresh(2);
+    const d = demon(s);
+    // a secret about the demon's trade, as if earned
+    s.player.knownClues.push({ text: `The demon is a ${d.attributes.occupation}`, isGood: true, relatedAttribute: { key: 'occupation', value: d.attributes.occupation } });
+    let r = applyText(s, { type: 'search_town', contradictions: true });
+    expect(r.summary).toContain('None of them contradicts');
+    // a liar whose lie is exactly that negation
+    const liar = s.towns[0]!.people.find((p) => p.id !== d.id)!;
+    liar.clues.bad = { text: `The demon is not a ${d.attributes.occupation}`, isGood: false, relatedAttribute: { key: 'occupation', value: d.attributes.occupation } };
+    s = apply(s, { type: 'talk', person: liar.id });
+    s = apply(s, { type: 'goodbye' });
+    r = applyText(s, { type: 'search_town', contradictions: true });
+    expect(r.summary).toContain(`said by ${liar.name} the ${liar.attributes.occupation}`);
+    expect(r.summary).toContain('was lying');
+    // works outdoors too
+    r = applyText(apply(s, { type: 'leave' }), { type: 'search_town', contradictions: true });
+    expect(r.summary).toContain('was lying');
+  });
+
+  it('without a secret, says why nothing can contradict', () => {
+    const r = applyText(fresh(3), { type: 'search_town', contradictions: true });
+    expect(r.summary).toContain('Without a demon secret');
+  });
+});
+
 describe('escorts', () => {
   it('the escorted person travels with you and moves house on arrival; escorting the demon moves the location clues', () => {
     let s = fresh(4);
@@ -175,7 +333,7 @@ describe('escorts', () => {
     s.player.inside = 'town';
     s = apply(s, { type: 'talk', person: d.id });
     s = apply(s, { type: 'accept_task' });
-    expect(s.player.follower).toBe(d.id);
+    expect(s.player.followers).toContain(d.id);
     s = apply(s, { type: 'goodbye' });
     // a truthful "not in <dest>" clue in the book must flip; the good town clue must follow
     const goodHolder = s.towns.flatMap((t) => t.people).find((p) => p.clues.good?.relatedAttribute?.key === 'townId')!;
@@ -185,7 +343,7 @@ describe('escorts', () => {
     const r = applyText(s, { type: 'teleport', town: dest.id });
     s = r.state;
     expect(r.summary).toContain('will live here now');
-    expect(s.player.follower).toBeNull();
+    expect(s.player.followers).not.toContain(d.id);
     expect(person(s, d.id).attributes.townId).toBe(dest.id);
     expect(s.towns.find((t) => t.id === dest.id)!.people.some((p) => p.id === d.id)).toBe(true);
     expect(s.towns.find((t) => t.id === home.id)!.people.some((p) => p.id === d.id)).toBe(false);
@@ -260,5 +418,42 @@ describe('houses and bindings', () => {
     r = applyText(s, { type: 'search_house', person: innocent.id });
     expect(r.summary).toContain('Nothing of note');
     expect(r.state.player.locksmithCharges).toBe(0);
+  });
+
+  it('buys and sells in any valid amount, or all; past the bound it refuses and names it', () => {
+    let s = fresh(8);
+    const town = s.towns[0]!;
+    s = apply(s, { type: 'inn' });
+    s.towns[0]!.stock.wood = 5; // on the state the inn move returned, not the copy it was cloned from
+    s.player.shuckles = 1000; // enough for any seed's prices
+    const buy = buyPrice('wood', town.prices.wood);
+    const sell = sellPrice('wood', town.prices.wood);
+    expect(() => apply(s, { type: 'buy', resource: 'wood', amount: 6 })).toThrow(/only 5 in stock|can afford/);
+    expect(() => apply(s, { type: 'buy', resource: 'wood', amount: 0 })).toThrow(/How many/);
+    expect(() => apply(s, { type: 'buy', resource: 'wood', amount: 1.5 })).toThrow(/How many/);
+    const r = applyText(s, { type: 'buy', resource: 'wood', amount: 3 });
+    expect(r.summary).toContain(`You buy 3 Wood for ${buy * 3}`);
+    s = r.state;
+    expect(s.player.resources.wood).toBe(3);
+    expect(s.player.shuckles).toBe(1000 - buy * 3);
+    expect(s.towns[0]!.stock.wood).toBe(2);
+    // all = as many as stock and purse allow
+    s = apply(s, { type: 'buy', resource: 'wood', amount: 'all' });
+    expect(s.player.resources.wood).toBe(5);
+    expect(s.towns[0]!.stock.wood).toBe(0);
+    expect(() => apply(s, { type: 'buy', resource: 'wood', amount: 'all' })).toThrow(/no Wood in stock/);
+    // a purse that only stretches so far
+    s.player.shuckles = buy * 2 - 1;
+    s.towns[0]!.stock.wood = 9;
+    s = apply(s, { type: 'buy', resource: 'wood', amount: 'all' });
+    expect(s.player.resources.wood).toBe(6);
+    expect(() => apply(s, { type: 'sell', resource: 'wood', amount: 7 })).toThrow(/only 6/);
+    s = apply(s, { type: 'sell', resource: 'wood', amount: 4 });
+    expect(s.player.resources.wood).toBe(2);
+    const before = s.player.shuckles;
+    s = apply(s, { type: 'sell', resource: 'wood', amount: 'all' });
+    expect(s.player.resources.wood).toBe(0);
+    expect(s.player.shuckles).toBe(before + sell * 2);
+    expect(() => apply(s, { type: 'sell', resource: 'wood', amount: 'all' })).toThrow(/no Wood to sell/);
   });
 });

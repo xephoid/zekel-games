@@ -64,6 +64,7 @@ export function generatePeople(towns: Town[], seed: number): number {
         task: seedTask(id),
         hasMet: false,
         taskCompleted: false,
+        confessed: false,
         tip: '',
         persona: { temperament: '', manner: '', quirk: '', worry: '', taskReason: '', loreHooks: [] },
       });
@@ -101,12 +102,14 @@ export function generatePuzzle(towns: Town[], seed: number): { puzzle: PuzzleTow
   const demon = demonPick.value;
   demon.isDemon = true;
 
-  // Minions: towns × MINIONS_PER_TOWN, drawn from everyone else (the original
-  // does not force them to spread across towns).
-  const minionCount = towns.length * MINIONS_PER_TOWN;
-  const candidates = shuffle(people.filter((p) => !p.isDemon), s);
-  s = candidates.nextSeed;
-  for (let i = 0; i < Math.min(minionCount, candidates.items.length); i++) candidates.items[i]!.isMinion = true;
+  // Minions: exactly MINIONS_PER_TOWN in every town, drawn from that town's
+  // people other than the demon (ruling 2026-10-21; the Musician's count and
+  // the rules text both say two per town).
+  for (const town of towns) {
+    const candidates = shuffle(town.people.filter((p) => !p.isDemon), s);
+    s = candidates.nextSeed;
+    for (let i = 0; i < Math.min(MINIONS_PER_TOWN, candidates.items.length); i++) candidates.items[i]!.isMinion = true;
+  }
 
   // 2. Items: one unique item per person.
   const itemNames = shuffle(ITEM_NAMES, s);
@@ -394,7 +397,29 @@ function generateTasks(towns: Town[], seed: number): number {
     }
   }
 
-  // Third: everyone else from the general pool, never a task that conflicts
+  // Third (ruling 2026-10-21): minions ask for hard things. Every minion who is
+  // not a Merchant (Merchants always escort, so a Merchant with a kill task
+  // would give the game away) gets a kill task, three times in four, drawn
+  // from the monsters that fight back; otherwise one of the temple finds left
+  // in the pool. Finds that a townmate satisfies, and escorts, stay with the
+  // innocent: catching a minion by finishing their task should cost something.
+  const hardPrey = OVERWORLD_ENEMIES.filter((e) => e.id !== 'slime' && e.toKill);
+  for (const p of people) {
+    if (!p.isMinion || assigned.has(p.id)) continue;
+    const roll = randomInt(s, 4);
+    s = roll.nextSeed;
+    if (roll.value === 0 && magicLeft.length > 0) {
+      give(p, magicLeft[0]!);
+      magicLeft = magicLeft.slice(1);
+      continue;
+    }
+    const prey = pick(hardPrey, s);
+    s = prey.nextSeed;
+    const e = prey.value;
+    give(p, mk({ id: `task_kill_${e.id}_${p.id}`, type: 'KILL', targetId: e.id, targetName: e.name.toUpperCase(), amount: e.toKill ?? 0, description: `Kill ${e.toKill} ${e.plural}` }));
+  }
+
+  // Fourth: everyone else from the general pool, never a task that conflicts
   // with the giver (asking to find themselves, or an escort to their own
   // town). PORT: the original rotated the pool at most ten times and could
   // still hand out a self-conflicting find task (talking to the giver would

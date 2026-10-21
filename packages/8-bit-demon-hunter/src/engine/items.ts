@@ -1,7 +1,7 @@
 // Harvesting, bombs, levelling, death and the Lady Bandit's black market
 // (PORT-PLAN §8–§9).
 
-import { BOMB_COST, BOMB_DAMAGE, LOCKPICK_COST, STAT_BASE, STAT_MAX, STAT_STEP, type StatId } from '../data/progression.js';
+import { BOMB_COST, BOMB_DAMAGE, BOMB_SELF_DAMAGE, LOCKPICK_COST, STAT_BASE, STAT_MAX, STAT_STEP, type StatId } from '../data/progression.js';
 import { GOLD_DROP_CHANCE, HARVEST_AGGRO_CHANCE, IRON_DROP_CHANCE, RESOURCE_DISPLAY_NAME, RESOURCE_NODE } from '../data/resources.js';
 import { ENEMY_BY_ID } from '../data/enemies.js';
 import { chance, pick, randomFloat } from '../rng.js';
@@ -10,9 +10,9 @@ import type { Enemy } from '../types.js';
 const defOfEnemy = (e: Enemy) => ENEMY_BY_ID[e.type];
 import type { DemonHunterState } from '../types.js';
 import { edgeBetween, neighborsOf } from '../world/graph.js';
-import { killEnemy, startCombat } from './combat.js';
+import { die, killEnemy, startCombat } from './combat.js';
 import { refuse } from './errors.js';
-import { aggressiveAt, canLevelUp, enemiesAt, enemyName, hasMagicItem, healToFull, hereNode, statIsMaxed } from './helpers.js';
+import { aggressiveAt, canLevelUp, condition, enemiesAt, enemyName, hasMagicItem, healToFull, hereNode, resourcesAt, statIsMaxed } from './helpers.js';
 import { arriveInTown, requireNoCombat, requireOutdoors } from './movement.js';
 
 /** `attack {target}` on a plant or tree. */
@@ -46,34 +46,21 @@ export function harvest(state: DemonHunterState, resourceId: string, lines: stri
   }
 }
 
-/** `bomb {target?}` outdoors: hurts every enemy here by 5; a targeted ore
- *  deposit is destroyed and rolls ore; with no target next to the walled Sky
- *  Temple edge, the wall opens and rolls ore. */
-export function bomb(state: DemonHunterState, target: string | undefined, lines: string[]): void {
+/** `bomb` outdoors: everything on the node takes the blast. Every enemy is
+ *  hurt by 5, every ore deposit shatters and rolls ore, every plant and tree
+ *  is burnt (no yield), and if the node touches the Sky Temple's stone ring
+ *  the ring opens (with an ore roll of its own). */
+export function bomb(state: DemonHunterState, confirm: boolean | undefined, lines: string[]): void {
   requireNoCombat(state);
   requireOutdoors(state);
   const p = state.player;
   const unlimited = hasMagicItem(state, 'fire');
   if (!unlimited && p.bombs <= 0) refuse('You have no bombs.');
   const here = hereNode(state);
-
-  let ore = false;
-  if (target !== undefined) {
-    const r = state.resources[target];
-    if (!r || r.at !== here.id) refuse(`There is no "${target}" here to bomb.`);
-    if (r.kind !== 'ore') refuse(`Bombs are for ore deposits and the Sky Temple wall; a ${RESOURCE_NODE[r.kind].name} can simply be attacked.`);
-    delete state.resources[r.id];
-    ore = true;
-    lines.push('The ore deposit shatters.');
-  } else {
-    const wall = neighborsOf(state.graph, here.id, { includeWalled: true })
-      .map((n) => edgeBetween(state.graph, here.id, n)!)
-      .find((e) => e.walled);
-    if (wall) {
-      wall.walled = false;
-      ore = true;
-      lines.push('The blast tears a hole in the stone ring. The way to the Sky Temple is open.');
-    }
+  // The blast catches you too. Warn before a bomb that would be the end of you.
+  if (p.hp <= BOMB_SELF_DAMAGE && !confirm) {
+    lines.push(`Careful: the blast would hit you for ${BOMB_SELF_DAMAGE} and you have only ${p.hp} HP. That bomb would kill you. Bomb again with confirm set to true to do it anyway.`);
+    return;
   }
 
   if (!unlimited) {
@@ -83,15 +70,41 @@ export function bomb(state: DemonHunterState, target: string | undefined, lines:
     lines.push('You conjure a Fire Bomb.');
   }
   lines.push('BOOM!');
+  p.hp -= BOMB_SELF_DAMAGE;
+  lines.push(`The blast catches you too: ${BOMB_SELF_DAMAGE} damage (HP ${Math.max(0, p.hp)}/${p.maxHp}).`);
+  if (p.hp <= 0) {
+    die(state, 'your own bomb', lines);
+    return;
+  }
+
+  let oreRolls = 0;
+  const wall = neighborsOf(state.graph, here.id, { includeWalled: true })
+    .map((n) => edgeBetween(state.graph, here.id, n)!)
+    .find((e) => e.walled);
+  if (wall) {
+    wall.walled = false;
+    oreRolls++;
+    lines.push('The blast tears a hole in the stone ring. The way to the Sky Temple is open.');
+  }
 
   for (const e of enemiesAt(state, here.id)) {
     e.hp -= BOMB_DAMAGE;
     e.attacked = true;
     if (e.hp <= 0) killEnemy(state, e, lines);
-    else lines.push(`The blast hurts the ${enemyName(e)} (${e.hp}/${e.maxHp} HP left).`);
+    else lines.push(`The blast hurts the ${enemyName(e)}; it is ${condition(e)}.`);
   }
 
-  if (ore) {
+  let burnt = 0;
+  for (const r of resourcesAt(state, here.id)) {
+    delete state.resources[r.id];
+    if (r.kind === 'ore') {
+      oreRolls++;
+      lines.push('An ore deposit shatters.');
+    } else burnt++;
+  }
+  if (burnt > 0) lines.push(`${burnt} plant${burnt === 1 ? '' : 's'} or tree${burnt === 1 ? '' : 's'} here burn to nothing.`);
+
+  for (let k = 0; k < oreRolls; k++) {
     const roll = randomFloat(state.seed);
     state.seed = roll.nextSeed;
     if (roll.value < GOLD_DROP_CHANCE) {
@@ -143,11 +156,11 @@ export function continueAfterDeath(state: DemonHunterState, lines: string[]): vo
   p.auraUp = false;
   state.combat = null;
   state.temple = null;
-  state.arena = null;
+  state.lair = null;
   state.dialogue = null;
   state.innOpen = false;
   state.phase = 'playing';
-  // Temple guardians and arena foes do not outlive the attempt.
+  // Temple guardians and lair foes do not outlive the attempt.
   for (const e of Object.values(state.enemies)) if (defOfEnemy(e).templeOnly) delete state.enemies[e.id];
   lines.push('You wake up. Your level and stats are back to where you started, but you kept everything you carried and learned.');
   arriveInTown(state, p.lastTown, lines);
@@ -158,21 +171,31 @@ export function talkBandit(state: DemonHunterState, lines: string[]): void {
   requireNoCombat(state);
   requireOutdoors(state);
   const lady = findTrader(state);
-  if (!lady) refuse('There is no Lady Bandit here willing to trade.');
-  lines.push(`The Lady Bandit looks you over. "Black market's open. Bomb, ${BOMB_COST} shuckles. Lockpick, ${LOCKPICK_COST}. You have ${state.player.shuckles}."`);
+  if (!lady) refuse('There is no Lady Bandit here willing to talk.');
+  state.player.blackMarketKnown = true;
+  lines.push(`The Lady Bandit looks you over, then lowers her voice. "You're not here to fight, are you. Good. I deal, if you've got coin: a bomb for ${BOMB_COST} shuckles, a lockpick for ${LOCKPICK_COST}. You have ${state.player.shuckles}."`);
 }
 
-export function buyFromBandit(state: DemonHunterState, item: 'bomb' | 'lockpick', lines: string[]): void {
+export function buyFromBandit(state: DemonHunterState, item: 'bomb' | 'lockpick', amount: number | 'all' | undefined, lines: string[]): void {
   requireNoCombat(state);
   requireOutdoors(state);
   const lady = findTrader(state);
   if (!lady) refuse('There is no Lady Bandit here willing to trade.');
   const cost = item === 'bomb' ? BOMB_COST : LOCKPICK_COST;
   if (state.player.shuckles < cost) refuse(`A ${item} costs ${cost} shuckles; you have ${state.player.shuckles}.`);
-  state.player.shuckles -= cost;
-  if (item === 'bomb') state.player.bombs++;
-  else state.player.lockpicks++;
-  lines.push(`You buy a ${item} for ${cost} shuckles (${state.player.shuckles} left; bombs ${state.player.bombs}, lockpicks ${state.player.lockpicks}).`);
+  const affordable = Math.floor(state.player.shuckles / cost);
+  // One deal, any amount you can pay for (designer, 2026-10-21); then she is gone.
+  let n = 1;
+  if (amount === 'all') n = affordable;
+  else if (amount !== undefined) {
+    if (!Number.isInteger(amount) || amount < 1) refuse('How many? Give a whole number of at least 1, or "all".');
+    if (amount > affordable) refuse(`At ${cost} shuckles each you can afford ${affordable} ${item}${affordable === 1 ? '' : 's'} with ${state.player.shuckles} shuckles.`);
+    n = amount;
+  }
+  state.player.shuckles -= cost * n;
+  if (item === 'bomb') state.player.bombs += n;
+  else state.player.lockpicks += n;
+  lines.push(`You buy ${n === 1 ? `a ${item}` : `${n} ${item}s`} for ${cost * n} shuckles (${state.player.shuckles} left; bombs ${state.player.bombs}, lockpicks ${state.player.lockpicks}).`);
   // After a sale she slips away (the original removes her).
   delete state.enemies[lady.id];
   lines.push('The Lady Bandit pockets your coins and vanishes into the trees.');

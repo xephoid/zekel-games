@@ -124,6 +124,10 @@ export const LORE_LINES: readonly string[] = [
   'All the monsters showed up about the same time as rumors of the demon did. Just saying!',
   'The reason some of us can sense the demon is because we are descendants of Chineera. Once the bride of Memlax.',
   'The demon was defeated by Chineera and her followers once a long time ago. Surely one of her ancestors will do it again.',
+  // Two casual lines on the demon's weakness (ruling 2026-10-21): the secret
+  // way in the lair is discoverable in play, not only through the lore tool.
+  'My gran swore the demon fears nothing in this world but love. She was a strange woman, my gran, but she was never wrong about much.',
+  "There's a song the old folk sing at weddings about Chineera facing the demon with no sword at all, only her heart. Nobody remembers the second verse.",
   'The champions of Chineera were a rebel group. One of my ancestors was a member!',
   "My grandpa told me the demon was married to Chineera, but that doesn't make sense!",
   'The demon ruled this world a long time ago an has returned!',

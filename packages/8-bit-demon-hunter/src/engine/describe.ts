@@ -5,16 +5,15 @@ import { ENEMY_BY_ID } from '../data/enemies.js';
 import { RESOURCE_NODE } from '../data/resources.js';
 import type { DemonHunterState } from '../types.js';
 import { edgeBetween, neighborsOf } from '../world/graph.js';
-import { defOf, enemiesAt, hereNode, resourcesAt, townAtNode } from './helpers.js';
+import { condition, enemiesAt, hereNode, resourcesAt, townAtNode } from './helpers.js';
 
 export interface NodeView {
   id: string;
   kind: 'town' | 'clearing' | 'temple';
   name: string;
   paths: { to: string; name: string; kind: string; walled: boolean }[];
-  enemies: { type: string; name: string; count: number; ids: string[]; hp: number[] }[];
+  enemies: { type: string; name: string; count: number; ids: string[]; condition: string[] }[];
   resources: { kind: string; name: string; count: number; ids: string[] }[];
-  trader: boolean;
 }
 
 export function describeNode(state: DemonHunterState, nodeId: string = state.player.at): NodeView {
@@ -25,11 +24,11 @@ export function describeNode(state: DemonHunterState, nodeId: string = state.pla
     kind: state.graph.nodes[n]!.kind,
     walled: edgeBetween(state.graph, nodeId, n)!.walled,
   }));
-  const enemyGroups = new Map<string, { ids: string[]; hp: number[] }>();
+  const enemyGroups = new Map<string, { ids: string[]; condition: string[] }>();
   for (const e of enemiesAt(state, nodeId)) {
-    const g = enemyGroups.get(e.type) ?? { ids: [], hp: [] };
+    const g = enemyGroups.get(e.type) ?? { ids: [], condition: [] };
     g.ids.push(e.id);
-    g.hp.push(e.hp);
+    g.condition.push(condition(e));
     enemyGroups.set(e.type, g);
   }
   const resourceGroups = new Map<string, string[]>();
@@ -43,10 +42,35 @@ export function describeNode(state: DemonHunterState, nodeId: string = state.pla
     kind: node.kind,
     name: node.name,
     paths,
-    enemies: Array.from(enemyGroups, ([type, g]) => ({ type, name: ENEMY_BY_ID[type as keyof typeof ENEMY_BY_ID].name, count: g.ids.length, ids: g.ids, hp: g.hp })),
+    enemies: Array.from(enemyGroups, ([type, g]) => ({ type, name: ENEMY_BY_ID[type as keyof typeof ENEMY_BY_ID].name, count: g.ids.length, ids: g.ids, condition: g.condition })),
     resources: Array.from(resourceGroups, ([kind, ids]) => ({ kind, name: RESOURCE_NODE[kind as keyof typeof RESOURCE_NODE].name, count: ids.length, ids })),
-    trader: enemiesAt(state, nodeId).some((e) => e.type === 'lady_bandit' && !e.attacked),
   };
+}
+
+/** The enemies (by count, with ids) and resources where the player stands:
+ *  said on every arrival outdoors, so nobody has to look each time
+ *  (designer, 2026-10-21). */
+export function whatIsHere(state: DemonHunterState, nodeId: string = state.player.at): string {
+  const v = describeNode(state, nodeId);
+  const parts: string[] = [];
+  if (v.enemies.length === 0) parts.push('No enemies here.');
+  else {
+    parts.push(
+      'Enemies: ' +
+        v.enemies
+          .map((g) => {
+            const def = ENEMY_BY_ID[g.type as keyof typeof ENEMY_BY_ID];
+            const hurt = g.condition.filter((c) => c !== 'unhurt').length;
+            return `${g.count} ${g.count === 1 ? def.name : def.plural} [${g.ids.join(', ')}]${hurt > 0 ? ` (${hurt} of them hurt)` : ''}`;
+          })
+          .join('; ') +
+        '.',
+    );
+  }
+  if (v.resources.length > 0) {
+    parts.push('Resources: ' + v.resources.map((g) => `${g.count} ${g.count === 1 ? g.name : RESOURCE_NODE[g.kind as keyof typeof RESOURCE_NODE].plural} [${g.ids.join(', ')}]`).join('; ') + '.');
+  }
+  return parts.join(' ');
 }
 
 export function lookText(state: DemonHunterState): string {
@@ -68,30 +92,8 @@ export function lookText(state: DemonHunterState): string {
       v.paths.map((x) => `${x.name} (${x.kind}${x.walled ? ', blocked by a ring of stone wall' : ''})`).join(', ') +
       '.',
   );
-  if (v.enemies.length === 0) parts.push('No enemies here.');
-  else {
-    parts.push(
-      'Enemies: ' +
-        v.enemies
-          .map((g) => {
-            const def = ENEMY_BY_ID[g.type as keyof typeof ENEMY_BY_ID];
-            return `${g.count} ${g.count === 1 ? def.name : def.plural} [${g.ids.join(', ')}]`;
-          })
-          .join('; ') +
-        '.',
-    );
-  }
-  if (v.resources.length > 0) {
-    parts.push('Resources: ' + v.resources.map((g) => `${g.count} ${g.count === 1 ? g.name : RESOURCE_NODE[g.kind as keyof typeof RESOURCE_NODE].plural} [${g.ids.join(', ')}]`).join('; ') + '.');
-  }
-  if (v.trader) parts.push('A Lady Bandit here will trade if you talk to her.');
-  const follower = p.follower ? state.towns.flatMap((t) => t.people).find((x) => x.id === p.follower) : null;
-  if (follower) parts.push(`${follower.name} is travelling with you.`);
+  parts.push(whatIsHere(state));
+  const followers = p.followers.map((id) => state.towns.flatMap((t) => t.people).find((x) => x.id === id)?.name ?? id);
+  if (followers.length > 0) parts.push(`${followers.join(' and ')} ${followers.length === 1 ? 'is' : 'are'} travelling with you.`);
   return parts.join(' ');
-}
-
-export function enemyLine(state: DemonHunterState, enemyId: string): string {
-  const e = state.enemies[enemyId]!;
-  const d = defOf(e);
-  return `${d.name} (${e.hp}/${e.maxHp} HP, speed ${d.speed}, range ${d.range}, damage ${d.damage})`;
 }

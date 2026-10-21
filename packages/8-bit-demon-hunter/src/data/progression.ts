@@ -38,6 +38,30 @@ export const INN_RIDE_COST = 50;
 export const BOMB_COST = 10;
 export const LOCKPICK_COST = 200;
 export const BOMB_DAMAGE = 5;
+
+/** Guardians faced in a temple gauntlet, one at a time (ruling 2026-10-21: the
+ *  original's full count, five to eight, was a cliff: a hunter either killed
+ *  each before it acted or died, with no healing between). */
+export const GAUNTLET_LENGTH = 4;
+
+/** The lair fight, in one place so it can be tuned (ruling 2026-10-21).
+ *  Flat HP: strength shortens the fight; every binding and every artifact
+ *  held takes `perWeakening` off, never below `minHp`. At two thirds the
+ *  demon summons `minionCount` minions of `minionHp`, one fewer for every
+ *  `weakeningsPerMinionLost` weakenings (the bindings bind its servants too);
+ *  in its last third it fires `phase3ExtraAttacks` more per action. */
+export const LAIR = {
+  baseHp: 48,
+  perWeakening: 8,
+  minHp: 4,
+  minionCount: 3,
+  minionHp: 6,
+  weakeningsPerMinionLost: 2,
+  phase3ExtraAttacks: 1,
+};
+/** The blast catches you too (ruling 2026-10-21); a bomb that would kill
+ *  you needs `confirm`. */
+export const BOMB_SELF_DAMAGE = 2;
 export const MINIONS_PER_TOWN = 2;
 export const PEOPLE_PER_TOWN = 10;
 export const TOWN_COUNT = 5;

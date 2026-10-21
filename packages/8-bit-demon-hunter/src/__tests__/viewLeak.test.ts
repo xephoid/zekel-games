@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { ENEMY_BY_ID } from '../data/enemies.js';
 import { RIDDLES } from '../data/riddles.js';
 import { getView } from '../views.js';
 import { getLegalMoves } from '../legalMoves.js';
 import { describeNextStep } from '../nextStep.js';
 import { apply, fresh, outsideStart } from './support.js';
+import { SESSION_START_GUIDANCE } from '../guidance.js';
+import { DEMON_HUNTER_RULE_SECTIONS, renderRules } from '../rulesSections.js';
 
 // Nothing hidden may reach the player view, the legal moves or next_step:
 // the demon's identity, minion flags, unearned secrets, riddle answers.
@@ -30,7 +33,7 @@ describe('the player view hides the mystery', () => {
       for (const p of state.towns.flatMap((t) => t.people)) {
         if (p.clues.good) expect(text, `${p.id}'s secret ${p.clues.good.text}`).not.toContain(p.clues.good.text);
       }
-      // the demon id appears only as an ordinary person id (talk/accuse targets), never flagged
+      // the demon id appears only as an ordinary person id (talk/stab targets), never flagged
       const demon = state.towns.flatMap((t) => t.people).find((p) => p.id === state.demonId)!;
       const view = getView(state) as { here: { people: { id: string; name: string }[] } };
       const card = view.here.people.find((x) => x.id === demon.id) as Record<string, unknown> | undefined;
@@ -85,5 +88,27 @@ describe('the player view hides the mystery', () => {
       expect(card.rumour).toBeUndefined();
       expect(card.knows_the_truth).toBeUndefined();
     }
+  });
+
+  it('an unconfessed minion is never marked; the demon reads as "the Demon" in combat', () => {
+    const s = fresh(6);
+    for (const p of s.towns[0]!.people) p.hasMet = true;
+    const text = JSON.stringify(getView(s));
+    expect(text).not.toContain('confessed_minion');
+    expect(text).not.toContain('isMinion');
+    expect(ENEMY_BY_ID.demon.name).toBe('Demon');
+  });
+
+  it('nothing GM-facing names the word that undoes the demon', () => {
+    let s = fresh(2);
+    const d = s.towns.flatMap((t) => t.people).find((x) => x.id === s.demonId)!;
+    s.player.at = s.towns.find((t) => t.id === d.attributes.townId)!.nodeId;
+    s.player.inside = 'town';
+    s.player.maxHp = 10;
+    s.player.hp = 10;
+    s.player.bindings = ['a'];
+    s = apply(s, { type: 'stab', person: d.id });
+    const text = JSON.stringify([getLegalMoves(s), describeNextStep(s, 'p1'), SESSION_START_GUIDANCE, renderRules(DEMON_HUNTER_RULE_SECTIONS)]);
+    expect(text.toLowerCase()).not.toMatch(/\blove\b/);
   });
 });

@@ -3,6 +3,7 @@
 import { ENEMY_BY_ID, isAggressive, type EnemyDef } from '../data/enemies.js';
 import { MAX_LEVEL, STAT_MAX, XP_CURVE } from '../data/progression.js';
 import { RESOURCE_NODE } from '../data/resources.js';
+import { neighborsOf } from '../world/graph.js';
 import type { Clue, DemonHunterState, Enemy, GameTask, MajorNode, Person, ResourceNode, Town } from '../types.js';
 import { refuse } from './errors.js';
 
@@ -68,6 +69,13 @@ export function personOf(state: DemonHunterState, personId: string): Person {
   return p;
 }
 
+/** "an Arachne", "a Bee": the indefinite article by the first letter;
+ *  capitalised at the start of a sentence. */
+export function withArticle(name: string, sentenceStart = false): string {
+  const an = /^[aeiou]/i.test(name);
+  return `${sentenceStart ? (an ? 'An' : 'A') : an ? 'an' : 'a'} ${name}`;
+}
+
 export function enemyName(enemy: Enemy): string {
   return defOf(enemy).name;
 }
@@ -106,10 +114,54 @@ export function gainXp(state: DemonHunterState, amount: number, lines: string[])
   if (!before && canLevelUp(state)) lines.push(`You can level up! (level ${state.player.level + 1} is ready: choose a stat to raise.)`);
 }
 
-export function activeTask(state: DemonHunterState): GameTask | null {
-  const giver = state.player.activeTaskGiver;
-  if (!giver) return null;
-  return allPeople(state).find((p) => p.id === giver)?.task ?? null;
+/** Every accepted task, in acceptance order. */
+export function activeTasks(state: DemonHunterState): GameTask[] {
+  const people = allPeople(state);
+  return state.player.activeTasks.map((giver) => people.find((p) => p.id === giver)?.task).filter((t): t is GameTask => !!t);
+}
+
+/** How an enemy looks, in words: the GM never sees its numbers. */
+export function condition(e: Enemy): string {
+  if (e.hp <= 0) return 'dead';
+  const f = e.hp / e.maxHp;
+  if (f >= 1) return 'unhurt';
+  if (f >= 0.75) return 'barely scratched';
+  if (f >= 0.5) return 'hurt';
+  if (f >= 0.25) return 'badly wounded';
+  return 'barely able to stand';
+}
+
+/** The overworld as it was generated comes back (the original reloaded its
+ *  stored overworld every time the player left a town or temple). Ore
+ *  deposits and the opened Sky ring stay as they are. */
+/** Standing somewhere, the player learns it and every place a path leads to
+ *  from it (a walled temple included: the wall is in plain sight). */
+export function learnSurroundings(state: DemonHunterState): void {
+  const p = state.player;
+  for (const id of [p.at, ...neighborsOf(state.graph, p.at, { includeWalled: true })]) {
+    if (!p.knownPlaces.includes(id)) p.knownPlaces.push(id);
+  }
+}
+
+export function knowsPlace(state: DemonHunterState, nodeId: string): boolean {
+  return state.player.knownPlaces.includes(nodeId);
+}
+
+/** Doing anything else ends the conversation you were in (the player simply
+ *  walks away; nothing needs a goodbye first). Ruling 2026-10-21: quest
+ *  flows were six moves long. */
+export function endDialogue(state: DemonHunterState, lines: string[]): void {
+  if (!state.dialogue) return;
+  const who = allPeople(state).find((x) => x.id === state.dialogue!.personId);
+  lines.push(`(You take your leave of ${who?.name ?? 'them'}.)`);
+  state.dialogue = null;
+}
+
+export function respawnOverworld(state: DemonHunterState): void {
+  state.enemies = structuredClone(state.initialEnemies);
+  for (const [id, r] of Object.entries(state.initialResources)) {
+    if (!state.resources[id]) state.resources[id] = structuredClone(r);
+  }
 }
 
 export function addClue(state: DemonHunterState, clue: Clue): boolean {
@@ -127,7 +179,7 @@ export function healToFull(state: DemonHunterState): void {
   state.player.hp = state.player.maxHp;
 }
 
-/** Remove temple guardians / arena foes standing at `nodeId`. */
+/** Remove temple guardians / lair foes standing at `nodeId`. */
 export function clearTempleEnemiesAt(state: DemonHunterState, nodeId: string): void {
   for (const e of Object.values(state.enemies)) {
     if (e.at === nodeId && ENEMY_BY_ID[e.type].templeOnly) delete state.enemies[e.id];

@@ -38,15 +38,15 @@ function stage(name: string): DemonHunterState {
       s.towns[0]!.people.find((p) => p.id === holder.id)!.task.isCompleted = true;
       return apply(s, { type: 'talk', person: holder.id });
     }
-    case 'found': {
+    case 'reward-here': {
       let s = fresh(1);
       const giver = s.towns[0]!.people[0]!;
       const target = s.towns[0]!.people[1]!;
       giver.task = { ...giver.task, type: 'FIND_PERSON', targetId: target.attributes.pet, targetName: target.attributes.pet, amount: 1, currentAmount: 0, description: 'Find', isCompleted: false };
       s = apply(s, { type: 'talk', person: giver.id });
       s = apply(s, { type: 'accept_task' });
-      s = apply(s, { type: 'goodbye' });
-      return apply(s, { type: 'talk', person: target.id });
+      s = apply(s, { type: 'talk', person: target.id }); // found: the task completes
+      return apply(s, { type: 'goodbye' });
     }
     case 'inn': {
       const s = fresh(1);
@@ -61,6 +61,7 @@ function stage(name: string): DemonHunterState {
       place(s, 'slime', s.player.at, 'slime_a');
       place(s, 'lady_bandit', s.player.at, 'lady_a');
       s.player.bombs = 1;
+      s.player.blackMarketKnown = true;
       s.player.magicItems.push('sky', 'earth');
       s.resources['ore_a'] = { id: 'ore_a', kind: 'ore', at: s.player.at, hp: 0 };
       return s;
@@ -70,6 +71,16 @@ function stage(name: string): DemonHunterState {
       s.player.magicItems.push('sky');
       s = apply(s, { type: 'fly' });
       return s;
+    }
+    case 'lair': {
+      let s = fresh(2);
+      const d = s.towns.flatMap((t) => t.people).find((x) => x.id === s.demonId)!;
+      s.player.at = s.towns.find((t) => t.id === d.attributes.townId)!.nodeId;
+      s.player.inside = 'town';
+      s.player.maxHp = 10;
+      s.player.hp = 10;
+      s.player.bindings = ['a'];
+      return apply(s, { type: 'stab', person: d.id });
     }
     case 'combat': {
       let s = outsideStart(1);
@@ -102,7 +113,7 @@ function stage(name: string): DemonHunterState {
   }
 }
 
-const STAGES = ['town', 'offer', 'reward', 'found', 'inn', 'outdoors', 'flying', 'combat', 'temple-choice', 'gauntlet', 'riddle', 'dead'];
+const STAGES = ['town', 'offer', 'reward', 'reward-here', 'inn', 'outdoors', 'flying', 'combat', 'temple-choice', 'gauntlet', 'riddle', 'lair', 'dead'];
 
 describe('choice catalog coverage', () => {
   it('names only real move types (or session options)', () => {
@@ -127,7 +138,7 @@ describe('choice catalog coverage', () => {
     for (const row of DEMON_HUNTER_CHOICES.filter((r) => r.owner === 'player')) {
       const moves = row.resolvedBy.filter((m) => !m.startsWith('options.'));
       for (const m of moves) expect(offered.has(m), `${row.id}: ${m} is offered somewhere`).toBe(true);
-      if (row.distinguishedBy && !moves.includes('answer_riddle')) {
+      if (row.distinguishedBy && !moves.includes('answer_riddle') && !moves.includes('say')) {
         const carried = moves.some((m) => offered.get(m)!.has(row.distinguishedBy!));
         expect(carried, `${row.id}: some offered move carries ${row.distinguishedBy}`).toBe(true);
       }

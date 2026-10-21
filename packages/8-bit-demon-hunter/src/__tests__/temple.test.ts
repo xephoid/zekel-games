@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { GAUNTLET_LENGTH } from '../data/progression.js';
 import { ENEMY_BY_ID } from '../data/enemies.js';
 import { TEMPLE_GUARDIAN } from '../data/magicItems.js';
 import type { DemonHunterState } from '../types.js';
@@ -20,6 +21,9 @@ describe('temples', () => {
     s = r.state;
     expect(r.summary).toContain('gauntlet');
     expect(r.summary).toContain('riddle');
+    expect(r.summary).toContain('A treasure awaits');
+    expect(r.summary).not.toContain('Aura of Protection');
+    expect(r.summary).not.toContain('Flower');
     expect(s.temple?.mode).toBe('choice');
     expect(() => apply(s, { type: 'answer_riddle', text: 'Memlax' })).toThrow(/Say "riddle" first/);
     r = applyText(s, { type: 'riddle' });
@@ -36,7 +40,7 @@ describe('temples', () => {
     // leaving and re-entering: already taken
     s = apply(s, { type: 'leave' });
     r = applyText(s, { type: 'enter' });
-    expect(r.summary).toContain('already carry');
+    expect(r.summary).toContain('already took');
     expect(r.state.temple).toBeNull();
   });
 
@@ -50,11 +54,12 @@ describe('temples', () => {
     s = apply(s, { type: 'enter' });
     s = apply(s, { type: 'gauntlet' });
     expect(s.temple?.mode).toBe('gauntlet');
-    const total = ENEMY_BY_ID[TEMPLE_GUARDIAN.fire].max;
+    const total = Math.min(GAUNTLET_LENGTH, ENEMY_BY_ID[TEMPLE_GUARDIAN.fire].max);
+    expect(total).toBe(4);
     expect(s.temple?.remaining).toBe(total);
     let r = applyText(s, { type: 'next_fight' });
     s = r.state;
-    expect(r.summary).toContain('Fire Skull');
+    expect(r.summary).toContain('A Fire Skull comes at you.');
     // strength 5 vs 5 HP: dead in one hit (opening by range)
     expect(s.combat).toBeNull();
     expect(s.temple?.remaining).toBe(total - 1);
@@ -80,7 +85,7 @@ describe('temples', () => {
     s = apply(s, { type: 'gauntlet' });
     let r = applyText(s, { type: 'next_fight' });
     s = r.state;
-    expect(r.summary).toContain("Evil Eye's range is higher");
+    expect(r.summary).toContain('Evil Eye strikes before you can close');
     const eye = Object.values(s.enemies).find((e) => e.type === 'evil_eye')!;
     expect(s.combat?.enemyId).toBe(eye.id);
     s = apply(s, { type: 'fight' });
@@ -95,7 +100,7 @@ describe('temples', () => {
     let s = atTemple('space', 2);
     const giver = s.towns[0]!.people[0]!;
     giver.task = { ...giver.task, type: 'FIND_ITEM', targetId: 'space', targetName: 'Cape of Teleportation', amount: 1, currentAmount: 0, description: 'Find the Cape of Teleportation', isCompleted: false };
-    s.player.activeTaskGiver = giver.id;
+    s.player.activeTasks = [giver.id];
     s = apply(s, { type: 'enter' });
     s = apply(s, { type: 'riddle' });
     const r = applyText(s, { type: 'answer_riddle', text: 'Chineera' });
@@ -108,5 +113,19 @@ describe('temples', () => {
     // the player is standing at the temple node but arrived by fiat; the engine
     // only guards the edge, so check the edge
     expect(s.graph.edges.find((e) => e.walled)).toBeDefined();
+  });
+
+  it('a guardian whose name starts with a vowel gets "An"', () => {
+    let s = atTemple('space');
+    s.player.strength = 5;
+    s.player.agility = 17;
+    s.player.range = 5;
+    s.player.maxHp = 10;
+    s.player.hp = 10;
+    s = apply(s, { type: 'enter' });
+    s = apply(s, { type: 'gauntlet' });
+    const r = applyText(s, { type: 'next_fight' });
+    expect(r.summary).toContain('An Arachne comes at you.');
+    expect(r.summary).not.toContain('A Arachne');
   });
 });

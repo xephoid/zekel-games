@@ -53,16 +53,25 @@ const moveSchema = {
   required: ['type'],
   properties: {
     type: { enum: [...MOVE_TYPES] },
-    to: { type: 'string', description: 'move: the id of an adjacent place' },
-    target: { type: 'string', description: 'attack / bomb: an enemy, plant, tree or ore deposit id from look' },
-    item: { enum: ['bomb', 'lockpick'], description: 'buy_from_bandit' },
+    to: { type: 'string', description: 'move: the id of an adjacent place; travel: a place the player knows of (see known_places in the view), by name or id' },
+    nearest: { enum: ['inn', 'town'], description: 'travel: the nearest town (every town has an inn)' },
+    via_inn: { type: 'boolean', description: 'travel: may pay an inn cart between towns when shorter' },
+    target: { type: 'string', description: 'attack: an enemy, plant or tree id from look' },
+    item: { type: 'string', description: 'buy_from_bandit: "bomb" or "lockpick"; search_town: who owns this item' },
     town: { type: 'string', description: 'teleport / ride: a town id or name' },
     stat: { enum: ['strength', 'agility', 'health', 'range'], description: 'level_up' },
-    person: { type: 'string', description: 'talk / search_house / accuse / mark_suspect: a person id (or name, in town)' },
+    person: { type: 'string', description: 'talk / claim_reward / search_house / stab / mark_suspect: a person id (or name, in town); claim_reward: the giver, talked to and claimed from in one move' },
+    pet: { type: 'string', description: 'search_town: who keeps this pet' },
+    color: { type: 'string', description: 'search_town: who likes this colour' },
+    occupation: { type: 'string', description: 'search_town: who follows this trade' },
+    task: { type: 'string', description: 'search_town: who wants help with this (a monster, "escort", "find", or a word of the task)' },
+    truth: { type: 'boolean', description: 'search_town: who claims to know the truth' },
+    contradictions: { type: 'boolean', description: 'search_town: which rumours in the clue book contradict a secret (works anywhere)' },
     reward: { enum: ['clue', 'power'], description: 'claim_reward' },
     resource: { enum: Object.keys(RESOURCE_BASE_VALUE), description: 'buy / sell' },
-    confirm: { type: 'boolean', description: 'search_house: true to spend a lockpick' },
-    text: { type: 'string', description: "answer_riddle: the player's answer, verbatim" },
+    amount: { anyOf: [{ type: 'integer', minimum: 1 }, { enum: ['all'] }], description: 'buy / sell / buy_from_bandit: how many (default 1). "all" = everything you hold (sell), or as many as the stock and your shuckles allow (buy).' },
+    confirm: { type: 'boolean', description: 'search_house: true to spend a lockpick; bomb: true to set off a bomb that would kill you' },
+    text: { type: 'string', description: "answer_riddle: the player's answer, verbatim; say: the player's words, verbatim" },
   },
   description: 'One action. get_legal_moves lists exactly which are possible now, with filled-in ids.',
 } as const;
@@ -96,7 +105,7 @@ export class EightBitDemonHunterGame implements Game<DemonHunterState, DemonHunt
   readonly description =
     'A solo text detective RPG: a demon hides as an ordinary person in one of five towns. Talk to townsfolk, do their tasks for ' +
     'clues, fight monsters across a map of clearings and temples, gather the five magic items, find the demon\'s bindings, ' +
-    'and accuse it. Accuse the wrong person and you lose. The server runs the whole world; the LLM client is the game master.';
+    'and put the demon-killing knife in it. Stab the wrong person and the town turns on you. The server runs the whole world; the LLM client is the game master.';
   readonly minPlayers = 1;
   readonly maxPlayers = 1;
   readonly supportsAI = true; // the harness bot only (it may read the hidden demon)
@@ -224,12 +233,12 @@ export class EightBitDemonHunterGame implements Game<DemonHunterState, DemonHunt
 
   getReferenceData(): unknown {
     return {
-      enemies: ENEMIES.map((e) => ({ id: e.id, name: e.name, hp: e.hp, xp: e.xp, speed: e.speed, damage: e.damage, range: e.range, behaviour: e.behaviour, temple_only: !!e.templeOnly })),
+      // Enemy numbers are deliberately absent: the GM describes enemies by condition and behaviour.
+      enemies: ENEMIES.filter((e) => !e.templeOnly).map((e) => ({ id: e.id, name: e.name, behaviour: e.behaviour })),
       progression: { xp_curve: XP_CURVE, max_level: MAX_LEVEL, stat_caps: STAT_MAX, stat_step: STAT_STEP },
-      magic_items: Object.values(MAGIC_ITEMS).map((m) => ({ temple: m.templeName, name: m.name, description: m.description })),
+      magic_items: Object.values(MAGIC_ITEMS).map((m) => ({ name: m.name, description: m.description })),
       resource_base_values: RESOURCE_BASE_VALUE,
       inn: { sleep: 5, train: 50, train_xp: 20, ride: 50, buy_price: 'ceil(base × town multiplier × 1.5)', sell_price: 'base × town multiplier (1 to 6)' },
-      black_market: { bomb: 10, lockpick: 200 },
       demon: { base_hp: 20, per_binding: -3, min: 1, times: 'your strength', speed: 8, range: 3, damage: 2 },
     };
   }

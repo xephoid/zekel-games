@@ -38,11 +38,12 @@ export function place(state: DemonHunterState, type: EnemyType, at: string, id =
   return e;
 }
 
-/** The player outdoors at the start town's door, with that node emptied. */
+/** The player outdoors at the start town's door, with that node emptied
+ *  (leaving respawns the wild, so the node is cleared after stepping out). */
 export function outsideStart(seed = 1): DemonHunterState {
-  const s = fresh(seed);
+  const s = apply(fresh(seed), { type: 'leave' });
   clearNode(s, s.graph.startNodeId);
-  return apply(s, { type: 'leave' });
+  return s;
 }
 
 export function startClearing(state: DemonHunterState): string {

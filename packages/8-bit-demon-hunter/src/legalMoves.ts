@@ -2,10 +2,10 @@
 // plain-words description. Fill-in moves (a riddle answer) carry a template.
 
 import { ENEMY_BY_ID } from './data/enemies.js';
-import { INN_RIDE_COST, INN_SLEEP_COST, INN_TRAIN_COST, STAT_BASE, type StatId } from './data/progression.js';
+import { BOMB_SELF_DAMAGE, INN_RIDE_COST, INN_SLEEP_COST, INN_TRAIN_COST, STAT_BASE, type StatId } from './data/progression.js';
 import { buyPrice, RESOURCE_DISPLAY_NAME, RESOURCE_NODE, RESOURCE_TYPES, sellPrice } from './data/resources.js';
 import type { DemonHunterMove } from './engine/moves.js';
-import { canLevelUp, currentTown, enemiesAt, hasMagicItem, hereNode, resourcesAt, statIsMaxed } from './engine/helpers.js';
+import { canLevelUp, condition, currentTown, enemiesAt, hasMagicItem, hereNode, resourcesAt, statIsMaxed } from './engine/helpers.js';
 import type { DemonHunterState } from './types.js';
 import { edgeBetween, neighborsOf } from './world/graph.js';
 
@@ -41,8 +41,9 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
     const e = state.enemies[state.combat.enemyId]!;
     const d = ENEMY_BY_ID[e.type];
     if (!(p.flying && p.range < 3)) add('fight', `Attack the ${d.name}`, { type: 'fight' });
-    if (!state.arena) add('flee', `Run away from the ${d.name}${d.behaviour === 'hunter' ? ' (it gets one attack as you go)' : ''}`, { type: 'flee' });
-    if (hasMagicItem(state, 'earth') && !state.arena) add('aura', 'Aura of Protection: leave the fight untouched', { type: 'aura' });
+    if (!state.lair) add('flee', `Run away from the ${d.name}${d.behaviour === 'hunter' ? ' (it gets one attack as you go)' : ''}`, { type: 'flee' });
+    if (state.lair) add('say', `Say something to the ${d.name} (fill in text: the player's words, verbatim)`, { type: 'say', text: '' });
+    if (hasMagicItem(state, 'earth') && !state.lair) add('aura', 'Aura of Protection: leave the fight untouched', { type: 'aura' });
     levelUps();
     return out;
   }
@@ -50,21 +51,19 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
   if (state.dialogue) {
     const person = state.towns.flatMap((t) => t.people).find((x) => x.id === state.dialogue!.personId)!;
     switch (state.dialogue.stage) {
-      case 'found':
-        add('found_you', `Tell ${person.name} "I found you"`, { type: 'found_you' });
-        break;
       case 'reward':
         if (person.clues.good) add('claim_reward:clue', `Take ${person.name}'s demon secret (clue)`, { type: 'claim_reward', reward: 'clue' });
         add('claim_reward:power', `Take ${person.name}'s ability (power)`, { type: 'claim_reward', reward: 'power' });
         break;
       case 'offer':
-        add('accept_task', `Accept ${person.name}'s task: ${person.task.description}${p.activeTaskGiver ? ' (replaces your current task)' : ''}`, { type: 'accept_task' });
+        add('accept_task', `Accept ${person.name}'s task: ${person.task.description}`, { type: 'accept_task' });
         add('decline', 'No thanks', { type: 'decline' });
         break;
       default:
         break;
     }
-    add('goodbye', `Say goodbye to ${person.name}`, { type: 'goodbye' });
+    add('goodbye', `Say goodbye to ${person.name} (or just do something else: talk to someone, ask around, the inn, leave)`, { type: 'goodbye' });
+    levelUps();
     return out;
   }
 
@@ -77,14 +76,18 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
     }
     for (const r of RESOURCE_TYPES) {
       const buy = buyPrice(r, town.prices[r]);
-      if (town.stock[r] > 0 && p.shuckles >= buy) add(`buy:${r}`, `Buy ${RESOURCE_DISPLAY_NAME[r]}`, { type: 'buy', resource: r }, `${buy} shuckles`);
-      if (p.resources[r] > 0) add(`sell:${r}`, `Sell ${RESOURCE_DISPLAY_NAME[r]} for ${sellPrice(r, town.prices[r])} shuckles`, { type: 'sell', resource: r });
+      if (town.stock[r] > 0 && p.shuckles >= buy) add(`buy:${r}`, `Buy ${RESOURCE_DISPLAY_NAME[r]} (fill in amount: up to ${Math.min(town.stock[r], Math.floor(p.shuckles / buy))}, or "all")`, { type: 'buy', resource: r }, `${buy} shuckles each`);
+      if (p.resources[r] > 0) add(`sell:${r}`, `Sell ${RESOURCE_DISPLAY_NAME[r]} for ${sellPrice(r, town.prices[r])} shuckles each (fill in amount: up to ${p.resources[r]}, or "all")`, { type: 'sell', resource: r });
     }
     add('leave_inn', 'Leave the inn', { type: 'leave_inn' });
+    levelUps();
     return out;
   }
 
   const anywhere = (): void => {
+    if (!state.combat && state.phase === 'playing') {
+      add('travel', 'Travel in one go to a place you know of, a person\'s town, or the nearest inn (fill in to / person / nearest; known places are listed in the view). Stops at the edge of anywhere that would attack you on the way out; travel again to go on.', { type: 'travel' });
+    }
     levelUps();
     if (hasMagicItem(state, 'space')) {
       for (const t of state.towns) {
@@ -95,7 +98,6 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
     }
     const people = state.towns.flatMap((t) => t.people).filter((x) => x.hasMet);
     for (const x of people) {
-      add(`accuse:${x.id}`, `ACCUSE ${x.name} the ${x.attributes.occupation} of being the demon (wrong = you lose)`, { type: 'accuse', person: x.id });
       if (p.suspects.includes(x.id)) add(`unmark_suspect:${x.id}`, `Unmark ${x.name} as a suspect`, { type: 'unmark_suspect', person: x.id });
       else if (p.suspects.length < state.towns.length * 2) add(`mark_suspect:${x.id}`, `Mark ${x.name} as a suspect`, { type: 'mark_suspect', person: x.id });
     }
@@ -103,12 +105,21 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
 
   if (p.inside === 'town') {
     const town = currentTown(state);
-    for (const x of town.people) add(`talk:${x.id}`, `Talk to ${x.name} the ${x.attributes.occupation}${x.hasMet ? '' : ' (not yet met)'}`, { type: 'talk', person: x.id });
-    add('inn', 'Go to the inn', { type: 'inn' });
-    if (p.locksmithCharges > 0 || p.lockpicks > 0) {
-      for (const x of town.people) {
-        if (!p.searchedHouses.includes(x.id)) add(`search_house:${x.id}`, `Search ${x.name}'s house`, { type: 'search_house', person: x.id, confirm: true }, p.locksmithCharges > 0 ? "a Locksmith's favour" : 'one lockpick');
+    // Givers here who owe a reward: claim it in one move, no talk needed first.
+    for (const x of town.people) {
+      if (p.activeTasks.includes(x.id) && x.task.isCompleted && !x.taskCompleted) {
+        if (x.clues.good) add(`claim_reward:${x.id}:clue`, `Claim ${x.name}'s reward: their demon secret (clue)`, { type: 'claim_reward', person: x.id, reward: 'clue' });
+        add(`claim_reward:${x.id}:power`, `Claim ${x.name}'s reward: their favour (power)`, { type: 'claim_reward', person: x.id, reward: 'power' });
       }
+    }
+    for (const x of town.people) add(`talk:${x.id}`, `Talk to ${x.name} the ${x.attributes.occupation}${x.hasMet ? '' : ' (not yet met)'}`, { type: 'talk', person: x.id });
+    add('search_town', 'Ask around town; whoever fits counts as met (fill in what you are looking for: a pet, colour, trade or item; a task by its monster or a word of it; truth = who claims to know the truth; contradictions = which rumours clash with your secrets)', { type: 'search_town' });
+    for (const x of town.people) add(`stab:${x.id}`, `STAB ${x.name} the ${x.attributes.occupation} with the demon-killing knife (an innocent dies and you lose)`, { type: 'stab', person: x.id });
+    add('inn', 'Go to the inn', { type: 'inn' });
+    for (const x of town.people) {
+      if (p.searchedHouses.includes(x.id)) continue;
+      if (x.confessed) add(`search_house:${x.id}`, `Search ${x.name}'s house (a confessed minion: no lock stops you)`, { type: 'search_house', person: x.id, confirm: true });
+      else if (p.locksmithCharges > 0 || p.lockpicks > 0) add(`search_house:${x.id}`, `Search ${x.name}'s house`, { type: 'search_house', person: x.id, confirm: true }, p.locksmithCharges > 0 ? "a Locksmith's favour" : 'one lockpick');
     }
     add('leave', `Leave ${town.name}`, { type: 'leave' });
     anywhere();
@@ -139,7 +150,7 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
   if (here.kind === 'town' || here.kind === 'temple') add('enter', `Enter ${here.name}`, { type: 'enter' });
   const canAttack = !p.auraUp && !(p.flying && p.range < 3);
   if (canAttack) {
-    for (const e of enemiesAt(state, here.id)) add(`attack:${e.id}`, `Attack the ${ENEMY_BY_ID[e.type].name} ${e.id} (${e.hp}/${e.maxHp} HP)`, { type: 'attack', target: e.id });
+    for (const e of enemiesAt(state, here.id)) add(`attack:${e.id}`, `Attack the ${ENEMY_BY_ID[e.type].name} ${e.id} (${condition(e)})`, { type: 'attack', target: e.id });
     for (const r of resourcesAt(state, here.id)) {
       if (r.kind !== 'ore') add(`attack:${r.id}`, `Harvest the ${RESOURCE_NODE[r.kind].name} ${r.id}`, { type: 'attack', target: r.id });
     }
@@ -147,13 +158,18 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
   const canBomb = hasMagicItem(state, 'fire') || p.bombs > 0;
   if (canBomb) {
     const wall = neighborsOf(state.graph, here.id, { includeWalled: true }).some((n) => edgeBetween(state.graph, here.id, n)!.walled);
-    add('bomb', wall ? 'Bomb: blow a hole in the stone ring (and hurt every enemy here)' : 'Bomb: hurt every enemy here by 5', { type: 'bomb' }, hasMagicItem(state, 'fire') ? 'free' : 'one bomb');
-    for (const r of resourcesAt(state, here.id)) if (r.kind === 'ore') add(`bomb:${r.id}`, `Bomb the ore deposit ${r.id}`, { type: 'bomb', target: r.id }, hasMagicItem(state, 'fire') ? 'free' : 'one bomb');
+    const ore = resourcesAt(state, here.id).filter((r) => r.kind === 'ore').length;
+    const what = ['hurt every enemy here by 5', ...(ore > 0 ? [`shatter ${ore} ore deposit${ore === 1 ? '' : 's'}`] : []), ...(wall ? ['blow a hole in the stone ring'] : []), 'burn every plant and tree here'];
+    const lethal = p.hp <= BOMB_SELF_DAMAGE;
+    add('bomb', `Bomb this place: ${what.join(', ')}. The blast hits you for ${BOMB_SELF_DAMAGE} too${lethal ? ` (THAT WOULD KILL YOU at ${p.hp} HP: needs confirm: true)` : ''}`, lethal ? { type: 'bomb', confirm: true } : { type: 'bomb' }, hasMagicItem(state, 'fire') ? 'free' : 'one bomb');
   }
   if (enemiesAt(state, here.id).some((e) => e.type === 'lady_bandit' && !e.attacked)) {
-    add('talk_bandit', 'Talk to the Lady Bandit (black market)', { type: 'talk_bandit' });
-    add('buy_from_bandit:bomb', 'Buy a bomb from the Lady Bandit', { type: 'buy_from_bandit', item: 'bomb' }, '10 shuckles');
-    add('buy_from_bandit:lockpick', 'Buy a lockpick from the Lady Bandit', { type: 'buy_from_bandit', item: 'lockpick' }, '200 shuckles');
+    add('talk_bandit', 'Talk to the Lady Bandit', { type: 'talk_bandit' });
+    // Her wares are a secret until the player has heard her offer.
+    if (p.blackMarketKnown) {
+      add('buy_from_bandit:bomb', 'Buy bombs from the Lady Bandit (fill in amount; one deal, then she is gone)', { type: 'buy_from_bandit', item: 'bomb' }, '10 shuckles each');
+      add('buy_from_bandit:lockpick', 'Buy lockpicks from the Lady Bandit (fill in amount; one deal, then she is gone)', { type: 'buy_from_bandit', item: 'lockpick' }, '200 shuckles each');
+    }
   }
   if (hasMagicItem(state, 'sky')) {
     if (p.flying) add('land', 'Land', { type: 'land' });

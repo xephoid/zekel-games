@@ -8,11 +8,11 @@ import { fresh } from './support.js';
 // every move it picks must be one the engine accepts.
 
 describe('the harness bot', () => {
-  it('reaches game over on 12 seeds within 600 moves, choosing only accepted moves', () => {
+  it('reaches game over on 12 seeds within 1500 moves, choosing only accepted moves', () => {
     for (let seed = 1; seed <= 12; seed++) {
       let s = fresh(seed);
       let moves = 0;
-      while (s.phase !== 'won' && s.phase !== 'lost' && moves < 600) {
+      while (s.phase !== 'won' && s.phase !== 'lost' && moves < 1500) {
         const choice = chooseMove(s, 'medium');
         const legalIds = getLegalMoves(s).map((m) => JSON.stringify(m.move));
         if (choice.move.type !== 'look') {

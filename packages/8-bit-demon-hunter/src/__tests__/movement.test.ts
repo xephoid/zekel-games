@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { neighborsOf } from '../world/graph.js';
+import { getLegalMoves } from '../legalMoves.js';
 import { apply, applyText, clearAllEnemies, clearNode, fresh, outsideStart, place, startClearing } from './support.js';
 
 // PORT-PLAN §4, §8, §9 (movement items).
@@ -173,7 +174,7 @@ describe('moving around', () => {
     expect(s.player.resources.wood).toBe(1);
     // with an aggressive enemy about, roughly one swing in ten draws it
     let drawn = 0;
-    for (let seed = 1; seed <= 100; seed++) {
+    for (let seed = 1; seed <= 300; seed++) { // the draw needs an aggressive neighbour, so a wide sample
       const t = outsideStart(seed);
       clearAllEnemies(t);
       place(t, 'dude_bandit', t.player.at, 'dude_1');
@@ -182,40 +183,50 @@ describe('moving around', () => {
       if (r.summary.includes('draws the Dude Bandit')) drawn++;
     }
     expect(drawn).toBeGreaterThan(2);
-    expect(drawn).toBeLessThan(30);
+    expect(drawn).toBeLessThan(90);
   });
 
-  it('bombs: need a bomb unless you hold Fire Bombs; hurt everyone here by 5; open the sky wall; shatter ore', () => {
+  it('bombs: need a bomb unless you hold Fire Bombs; hit everything here: enemies by 5, every ore deposit, plants and trees, the sky wall', () => {
     let s = outsideStart();
     clearAllEnemies(s);
+    for (const r of Object.values(s.resources)) if (r.at === s.player.at) delete s.resources[r.id];
     expect(() => apply(s, { type: 'bomb' })).toThrow(/no bombs/);
     s.player.bombs = 2;
     place(s, 'wizard', s.player.at, 'wiz_1');
     place(s, 'undead_knight', s.player.at, 'knight_1');
+    s.resources['plant_z'] = { id: 'plant_z', kind: 'plant', at: s.player.at, hp: 1 };
     let r = applyText(s, { type: 'bomb' });
     s = r.state;
     expect(s.player.bombs).toBe(1);
     expect(s.enemies['wiz_1']).toBeUndefined();
     expect(s.enemies['knight_1']!.hp).toBe(15);
+    expect(r.summary).toContain('The blast hurts the Undead Knight; it is');
+    expect(r.summary).not.toMatch(/\d+\/\d+ HP/);
+    expect(s.player.hp).toBe(s.player.maxHp - 2); // the blast catches you too
+    expect(r.summary).toContain('The blast catches you too: 2 damage');
+    s.player.maxHp = 20;
+    s.player.hp = 20; // the rest of this test is about what the blast hits, not about dying
     expect(s.enemies['knight_1']!.attacked).toBe(true);
     expect(s.player.xp).toBe(3);
-    // the sky wall
+    expect(s.resources['plant_z']).toBeUndefined(); // burnt, no fiber
+    expect(s.player.resources.plant_fiber).toBe(0);
+    expect(r.summary).toContain('burn to nothing');
+    // the sky wall, and two deposits at once
     const clearing = neighborsOf(s.graph, 'temple_sky', { includeWalled: true })[0]!;
     s.player.at = clearing;
-    clearNode(s, clearing);
+    clearNode(s, clearing, true);
+    s.resources['ore_x'] = { id: 'ore_x', kind: 'ore', at: clearing, hp: 0 };
+    s.resources['ore_y'] = { id: 'ore_y', kind: 'ore', at: clearing, hp: 0 };
     r = applyText(s, { type: 'bomb' });
     s = r.state;
     expect(r.summary).toContain('way to the Sky Temple is open');
     expect(s.graph.edges.find((e) => e.walled)).toBeUndefined();
+    expect(s.resources['ore_x']).toBeUndefined();
+    expect(s.resources['ore_y']).toBeUndefined();
+    expect((r.summary.match(/rubble/g) ?? []).length).toBe(3); // wall + two deposits, one roll each
     expect(() => apply(s, { type: 'bomb' })).toThrow(/no bombs/);
     s.player.magicItems.push('fire');
-    // ore
-    s.resources['ore_x'] = { id: 'ore_x', kind: 'ore', at: clearing, hp: 0 };
-    s.resources['plant_z'] = { id: 'plant_z', kind: 'plant', at: clearing, hp: 1 };
-    expect(() => apply(s, { type: 'bomb', target: 'plant_z' })).toThrow(/simply be attacked/);
-    r = applyText(s, { type: 'bomb', target: 'ore_x' });
-    expect(r.summary).toContain('ore deposit shatters');
-    expect(r.state.resources['ore_x']).toBeUndefined();
+    r = applyText(s, { type: 'bomb' });
     expect(r.state.player.bombs).toBe(0); // unlimited: none consumed
     // ore odds over many seeds: ~10% gold, ~40% iron
     let gold = 0;
@@ -223,9 +234,10 @@ describe('moving around', () => {
     for (let seed = 1; seed <= 200; seed++) {
       const t = outsideStart(seed);
       clearAllEnemies(t);
+      for (const x of Object.values(t.resources)) if (x.at === t.player.at) delete t.resources[x.id];
       t.player.magicItems.push('fire');
       t.resources['ore_y'] = { id: 'ore_y', kind: 'ore', at: t.player.at, hp: 0 };
-      const rt = apply(t, { type: 'bomb', target: 'ore_y' });
+      const rt = apply(t, { type: 'bomb' });
       gold += rt.player.resources.gold;
       iron += rt.player.resources.iron_ore;
     }
@@ -242,10 +254,14 @@ describe('moving around', () => {
     place(s, 'dude_bandit', s.player.at, 'dude_1');
     s.player.shuckles = 15;
     const r = applyText(s, { type: 'talk_bandit' });
-    expect(r.summary).toContain("Black market's open");
+    expect(r.summary).toContain('I deal, if you');
+    expect(r.state.player.blackMarketKnown).toBe(true);
+    expect(s.player.blackMarketKnown).toBe(false);
     expect(() => apply(s, { type: 'buy_from_bandit', item: 'lockpick' })).toThrow(/costs 200/);
-    s = apply(s, { type: 'buy_from_bandit', item: 'bomb' });
-    expect(s.player.bombs).toBe(1);
+    expect(() => apply(s, { type: 'buy_from_bandit', item: 'bomb', amount: 2 })).toThrow(/can afford 1 bomb /);
+    s.player.shuckles = 35;
+    s = apply(s, { type: 'buy_from_bandit', item: 'bomb', amount: 'all' }); // one deal, as many as she can sell you
+    expect(s.player.bombs).toBe(3);
     expect(s.player.shuckles).toBe(5);
     expect(s.enemies['lady_1']).toBeUndefined();
     expect(() => apply(s, { type: 'talk_bandit' })).toThrow(/no Lady Bandit/);
@@ -255,5 +271,49 @@ describe('moving around', () => {
     const lady = place(t, 'lady_bandit', t.player.at, 'lady_2');
     lady.attacked = true;
     expect(() => apply(t, { type: 'talk_bandit' })).toThrow(/no Lady Bandit/);
+  });
+
+  it('a bomb that would kill you is refused with a warning until confirmed; confirmed, it kills you', () => {
+    let s = outsideStart(9);
+    clearAllEnemies(s);
+    s.player.bombs = 2;
+    s.player.hp = 2;
+    let r = applyText(s, { type: 'bomb' });
+    expect(r.summary).toContain('That bomb would kill you');
+    expect(r.state.player.bombs).toBe(2);
+    expect(r.state.player.hp).toBe(2);
+    expect(getLegalMoves(r.state).find((m) => m.move_id === 'bomb')?.description).toContain('WOULD KILL YOU');
+    r = applyText(r.state, { type: 'bomb', confirm: true });
+    expect(r.state.phase).toBe('dead');
+    expect(r.state.player.bombs).toBe(1);
+    expect(r.summary).toContain('your own bomb');
+    // at 3 HP no warning, and you live
+    s.player.hp = 3;
+    r = applyText(s, { type: 'bomb' });
+    expect(r.summary).not.toContain('would kill you');
+    expect(r.state.player.hp).toBe(1);
+    expect(r.state.phase).toBe('playing');
+  });
+
+  it('every arrival outdoors says what is here: a move, stepping out, the end of a travel', () => {
+    let s = fresh(10);
+    const clearing = startClearing(s);
+    let r = applyText(s, { type: 'leave' });
+    s = r.state;
+    expect(r.summary).toMatch(/No enemies here\.|Enemies: /);
+    clearAllEnemies(s);
+    place(s, 'slime', clearing, 'slime_a');
+    place(s, 'slime', clearing, 'slime_b');
+    place(s, 'snake', clearing, 'snake_a');
+    r = applyText(s, { type: 'move', to: clearing });
+    expect(r.summary).toContain('You travel to');
+    expect(r.summary).toContain('2 Slimes [slime_a, slime_b]');
+    expect(r.summary).toContain('1 Snake [snake_a]');
+    s = r.state;
+    const beyond = neighborsOf(s.graph, clearing).find((n) => n !== s.graph.startNodeId)!;
+    place(s, 'slime', beyond, 'slime_c');
+    r = applyText(s, { type: 'travel', to: beyond });
+    expect(r.summary).toMatch(/You arrive at .*\. Enemies: 1 Slime \[slime_c\]/);
+    expect(r.summary).not.toContain('slime_a'); // the hop through the first clearing stays brief
   });
 });

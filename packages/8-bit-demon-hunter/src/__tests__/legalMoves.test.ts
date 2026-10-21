@@ -29,7 +29,7 @@ describe('legal moves', () => {
     expect(ids).toContain('inn');
     expect(ids).toContain('leave');
     expect(ids.filter((i) => i.startsWith('talk:'))).toHaveLength(10);
-    expect(ids.some((i) => i.startsWith('accuse:'))).toBe(false); // nobody met yet
+    expect(ids.filter((i) => i.startsWith('stab:'))).toHaveLength(10); // the knife works on anyone here
     expect(ids.some((i) => i.startsWith('search_house:'))).toBe(false); // no key
     allAccepted(s);
   });
@@ -42,11 +42,14 @@ describe('legal moves', () => {
     s.player.bombs = 1;
     s.player.shuckles = 300;
     s.resources['ore_a'] = { id: 'ore_a', kind: 'ore', at: s.player.at, hp: 0 };
+    const before = getLegalMoves(s).map((m) => m.move_id);
+    expect(before).toContain('talk_bandit');
+    expect(before.some((i) => i.startsWith('buy_from_bandit'))).toBe(false); // a secret until she offers
+    s.player.blackMarketKnown = true;
     const ids = getLegalMoves(s).map((m) => m.move_id);
     expect(ids).toContain('enter');
     expect(ids).toContain('attack:slime_a');
     expect(ids).toContain('bomb');
-    expect(ids).toContain('bomb:ore_a');
     expect(ids).toContain('talk_bandit');
     expect(ids).toContain('buy_from_bandit:lockpick');
     expect(ids.some((i) => i.startsWith('move:'))).toBe(true);
@@ -83,7 +86,7 @@ describe('legal moves', () => {
     clearAllEnemies(v);
     v.player.at = 'temple_light';
     v = apply(v, { type: 'enter' });
-    expect(getLegalMoves(v).map((m) => m.move_id)).toEqual(['look', 'gauntlet', 'riddle', 'leave']);
+    expect(getLegalMoves(v).map((m) => m.move_id)).toEqual(['look', 'gauntlet', 'riddle', 'leave', 'travel']);
     allAccepted(v);
     v = apply(v, { type: 'riddle' });
     expect(getLegalMoves(v).map((m) => m.move_id)).toContain('answer_riddle');
@@ -97,13 +100,19 @@ describe('legal moves', () => {
     allAccepted(w);
   });
 
-  it('after a wrong accusation nothing is legal and next_step is game_over', () => {
+  it('after stabbing an innocent nothing is legal and next_step is game_over', () => {
     let s = fresh();
-    s = apply(s, { type: 'talk', person: s.towns[0]!.people[0]!.id });
-    s = apply(s, { type: 'goodbye' });
     const innocent = s.towns[0]!.people.find((p) => p.id !== s.demonId)!;
-    s = apply(s, { type: 'accuse', person: innocent.id });
+    s = apply(s, { type: 'stab', person: innocent.id });
     expect(getLegalMoves(s)).toEqual([]);
     expect(describeNextStep(s, 'p1').status).toBe('game_over');
+  });
+
+  it('the inn offers a level-up when one is earned', () => {
+    let s = fresh(3);
+    s = apply(s, { type: 'inn' });
+    s.player.xp = 1000;
+    const ids = getLegalMoves(s).map((m) => m.move_id);
+    expect(ids.some((id) => id.startsWith('level_up:'))).toBe(true);
   });
 });

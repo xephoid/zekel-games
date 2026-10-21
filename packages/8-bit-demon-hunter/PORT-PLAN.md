@@ -16,6 +16,95 @@ Ruling 2026-10-20 (later the same day): clearings may hold up to **4** major
 connections and every town attaches to a clearing (Q1 accepted).
 Ruling 2026-10-20 (evening): the player starts at **speed 4** (agility picks
 then run 4, 8, 12, 16, 20; cap 20). This answers most of Q9.
+Rulings 2026-10-21 (after the designer's playtest): townsfolk know nothing
+specific about the temples, the creatures inside or the magic items, only
+that temples are very old and dangerous; the accusation is a **demon-killing
+knife** (`stab`): face to face in the person's town, the wrong person dies and
+the townspeople turn on you (loss); a **bomb hits everything** on the node it
+is set off in.
+Rulings 2026-10-21 (second playtest): the player holds **any number of
+accepted tasks** at once and overlapping ones progress and complete together;
+**the wild respawns** (enemies, plants, trees as generated) whenever the
+player steps out of a town or temple, as the original's reload did; **temple
+nodes get enemies and resources** like clearings; **temples are mysterious**:
+entering says only that a treasure awaits, guardians are named only as they
+appear, their count is never given, the item is named when the chest opens;
+**enemies have no numbers**: nothing the GM reads states an enemy's HP, speed,
+range or damage, only its condition in words and its behaviour; the **Lady
+Bandits' black market is a secret** to discover: nothing states it, townsfolk
+may only pass it on as a rumour, and buying is offered only after the player
+has talked to a Lady Bandit and heard her offer.
+Ruling 2026-10-21 (third): **asking around town** (`search_town`): who here
+keeps a pet, likes a colour, follows a trade, owns an item, wants help with
+something, or claims to know the truth; and a **contradictions** check that
+compares the clue book's rumours against the secrets held and names who
+said what. Whoever it turns up counts as met: cards and rumours are recorded (ruling, same day).
+Ruling 2026-10-21 (fourth): **travel** in one go to a place, a person's town
+or the nearest inn, hop by hop under the walking rules, with an **edge stop**
+before any place whose occupants would attack on the way out (bandits,
+skeletons, undead knights, a mushroom crowd the tail would complete); travel
+again to go through. Quietly, `via_inn` with the shuckles lets the route pay
+an inn cart between towns when that is shorter; it is not advertised.
+Ruling 2026-10-21 (fifth): **known places**. Travel only accepts places the
+player knows of, and the view lists only those temples: every town from the
+start, as the original's minimap showed them, plus everywhere the player has
+stood and everywhere a path leads from there. The Sky Temple behind its wall
+counts as seen from the next clearing. Unknown and non-existent names get
+the same refusal, so a refusal gives nothing away.
+Ruling 2026-10-21 (sixth): **amounts**. Buying and selling one at a time was
+tedious: `buy`, `sell` and `buy_from_bandit` take an `amount` (default 1,
+or `all`), bounded by the stock, the purse and the pack; an amount past the
+bound is refused with the bound. A Lady Bandit still vanishes after her one
+deal, however large.
+Rulings 2026-10-21 (seventh): a **bomb hurts you by 2** as well, and one that
+would kill you is refused with a warning until sent with `confirm`; every
+arrival outdoors (a move, stepping out of a town or temple, the end of a
+travel) **says what is here** (enemies by count with ids, resources) so
+nobody has to look each time; **undead knights spawn one per clearing**
+(`onePerNode`), so a map with fewer eligible clearings has fewer knights.
+Playtest 2 (seed 33, 2026-10-21) fixes: the bomb no longer prints enemy HP;
+an edge stop part-way says where you stand; a stop is forgotten by any other
+action (no stale "press on"); arrival text leads with the place; a cart from
+the town you stand in enters once; the inn offers level-ups; "an Undead Knight".
+Ruling 2026-10-21 (eighth): **short quest flows**. Meeting the person a find
+task asks for completes it on the spot (no `found_you`); any other action ends
+the current conversation by itself (no goodbye needed); `claim_reward` may
+name the giver and then talks and claims in one move. The six-move find
+flow is two moves: talk to the target, claim from the giver.
+Playtest 3 (seed 44, 2026-10-21): the demon (Lauren the Merchant of
+Placington) was found by two secrets (has a Bird; is a Merchant) and the
+contradiction check; the lair was lost at once with no bindings (Q11).
+Fixes: the demon's name no longer doubles "The"; a confessed minion's card
+says `confessed_minion`; level-ups are offered mid-conversation; the
+Carpenter's "not in" clue is filed as a certainty (special), not a rumour.
+Ruling 2026-10-21 (ninth): **exactly two minions in every town**, drawn from
+that town's people other than the demon (before, ten were drawn across all
+towns, so a town could hold three or one).
+Ruling 2026-10-21 (tenth): **the lair** (never "arena"). The demon has a flat
+48 HP, less 8 for every binding and every artifact held (a "weakening"),
+never below 4; strength no longer scales it, so levelling shortens the fight.
+Phase 2 summons three 6-HP minions, one fewer per two weakenings; phase 3 is
+a double shot. Tuned with the real engine (scratch `lair_sweep`) against
+builds bounded by the level-10 cap (9 level-ups + up to 5 Blacksmith
+favours): fewest weakenings to win on 5 seeds: fresh (0 picks) never, early
+(4) 6, mid (8) 5, late fighter (12) 3, late tank (12) 5, ceiling (14) 1.
+Nothing wins with none. The constants live in `data/progression.ts LAIR`. A confessed minion's house needs no lockpick. Death in the lair
+turns time back through the knife: the usual death, the demon keeps its face
+and town, the player keeps the knowledge; it does not re-hide. Resolves Q11.
+Ruling 2026-10-21 (eleventh): **a secret way**. In the lair the player may
+`say` anything to the demon; a sentence containing the word "love" undoes it
+(the songs about Chineera were right). Anything else costs the demon's next
+action; said to a minion or to the air, nothing. No GM-facing text names the
+word; the lore and the rumours carry it, and two casual lines in the lore pool
+(`LORE_LINES`) say outright that the demon fears love.
+Ruling 2026-10-21 (twelfth): **minions ask for hard things.** Across 300
+seeds 60% of minions had a find a townmate satisfied, or an escort, so a
+playthrough caught six minions by running errands and won the lair without
+a fight. Now every minion who is not a Merchant (Merchants always escort)
+gets a kill task three times in four, never slimes, else a temple find.
+Ruling 2026-10-21 (thirteenth): **gauntlets are four guardians** long
+(`GAUNTLET_LENGTH`), not the kind's full five to eight: with no healing between
+fights the full count was a cliff, damage-free or death.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.
@@ -53,7 +142,7 @@ packages/8-bit-demon-hunter/
       town.ts                  talk, tasks, powers, inn, houses, bindings
       temple.ts                gauntlet, riddle, chest, sky wall
       items.ts                 bombs, harvest, magic items, level up, death
-      finale.ts                accuse, arena, demon phases
+      finale.ts                the knife, lair, demon phases
     legalMoves.ts
     views.ts                   player view (hidden data stripped), clue book
     nextStep.ts                describeNextStep per pending kind
@@ -78,7 +167,7 @@ views and next_step need the real types.
 ```ts
 interface DemonHunterState {
   seed; rng;                       // server-held randomness
-  phase: 'playing' | 'dead' | 'arena' | 'won' | 'lost';
+  phase: 'playing' | 'dead' | 'lair' | 'won' | 'lost';
   graph: { nodes: Record<NodeId, Node>; edges: Edge[] };   // §3
   player: {
     at: NodeId;                    // current major node
@@ -201,11 +290,11 @@ The player stands at a major node, outside or inside it. Moves:
 - `enter` / `leave` — town or temple interior.
 - `attack {target}` — start combat with an enemy node, or harvest a resource.
 - `talk_bandit`, `buy_from_bandit {item}` — Lady Bandit trade (§6).
-- `bomb {target?}` — §8.
+- `bomb` — §8.
 - `fly` / `land`, `teleport {town}`, `aura` — §9.
 - `level_up {stat}` — any time a level is pending.
 - `mark_suspect {person}` / `unmark_suspect`, `clue_book` (read-only view).
-- `accuse {person}` — any time, like the original clue book.
+- `stab {person}` — the demon-killing knife; only inside a town, on someone there (§6).
 
 **Leaving a node** (on `move`), in this order:
 
@@ -228,7 +317,7 @@ nodes over time (the notes say "some enemies can move"); current reading is
 only mushrooms (follow), wizards (teleport) and snakes (flee).
 
 **World cleared bonus:** when the last overworld enemy dies the player gains
-100 XP once, as in the original (temples and arena excluded).
+100 XP once, as in the original (temples and lair excluded).
 
 ---
 
@@ -272,10 +361,10 @@ action and what the enemy will do, as `facts.notes`, so the GM can relay it.
 
 Death: HP ≤ 0 → phase `dead`, pending `continue`. `continue` resets level 1,
 XP 0, strength/agility/range 1, max HP 3, full HP, clears pending level-ups,
-ends combat/temple/arena, and respawns inside `lastTown`. Everything else is
+ends combat/temple/lair, and respawns inside `lastTown`. Everything else is
 kept (clues, items, shuckles, resources, bindings, magic items, task progress,
-follower). Identical to the original's Continue button. Dying in the arena
-returns to the world; accusing again later starts a fresh arena.
+follower). Identical to the original's Continue button. Dying in the lair
+returns to the world; stabbing it again later starts a fresh lair.
 
 ---
 
@@ -328,9 +417,10 @@ confirm, which becomes a `confirm: true` field). A minion's house yields the
 next binding name from `bindingNameRegistry`; others "nothing of note". A
 searched house stays searched.
 
-Accuse: `accuse {person}` from anywhere, for anyone the player has met (the
-original accuses from the clue book, which lists met people). Wrong →
-`lost`, game over. Right → arena (§9).
+The knife: `stab {person}`, inside a town, on anyone there (or the follower).
+The wrong person dies in front of their town and the townspeople turn on you:
+`lost`, game over. The right one drops its disguise: lair (§9). (Replaces
+the original's clue-book accusation, designer ruling 2026-10-21.)
 
 Escorting the demon: the original's design doc says location clues must
 update but its code never did; the port rewrites every town clue when the
@@ -371,15 +461,15 @@ walled; bomb it from the adjacent clearing first (§8).
 Bombs: Lady Bandit sells them (10 shuckles) and lockpicks (200); after any
 purchase she leaves the node (original removes her). Attacking a Lady Bandit
 ends trading with her. Fire Bombs (fire temple) = unlimited. `bomb` is legal
-only outdoors at a major node, one per action:
+only outdoors at a major node, one per action, and hits everything there
+(ruling 2026-10-21):
 
-- Damages every enemy at the node by 5 (the original's blast; kills wizards
-  and slimes outright).
-- `target` an ore deposit at the node: it is destroyed and rolls ore (10%
-  gold, 40% iron ore, else nothing) — the original's rock-wall roll. One
-  deposit per bomb (Q6).
-- At the clearing next to the Sky Temple with no target: opens the walled
-  edge and rolls ore once.
+- Every enemy at the node takes 5 (kills wizards and slimes outright).
+- Every ore deposit at the node shatters, each rolling ore (10% gold, 40%
+  iron ore, else nothing) — the original's rock-wall roll.
+- Every plant and tree at the node burns to nothing (no yield).
+- At the clearing next to the Sky Temple: the walled edge opens, with an ore
+  roll of its own.
 
 Harvest: `attack {plant|tree}` deals `strength` per action; at 0 HP it yields
 its resource. Each harvest action has a 10% chance to pull one aggressive enemy
@@ -411,7 +501,7 @@ likes. +1 strength (cap 5), +1 range (cap 5), +1 max HP with full heal (cap
 10), agility +4 (starts 4: 8, 12, 16, 20; cap after 4 picks). Blacksmith gives a free
 pick without consuming a level.
 
-Finale: correct accusation → phase `arena`, pending `combat_turn` against The
+Finale: stabbing the demon → phase `lair`, pending `combat_turn` against The
 Demon: HP `max(1, 20 − 3 × bindings) × strength`, speed 8, range 3, damage 2.
 Phase 2 at ≤ 2/3 HP (once): three random overworld enemy types at 10 HP each
 are fought one at a time, then the demon resumes. Phase 3 at ≤ 1/3 HP: the
@@ -456,7 +546,7 @@ the inn for training; spend levels keeping health within two of strength; when
 a node's blockers cost too much, buy a bomb from the Lady Bandit and bomb them;
 march on the demon's town only once a real fight estimate says it survives a
 bandit pair, avoiding undead knights; when nothing safe is left or it is strong enough,
-walk to the demon's town, meet it and accuse it; after three deaths it accuses
+walk to the demon's town and stab it; after three deaths it stabs
 a met innocent, ending the game. It exists so `scripts/smoke.mjs` and the
 harness can run the game to `game_over`; on the 12 test seeds it loses every
 time at level 1, which is a statement about early-game lethality (Q9), not
@@ -478,7 +568,7 @@ a goal of the bot.
 - `movement.test.ts`: blockers, mushroom following and the 5+ rule, flying
   exceptions, walled edge, world-cleared bonus.
 - `town.test.ts`: every dialogue branch, each occupation power, inn pricing
-  and stock, houses and bindings, accuse outcomes.
+  and stock, houses and bindings, knife outcomes.
 - `temple.test.ts`: gauntlet reset on leave, riddle normalisation, chest and
   task completion, sky wall.
 - `viewLeak.test.ts`, `nextStepFacts.test.ts`, `solvability.test.ts` (bot
@@ -498,7 +588,7 @@ a goal of the bot.
 5. Range free attack: once at the start of combat (stat text) or every round
    (loop text)? And does an enemy with higher range (skeleton, eye, demon) get
    the same free attack against the player?
-6. One ore deposit per bomb?
+6. ~~One ore deposit per bomb?~~ Superseded: a bomb hits everything on the node (ruling 2026-10-21).
 7. Keep the original's full heal on cape teleport?
 8. Enemy counts stay the original's (~95 overworld enemies over ~11 major
    nodes, 8–9 per node; generated worlds show up to ~18 on the farthest
@@ -515,17 +605,18 @@ a goal of the bot.
    game come from this. **Ruled:** starting speed is 4, so a mushroom (3)
    gets one hit per action and the player strikes first against anything
    slower than 4.
-11. **The finale cannot be won without bindings.** Demon HP is
+11. ~~**The finale cannot be won without bindings.**~~ Resolved by the tenth
+    ruling (2026-10-21): flat HP, artifacts count, minions bound. Original note: Demon HP was
     (20 − 3 × bindings) × strength, so with no bindings it always takes
     exactly 20 of your hits whatever your strength, while it deals 2 per hit
     at speed 8 (one or two hits per action against any agility below 16; two
-    of yours per action only at 16+). With health capped at 10 the arena is
+    of yours per action only at 16+). With health capped at 10 the lair is
     lost before 20 hits land; the harness bot reaches the demon at level 7
     with full health and dies every time. In the original the player dodged
     projectiles in real time; in text there is no dodge. Every binding takes 3
     × strength off, so five bindings make it a 5-hit fight. Options: keep it
     as the design (bindings are the point: find minion houses) and make that
-    clearer in tips and lore; lower the base multiplier; give the arena a
+    clearer in tips and lore; lower the base multiplier; give the lair a
     heal; or cap the demon at a flat HP. Also worth asking: lockpicks at 200
     shuckles each and one Locksmith favour per town make five bindings a long
     road.
@@ -545,9 +636,9 @@ symmetric, Q6 yes, Q7 yes, Q8 keep, Q9 as is, Q10 as built.
    tests for §3 invariants and the puzzle. (Can start before game-kit lands.)
 2. **Core loop**: state, look/move/enter/leave, combat resolver, leaving-node
    reactions, harvest, death; views and next_step for these.
-3. **Towns**: dialogue, tasks, powers, escort, inn, houses, bindings, accuse.
+3. **Towns**: dialogue, tasks, powers, escort, inn, houses, bindings, the knife.
 4. **Temples, items, finale**: gauntlet, riddles, chest, bombs and sky wall,
-   magic items, levelling, arena.
+   magic items, levelling, lair.
 5. **GM layer**: guidance, rules text, lore topics, report voice, reference
    data, leak and facts tests.
 6. **Harness bot + wire-up**: ai.ts, solvability test, serve/smoke/README.
@@ -582,7 +673,7 @@ Built, tested and verified through the real server once `@zekel/game-kit`
   get out; `continue` frees them, so not a soft-lock, but worth a look.
 
 Deviations from the original worth knowing (all noted inline): unique person
-names world-wide; find tasks never self-conflict; accuse only met people;
+names world-wide; find tasks never self-conflict; the knife works only face to face in town;
 escort relocates the demon's town clues; hops measured from the start town;
 clearings allow 4 links; combat `attack` includes the first swing; starting
 speed 4.

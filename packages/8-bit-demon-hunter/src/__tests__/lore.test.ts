@@ -19,7 +19,7 @@ describe('lore and guidance', () => {
   it('the guidance forbids hints and the rules cover the main systems', () => {
     expect(SESSION_START_GUIDANCE).toMatch(/NEVER GIVE HINTS/);
     expect(SESSION_START_GUIDANCE).toMatch(/get_demon_hunter_lore/);
-    for (const word of ['Winged Boots', 'Aura of Protection', 'Cape of Teleportation', 'Eye of Truth', 'Fire Bombs', 'binding', 'gauntlet', 'riddle', 'Lady Bandit', 'arena']) {
+    for (const word of ['Winged Boots', 'Aura of Protection', 'Cape of Teleportation', 'Eye of Truth', 'Fire Bombs', 'binding', 'gauntlet', 'riddle', 'Lady Bandit', 'lair']) {
       expect(RULES_TEXT).toContain(word);
     }
   });

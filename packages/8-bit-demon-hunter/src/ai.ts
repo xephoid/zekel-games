@@ -6,14 +6,14 @@
 // stand on nodes it can leave again; otherwise grind — cut plants and trees
 // on safe nodes, sell everything at an inn, and pay for training — until it is
 // strong enough to walk through bandits to the demon's town, meet the demon
-// and accuse it. After three deaths it gives up by accusing an innocent it has
-// met, which ends the game. Fully deterministic: it never draws randomness.
+// and stab it. After three deaths it gives up by stabbing an innocent, which
+// ends the game. Fully deterministic: it never draws randomness.
 
 import { ENEMY_BY_ID } from './data/enemies.js';
-import { BOMB_COST, BOMB_DAMAGE, INN_SLEEP_COST, INN_TRAIN_COST, STAT_MAX } from './data/progression.js';
+import { BOMB_COST, BOMB_DAMAGE, BOMB_SELF_DAMAGE, INN_SLEEP_COST, INN_TRAIN_COST, STAT_MAX } from './data/progression.js';
 import { RESOURCE_TYPES } from './data/resources.js';
 import type { DemonHunterMove } from './engine/moves.js';
-import { activeTask, attacksPerAction, canLevelUp, enemiesAt, hereNode, resourcesAt, townAtNode } from './engine/helpers.js';
+import { activeTasks, attacksPerAction, canLevelUp, enemiesAt, hereNode, resourcesAt, townAtNode } from './engine/helpers.js';
 import type { DemonHunterState, Enemy, Person } from './types.js';
 import { neighborsOf } from './world/graph.js';
 
@@ -32,6 +32,7 @@ export interface BotChoice {
 
 const PREY: ReadonlySet<string> = new Set(['slime', 'mushroom']);
 const GIVE_UP_DEATHS = 3;
+const GIVE_UP_TURNS = 1000;
 
 /** Can the bot take one of this enemy's actions and live? */
 function survivable(state: DemonHunterState, e: Enemy): boolean {
@@ -119,6 +120,12 @@ function noKnights(state: DemonHunterState, nodeId: string): boolean {
 /** First step of a shortest path to a node satisfying `goal`, passing only
  *  through nodes `allowed` (the goal itself is exempt). Walled edges are never used. */
 function nextHopTo(state: DemonHunterState, from: string, goal: (id: string) => boolean, allowed: boolean | ((id: string) => boolean)): string | null {
+  const path = pathTo(state, from, goal, allowed);
+  return path ? path[0]! : null;
+}
+
+/** The whole path (excluding `from`) under the same rules, or null. */
+function pathTo(state: DemonHunterState, from: string, goal: (id: string) => boolean, allowed: boolean | ((id: string) => boolean)): string[] | null {
   const pass = allowed === true ? () => true : allowed === false ? () => true : allowed;
   const safeOnly = allowed === true;
   const prev: Record<string, string> = {};
@@ -134,14 +141,31 @@ function nextHopTo(state: DemonHunterState, from: string, goal: (id: string) => 
       seen.add(n);
       prev[n] = cur;
       if (goal(n)) {
-        let step = n;
-        while (prev[step] !== from) step = prev[step]!;
-        return step;
+        const path: string[] = [];
+        let step: string = n;
+        while (step !== from) {
+          path.unshift(step);
+          step = prev[step]!;
+        }
+        return path;
       }
       queue.push(n);
     }
   }
   return null;
+}
+
+/** HP the march to the demon's town would cost from here: this node's
+ *  blockers plus every node on the way (not the town itself). */
+function marchCost(state: DemonHunterState, here: string): number {
+  const target = demonTownNode(state);
+  if (here === target) return 0;
+  const goal = (id: string): boolean => id === target;
+  const path = pathTo(state, here, goal, true) ?? pathTo(state, here, goal, (id) => noKnights(state, id)) ?? pathTo(state, here, goal, false);
+  if (!path) return Number.POSITIVE_INFINITY;
+  let cost = clearCost(state, here);
+  for (const id of path) if (id !== target) cost += clearCost(state, id);
+  return cost;
 }
 
 function demon(state: DemonHunterState): Person {
@@ -201,7 +225,7 @@ export function chooseMove(state: DemonHunterState, difficulty?: string): BotCho
     // pay for a bed. Otherwise a death is the way out (it respawns in town).
     const crowd = enemiesAt(state, p.at).filter((m) => m.type === 'mushroom').length >= 5;
     const trapped = d.behaviour === 'blocker' || d.behaviour === 'hunter' || (d.id === 'mushroom' && crowd);
-    if (!state.arena && !trapped && p.hp <= d.damage && e.hp > p.strength && canHeal(state)) {
+    if (!state.lair && !trapped && p.hp <= d.damage && e.hp > p.strength && canHeal(state)) {
       return { move: { type: 'flee' }, reasoning: 'about to die: run' };
     }
     return { move: { type: 'fight' }, reasoning: 'fight' };
@@ -210,12 +234,10 @@ export function chooseMove(state: DemonHunterState, difficulty?: string): BotCho
   if (state.dialogue) {
     const person = state.towns.flatMap((t) => t.people).find((x) => x.id === state.dialogue!.personId)!;
     switch (state.dialogue.stage) {
-      case 'found':
-        return { move: { type: 'found_you' }, reasoning: 'found the target' };
       case 'reward':
         return { move: { type: 'claim_reward', reward: person.clues.good ? 'clue' : 'power' }, reasoning: 'claim the reward' };
       case 'offer':
-        return { move: p.activeTaskGiver ? { type: 'decline' } : { type: 'accept_task' }, reasoning: 'task offer' };
+        return { move: { type: 'accept_task' }, reasoning: 'task offer' };
       default:
         return { move: { type: 'goodbye' }, reasoning: 'done talking' };
     }
@@ -242,7 +264,7 @@ export function chooseMove(state: DemonHunterState, difficulty?: string): BotCho
 
   const here = hereNode(state);
   const d = demon(state);
-  const givingUp = p.deaths >= GIVE_UP_DEATHS;
+  const givingUp = p.deaths >= GIVE_UP_DEATHS || state.turn >= GIVE_UP_TURNS;
   const innWorthwhile = hasGoods(state) || (!strong && p.shuckles >= INN_TRAIN_COST);
   // Nothing left to grind: no prey, nothing to cut, nothing to sell or train with.
   const ready = strong || (!preyReachable(state) && !harvestReachable(state) && !innWorthwhile);
@@ -250,39 +272,43 @@ export function chooseMove(state: DemonHunterState, difficulty?: string): BotCho
   if (p.inside === 'town') {
     const town = townAtNode(state, p.at)!;
     if ((p.hp < p.maxHp && canHeal(state)) || innWorthwhile) return { move: { type: 'inn' }, reasoning: 'to the inn' };
-    const task = activeTask(state);
-    if (task && task.isCompleted && p.activeTaskGiver && town.people.some((x) => x.id === p.activeTaskGiver)) {
-      return { move: { type: 'talk', person: p.activeTaskGiver }, reasoning: 'collect a task reward' };
-    }
+    const owed = activeTasks(state).find((task) => task.isCompleted && town.people.some((x) => x.id === task.giverId));
+    if (owed) return { move: { type: 'talk', person: owed.giverId }, reasoning: 'collect a task reward' };
     if (givingUp) {
       const someone = state.towns.flatMap((t) => t.people).find((x) => x.hasMet && x.id !== d.id);
-      if (someone) return { move: { type: 'accuse', person: someone.id }, reasoning: 'giving up after three deaths' };
+      void someone;
       const stranger = town.people.find((x) => x.id !== d.id)!;
-      return { move: { type: 'talk', person: stranger.id }, reasoning: 'giving up: meet someone to accuse' };
+      return { move: { type: 'stab', person: stranger.id }, reasoning: 'giving up after three deaths' };
     }
     if (ready) {
-      if (d.hasMet) return { move: { type: 'accuse', person: d.id }, reasoning: 'accuse the demon' };
-      if (d.attributes.townId === town.id) return { move: { type: 'talk', person: d.id }, reasoning: 'meet the demon first' };
+      if (d.attributes.townId === town.id) return { move: { type: 'stab', person: d.id }, reasoning: 'stab the demon' };
     }
     return { move: { type: 'leave' }, reasoning: ready ? "off to the demon's town" : 'back out to hunt' };
   }
 
   if (p.inside === 'temple') return { move: { type: 'leave' }, reasoning: 'the bot skips temples' };
 
-  // Outdoors.
+  // Outdoors. Once strong enough, prey is a distraction (it respawns every
+  // time the bot steps indoors) and a scratch is no reason to turn back.
   const prey = preyAt(state, here.id);
-  if (prey && !givingUp) return { move: { type: 'attack', target: prey.id }, reasoning: `kill a ${ENEMY_BY_ID[prey.type].name}` };
+  if (prey && !givingUp && !strong) return { move: { type: 'attack', target: prey.id }, reasoning: `kill a ${ENEMY_BY_ID[prey.type].name}` };
 
   // Blockers here it cannot afford to fight: soften them with a bomb, buying
   // one from the Lady Bandit if need be (the tip "someone bought a bomb off a
   // Lady Bandit" is exactly this).
   const toll = clearCost(state, here.id);
   if (toll > 0 && toll >= p.hp) {
-    if (!hasBomb(state) && traderAt(state, here.id) && p.shuckles >= BOMB_COST) return { move: { type: 'buy_from_bandit', item: 'bomb' }, reasoning: 'buy a bomb to break out' };
-    if (hasBomb(state) && clearCost(state, here.id, true) < p.hp) return { move: { type: 'bomb' }, reasoning: 'bomb the blockers' };
+    if (!hasBomb(state) && traderAt(state, here.id) && p.shuckles >= BOMB_COST) {
+      if (!p.blackMarketKnown) return { move: { type: 'talk_bandit' }, reasoning: 'see what the Lady Bandit wants' };
+      return { move: { type: 'buy_from_bandit', item: 'bomb' }, reasoning: 'buy a bomb to break out' };
+    }
+    if (hasBomb(state) && p.hp > BOMB_SELF_DAMAGE && clearCost(state, here.id, true) < p.hp - BOMB_SELF_DAMAGE) return { move: { type: 'bomb' }, reasoning: 'bomb the blockers' };
   }
 
-  if (p.hp < p.maxHp) {
+  // Strong: rest only when the whole march ahead costs more HP than it has
+  // (every rest stop respawns the wild, so the march restarts from scratch).
+  const needsRest = strong ? p.hp < p.maxHp && marchCost(state, here.id) >= p.hp : p.hp < p.maxHp;
+  if (needsRest) {
     if (canHeal(state)) {
       if (here.kind === 'town') return { move: { type: 'enter' }, reasoning: 'into town to heal' };
       const next =
@@ -308,7 +334,7 @@ export function chooseMove(state: DemonHunterState, difficulty?: string): BotCho
 
   if (ready) {
     const target = demonTownNode(state);
-    if (here.id === target || (d.hasMet && here.kind === 'town')) return { move: { type: 'enter' }, reasoning: 'into town to accuse' };
+    if (here.id === target) return { move: { type: 'enter' }, reasoning: "into the demon's town" };
     const goal = (id: string): boolean => id === target;
     const next = nextHopTo(state, here.id, goal, true) ?? nextHopTo(state, here.id, goal, (id) => noKnights(state, id)) ?? nextHopTo(state, here.id, goal, false);
     if (next) return { move: { type: 'move', to: next }, reasoning: "towards the demon's town" };

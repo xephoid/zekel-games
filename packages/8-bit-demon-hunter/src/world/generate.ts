@@ -6,7 +6,7 @@ import { TOWN_NAMES } from '../data/registries.js';
 import { RESOURCE_TYPES, type ResourceType } from '../data/resources.js';
 import { shuffle } from '../rng.js';
 import type { DemonHunterOptions, DemonHunterState, PlayerState, Town } from '../types.js';
-import { buildGraph } from './graph.js';
+import { buildGraph, neighborsOf } from './graph.js';
 import { populateEnemies, populateInns, populateResources } from './populate.js';
 import { generatePeople, generatePuzzle } from './puzzle.js';
 
@@ -66,20 +66,24 @@ export function generateWorld(seed: number, options: DemonHunterOptions = {}): D
     flying: false,
     auraUp: false,
     knownClues: [],
-    activeTaskGiver: null,
-    follower: null,
+    activeTasks: [],
+    followers: [],
     suspects: [],
     searchedHouses: [],
     locksmithCharges: 0,
     bindings: [],
     visitedTowns: [startTown.id],
+    knownPlaces: Array.from(new Set([...towns.map((t) => t.nodeId), startTown.nodeId, ...neighborsOf(built.graph, startTown.nodeId, { includeWalled: true })])),
     lastTown: startTown.id,
     worldCleared: false,
+    blackMarketKnown: false,
+    lastEdgeStop: null,
     deaths: 0,
   };
 
   return {
     seed: s,
+    turn: 0,
     phase: 'playing',
     graph: built.graph,
     towns,
@@ -87,10 +91,12 @@ export function generateWorld(seed: number, options: DemonHunterOptions = {}): D
     items: puzzle.puzzle.items,
     enemies: enemies.enemies,
     resources: resources.resources,
+    initialEnemies: structuredClone(enemies.enemies),
+    initialResources: Object.fromEntries(Object.entries(resources.resources).filter(([, r]) => r.kind !== 'ore')),
     player,
     combat: null,
     temple: null,
-    arena: null,
+    lair: null,
     dialogue: null,
     innOpen: false,
     result: null,

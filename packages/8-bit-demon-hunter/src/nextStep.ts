@@ -3,9 +3,8 @@
 // `facts`: plain game facts in speakable words, no tool or move names.
 
 import { ENEMY_BY_ID } from './data/enemies.js';
-import { MAGIC_ITEMS, TEMPLE_GUARDIAN } from './data/magicItems.js';
 import { RIDDLES } from './data/riddles.js';
-import { activeTask, attacksPerAction, canLevelUp, hereNode, townAtNode } from './engine/helpers.js';
+import { activeTasks, attacksPerAction, canLevelUp, condition, hereNode, townAtNode } from './engine/helpers.js';
 import { describeNode } from './engine/describe.js';
 import type { DemonHunterState } from './types.js';
 
@@ -59,24 +58,23 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
     const e = state.enemies[state.combat.enemyId]!;
     const d = ENEMY_BY_ID[e.type];
     const yours = attacksPerAction(p.agility, d.speed);
-    const its = attacksPerAction(d.speed, p.agility);
-    const arena = !!state.arena;
+    const lair = !!state.lair;
     return {
       status: 'human_to_move',
       active_player_id: playerId,
       instruction:
-        `COMBAT: the player's action is owed against ${d.name}. Relay both sides' HP exactly, then ask: fight or ${arena ? 'nothing else (there is no fleeing the arena)' : 'flee'}` +
-        (p.magicItems.includes('earth') && !arena ? ', or the Aura of Protection to walk away untouched' : '') +
+        `COMBAT: the player's action is owed against ${d.name}. Relay the player's HP exactly and describe the enemy by how it looks and acts (never its numbers), then ask: fight or ${lair ? 'say something to it (there is no fleeing the lair; if they speak to it, submit say with their exact words and never suggest any)' : 'flee'}` +
+        (p.magicItems.includes('earth') && !lair ? ', or the Aura of Protection to walk away untouched' : '') +
         '. Submit fight or flee. Never resolve attacks yourself; the server does. ' + NEVER_HINT,
       human_response: { ask: 'fight or run away', example: 'I fight', records_as: 'fight (attack) or flee (run away)' },
       facts: {
-        phase: arena ? 'The arena' : 'Combat',
+        phase: lair ? 'The lair' : 'Combat',
         reason: `fighting a ${d.name}`,
         notes: [
-          `You: ${p.hp}/${p.maxHp} HP, speed ${p.agility}, range ${p.range}, strength ${p.strength}.`,
-          `${d.name}: ${e.hp}/${e.maxHp} HP, speed ${d.speed}, range ${d.range}, damage ${d.damage}.`,
-          `You get ${yours} attack${yours === 1 ? '' : 's'} per action; it gets ${its}.`,
-          ...(arena ? ['There is no way out of the arena.'] : ['Running away always works.', ...(d.behaviour === 'hunter' ? [`The ${d.name} gets one attack as you run.`] : [])]),
+          `You: ${p.hp}/${p.maxHp} HP, strength ${p.strength}, speed ${p.agility}, range ${p.range}.`,
+          `The ${d.name} is ${condition(e)}; it is ${d.speed > p.agility ? 'faster than you' : d.speed === p.agility ? 'as fast as you' : 'slower than you'}${d.range > p.range ? ' and strikes from further away than you can' : ''}.`,
+          `You get ${yours} attack${yours === 1 ? '' : 's'} per action.`,
+          ...(lair ? ['There is no way out of the lair.'] : ['Running away always works.', ...(d.behaviour === 'hunter' ? [`The ${d.name} gets one attack as you run.`] : [])]),
           ...(p.flying ? [d.range >= 3 ? 'It can reach you in the air.' : 'It cannot reach you while you fly.'] : []),
           ...levelNote,
         ],
@@ -88,7 +86,7 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
     const person = state.towns.flatMap((t) => t.people).find((x) => x.id === state.dialogue!.personId)!;
     const stage = state.dialogue.stage;
     const options =
-      stage === 'found' ? ['I found you', 'goodbye'] : stage === 'reward' ? [...(person.clues.good ? ['clue'] : []), 'power', 'goodbye'] : stage === 'offer' ? ['accept', 'decline', 'goodbye'] : ['goodbye'];
+      stage === 'reward' ? [...(person.clues.good ? ['clue'] : []), 'power', 'goodbye'] : stage === 'offer' ? ['accept', 'decline', 'goodbye'] : ['goodbye'];
     return {
       status: 'human_to_move',
       active_player_id: playerId,
@@ -107,28 +105,28 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
       status: 'human_to_move',
       active_player_id: playerId,
       instruction: 'AT THE INN. Relay the prices and services exactly as given, then ask what the player does: sleep, train, ride to a town, buy or sell a resource, or leave. ' + NEVER_HINT,
-      human_response: { ask: 'what they do at the inn', example: 'Sleep', records_as: 'sleep / train / ride {town} / buy {resource} / sell {resource} / leave_inn' },
+      human_response: { ask: 'what they do at the inn', example: 'Sleep', records_as: 'sleep / train / ride {town} / buy {resource, amount} / sell {resource, amount|"all"} / leave_inn' },
       facts: { phase: 'The inn', notes: [`${p.shuckles} shuckles.`, `HP ${p.hp}/${p.maxHp}.`, ...levelNote] },
     };
   }
 
   if (p.inside === 'town') {
     const town = townAtNode(state, p.at)!;
-    const task = activeTask(state);
+    const tasks = activeTasks(state);
     return {
       status: 'human_to_move',
       active_player_id: playerId,
       instruction:
-        `INSIDE ${town.name}. The player may talk to anyone here, visit the inn, search a house (needs a lockpick or a Locksmith's favour), accuse someone, or leave. ` +
+        `INSIDE ${town.name}. The player may travel in one go to any place they know of or back to a quest giver (travel: it stops at the edge of danger), talk to anyone here (meeting the person a find task asks for completes it), claim a reward from a giver here in one move (claim_reward with their id), ask around town for someone who fits a description (search_town: a pet, colour, trade, item, a task by what it asks for, who claims to know the truth, or which rumours contradict their secrets), visit the inn, search a house (needs a lockpick or a Locksmith's favour), stab someone with the demon-killing knife, or leave. ` +
         `Describe only what the last response showed. ${NEVER_HINT}`,
-      human_response: { ask: 'what they do in town', example: 'Talk to the Baker', records_as: 'talk {person} / inn / search_house {person} / accuse {person} / leave' },
+      human_response: { ask: 'what they do in town', example: 'Ask around for anyone who likes purple', records_as: 'talk {person} / claim_reward {person, reward} / search_town {…} / travel {to|person|nearest} / inn / search_house {person} / stab {person} / leave' },
       facts: {
         phase: `In ${town.name}`,
         notes: [
           `${town.people.filter((x) => x.hasMet).length} of ${town.people.length} people here met.`,
-          ...(task ? [`Active task: ${task.description} (${task.currentAmount}/${task.amount})${task.isCompleted ? ', complete' : ''}.`] : ['No active task.']),
+          ...(tasks.length > 0 ? tasks.map((task) => `Task: ${task.description} (${task.currentAmount}/${task.amount})${task.isCompleted ? ', complete' : ''}.`) : ['No tasks accepted.']),
           ...(p.lockpicks === 0 && p.locksmithCharges === 0 ? ["Houses are locked: searching one needs a lockpick or a Locksmith's favour."] : []),
-          ...(town.people.every((x) => !x.hasMet) ? ['You can only accuse someone you have met.'] : []),
+          'The demon-killing knife works only face to face, here in town: the wrong person dies and the town turns on you.',
           ...levelNote,
         ],
       },
@@ -147,7 +145,6 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
         facts: { phase: here.name, notes: ['The chest here is empty.', ...levelNote] },
       };
     }
-    const guardian = ENEMY_BY_ID[TEMPLE_GUARDIAN[t.temple]];
     if (t.mode === 'riddle') {
       return {
         status: 'human_to_move',
@@ -156,24 +153,24 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
           `THE RIDDLE DOOR of the ${here.name}. Read the riddle exactly: "${RIDDLES[t.temple].text}" Ask for the player's answer and submit it verbatim; the server judges it. ` +
           'Never hint at or guess the answer. They may instead take the gauntlet or leave.',
         human_response: { ask: 'their answer to the riddle', example: 'The answer is a lantern', records_as: 'answer_riddle with their words as text' },
-        facts: { phase: `${here.name} riddle`, notes: ['A wrong answer costs nothing; they may try again.', `The gauntlet is ${guardian.max} ${guardian.plural} fought one at a time.`] },
+        facts: { phase: `${here.name} riddle`, notes: ['A wrong answer costs nothing; they may try again.', 'The other way is the gauntlet: whatever guards this place, one at a time.'] },
       };
     }
     if (t.mode === 'gauntlet') {
       return {
         status: 'human_to_move',
         active_player_id: playerId,
-        instruction: `THE GAUNTLET of the ${here.name}: ${t.remaining} ${guardian.plural} remain. Ask whether they face the next one, or leave (leaving resets the gauntlet). ${NEVER_HINT}`,
+        instruction: `THE GAUNTLET of the ${here.name}: something still stirs ahead. Never say how many guardians remain. Ask whether they face the next one, or leave (leaving resets the gauntlet). ${NEVER_HINT}`,
         human_response: { ask: 'whether they face the next guardian', example: 'Next fight', records_as: 'next_fight, or leave' },
-        facts: { phase: `${here.name} gauntlet`, progress: { current: guardian.max - t.remaining, total: guardian.max, of: guardian.plural }, notes: ['Leaving the temple resets the gauntlet.', ...levelNote] },
+        facts: { phase: `${here.name} gauntlet`, notes: ['Leaving the temple resets the gauntlet.', ...levelNote] },
       };
     }
     return {
       status: 'human_to_move',
       active_player_id: playerId,
-      instruction: `INSIDE the ${here.name}: the player chooses the gauntlet (${guardian.max} ${guardian.plural}, one at a time) or the riddle door, or leaves. ${NEVER_HINT}`,
+      instruction: `INSIDE the ${here.name}: the player chooses the gauntlet (whatever guards this place, one at a time) or the riddle door, or leaves. Say only that a treasure awaits at the heart; never what it is or what guards it. ${NEVER_HINT}`,
       human_response: { ask: 'gauntlet or riddle', example: 'The riddle', records_as: 'gauntlet / riddle / leave' },
-      facts: { phase: here.name, options: ['gauntlet', 'riddle', 'leave'], notes: [`The prize is the ${MAGIC_ITEMS[t.temple].name}.`, ...levelNote] },
+      facts: { phase: here.name, options: ['gauntlet', 'riddle', 'leave'], notes: ['A treasure awaits at the heart of the temple.', ...levelNote] },
     };
   }
 
@@ -184,17 +181,17 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
     active_player_id: playerId,
     instruction:
       `OUTDOORS at ${v.name}. Relay what is here exactly (paths, enemies with counts, resources, a trader) from the last look or move, then ask what the player does: ` +
-      'move somewhere, enter, attack something, harvest, bomb, trade with a Lady Bandit, use a magic item, accuse. ' + NEVER_HINT,
-    human_response: { ask: 'what they do', example: 'Go to the Old Crossroads', records_as: 'move {to} / enter / attack {target} / bomb / talk_bandit / fly / land / aura / teleport {town} / accuse {person}' },
+      'move somewhere (or travel in one go to a place, a quest giver\'s town or the nearest inn; it stops at the edge of danger), enter, attack something, harvest, bomb, talk to someone here, use a magic item. ' + NEVER_HINT,
+    human_response: { ask: 'what they do', example: 'Head back to Jim in Bigton', records_as: 'move {to} / travel {to|person|nearest} / enter / attack {target} / bomb / talk_bandit / fly / land / aura / teleport {town}' },
     facts: {
       phase: `${v.name} (${v.kind})`,
       notes: [
         `Paths: ${v.paths.map((x) => `${x.name}${x.walled ? ' (walled: needs a bomb)' : ''}`).join(', ')}.`,
         v.enemies.length === 0 ? 'No enemies here.' : `Enemies: ${v.enemies.map((g) => `${g.count} ${g.count === 1 ? g.name : ENEMY_BY_ID[g.type as keyof typeof ENEMY_BY_ID].plural}`).join(', ')}.`,
         ...(v.resources.length > 0 ? [`Resources: ${v.resources.map((g) => `${g.count} ${g.name}`).join(', ')}.`] : []),
-        ...(v.trader ? ['A Lady Bandit here will trade.'] : []),
         ...(p.flying ? ['You are flying.'] : []),
         ...(v.resources.some((g) => g.kind === 'ore') && !p.magicItems.includes('fire') && p.bombs === 0 ? ['Ore deposits need a bomb; you have none.'] : []),
+        ...((p.bombs > 0 || p.magicItems.includes('fire')) && v.resources.length > 0 ? ['A bomb here would also burn the plants and trees.'] : []),
         ...(v.paths.some((x) => x.walled) && !p.magicItems.includes('fire') && p.bombs === 0 ? ['The stone ring needs a bomb; you have none.'] : []),
         ...levelNote,
         ...gateNotes,

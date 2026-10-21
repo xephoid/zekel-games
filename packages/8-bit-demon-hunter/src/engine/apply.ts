@@ -2,7 +2,7 @@
 // state and a plain-words summary. Rule violations throw RuleError.
 
 import type { DemonHunterState } from '../types.js';
-import { arenaContinue, auraEscape, playerFight, playerFlee, startCombat } from './combat.js';
+import { lairContinue, auraEscape, playerFight, playerFlee, say, startCombat } from './combat.js';
 import { lookText } from './describe.js';
 import { refuse, RuleError } from './errors.js';
 import { clone, hasMagicItem, hereNode } from './helpers.js';
@@ -14,7 +14,6 @@ import {
   acceptTask,
   claimReward,
   declineTask,
-  foundYou,
   goodbye,
   innBuy,
   innLeave,
@@ -24,9 +23,11 @@ import {
   innSleep,
   innTrain,
   searchHouse,
+  searchTown,
   talk,
 } from './town.js';
-import { accuse } from './finale.js';
+import { stab } from './finale.js';
+import { travel } from './travel.js';
 
 export interface ApplyResult {
   newState: DemonHunterState;
@@ -35,6 +36,7 @@ export interface ApplyResult {
 
 export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): ApplyResult {
   const state = clone(prev);
+  state.turn++;
   const lines: string[] = [];
   if (state.phase === 'won' || state.phase === 'lost') {
     throw new RuleError('GAME_OVER', 'The game is over.');
@@ -43,12 +45,21 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
     refuse('You are dead. Say "continue" to wake up in the last town you visited.');
   }
 
+  // An edge stop is only "pressed on" by travelling again at once: any other
+  // action (a fight, a look, a harvest) forgets it, so a later travel starts clean.
+  if (move_.type !== 'travel' && move_.type !== 'look') state.player.lastEdgeStop = null;
   switch (move_.type) {
     case 'look':
       lines.push(lookText(state));
       break;
     case 'move':
       move(state, move_.to, lines);
+      break;
+    case 'travel':
+      travel(state, move_, lines);
+      break;
+    case 'say':
+      say(state, move_.text, lines);
       break;
     case 'enter': {
       requireNoCombat(state);
@@ -77,13 +88,13 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       break;
     }
     case 'bomb':
-      bomb(state, move_.target, lines);
+      bomb(state, move_.confirm, lines);
       break;
     case 'talk_bandit':
       talkBandit(state, lines);
       break;
     case 'buy_from_bandit':
-      buyFromBandit(state, move_.item, lines);
+      buyFromBandit(state, move_.item, move_.amount, lines);
       break;
     case 'fly':
       fly(state, lines);
@@ -127,14 +138,14 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       state.player.suspects = state.player.suspects.filter((p) => p !== move_.person);
       lines.push('Suspect mark removed.');
       break;
-    case 'accuse':
-      accuse(state, move_.person, lines);
+    case 'stab':
+      stab(state, move_.person, lines);
+      break;
+    case 'search_town':
+      searchTown(state, move_, lines);
       break;
     case 'talk':
       talk(state, move_.person, lines);
-      break;
-    case 'found_you':
-      foundYou(state, lines);
       break;
     case 'accept_task':
       acceptTask(state, lines);
@@ -143,7 +154,7 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       declineTask(state, lines);
       break;
     case 'claim_reward':
-      claimReward(state, move_.reward, lines);
+      claimReward(state, move_.reward, move_.person, lines);
       break;
     case 'goodbye':
       goodbye(state, lines);
@@ -161,10 +172,10 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       innRide(state, move_.town, lines);
       break;
     case 'buy':
-      innBuy(state, move_.resource, lines);
+      innBuy(state, move_.resource, move_.amount, lines);
       break;
     case 'sell':
-      innSell(state, move_.resource, lines);
+      innSell(state, move_.resource, move_.amount, lines);
       break;
     case 'leave_inn':
       innLeave(state, lines);
@@ -189,6 +200,6 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       refuse(`Unknown move ${JSON.stringify(never)}.`);
     }
   }
-  arenaContinue(state, lines);
+  lairContinue(state, lines);
   return { newState: state, summary: lines.join(' ') };
 }

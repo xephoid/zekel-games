@@ -5,9 +5,10 @@ import { TEMPLE_NAME } from '../data/magicItems.js';
 import type { DemonHunterState } from '../types.js';
 import { edgeBetween, neighborsOf } from '../world/graph.js';
 import { startCombat } from './combat.js';
+import { whatIsHere } from './describe.js';
 import { refuse } from './errors.js';
 import { movePersonToTown } from '../world/puzzle.js';
-import { activeTask, clearTempleEnemiesAt, defOf, enemiesAt, hasMagicItem, healToFull, hereNode, nodeOf, personOf, townAtNode } from './helpers.js';
+import { activeTasks, clearTempleEnemiesAt, defOf, enemiesAt, endDialogue, hasMagicItem, healToFull, hereNode, learnSurroundings, nodeOf, personOf, respawnOverworld, townAtNode } from './helpers.js';
 import { relocateDemonClues } from './clues.js';
 
 export function requireOutdoors(state: DemonHunterState): void {
@@ -20,7 +21,7 @@ export function requireNoCombat(state: DemonHunterState): void {
 }
 
 /** `move {to}`. Returns true when the player actually moved. */
-export function move(state: DemonHunterState, to: string, lines: string[]): boolean {
+export function move(state: DemonHunterState, to: string, lines: string[], opts: { quiet?: boolean } = {}): boolean {
   requireNoCombat(state);
   requireOutdoors(state);
   const here = hereNode(state);
@@ -63,11 +64,13 @@ export function move(state: DemonHunterState, to: string, lines: string[]): bool
 
   p.at = to;
   p.inside = null;
+  learnSurroundings(state);
   lines.push(`You travel to ${dest.name}.`);
   if (mushrooms.length > 0) {
     for (const m of mushrooms) m.at = to;
     lines.push(`${mushrooms.length === 1 ? 'A Mushroom follows' : `${mushrooms.length} Mushrooms follow`} you.`);
   }
+  if (!opts.quiet) lines.push(whatIsHere(state));
   return true;
 }
 
@@ -89,20 +92,22 @@ export function arriveInTown(state: DemonHunterState, townId: string, lines: str
   p.flying = false;
   p.auraUp = false;
   p.lastTown = town.id;
+  learnSurroundings(state);
   if (!p.visitedTowns.includes(town.id)) p.visitedTowns.push(town.id);
   lines.push(`You enter ${town.name}.`);
   // Escort tasks complete on entering the target town by any means (the
-  // original checks on every town load). The person now lives here; if it was
-  // the demon, every location clue follows it.
-  const task = activeTask(state);
-  if (task && !task.isCompleted && task.type === 'ESCORT' && task.targetId === town.id && p.follower) {
-    const follower = personOf(state, p.follower);
+  // original checks on every town load). Each delivered person now lives
+  // here; if one was the demon, every location clue follows it.
+  for (const followerId of [...p.followers]) {
+    const follower = personOf(state, followerId);
+    const task = follower.task;
+    if (!p.activeTasks.includes(followerId) || task.isCompleted || task.type !== 'ESCORT' || task.targetId !== town.id) continue;
     const from = follower.attributes.townId;
     movePersonToTown(state.towns, follower.id, town.id);
     if (follower.id === state.demonId) relocateDemonClues(state, from, town.id);
     task.currentAmount = task.amount;
     task.isCompleted = true;
-    p.follower = null;
+    p.followers = p.followers.filter((id) => id !== followerId);
     lines.push(`${follower.name} is safely in ${town.name} and will live here now. Task complete: ${follower.name} owes you a reward.`);
   }
 }
@@ -110,7 +115,7 @@ export function arriveInTown(state: DemonHunterState, townId: string, lines: str
 export function leaveInterior(state: DemonHunterState, lines: string[]): void {
   requireNoCombat(state);
   if (state.player.inside === null) refuse('You are already outdoors.');
-  if (state.dialogue) refuse('Finish the conversation first (say goodbye).');
+  endDialogue(state, lines);
   if (state.innOpen) refuse('Leave the inn first.');
   const here = hereNode(state);
   if (state.player.inside === 'temple') {
@@ -121,7 +126,11 @@ export function leaveInterior(state: DemonHunterState, lines: string[]): void {
     state.temple = null;
   }
   state.player.inside = null;
+  // The wild resets while you are indoors (the original reloaded its stored
+  // overworld on every exit): the monsters, plants and trees are back.
+  respawnOverworld(state);
   lines.push(`You step out of ${here.name}.`);
+  lines.push(whatIsHere(state));
 }
 
 export function fly(state: DemonHunterState, lines: string[]): void {
@@ -151,7 +160,8 @@ export function auraOutdoors(state: DemonHunterState, lines: string[]): void {
 export function teleport(state: DemonHunterState, townId: string, lines: string[]): void {
   requireNoCombat(state);
   if (!hasMagicItem(state, 'space')) refuse('You have no Cape of Teleportation.');
-  if (state.dialogue || state.innOpen) refuse('Finish what you are doing first.');
+  if (state.innOpen) refuse('Leave the inn first.');
+  endDialogue(state, lines);
   const town = state.towns.find((t) => t.id === townId || t.name.toLowerCase() === townId.toLowerCase());
   if (!town) refuse(`There is no town "${townId}".`);
   if (!state.player.visitedTowns.includes(town.id)) refuse(`You have never been to ${town.name}; the cape only knows places you have visited.`);
