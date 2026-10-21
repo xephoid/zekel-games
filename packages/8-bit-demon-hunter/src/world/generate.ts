@@ -96,7 +96,7 @@ export function generateWorld(seed: number, options: DemonHunterOptions = {}): D
     player,
     combat: null,
     temple: null,
-    arena: null,
+    lair: null,
     dialogue: null,
     innOpen: false,
     result: null,

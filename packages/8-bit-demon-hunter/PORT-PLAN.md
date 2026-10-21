@@ -73,13 +73,22 @@ name the giver and then talks and claims in one move. The six-move find
 flow is two moves: talk to the target, claim from the giver.
 Playtest 3 (seed 44, 2026-10-21): the demon (Lauren the Merchant of
 Placington) was found by two secrets (has a Bird; is a Merchant) and the
-contradiction check; the arena was lost at once with no bindings (Q11).
+contradiction check; the lair was lost at once with no bindings (Q11).
 Fixes: the demon's name no longer doubles "The"; a confessed minion's card
 says `confessed_minion`; level-ups are offered mid-conversation; the
 Carpenter's "not in" clue is filed as a certainty (special), not a rumour.
 Ruling 2026-10-21 (ninth): **exactly two minions in every town**, drawn from
 that town's people other than the demon (before, ten were drawn across all
 towns, so a town could hold three or one).
+Ruling 2026-10-21 (tenth): **the lair** (never "arena"). The demon has a flat
+40 HP, less 7 for every binding and every artifact held (a "weakening"),
+never below 4; strength no longer scales it, so levelling shortens the fight.
+Phase 2 summons three 6-HP minions, one fewer per two weakenings; phase 3 is
+a double shot. Tuned with the real engine (scratch `lair_sweep`): fewest
+weakenings to win on 5 seeds: fresh never, early 6, mid 5, strong 3, maxed 0.
+The constants live in `data/progression.ts LAIR`. A confessed minion's house needs no lockpick. Death in the lair
+turns time back through the knife: the usual death, the demon keeps its face
+and town, the player keeps the knowledge; it does not re-hide. Resolves Q11.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.
@@ -117,7 +126,7 @@ packages/8-bit-demon-hunter/
       town.ts                  talk, tasks, powers, inn, houses, bindings
       temple.ts                gauntlet, riddle, chest, sky wall
       items.ts                 bombs, harvest, magic items, level up, death
-      finale.ts                the knife, arena, demon phases
+      finale.ts                the knife, lair, demon phases
     legalMoves.ts
     views.ts                   player view (hidden data stripped), clue book
     nextStep.ts                describeNextStep per pending kind
@@ -142,7 +151,7 @@ views and next_step need the real types.
 ```ts
 interface DemonHunterState {
   seed; rng;                       // server-held randomness
-  phase: 'playing' | 'dead' | 'arena' | 'won' | 'lost';
+  phase: 'playing' | 'dead' | 'lair' | 'won' | 'lost';
   graph: { nodes: Record<NodeId, Node>; edges: Edge[] };   // §3
   player: {
     at: NodeId;                    // current major node
@@ -292,7 +301,7 @@ nodes over time (the notes say "some enemies can move"); current reading is
 only mushrooms (follow), wizards (teleport) and snakes (flee).
 
 **World cleared bonus:** when the last overworld enemy dies the player gains
-100 XP once, as in the original (temples and arena excluded).
+100 XP once, as in the original (temples and lair excluded).
 
 ---
 
@@ -336,10 +345,10 @@ action and what the enemy will do, as `facts.notes`, so the GM can relay it.
 
 Death: HP ≤ 0 → phase `dead`, pending `continue`. `continue` resets level 1,
 XP 0, strength/agility/range 1, max HP 3, full HP, clears pending level-ups,
-ends combat/temple/arena, and respawns inside `lastTown`. Everything else is
+ends combat/temple/lair, and respawns inside `lastTown`. Everything else is
 kept (clues, items, shuckles, resources, bindings, magic items, task progress,
-follower). Identical to the original's Continue button. Dying in the arena
-returns to the world; stabbing it again later starts a fresh arena.
+follower). Identical to the original's Continue button. Dying in the lair
+returns to the world; stabbing it again later starts a fresh lair.
 
 ---
 
@@ -394,7 +403,7 @@ searched house stays searched.
 
 The knife: `stab {person}`, inside a town, on anyone there (or the follower).
 The wrong person dies in front of their town and the townspeople turn on you:
-`lost`, game over. The right one drops its disguise: arena (§9). (Replaces
+`lost`, game over. The right one drops its disguise: lair (§9). (Replaces
 the original's clue-book accusation, designer ruling 2026-10-21.)
 
 Escorting the demon: the original's design doc says location clues must
@@ -476,7 +485,7 @@ likes. +1 strength (cap 5), +1 range (cap 5), +1 max HP with full heal (cap
 10), agility +4 (starts 4: 8, 12, 16, 20; cap after 4 picks). Blacksmith gives a free
 pick without consuming a level.
 
-Finale: stabbing the demon → phase `arena`, pending `combat_turn` against The
+Finale: stabbing the demon → phase `lair`, pending `combat_turn` against The
 Demon: HP `max(1, 20 − 3 × bindings) × strength`, speed 8, range 3, damage 2.
 Phase 2 at ≤ 2/3 HP (once): three random overworld enemy types at 10 HP each
 are fought one at a time, then the demon resumes. Phase 3 at ≤ 1/3 HP: the
@@ -580,17 +589,18 @@ a goal of the bot.
    game come from this. **Ruled:** starting speed is 4, so a mushroom (3)
    gets one hit per action and the player strikes first against anything
    slower than 4.
-11. **The finale cannot be won without bindings.** Demon HP is
+11. ~~**The finale cannot be won without bindings.**~~ Resolved by the tenth
+    ruling (2026-10-21): flat HP, artifacts count, minions bound. Original note: Demon HP was
     (20 − 3 × bindings) × strength, so with no bindings it always takes
     exactly 20 of your hits whatever your strength, while it deals 2 per hit
     at speed 8 (one or two hits per action against any agility below 16; two
-    of yours per action only at 16+). With health capped at 10 the arena is
+    of yours per action only at 16+). With health capped at 10 the lair is
     lost before 20 hits land; the harness bot reaches the demon at level 7
     with full health and dies every time. In the original the player dodged
     projectiles in real time; in text there is no dodge. Every binding takes 3
     × strength off, so five bindings make it a 5-hit fight. Options: keep it
     as the design (bindings are the point: find minion houses) and make that
-    clearer in tips and lore; lower the base multiplier; give the arena a
+    clearer in tips and lore; lower the base multiplier; give the lair a
     heal; or cap the demon at a flat HP. Also worth asking: lockpicks at 200
     shuckles each and one Locksmith favour per town make five bindings a long
     road.
@@ -612,7 +622,7 @@ symmetric, Q6 yes, Q7 yes, Q8 keep, Q9 as is, Q10 as built.
    reactions, harvest, death; views and next_step for these.
 3. **Towns**: dialogue, tasks, powers, escort, inn, houses, bindings, the knife.
 4. **Temples, items, finale**: gauntlet, riddles, chest, bombs and sky wall,
-   magic items, levelling, arena.
+   magic items, levelling, lair.
 5. **GM layer**: guidance, rules text, lore topics, report voice, reference
    data, leak and facts tests.
 6. **Harness bot + wire-up**: ai.ts, solvability test, serve/smoke/README.

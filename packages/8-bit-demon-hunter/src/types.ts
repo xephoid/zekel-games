@@ -202,7 +202,7 @@ export interface PlayerState {
 export type Stat = StatId;
 
 // ---------------------------------------------------------------------------
-// Combat / temple / arena
+// Combat / temple / lair
 // ---------------------------------------------------------------------------
 
 export interface Combat {
@@ -230,7 +230,7 @@ export interface DialogueState {
   stage: 'reward' | 'offer' | 'closing';
 }
 
-export interface ArenaState {
+export interface LairState {
   demonEnemyId: string;
   phase2Done: boolean;
   /** Phase 2 minions still to fight before the demon resumes. */
@@ -241,7 +241,7 @@ export interface ArenaState {
 // Session state
 // ---------------------------------------------------------------------------
 
-export type Phase = 'playing' | 'dead' | 'arena' | 'won' | 'lost';
+export type Phase = 'playing' | 'dead' | 'lair' | 'won' | 'lost';
 
 export interface DemonHunterOptions {
   seed?: number;
@@ -268,7 +268,7 @@ export interface DemonHunterState {
   player: PlayerState;
   combat: Combat | null;
   temple: TempleRun | null;
-  arena: ArenaState | null;
+  lair: LairState | null;
   dialogue: DialogueState | null;
   innOpen: boolean;
   result: { winner: 'player' | 'demon'; summary: string } | null;

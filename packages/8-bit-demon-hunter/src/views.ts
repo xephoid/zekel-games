@@ -156,16 +156,16 @@ export function getView(state: DemonHunterState): Record<string, unknown> {
           it_strikes_from_further_than_you: d.range > p.range,
           it_can_reach_you: !(p.flying && d.range < 3),
           you_can_attack: !(p.flying && p.range < 3) && !p.auraUp,
-          can_flee: !state.arena,
+          can_flee: !state.lair,
         };
       })()
     : null;
 
-  const arena = state.arena
+  const lair = state.lair
     ? {
-        demon_condition: state.enemies[state.arena.demonEnemyId] ? condition(state.enemies[state.arena.demonEnemyId]!) : 'dead',
-        minions_summoned: state.arena.phase2Done,
-        minions_left: state.arena.minionQueue.length + (state.combat && state.combat.enemyId !== state.arena.demonEnemyId ? 1 : 0),
+        demon_condition: state.enemies[state.lair.demonEnemyId] ? condition(state.enemies[state.lair.demonEnemyId]!) : 'dead',
+        minions_summoned: state.lair.phase2Done,
+        minions_left: state.lair.minionQueue.length + (state.combat && state.combat.enemyId !== state.lair.demonEnemyId ? 1 : 0),
       }
     : null;
 
@@ -178,7 +178,7 @@ export function getView(state: DemonHunterState): Record<string, unknown> {
     you,
     here: hereView,
     combat,
-    arena,
+    lair,
     dialogue,
     inn_open: state.innOpen,
     clue_book: {

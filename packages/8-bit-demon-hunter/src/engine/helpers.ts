@@ -172,7 +172,7 @@ export function healToFull(state: DemonHunterState): void {
   state.player.hp = state.player.maxHp;
 }
 
-/** Remove temple guardians / arena foes standing at `nodeId`. */
+/** Remove temple guardians / lair foes standing at `nodeId`. */
 export function clearTempleEnemiesAt(state: DemonHunterState, nodeId: string): void {
   for (const e of Object.values(state.enemies)) {
     if (e.at === nodeId && ENEMY_BY_ID[e.type].templeOnly) delete state.enemies[e.id];

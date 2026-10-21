@@ -10,18 +10,18 @@
 // automatically right after, or right at the start when it is faster.
 
 import { ENEMIES, ENEMY_BY_ID, TEMPLE_ENEMY_TYPES } from '../data/enemies.js';
-import { WORLD_CLEARED_XP } from '../data/progression.js';
+import { LAIR, WORLD_CLEARED_XP } from '../data/progression.js';
+import { weakenings } from './finale.js';
 import { chance, pick, shuffle } from '../rng.js';
 
-export const ARENA_NODE_ID = 'arena';
-export const ARENA_MINION_HP = 10;
+export const LAIR_NODE_ID = 'lair';
 import type { DemonHunterState, Enemy } from '../types.js';
 import { neighborsOf } from '../world/graph.js';
 import { refuse } from './errors.js';
 import { activeTasks, attacksPerAction, condition, defOf, enemyName, gainXp, overworldEnemiesLeft } from './helpers.js';
 import { grantMagicItem } from './rewards.js';
 
-export type CombatCause = 'attack' | 'leaving' | 'harvest' | 'gauntlet' | 'arena' | 'flying' | 'resume';
+export type CombatCause = 'attack' | 'leaving' | 'harvest' | 'gauntlet' | 'lair' | 'flying' | 'resume';
 
 export function inCombat(state: DemonHunterState): boolean {
   return state.combat !== null;
@@ -49,7 +49,7 @@ export function startCombat(state: DemonHunterState, enemyId: string, cause: Com
     leaving: `The ${def.name} attacks as you try to leave!`,
     harvest: `Your noise draws the ${def.name} to you!`,
     gauntlet: `A ${def.name} comes at you.`,
-    arena: `${def.name} rises to meet you.`,
+    lair: `${def.name} rises to meet you.`,
     flying: `The ${def.name} fires at you as you fly past!`,
     resume: `${def.name} comes at you again.`,
   };
@@ -96,7 +96,7 @@ export function playerFight(state: DemonHunterState, lines: string[]): void {
 export function playerFlee(state: DemonHunterState, lines: string[]): void {
   const enemy = combatEnemy(state);
   const def = defOf(enemy);
-  if (state.arena) refuse('There is no way out of the arena but through the demon.');
+  if (state.lair) refuse('There is no way out of the lair but through the demon.');
   lines.push(`You run from the ${def.name}.`);
   if (def.behaviour === 'hunter') {
     lines.push(`The ${def.name} attacks as you run!`);
@@ -110,7 +110,7 @@ export function playerFlee(state: DemonHunterState, lines: string[]): void {
 /** Aura of Protection: the fight ends with no parting shots. */
 export function auraEscape(state: DemonHunterState, lines: string[]): void {
   const enemy = combatEnemy(state);
-  if (state.arena) refuse('The Aura of Protection cannot carry you out of the arena.');
+  if (state.lair) refuse('The Aura of Protection cannot carry you out of the lair.');
   lines.push(`The Aura of Protection flares; the ${enemyName(enemy)} cannot touch you and you walk away from the fight.`);
   endCombat(state);
 }
@@ -133,42 +133,54 @@ function playerHits(state: DemonHunterState, attacks: number, lines: string[]): 
     endCombat(state);
     return;
   }
-  // Arena phase 2: at two-thirds HP the demon withdraws and summons minions.
-  if (def.behaviour === 'boss' && state.arena && !state.arena.phase2Done && enemy.hp <= Math.floor((enemy.maxHp * 2) / 3)) {
-    state.arena.phase2Done = true;
+  // Lair phase 2: at two-thirds HP the demon withdraws and summons minions.
+  if (def.behaviour === 'boss' && state.lair && !state.lair.phase2Done && enemy.hp <= Math.floor((enemy.maxHp * 2) / 3)) {
+    state.lair.phase2Done = true;
     const pool = ENEMIES.filter((d) => !d.templeOnly);
     const chosen = shuffle(pool, state.seed);
     state.seed = chosen.nextSeed;
-    const minions = chosen.items.slice(0, 3);
-    state.arena.minionQueue = minions.map((d, i) => {
-      const id = `arena_minion_${i + 1}`;
-      state.enemies[id] = { id, type: d.id, at: ARENA_NODE_ID, hp: ARENA_MINION_HP, maxHp: ARENA_MINION_HP, attacked: false };
+    const lost = Math.floor((state.player.bindings.length + state.player.magicItems.length) / LAIR.weakeningsPerMinionLost);
+    const minions = chosen.items.slice(0, Math.max(0, LAIR.minionCount - lost));
+    if (minions.length === 0) {
+      lines.push('The Demon screams for its servants, but your bindings hold them fast: nothing answers. It turns back to you.');
+      return;
+    }
+    state.lair.minionQueue = minions.map((d, i) => {
+      const id = `lair_minion_${i + 1}`;
+      state.enemies[id] = { id, type: d.id, at: LAIR_NODE_ID, hp: LAIR.minionHp, maxHp: LAIR.minionHp, attacked: false };
       return id;
     });
-    lines.push(`The Demon screams and retreats to the centre of the arena. Three Demon Minions answer its call: ${minions.map((d) => d.name).join(', ')}. You must fight them one at a time.`);
+    lines.push(`The Demon screams and retreats to the centre of the lair. ${minions.length === 1 ? 'A Demon Minion answers' : `${['', 'One', 'Two', 'Three', 'Four', 'Five'][minions.length] ?? minions.length} Demon Minions answer`} its call: ${minions.map((d) => d.name).join(', ')}. You must fight them one at a time.`);
     endCombat(state);
   }
 }
 
-/** Between arena fights: the next minion, then the demon again, or victory. */
-export function arenaContinue(state: DemonHunterState, lines: string[]): void {
-  const arena = state.arena;
-  if (!arena || state.combat || state.phase !== 'arena') return;
-  if (!state.enemies[arena.demonEnemyId]) {
+/** Between lair fights: the next minion, then the demon again, or victory. */
+export function lairContinue(state: DemonHunterState, lines: string[]): void {
+  // A foe can die to the opening attack of its own fight; keep going until a
+  // fight is open or the lair is over.
+  let guard = 0;
+  while (state.lair && !state.combat && state.phase === 'lair' && guard++ < 10) lairStep(state, lines);
+}
+
+function lairStep(state: DemonHunterState, lines: string[]): void {
+  const lair = state.lair;
+  if (!lair || state.combat || state.phase !== 'lair') return;
+  if (!state.enemies[lair.demonEnemyId]) {
     state.phase = 'won';
-    state.arena = null;
-    for (const e of Object.values(state.enemies)) if (e.at === ARENA_NODE_ID) delete state.enemies[e.id];
+    state.lair = null;
+    for (const e of Object.values(state.enemies)) if (e.at === LAIR_NODE_ID) delete state.enemies[e.id];
     state.result = { winner: 'player', summary: 'The Demon is destroyed. The land is free, and the hunt is over: you win!' };
     lines.push(state.result.summary);
     return;
   }
-  const next = arena.minionQueue.find((id) => state.enemies[id]);
+  const next = lair.minionQueue.find((id) => state.enemies[id]);
   if (next) {
-    arena.minionQueue = arena.minionQueue.filter((id) => id !== next);
-    startCombat(state, next, 'arena', lines);
+    lair.minionQueue = lair.minionQueue.filter((id) => id !== next);
+    startCombat(state, next, 'lair', lines);
     return;
   }
-  startCombat(state, arena.demonEnemyId, 'resume', lines);
+  startCombat(state, lair.demonEnemyId, 'resume', lines);
 }
 
 function enemyHits(state: DemonHunterState, attacks: number, lines: string[]): void {
@@ -220,7 +232,7 @@ function enemyAction(state: DemonHunterState, lines: string[]): void {
       break;
   }
   let attacks = attacksPerAction(def.speed, p.agility);
-  if (def.behaviour === 'boss' && state.arena && enemy.hp <= Math.floor(enemy.maxHp / 3)) attacks += 2; // phase 3 triple shot
+  if (def.behaviour === 'boss' && state.lair && enemy.hp <= Math.floor(enemy.maxHp / 3)) attacks += LAIR.phase3ExtraAttacks; // phase 3 (ruling 2026-10-21: a double shot, not triple)
   lines.push(attacks > 1 ? `The ${def.name} attacks ${attacks} times.` : `The ${def.name} attacks.`);
   enemyHits(state, attacks, lines);
   if (state.combat) state.combat.round++;
@@ -312,10 +324,15 @@ export function die(state: DemonHunterState, killerName: string, lines: string[]
   state.player.deaths++;
   state.phase = 'dead';
   state.combat = null;
-  if (state.arena) {
-    for (const e of Object.values(state.enemies)) if (e.at === ARENA_NODE_ID) delete state.enemies[e.id];
-    state.arena = null;
-    lines.push('The arena dissolves around you.');
+  if (state.lair) {
+    for (const e of Object.values(state.enemies)) if (e.at === LAIR_NODE_ID) delete state.enemies[e.id];
+    state.lair = null;
+    // Death in the lair: the knife turns time back. The stab, the lair and the
+    // wound are undone; the demon keeps its face and its town, and the player
+    // keeps the knowledge (ruling 2026-10-21: the demon does not re-hide).
+    lines.push(`The ${killerName} hits you and the lair dissolves. The knife in your hand burns cold and time runs backwards: the stab, the lair, the wound, all undone.`);
+    lines.push('Say "continue" to wake up in the last town you visited, before any of it happened. Your level and stats reset; everything you carry and know is kept, and you still know the demon\'s face.');
+    return;
   }
   lines.push(`You were killed by ${/^[aeiou]/i.test(killerName) ? 'an' : 'a'} ${killerName}.`);
   lines.push('Say "continue" to wake up in the last town you visited. Your level and stats reset; everything you carry and know is kept.');

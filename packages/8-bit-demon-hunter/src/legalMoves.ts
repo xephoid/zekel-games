@@ -41,8 +41,8 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
     const e = state.enemies[state.combat.enemyId]!;
     const d = ENEMY_BY_ID[e.type];
     if (!(p.flying && p.range < 3)) add('fight', `Attack the ${d.name}`, { type: 'fight' });
-    if (!state.arena) add('flee', `Run away from the ${d.name}${d.behaviour === 'hunter' ? ' (it gets one attack as you go)' : ''}`, { type: 'flee' });
-    if (hasMagicItem(state, 'earth') && !state.arena) add('aura', 'Aura of Protection: leave the fight untouched', { type: 'aura' });
+    if (!state.lair) add('flee', `Run away from the ${d.name}${d.behaviour === 'hunter' ? ' (it gets one attack as you go)' : ''}`, { type: 'flee' });
+    if (hasMagicItem(state, 'earth') && !state.lair) add('aura', 'Aura of Protection: leave the fight untouched', { type: 'aura' });
     levelUps();
     return out;
   }
@@ -115,10 +115,10 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
     add('search_town', 'Ask around town; whoever fits counts as met (fill in what you are looking for: a pet, colour, trade or item; a task by its monster or a word of it; truth = who claims to know the truth; contradictions = which rumours clash with your secrets)', { type: 'search_town' });
     for (const x of town.people) add(`stab:${x.id}`, `STAB ${x.name} the ${x.attributes.occupation} with the demon-killing knife (an innocent dies and you lose)`, { type: 'stab', person: x.id });
     add('inn', 'Go to the inn', { type: 'inn' });
-    if (p.locksmithCharges > 0 || p.lockpicks > 0) {
-      for (const x of town.people) {
-        if (!p.searchedHouses.includes(x.id)) add(`search_house:${x.id}`, `Search ${x.name}'s house`, { type: 'search_house', person: x.id, confirm: true }, p.locksmithCharges > 0 ? "a Locksmith's favour" : 'one lockpick');
-      }
+    for (const x of town.people) {
+      if (p.searchedHouses.includes(x.id)) continue;
+      if (x.confessed) add(`search_house:${x.id}`, `Search ${x.name}'s house (a confessed minion: no lock stops you)`, { type: 'search_house', person: x.id, confirm: true });
+      else if (p.locksmithCharges > 0 || p.lockpicks > 0) add(`search_house:${x.id}`, `Search ${x.name}'s house`, { type: 'search_house', person: x.id, confirm: true }, p.locksmithCharges > 0 ? "a Locksmith's favour" : 'one lockpick');
     }
     add('leave', `Leave ${town.name}`, { type: 'leave' });
     anywhere();

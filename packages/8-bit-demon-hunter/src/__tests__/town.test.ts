@@ -105,6 +105,28 @@ describe('talking to townsfolk', () => {
     expect(getLegalMoves(r.state).some((m) => m.move_id.startsWith('level_up:'))).toBe(true); // offered mid-conversation too
   });
 
+  it("a confessed minion's house needs no lockpick and yields its binding", () => {
+    let s = fresh(3);
+    const minion = s.towns.flatMap((t) => t.people).find((x) => x.isMinion)!;
+    const town = s.towns.find((t) => t.id === minion.attributes.townId)!;
+    s.player.at = town.nodeId;
+    s.player.inside = 'town';
+    s = apply(s, { type: 'talk', person: minion.id });
+    s = apply(s, { type: 'accept_task' });
+    person(s, minion.id).task.isCompleted = true;
+    s = apply(s, { type: 'talk', person: minion.id }); // confesses
+    s = apply(s, { type: 'goodbye' });
+    expect(s.player.lockpicks).toBe(0);
+    expect(getLegalMoves(s).map((m) => m.move_id)).toContain(`search_house:${minion.id}`);
+    const r = applyText(s, { type: 'search_house', person: minion.id });
+    expect(r.summary).toContain('confessed to serving the demon');
+    expect(r.summary).toContain('found a demon binding');
+    expect(r.state.player.bindings).toHaveLength(1);
+    // anyone else's door is still locked without a pick
+    const other = town.people.find((x) => !x.isMinion && x.id !== s.demonId)!;
+    expect(() => apply(r.state, { type: 'search_house', person: other.id })).toThrow(/locked/);
+  });
+
   it('find tasks: the matching person says "you found me"', () => {
     let s = fresh();
     const giver = townPeople(s)[0]!;

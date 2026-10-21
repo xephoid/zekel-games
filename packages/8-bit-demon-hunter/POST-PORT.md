@@ -22,7 +22,7 @@ standard, not rounded up.
   `server/src/services/WorldGenerator.ts` (people, tips, spawn rules, temples),
   `server/src/config/gameConfig.ts` (every number),
   `server/src/index.ts` (escort/accuse API), `client/src/main.ts` (combat,
-  powers, inn, houses, bindings, death, arena, kill-all, drops),
+  powers, inn, houses, bindings, death, lair, kill-all, drops),
   `client/src/ui/DialogueUI.ts` (every dialogue branch),
   `client/src/data/dialogue.ts` (power texts), `client/src/engine/EntityManager.ts`
   (enemy behaviour), `README.md` + `CLAUDE.md` (design rules).
@@ -36,7 +36,7 @@ standard, not rounded up.
 
 | Zone | Category | Verified |
 |---|---|---|
-| Graph, towns, inn prices/stock, enemies, resources, player sheet, combat, temple run, arena, dialogue, inn flag | Public, server-tracked | ✓ all in `DemonHunterState`; the view (§1a) carries them |
+| Graph, towns, inn prices/stock, enemies, resources, player sheet, combat, temple run, lair, dialogue, inn flag | Public, server-tracked | ✓ all in `DemonHunterState`; the view (§1a) carries them |
 | `demonId`, `Person.isDemon`, `Person.isMinion` | **Hidden by rule** (the mystery) | ✓ never in any view (`viewLeak.test.ts`) |
 | `Person.clues.good` | Hidden until earned (then a clue-book entry) | ✓ `viewLeak.test.ts` "never contains … an unearned secret" |
 | Riddle answers (`data/riddles.ts`) | Hidden by rule | ✓ `viewLeak.test.ts` "never contains a riddle answer" |
@@ -63,7 +63,7 @@ Classification of every field of `DemonHunterState` and where the view
 | `knownClues`, `suspects`, `bindings` | private-known | `clue_book.{clues[{text,kind}],suspects,max_suspects,bindings}` |
 | `combat` | public, enemy by appearance only | `combat.{enemy{id,name,condition},round,your_attacks_per_action,it_is_faster_than_you,it_strikes_from_further_than_you,it_can_reach_you,you_can_attack,can_flee}` |
 | `temple` | public, treasure and guardians hidden until met | `here.challenge{mode,riddle}`, `here.treasure` ('unknown' until taken) |
-| `arena` | public | `arena{demon_condition,minions_summoned,minions_left}` |
+| `lair` | public | `lair{demon_condition,minions_summoned,minions_left}` |
 | `dialogue`, `innOpen` | public (tokenless) | `dialogue{with,person_id,stage}`, `inn_open` |
 | `phase`, `result` | public | `phase`, `result` |
 | Eye of Truth verdict | private-known (only with the item) | `people[].lying` (absent without the item) |
@@ -162,7 +162,7 @@ marked out-of-scope.
 | Blockers (bandits, skeletons, knights) attack when the player leaves; mushrooms follow; ≥5 mushrooms attack on leaving | `eng/movement.ts move:23` | movement "bandits block leaving…", "mushrooms follow; five or more attack…" |
 | Flying: blockers/knights/mushrooms cannot reach; range ≥3 enemies (skeleton) still attack; attack from the air needs range ≥3; enemies with range <3 cannot hit a flier | `move` flying branch; `playerFight`/`enemyHits` flying checks | movement "flying passes bandits and knights but a skeleton still shoots…" |
 | Kill payout: XP; drops (powder except bandits; ichor from guardians); kill-task progress; world-cleared +100 once | `killEnemy:263` | combat "kill tasks progress…", "clearing the last overworld enemy pays the 100 XP bonus once"; temple gauntlet test (ichor) |
-| Death: stats and level reset, everything else kept, respawn in the last town (original Continue); arena dissolves; temple guardians cleared | `die:313`; `eng/items.ts continueAfterDeath:131` | combat "a knight … death resets stats but keeps the rest"; finale "dying in the arena dissolves it" |
+| Death: stats and level reset, everything else kept, respawn in the last town (original Continue); lair dissolves; temple guardians cleared | `die:313`; `eng/items.ts continueAfterDeath:131` | combat "a knight … death resets stats but keeps the rest"; finale "dying in the lair dissolves it" |
 | Player speed starts 4 (ruling), +4 per pick to 20 | `data/progression.ts STAT_BASE/STAT_STEP/STAT_MAX` | combat "levelling…" |
 
 ### Resources, bombs, levelling, magic items
@@ -181,8 +181,8 @@ marked out-of-scope.
 | Enter: gauntlet (guardian count, one at a time) or riddle; chest → item + find-item task; already taken → empty hall | `eng/temple.ts enterTemple:14, startGauntlet:39, nextFight:46, startRiddle:62, answerRiddle:73`; `eng/rewards.ts grantMagicItem:7` | temple "entering offers gauntlet or riddle…", "the gauntlet is the guardian count…", "a find-item task completes when the chest is opened" |
 | Leaving mid-gauntlet resets it (ruling); a fled guardian waits | `eng/movement.ts leaveInterior:110`; `nextFight` | temple gauntlet test; "a fled guardian is still there…" |
 | Riddle: normalised answer match; wrong answer free (ruling); answers never shown | `data/riddles.ts`; `answerRiddle` | riddles suite; viewLeak "never contains a riddle answer" |
-| Wrong stab → loss; right → arena at once (no escape, no aura) | `eng/finale.ts stab`; `combat.ts playerFlee/auraEscape` arena refusals | finale suite |
-| Arena: demon speed 8 / range 3 / dmg 2; phase 2 at ⅔ HP summons 3 random overworld types at 10 HP fought one at a time; phase 3 at ⅓ HP +2 attacks; kill → win | `combat.ts playerHits` phase-2 block, `arenaContinue:157`, `enemyAction` boss line | finale "the right accusation starts the arena; the demon summons minions at two thirds; killing it wins" |
+| Wrong stab → loss; right → lair at once (no escape, no aura) | `eng/finale.ts stab`; `combat.ts playerFlee/auraEscape` lair refusals | finale suite |
+| Lair: demon speed 8 / range 3 / dmg 2; phase 2 at ⅔ HP summons 3 random overworld types at 10 HP fought one at a time; phase 3 at ⅓ HP +1 attack; kill → win | `combat.ts playerHits` phase-2 block, `lairContinue:157`, `enemyAction` boss line | finale "the right accusation starts the lair; the demon summons minions at two thirds; killing it wins" |
 
 ### The GM (notes "Important notes for the LLM")
 
@@ -211,7 +211,7 @@ marked out-of-scope.
    offers at least one other move (summaries suite asserts >1 over 12 full
    games). Dead → `continue`; game over → none by design.
 3. **Simultaneous game-end**: impossible — `won`/`lost` are set by exactly one
-   path each (`arenaContinue`, `stab`); later moves are refused (`GAME_OVER`).
+   path each (`lairContinue`, `stab`); later moves are refused (`GAME_OVER`).
 4. **Empty zones**: a node with no enemies/resources renders "No enemies
    here"; a temple with no guardians left opens the chest at once; a Barber
    with nobody unmet introduces 0 people; a Carpenter with no town left says so.
@@ -221,7 +221,7 @@ marked out-of-scope.
 6. **Player count**: exactly 1; `createSession` rejects others.
 7. **Pending hygiene**: see §8.
 8. **Death mid-escort / mid-task**: follower and task progress are kept (the
-   original keeps them too); death in the arena deletes arena foes; death in a
+   original keeps them too); death in the lair deletes lair foes; death in a
    temple deletes guardians and the run.
 9. **Teleport / inn ride while escorting**: the follower arrives too and the
    escort completes if it was the destination (`arriveInTown`).
@@ -290,7 +290,7 @@ trade / items, any order. In a town: talk (a conversation is a
 short pending with its own replies), inn (a menu pending), houses, the knife,
 leave. In a temple: gauntlet or riddle, then leave. Combat interrupts
 everything and owes `fight`/`flee` until it ends. Death owes `continue`. The
-arena is continuous combat. Stated in `getSessionStartGuidance` §9 and
+lair is continuous combat. Stated in `getSessionStartGuidance` §9 and
 `getRulesSections` "The world"/"Combat".
 
 ## 8. next_step / describeNextStep coverage and pending hygiene
@@ -302,12 +302,12 @@ clear path:
 | Situation (set by) | Directive (`nextStep.ts`) | Cleared by |
 |---|---|---|
 | `phase === 'dead'` (`combat.ts die`) | "DEAD … submit continue" | `continue` |
-| `combat` (`startCombat` from attack / leaving / harvest / gauntlet / arena / flying) | "COMBAT … fight or flee" | enemy dies (`playerHits`), player flees/aura, snake/wizard flee, player dies, phase-2 withdrawal |
+| `combat` (`startCombat` from attack / leaving / harvest / gauntlet / lair / flying) | "COMBAT … fight or flee" | enemy dies (`playerHits`), player flees/aura, snake/wizard flee, player dies, phase-2 withdrawal |
 | `dialogue` (`talk`) | "IN CONVERSATION with X" | `goodbye`, `stab`, `continue`, `talk` to someone else |
 | `innOpen` (`inn`) | "AT THE INN" | `leave_inn`, `ride`, `stab`, `continue` |
 | `inside === 'town'` (`enter`, ride, cape, respawn) | "INSIDE town" | `leave`, `stab`, `teleport` |
 | `temple` (`enterTemple`) choice / gauntlet / riddle | one directive each | `leave`, chest, `teleport`, `continue` |
-| `arena` (`stab`) | the combat directive with "no way out" | win, death |
+| `lair` (`stab`) | the combat directive with "no way out" | win, death |
 | outdoors (default) | "OUTDOORS at X" with paths/enemies/resources | — |
 | `won`/`lost` | `game_over` | — |
 

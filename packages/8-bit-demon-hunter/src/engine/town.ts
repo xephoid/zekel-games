@@ -422,7 +422,9 @@ export function searchHouse(state: DemonHunterState, personId: string, confirm: 
   if (!owner) refuse(`No one called "${personId}" has a house in ${town.name}.`);
   const p = state.player;
   if (p.searchedHouses.includes(owner.id)) refuse(`You already searched ${owner.name}'s house.`);
-  if (p.locksmithCharges > 0) {
+  if (owner.confessed) {
+    lines.push(`${owner.name} confessed to serving the demon; nobody stops you turning their house over.`);
+  } else if (p.locksmithCharges > 0) {
     p.locksmithCharges--;
     lines.push(`The Locksmith's favour opens ${owner.name}'s door.`);
   } else if (p.lockpicks > 0) {

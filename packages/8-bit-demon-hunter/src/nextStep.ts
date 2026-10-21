@@ -58,23 +58,23 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
     const e = state.enemies[state.combat.enemyId]!;
     const d = ENEMY_BY_ID[e.type];
     const yours = attacksPerAction(p.agility, d.speed);
-    const arena = !!state.arena;
+    const lair = !!state.lair;
     return {
       status: 'human_to_move',
       active_player_id: playerId,
       instruction:
-        `COMBAT: the player's action is owed against ${d.name}. Relay the player's HP exactly and describe the enemy by how it looks and acts (never its numbers), then ask: fight or ${arena ? 'nothing else (there is no fleeing the arena)' : 'flee'}` +
-        (p.magicItems.includes('earth') && !arena ? ', or the Aura of Protection to walk away untouched' : '') +
+        `COMBAT: the player's action is owed against ${d.name}. Relay the player's HP exactly and describe the enemy by how it looks and acts (never its numbers), then ask: fight or ${lair ? 'nothing else (there is no fleeing the lair)' : 'flee'}` +
+        (p.magicItems.includes('earth') && !lair ? ', or the Aura of Protection to walk away untouched' : '') +
         '. Submit fight or flee. Never resolve attacks yourself; the server does. ' + NEVER_HINT,
       human_response: { ask: 'fight or run away', example: 'I fight', records_as: 'fight (attack) or flee (run away)' },
       facts: {
-        phase: arena ? 'The arena' : 'Combat',
+        phase: lair ? 'The lair' : 'Combat',
         reason: `fighting a ${d.name}`,
         notes: [
           `You: ${p.hp}/${p.maxHp} HP, strength ${p.strength}, speed ${p.agility}, range ${p.range}.`,
           `The ${d.name} is ${condition(e)}; it is ${d.speed > p.agility ? 'faster than you' : d.speed === p.agility ? 'as fast as you' : 'slower than you'}${d.range > p.range ? ' and strikes from further away than you can' : ''}.`,
           `You get ${yours} attack${yours === 1 ? '' : 's'} per action.`,
-          ...(arena ? ['There is no way out of the arena.'] : ['Running away always works.', ...(d.behaviour === 'hunter' ? [`The ${d.name} gets one attack as you run.`] : [])]),
+          ...(lair ? ['There is no way out of the lair.'] : ['Running away always works.', ...(d.behaviour === 'hunter' ? [`The ${d.name} gets one attack as you run.`] : [])]),
           ...(p.flying ? [d.range >= 3 ? 'It can reach you in the air.' : 'It cannot reach you while you fly.'] : []),
           ...levelNote,
         ],

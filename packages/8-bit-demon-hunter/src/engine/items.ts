@@ -156,11 +156,11 @@ export function continueAfterDeath(state: DemonHunterState, lines: string[]): vo
   p.auraUp = false;
   state.combat = null;
   state.temple = null;
-  state.arena = null;
+  state.lair = null;
   state.dialogue = null;
   state.innOpen = false;
   state.phase = 'playing';
-  // Temple guardians and arena foes do not outlive the attempt.
+  // Temple guardians and lair foes do not outlive the attempt.
   for (const e of Object.values(state.enemies)) if (defOfEnemy(e).templeOnly) delete state.enemies[e.id];
   lines.push('You wake up. Your level and stats are back to where you started, but you kept everything you carried and learned.');
   arriveInTown(state, p.lastTown, lines);

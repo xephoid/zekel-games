@@ -225,7 +225,7 @@ export function chooseMove(state: DemonHunterState, difficulty?: string): BotCho
     // pay for a bed. Otherwise a death is the way out (it respawns in town).
     const crowd = enemiesAt(state, p.at).filter((m) => m.type === 'mushroom').length >= 5;
     const trapped = d.behaviour === 'blocker' || d.behaviour === 'hunter' || (d.id === 'mushroom' && crowd);
-    if (!state.arena && !trapped && p.hp <= d.damage && e.hp > p.strength && canHeal(state)) {
+    if (!state.lair && !trapped && p.hp <= d.damage && e.hp > p.strength && canHeal(state)) {
       return { move: { type: 'flee' }, reasoning: 'about to die: run' };
     }
     return { move: { type: 'fight' }, reasoning: 'fight' };

@@ -97,7 +97,7 @@ describe('populating the world', () => {
     expect(s.player.level).toBe(1);
     expect(s.combat).toBeNull();
     expect(s.temple).toBeNull();
-    expect(s.arena).toBeNull();
+    expect(s.lair).toBeNull();
   });
 
   it('undead knights never share a clearing (200 seeds)', () => {

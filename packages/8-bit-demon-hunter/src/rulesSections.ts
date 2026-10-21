@@ -35,7 +35,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
       'A demon hides as an ordinary person in one of five towns. Find out who it is and put the demon-killing knife in it. ' +
       'You carry the knife from the start. It works only face to face: you must be inside the town with the person. ' +
       'Stab the wrong person and you have killed an innocent in front of their town; the townspeople turn on you and the game is lost at once. ' +
-      'Stab the right one and the disguise comes off: the demon drags you into its arena for the final fight.',
+      'Stab the right one and the disguise comes off: the demon drags you into its lair for the final fight.',
     tags: { move_types: ['stab'], phases: ['playing'] },
   },
   {
@@ -66,7 +66,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     title: 'Houses and demon bindings',
     text:
       "Every house is locked. A lockpick or a Locksmith's favour opens one house, once. " +
-      'A minion\'s house holds a demon binding; anyone else\'s holds nothing. Each binding you hold takes 3 off the demon\'s base HP of 20 (never below 1); the result is multiplied by your strength.',
+      'A minion\'s house holds a demon binding; anyone else\'s holds nothing. A minion who has confessed to you can no longer keep you out: their house needs no lockpick. Each binding you hold, and each of the five artifacts, takes 7 off the demon\'s 40 HP (never below 4).',
     tags: { move_types: ['search_house'], phases: ['town'] },
   },
   {
@@ -104,7 +104,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     text:
       'Fights are one on one and turn based. At the start, the side with the higher range gets one free attack. Then the faster side acts (your agility against the enemy\'s speed; ties go to you), then the other, and so on. ' +
       'An action is attack or run away. Attacks always hit. Each action is floor(your speed ÷ theirs) attacks, at least one; the enemy gets the same against you. Your hits do your strength in damage; theirs do their listed damage. ' +
-      'Running away always works, but a skeleton or undead knight gets one attack as you go. There is no running from the demon\'s arena. ' +
+      'Running away always works, but a skeleton or undead knight gets one attack as you go. There is no running from the demon\'s lair. ' +
       'Attacking an enemy opens the fight and is your first action. ' +
       `If you die, say "continue": you wake in the last town you visited with your level and stats back at the start (strength ${STAT_BASE.strength}, agility ${STAT_BASE.agility}, range ${STAT_BASE.range}, ${STAT_BASE.health} health) but you keep everything you carry and everything you know.`,
     tags: { move_types: ['attack', 'fight', 'flee', 'continue'], phases: ['combat', 'dead'] },
@@ -141,10 +141,10 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     id: 'the-finale',
     title: 'The finale',
     text:
-      'Stab the demon and the town falls away: you stand in its arena. The demon has (20 − 3 per binding, at least 1) × your strength HP, speed 8, range 3 and damage 2. ' +
-      'At two thirds of its HP it retreats and summons three monsters of 10 HP each, which you fight one at a time before it returns. At one third it attacks twice more per action. ' +
-      'Kill it to win. Dying in the arena is a death like any other; you may stab it again.',
-    tags: { move_types: ['stab', 'fight'], phases: ['arena'] },
+      'Stab the demon and the town falls away: you stand in its lair. The demon has 40 HP, less 7 for every binding and every artifact you hold (never below 4), speed 8, range 3 and damage 2. ' +
+      'At two thirds of its HP it retreats and summons up to three monsters, one fewer for every two bindings or artifacts you hold, which you fight one at a time before it returns. At one third it attacks twice per action. ' +
+      'Kill it to win. If it kills you, the knife turns time back: you wake in the last town as after any death, the demon still wearing its face in its town, and you may stab it again when you are readier.',
+    tags: { move_types: ['stab', 'fight'], phases: ['lair'] },
   },
 ];
 

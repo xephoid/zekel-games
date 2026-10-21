@@ -145,7 +145,7 @@ describe('view completeness', () => {
     expect(v.here.challenge.riddle).toBe(RIDDLES.space.text);
   });
 
-  it('dialogue and inn flags; the arena; the result', () => {
+  it('dialogue and inn flags; the lair; the result', () => {
     let s = fresh(9);
     const p = s.towns[0]!.people[3]!;
     s = apply(s, { type: 'talk', person: p.id });
@@ -163,14 +163,18 @@ describe('view completeness', () => {
     s.player.range = 5;
     s.player.maxHp = 10;
     s.player.hp = 10;
-    s.player.bindings = ['a', 'b', 'c', 'd', 'e', 'f']; // (20 - 18) × 5 = 10 HP
+    s.player.bindings = []; // 40 HP
     s = apply(s, { type: 'stab', person: d.id });
     v = getView(s) as AnyView;
-    expect(v.phase).toBe('arena');
-    // the opening attack (range 5 > 3) already knocks it to 5/10: phase two, three minions queued
-    expect(v.arena).toMatchObject({ demon_condition: 'hurt', minions_summoned: true, minions_left: 3 });
+    expect(v.phase).toBe('lair');
+    // the opening attack (range 5 > 3) knocks it to 35/40; the first action (two hits) to 25: phase two, three minions queued
+    expect(v.lair).toMatchObject({ minions_summoned: false, minions_left: 0 });
+    expect(v.lair.demon_condition).not.toBe('unhurt');
+    s = apply(s, { type: 'fight' });
+    v = getView(s) as AnyView;
+    expect(v.lair).toMatchObject({ minions_summoned: true, minions_left: 3 });
     let guard = 0;
-    while (s.phase === 'arena' && guard++ < 40) s = apply(s, { type: 'fight' });
+    while (s.phase === 'lair' && guard++ < 40) s = apply(s, { type: 'fight' });
     v = getView(s) as AnyView;
     expect(v.phase).toBe('won');
     expect(v.result).toEqual(s.result);

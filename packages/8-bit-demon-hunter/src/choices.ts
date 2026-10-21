@@ -285,7 +285,7 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
 
   // ---- The finale ----
   {
-    id: 'arena-minions',
+    id: 'lair-minions',
     description: 'Which three monsters the demon summons',
     owner: 'auto',
     when: 'in-game',
