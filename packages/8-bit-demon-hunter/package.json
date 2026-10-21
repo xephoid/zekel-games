@@ -1,6 +1,6 @@
 {
   "name": "@zekel/8-bit-demon-hunter",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "8-bit Demon Hunter, a solo text detective RPG by Zekel Games, as a game module for the zekel MCP server.",
   "license": "Apache-2.0",
   "repository": {
