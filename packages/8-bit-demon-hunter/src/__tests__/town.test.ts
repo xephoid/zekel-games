@@ -165,18 +165,22 @@ describe('talking to townsfolk', () => {
 });
 
 describe('asking around town', () => {
-  it('names who fits a pet, colour, trade, item, task or truth without meeting them', () => {
+  it('names who fits a pet, colour, trade, item, task or truth, and they count as met', () => {
     const s = fresh(1);
     const town = s.towns[0]!;
     const purple = town.people.filter((p) => p.attributes.color === 'Purple');
     let r = applyText(s, { type: 'search_town', color: 'purple' });
     if (purple.length === 0) expect(r.summary).toContain('Nobody here fits');
     else for (const p of purple) expect(r.summary).toContain(`${p.name} the ${p.attributes.occupation}`);
-    expect(r.state.towns[0]!.people.every((p) => !p.hasMet)).toBe(true);
+    for (const p of purple) {
+      expect(r.state.towns[0]!.people.find((x) => x.id === p.id)!.hasMet).toBe(true);
+      if (p.clues.bad) expect(r.state.player.knownClues.map((c) => c.text)).toContain(p.clues.bad.text);
+    }
     const truth = town.people.find((p) => p.clues.good)!;
     r = applyText(s, { type: 'search_town', truth: true });
     expect(r.summary).toContain(`${truth.name} the ${truth.attributes.occupation}`);
-    expect(r.summary).toContain('[not yet met]');
+    expect(r.summary).toContain('I know the truth!');
+    expect(r.state.towns[0]!.people.find((x) => x.id === truth.id)!.hasMet).toBe(true);
     const killer = town.people.find((p) => p.task.type === 'KILL');
     if (killer) {
       const monster = killer.task.description.replace(/^Kill \d+ /, '');

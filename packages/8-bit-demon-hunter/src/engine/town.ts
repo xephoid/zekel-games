@@ -429,8 +429,9 @@ type SearchMove = Extract<DemonHunterMove, { type: 'search_town' }>;
 const norm = (x: string): string => x.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
 
 /** `search_town`: townsfolk know each other, so the player can ask who here
- *  fits a description instead of talking to everyone. It reveals names and the
- *  thing asked about, nothing else, and nobody counts as met. */
+ *  fits a description instead of talking to everyone. Whoever it turns up
+ *  counts as met (ruling 2026-10-21): their card and rumour come back and go
+ *  into the clue book, as if the player had talked to them. */
 export function searchTown(state: DemonHunterState, q: SearchMove, lines: string[]): void {
   requireNoCombat(state);
   if (state.innOpen) refuse('Leave the inn first.');
@@ -489,16 +490,15 @@ export function searchTown(state: DemonHunterState, q: SearchMove, lines: string
     lines.push(`You ask around ${town.name} for anyone who ${whom}. Nobody here fits.`);
     return;
   }
+  let newRumours = 0;
   const described = people.map((p) => {
-    const bits: string[] = [];
-    if (q.pet) bits.push(`keeps a ${p.attributes.pet}`);
-    if (q.color) bits.push(`likes ${p.attributes.color}`);
-    if (q.item) bits.push(`has ${itemName(p.attributes.item)}`);
-    if (q.task) bits.push(`asks: ${p.task.description.toLowerCase()}`);
-    if (q.truth) bits.push('claims to know the truth');
-    return `${p.name} the ${p.attributes.occupation}${bits.length > 0 ? ` (${bits.join('; ')})` : ''}${p.hasMet ? '' : ' [not yet met]'}`;
+    const first = !p.hasMet;
+    p.hasMet = true;
+    if (p.clues.bad && addClue(state, p.clues.bad)) newRumours++;
+    return `${personCard(state, p)} Task: ${p.task.description}${p.taskCompleted ? ' (done)' : ''}.${first ? '' : ' (Already met.)'}`;
   });
-  lines.push(`You ask around ${town.name} for anyone who ${whom}: ${described.join('; ')}.`);
+  lines.push(`You ask around ${town.name} for anyone who ${whom}, and are pointed to ${people.length === 1 ? 'one person' : `${people.length} people`}: ${described.join(' ')}`);
+  if (newRumours > 0) lines.push(`(${newRumours} rumour${newRumours === 1 ? '' : 's'} added to your clue book.)`);
 }
 
 /** Known rumours that cannot be true alongside a secret you hold: a

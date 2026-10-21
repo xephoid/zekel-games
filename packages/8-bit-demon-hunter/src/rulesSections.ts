@@ -48,7 +48,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
       'A person who says "I know the truth" holds a demon secret instead: a true fact about the demon\'s town, trade, colour, pet or item. Five such people exist, one per town, and they never lie. ' +
       'Everyone else\'s rumour is a true "the demon is not ..." except for the demon itself and its minions (two per town), who always lie: their rumour contradicts the truth. ' +
       'With the Eye of Truth you can tell who is lying. Your clue book lists every clue and everyone you have met, and lets you mark up to ten suspects. ' +
-      'Townsfolk know each other: in any town you may ask around for whoever keeps a certain pet, likes a colour, follows a trade, owns an item, wants help with something, or claims to know the truth, and you may compare the rumours in your clue book against the secrets you hold to see which cannot be true. Asking around tells you names, not rumours; those still come from talking.',
+      'Townsfolk know each other: in any town you may ask around for whoever keeps a certain pet, likes a colour, follows a trade, owns an item, wants help with something, or claims to know the truth, and you may compare the rumours in your clue book against the secrets you hold to see which cannot be true. Whoever asking around turns up counts as met: you learn their card and their rumour as if you had talked to them.',
     tags: { move_types: ['talk', 'goodbye', 'mark_suspect', 'unmark_suspect', 'look', 'search_town'], phases: ['town'] },
   },
   {

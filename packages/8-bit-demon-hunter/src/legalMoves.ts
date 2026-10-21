@@ -103,7 +103,7 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
   if (p.inside === 'town') {
     const town = currentTown(state);
     for (const x of town.people) add(`talk:${x.id}`, `Talk to ${x.name} the ${x.attributes.occupation}${x.hasMet ? '' : ' (not yet met)'}`, { type: 'talk', person: x.id });
-    add('search_town', 'Ask around town (fill in what you are looking for: a pet, colour, trade or item; a task by its monster or a word of it; truth = who claims to know the truth; contradictions = which rumours clash with your secrets)', { type: 'search_town' });
+    add('search_town', 'Ask around town; whoever fits counts as met (fill in what you are looking for: a pet, colour, trade or item; a task by its monster or a word of it; truth = who claims to know the truth; contradictions = which rumours clash with your secrets)', { type: 'search_town' });
     for (const x of town.people) add(`stab:${x.id}`, `STAB ${x.name} the ${x.attributes.occupation} with the demon-killing knife (an innocent dies and you lose)`, { type: 'stab', person: x.id });
     add('inn', 'Go to the inn', { type: 'inn' });
     if (p.locksmithCharges > 0 || p.lockpicks > 0) {
