@@ -163,11 +163,11 @@ describe('view completeness', () => {
     s.player.range = 5;
     s.player.maxHp = 10;
     s.player.hp = 10;
-    s.player.bindings = []; // 40 HP
+    s.player.bindings = ['a']; // 40 HP: nothing wins with nothing held
     s = apply(s, { type: 'stab', person: d.id });
     v = getView(s) as AnyView;
     expect(v.phase).toBe('lair');
-    // the opening attack (range 5 > 3) knocks it to 35/40; the first action (two hits) to 25: phase two, three minions queued
+    // the opening attack (range 5 > 3) knocks it to 35/40; one action (two hits) to 25 ≤ 26: phase two, three minions queued
     expect(v.lair).toMatchObject({ minions_summoned: false, minions_left: 0 });
     expect(v.lair.demon_condition).not.toBe('unhurt');
     s = apply(s, { type: 'fight' });

@@ -66,7 +66,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     title: 'Houses and demon bindings',
     text:
       "Every house is locked. A lockpick or a Locksmith's favour opens one house, once. " +
-      'A minion\'s house holds a demon binding; anyone else\'s holds nothing. A minion who has confessed to you can no longer keep you out: their house needs no lockpick. Each binding you hold, and each of the five artifacts, takes 7 off the demon\'s 40 HP (never below 4).',
+      'A minion\'s house holds a demon binding; anyone else\'s holds nothing. A minion who has confessed to you can no longer keep you out: their house needs no lockpick. Each binding you hold, and each of the five artifacts, takes 8 off the demon\'s 48 HP (never below 4).',
     tags: { move_types: ['search_house'], phases: ['town'] },
   },
   {
@@ -141,7 +141,7 @@ export const DEMON_HUNTER_RULE_SECTIONS: RuleSectionShape[] = [
     id: 'the-finale',
     title: 'The finale',
     text:
-      'Stab the demon and the town falls away: you stand in its lair. The demon has 40 HP, less 7 for every binding and every artifact you hold (never below 4), speed 8, range 3 and damage 2. ' +
+      'Stab the demon and the town falls away: you stand in its lair. The demon has 48 HP, less 8 for every binding and every artifact you hold (never below 4), speed 8, range 3 and damage 2. ' +
       'At two thirds of its HP it retreats and summons up to three monsters, one fewer for every two bindings or artifacts you hold, which you fight one at a time before it returns. At one third it attacks twice per action. ' +
       'Kill it to win. If it kills you, the knife turns time back: you wake in the last town as after any death, the demon still wearing its face in its town, and you may stab it again when you are readier.',
     tags: { move_types: ['stab', 'fight'], phases: ['lair'] },

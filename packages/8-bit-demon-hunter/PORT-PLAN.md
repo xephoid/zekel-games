@@ -81,12 +81,14 @@ Ruling 2026-10-21 (ninth): **exactly two minions in every town**, drawn from
 that town's people other than the demon (before, ten were drawn across all
 towns, so a town could hold three or one).
 Ruling 2026-10-21 (tenth): **the lair** (never "arena"). The demon has a flat
-40 HP, less 7 for every binding and every artifact held (a "weakening"),
+48 HP, less 8 for every binding and every artifact held (a "weakening"),
 never below 4; strength no longer scales it, so levelling shortens the fight.
 Phase 2 summons three 6-HP minions, one fewer per two weakenings; phase 3 is
-a double shot. Tuned with the real engine (scratch `lair_sweep`): fewest
-weakenings to win on 5 seeds: fresh never, early 6, mid 5, strong 3, maxed 0.
-The constants live in `data/progression.ts LAIR`. A confessed minion's house needs no lockpick. Death in the lair
+a double shot. Tuned with the real engine (scratch `lair_sweep`) against
+builds bounded by the level-10 cap (9 level-ups + up to 5 Blacksmith
+favours): fewest weakenings to win on 5 seeds: fresh (0 picks) never, early
+(4) 6, mid (8) 5, late fighter (12) 3, late tank (12) 5, ceiling (14) 1.
+Nothing wins with none. The constants live in `data/progression.ts LAIR`. A confessed minion's house needs no lockpick. Death in the lair
 turns time back through the knife: the usual death, the demon keeps its face
 and town, the player keeps the knowledge; it does not re-hide. Resolves Q11.
 

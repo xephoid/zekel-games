@@ -20,15 +20,15 @@ describe('the knife', () => {
     expect(() => apply(r.state, { type: 'look' })).toThrow(/over/);
   });
 
-  it('demon HP is flat: 40, less 7 per binding and per artifact, never below 4; strength does not scale it', () => {
+  it('demon HP is flat: 48, less 8 per binding and per artifact, never below 4; strength does not scale it', () => {
     const s = fresh();
-    expect(demonHp(s)).toBe(40);
+    expect(demonHp(s)).toBe(48);
     s.player.strength = 3;
-    expect(demonHp(s)).toBe(40);
+    expect(demonHp(s)).toBe(48);
     s.player.magicItems = ['sky', 'earth'];
-    expect(demonHp(s)).toBe(26);
+    expect(demonHp(s)).toBe(32);
     s.player.bindings = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
-    expect(demonHp(s)).toBe(4); // 40 - 63, floored
+    expect(demonHp(s)).toBe(4); // 48 - 72, floored
   });
 
   it('stabbing the demon starts the lair; the demon summons minions at two thirds; killing it wins', () => {
@@ -38,6 +38,7 @@ describe('the knife', () => {
     s.player.range = 5;
     s.player.maxHp = 10;
     s.player.hp = 10;
+    s.player.bindings = ['a']; // 40 HP: nothing wins with nothing held
     s.player.at = s.towns.find((t) => t.id === demon(s).attributes.townId)!.nodeId;
     s.player.inside = 'town';
     s.player.lastTown = demon(s).attributes.townId;
@@ -106,10 +107,10 @@ describe('the knife', () => {
     s.player.at = s.towns.find((t) => t.id === demon(s).attributes.townId)!.nodeId;
     s.player.inside = 'town';
     s = apply(s, { type: 'stab', person: demon(s).id });
-    expect(s.enemies['demon']!.maxHp).toBe(40);
+    expect(s.enemies['demon']!.maxHp).toBe(48);
     s.enemies['demon']!.hp = 12;
     s.lair!.phase2Done = true;
-    const r = applyText(s, { type: 'fight' }); // 12 - 5 = 7 ≤ 13: phase 3
+    const r = applyText(s, { type: 'fight' }); // 12 - 5 = 7 ≤ 16: phase 3
     expect(r.summary).toContain('Demon attacks 2 times');
     expect(r.summary).not.toContain('3 times');
   });
