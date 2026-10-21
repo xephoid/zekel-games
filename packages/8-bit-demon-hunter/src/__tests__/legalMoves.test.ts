@@ -86,7 +86,7 @@ describe('legal moves', () => {
     clearAllEnemies(v);
     v.player.at = 'temple_light';
     v = apply(v, { type: 'enter' });
-    expect(getLegalMoves(v).map((m) => m.move_id)).toEqual(['look', 'gauntlet', 'riddle', 'leave']);
+    expect(getLegalMoves(v).map((m) => m.move_id)).toEqual(['look', 'gauntlet', 'riddle', 'leave', 'travel']);
     allAccepted(v);
     v = apply(v, { type: 'riddle' });
     expect(getLegalMoves(v).map((m) => m.move_id)).toContain('answer_riddle');

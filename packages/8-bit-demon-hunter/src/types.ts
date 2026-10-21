@@ -184,6 +184,9 @@ export interface PlayerState {
    *  2026-10-21: the black market is a secret to discover; nothing states it
    *  before then, and buying is only offered once it is known). */
   blackMarketKnown: boolean;
+  /** Where the last travel stopped at the edge of danger: travelling the same
+   *  way again presses on through it. */
+  lastEdgeStop: { from: string; next: string } | null;
   /** Times the player has died (scoreboard; the harness bot gives up after three). */
   deaths: number;
 }

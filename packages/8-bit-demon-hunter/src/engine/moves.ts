@@ -8,6 +8,16 @@ export type DemonHunterMove =
   // --- outdoors ---
   | { type: 'look' }
   | { type: 'move'; to: string }
+  | {
+      type: 'travel';
+      /** A place by name or id. */
+      to?: string;
+      /** A person: their town. */
+      person?: string;
+      /** The nearest town (every town has an inn). */
+      nearest?: 'inn' | 'town';
+      via_inn?: boolean;
+    }
   | { type: 'enter' }
   | { type: 'leave' }
   | { type: 'attack'; target: string }
@@ -64,7 +74,7 @@ export type DemonHunterMove =
 export type MoveType = DemonHunterMove['type'];
 
 export const MOVE_TYPES: readonly MoveType[] = [
-  'look', 'move', 'enter', 'leave', 'attack', 'bomb', 'talk_bandit', 'buy_from_bandit', 'fly', 'land', 'aura', 'teleport',
+  'look', 'move', 'travel', 'enter', 'leave', 'attack', 'bomb', 'talk_bandit', 'buy_from_bandit', 'fly', 'land', 'aura', 'teleport',
   'fight', 'flee', 'level_up', 'mark_suspect', 'unmark_suspect', 'stab', 'continue',
   'search_town', 'talk', 'found_you', 'accept_task', 'decline', 'claim_reward', 'goodbye',
   'inn', 'sleep', 'train', 'ride', 'buy', 'sell', 'leave_inn', 'search_house',

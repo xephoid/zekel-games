@@ -37,6 +37,13 @@ export const DEMON_HUNTER_CHOICES: ChoiceRow[] = [
     distinguishedBy: 'to',
   },
   {
+    id: 'where-to-travel',
+    description: 'Where to travel in one go (a place, a quest giver\'s town, the nearest inn), and whether to press on past a stop at the edge of danger',
+    owner: 'player',
+    when: 'in-game',
+    resolvedBy: ['travel'],
+  },
+  {
     id: 'enter-or-pass',
     description: 'Whether to go into a town or temple you stand outside, and when to leave it',
     owner: 'player',

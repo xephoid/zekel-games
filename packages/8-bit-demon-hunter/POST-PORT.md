@@ -196,6 +196,7 @@ marked out-of-scope.
 | Enemies have no numbers in anything the GM reads: condition words and behaviour only (2026-10-21) | `helpers.ts condition`; `combat.ts`; `describe.ts`; `views.ts`; `legalMoves.ts`; `nextStep.ts`; rules "Enemies"; guidance §6b; reference data | viewCompleteness combat/outdoors (no hp/speed/range/damage keys); combat suite strings |
 | The black market is a secret: nothing states it, buying offered only after talking to a Lady Bandit (2026-10-21) | `player.blackMarketKnown`; `eng/items.ts talkBandit`; `legalMoves.ts`; rules; guidance §4c; lore `monsters`, conversation guide | legalMoves "outdoors…" (buy hidden before, offered after); movement Lady Bandit test |
 | Asking around town: `search_town` turns up who fits a pet/colour/trade/item/task/truth (they count as met: cards and rumours recorded), and `contradictions` compares the clue book against held secrets and names the liars (2026-10-21) | `eng/town.ts searchTown, contradictions`; `legalMoves.ts`; rules "People, rumours and secrets"; guidance §2c | town "asking around town" (3 tests) |
+| Travel in one go (place / person's town / nearest inn) with an edge stop before anything that attacks on the way out; a quiet paid cart with `via_inn` (2026-10-21) | `eng/travel.ts`; `legalMoves.ts`; rules "The world"; guidance §2d | travel suite (6 tests) |
 | Never give hints unless asked | `guidance.ts SESSION_START_GUIDANCE` §3; every `nextStep.ts` instruction ends with the rule | lore "the guidance forbids hints…"; summaries suite (facts lint) |
 | Conversations are played, not read (designer, 2026-10-20 evening): every person has a seeded persona and a task reason; `talk` returns a GM BRIEF plus "Gist:" lines; the GM improvises, facts stay exact; talking records nothing | `data/personas.ts`; `w/puzzle.ts generatePuzzle` step 6; `eng/town.ts characterBrief`; `nextStep.ts` conversation directive; guidance §2b; lore `running-a-conversation`, `what-nobody-knows` | personas suite (4 tests) |
 | The GM never learns the demon | view stripping (§2) | viewLeak suite; sweep (§13) |
@@ -264,7 +265,7 @@ row has a `why`, and every named move type exists.
 | Choice | Owner | How surfaced | AI policy (harness bot) | Balance axis |
 |---|---|---|---|---|
 | World seed / clearings | player | `options.seed`, `options.clearings` | — | `world_seed` |
-| Where to go | player | `move {to}` per path (walled paths withheld with a reason in next_step) | nearest safe prey, else the demon's town | — |
+| Where to go | player | `move {to}` per path (walled paths withheld with a reason in next_step); `travel {to|person|nearest}` for the whole way, stopping at the edge of danger | nearest safe prey, else the demon's town | — |
 | Enter / leave a town or temple | player | `enter`, `leave` | heals and stabs in towns; skips temples | — |
 | Whom to attack / harvest | player | `attack {target}` per enemy, plant, tree | weakest survivable slime/mushroom on a node it can leave again; cuts plants/trees to pay for a bed when hurt and broke | — |
 | Bomb here | player | `bomb` (needs a bomb; hits everything on the node) | bombs a node whose blockers it cannot afford to fight | — |

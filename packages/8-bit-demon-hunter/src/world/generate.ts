@@ -76,6 +76,7 @@ export function generateWorld(seed: number, options: DemonHunterOptions = {}): D
     lastTown: startTown.id,
     worldCleared: false,
     blackMarketKnown: false,
+    lastEdgeStop: null,
     deaths: 0,
   };
 

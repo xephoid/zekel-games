@@ -85,6 +85,9 @@ export function getLegalMoves(state: DemonHunterState): LegalMoveEntry[] {
   }
 
   const anywhere = (): void => {
+    if (!state.combat && state.phase === 'playing') {
+      add('travel', 'Travel in one go to a place, a person\'s town, or the nearest inn (fill in to / person / nearest). Stops at the edge of anywhere that would attack you on the way out; travel again to go on.', { type: 'travel' });
+    }
     levelUps();
     if (hasMagicItem(state, 'space')) {
       for (const t of state.towns) {

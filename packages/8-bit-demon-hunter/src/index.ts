@@ -53,7 +53,9 @@ const moveSchema = {
   required: ['type'],
   properties: {
     type: { enum: [...MOVE_TYPES] },
-    to: { type: 'string', description: 'move: the id of an adjacent place' },
+    to: { type: 'string', description: 'move: the id of an adjacent place; travel: any place by name or id' },
+    nearest: { enum: ['inn', 'town'], description: 'travel: the nearest town (every town has an inn)' },
+    via_inn: { type: 'boolean', description: 'travel: may pay an inn cart between towns when shorter' },
     target: { type: 'string', description: 'attack: an enemy, plant or tree id from look' },
     item: { type: 'string', description: 'buy_from_bandit: "bomb" or "lockpick"; search_town: who owns this item' },
     town: { type: 'string', description: 'teleport / ride: a town id or name' },

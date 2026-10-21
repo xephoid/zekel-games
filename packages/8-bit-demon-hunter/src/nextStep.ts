@@ -117,9 +117,9 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
       status: 'human_to_move',
       active_player_id: playerId,
       instruction:
-        `INSIDE ${town.name}. The player may talk to anyone here, ask around town for someone who fits a description (search_town: a pet, colour, trade, item, a task by what it asks for, who claims to know the truth, or which rumours contradict their secrets), visit the inn, search a house (needs a lockpick or a Locksmith's favour), stab someone with the demon-killing knife, or leave. ` +
+        `INSIDE ${town.name}. The player may travel in one go to any place or back to a quest giver (travel: it stops at the edge of danger), talk to anyone here, ask around town for someone who fits a description (search_town: a pet, colour, trade, item, a task by what it asks for, who claims to know the truth, or which rumours contradict their secrets), visit the inn, search a house (needs a lockpick or a Locksmith's favour), stab someone with the demon-killing knife, or leave. ` +
         `Describe only what the last response showed. ${NEVER_HINT}`,
-      human_response: { ask: 'what they do in town', example: 'Ask around for anyone who likes purple', records_as: 'talk {person} / search_town {pet|color|occupation|item|task|truth|contradictions} / inn / search_house {person} / stab {person} / leave' },
+      human_response: { ask: 'what they do in town', example: 'Ask around for anyone who likes purple', records_as: 'talk {person} / search_town {…} / travel {to|person|nearest} / inn / search_house {person} / stab {person} / leave' },
       facts: {
         phase: `In ${town.name}`,
         notes: [
@@ -181,8 +181,8 @@ export function describeNextStep(state: DemonHunterState, playerId: string): Nex
     active_player_id: playerId,
     instruction:
       `OUTDOORS at ${v.name}. Relay what is here exactly (paths, enemies with counts, resources, a trader) from the last look or move, then ask what the player does: ` +
-      'move somewhere, enter, attack something, harvest, bomb, talk to someone here, use a magic item. ' + NEVER_HINT,
-    human_response: { ask: 'what they do', example: 'Go to the Old Crossroads', records_as: 'move {to} / enter / attack {target} / bomb / talk_bandit / fly / land / aura / teleport {town}' },
+      'move somewhere (or travel in one go to a place, a quest giver\'s town or the nearest inn; it stops at the edge of danger), enter, attack something, harvest, bomb, talk to someone here, use a magic item. ' + NEVER_HINT,
+    human_response: { ask: 'what they do', example: 'Head back to Jim in Bigton', records_as: 'move {to} / travel {to|person|nearest} / enter / attack {target} / bomb / talk_bandit / fly / land / aura / teleport {town}' },
     facts: {
       phase: `${v.name} (${v.kind})`,
       notes: [

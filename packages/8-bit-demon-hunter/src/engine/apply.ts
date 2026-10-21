@@ -28,6 +28,7 @@ import {
   talk,
 } from './town.js';
 import { stab } from './finale.js';
+import { travel } from './travel.js';
 
 export interface ApplyResult {
   newState: DemonHunterState;
@@ -51,6 +52,9 @@ export function applyMove(prev: DemonHunterState, move_: DemonHunterMove): Apply
       break;
     case 'move':
       move(state, move_.to, lines);
+      break;
+    case 'travel':
+      travel(state, move_, lines);
       break;
     case 'enter': {
       requireNoCombat(state);

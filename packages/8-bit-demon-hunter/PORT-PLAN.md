@@ -39,6 +39,12 @@ keeps a pet, likes a colour, follows a trade, owns an item, wants help with
 something, or claims to know the truth; and a **contradictions** check that
 compares the clue book's rumours against the secrets held and names who
 said what. Whoever it turns up counts as met: cards and rumours are recorded (ruling, same day).
+Ruling 2026-10-21 (fourth): **travel** in one go to a place, a person's town
+or the nearest inn, hop by hop under the walking rules, with an **edge stop**
+before any place whose occupants would attack on the way out (bandits,
+skeletons, undead knights, a mushroom crowd the tail would complete); travel
+again to go through. Quietly, `via_inn` with the shuckles lets the route pay
+an inn cart between towns when that is shorter; it is not advertised.
 
 Open questions for the designer are marked **Q** and collected in §12.
 Build status is in §14.
