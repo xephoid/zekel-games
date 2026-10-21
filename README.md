@@ -40,6 +40,21 @@ pnpm test       # every game's tests
 pnpm smoke      # serves all seven and plays each through the real MCP tools
 ```
 
+## Building and checking a game
+
+The tools from [`@zekel/dev`](https://www.npmjs.com/package/@zekel/dev) run on these games from this repo. Build first: the tools that play games start `examples/serve.mjs`, which serves the built packages.
+
+```
+pnpm build
+pnpm harness -- --game=fractured-fist --n=50 --players=2   # AI-vs-AI batch + balance analysis
+pnpm desync-bot -- --game=cybernoir-2127                   # a small model keeps its own copy of the board
+pnpm verify-hunt -- --game=cybernoir-2127 --mode=random --games=1000   # the rules checker
+pnpm verify-lint -- --game=cybernoir-2127                  # checks the encoding against the pinned rules text
+pnpm tool <command> [args]                                 # any @zekel/dev command
+```
+
+Each game's extra parts for the tools sit in its own `src/dev/` folder and ship as `@zekel/<game>/dev`: its balance-analysis settings, sweeps over its options, the rules-checker's encoding and adapter, and the pinned rules text the checker reads. `scripts/devHooks.ts` registers them. A game's own code never loads `src/dev/` (`tests/devBoundary.test.ts` checks), so someone who only plays a game doesn't need `@zekel/dev`.
+
 ## Not done yet
 
 - The screens that draw these games in the Zekel web app still live in that app's repo; they move here later.

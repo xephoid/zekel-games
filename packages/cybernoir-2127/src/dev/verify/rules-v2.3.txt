@@ -1,0 +1,1060 @@
+
+
+Cybernoir 2127
+
+Cybernoir 2127
+
+Cybernoir 2127
+A 2-player hidden-movement deduction game of frame-ups and false
+leads Rules v2.3 (2026-08-13, designer-accepted at Detective 59.8%: Motive sets play as COMPLETE trios with AT MOST TWO gangs per set, Buy Clue costs 3; earlier same day, the trio correction of a v1.9 misreading; 2026-08-12; v1.9 was frozen same
+day — this draft adds Little Ghana and Anansi the
+Spider for evaluation and reverts to v1.9 if too disruptive). v1.6 (all open questions
+resolved per playtesting) plus: the Burn the Safehouse Hacker
+action and its setup change (v1.7, §4 and §5.2a); the burn clearing
+every Clue token (v1.8); and the Motive
+restructure (v1.9, §7) — 3 sets of 3 different-affiliation
+people (3 different affiliations, at most two gangs, no repeated trios), any order, replacing
+the two sequential all-affiliation sets. A 3–4 player Hacker
+Crew table variant was added as §11 (2026-08-13) — it changes no
+base rules.
+
+1. Overview
+A crime has been committed in Dark City, and the
+Detective knows exactly who did it — because the
+Detective is the perpetrator. They've pinned the crime on the
+Hacker , and now they're racing to "arrest" them before
+the truth comes out.
+
+The Detective wins by deducing the Hacker's hidden
+location and making the arrest.
+The Hacker wins by assembling all 3 pieces
+of Evidence (Weapon, Witnesses, Motive) that clear their name —
+and surviving the Detective's final desperate guess.
+
+The core tension: the Hacker must interact with people around the
+city to build their case, but every person they use might secretly be
+one of the Detective's informants — and getting burned
+by an informant leaks a Clue to the Detective about
+where the Hacker is hiding.
+
+2. Components
+
+Component
+Count
+Notes
+
+Location cards
+19
+6 per borough; 7 in Boonies (v2.0: + Little Ghana, an attribute
+twin of Trailer Towers — Clues alone can never separate them)
+
+Contacts deck
+25
+The Hacker's copy of the 25 People — their draw deck for playing
+people and evidence
+
+POI deck
+25
+The Detective's identical copy of the 25 People (Persons of
+Interest) — used for marking informants and tracking arrests. Kept as a
+hidden, facedown deck
+
+Weapon card
+1
+Shuffled into the Contacts deck (Hacker only; there is no POI
+copy)
+
+Clue tokens
+13
+3 Borough, 4 Population (0/1/2/3), 6 Affiliation
+
+Action point markers
+4 + 3
+Detective has 4 AP, Hacker has 3 AP
+
+Jail track
+1
+A track with 3 slots; arrested people's cards sit here and advance
+one slot per Detective turn
+
+2.1 The City: Dark City
+
+3 Boroughs: Downtown, The Hive, Boonies
+
+18 Locations (6 per borough)
+
+6 Affiliations:
+
+None — Ordinary citizens of Dark City with no
+faction ties. Doormen, janitors, noodle vendors — the people who see
+everything.
+OmniSuperUltra Corp (corp) — The
+super-monopoly. It basically makes everything: your food, your
+implants, your news, your entertainment.
+Shizuoka Inc (corp) — Smaller only
+relative to Omni, still massive. Owns most of the real estate in Dark
+City — whatever land you're standing on is probably theirs.
+Iceden Collective (gang) — Anarchist
+hackers. The Hacker player is a member of this gang —
+which is exactly why they made such a convenient frame job. The gang
+takes care of its own: a played Motive set containing an Iceden
+member also wins back one revealed informant, free (§6).
+
+Crimson Clan (gang) — Vampire-themed
+gang. Drinks blood, wears leather. Sexy and scary.
+Chimera (gang) — Heavy body-modification
+gang. Most members barely look human anymore.
+
+Rules that refer to "gangs" mean Iceden Collective, Crimson Clan,
+and Chimera; "corps" means OmniSuperUltra Corp and Shizuoka Inc.
+
+24 People
+
+2.2 Card anatomy
+Location card: Borough · Population (0–3) · Resident
+People · Location Affiliation
+People card: Play Cost · Witness? · Affiliation ·
+Ability · Home Location
+The 24 People exist as two identical decks with different
+backs/names: the Hacker's Contacts and the Detective's
+POI (Persons of Interest).
+
+3. The Hidden Location &
+Clues
+The Hacker's hideout is defined by three attributes, each matching a
+Clue token type:
+
+Borough (3 possible values)
+Population (0, 1, 2, or 3)
+Affiliation (6 possible values)
+
+When the Detective gains a Clue , the Hacker
+chooses which of the three categories to reveal truthfully (e.g., hands
+over the "Downtown" Borough token if hiding Downtown). This keeps the
+Hacker in control of what leaks, but every leak narrows the search.
+No repeats: each truthful clue category can be given
+only once. When the Detective earns a Clue, the Hacker must choose a
+category not yet revealed. Note that Borough + Affiliation alone
+uniquely identify a location, so the third truthful clue only confirms
+what the first two imply. If the Detective earns a Clue when all three
+categories are already revealed, it has no effect.
+A Negative Clue is a token the Hacker declares
+false (e.g., "my location's affiliation is NOT Crimson Clan"). A
+Negative Clue must be new information : a token not previously
+declared false and not belonging to a category already truthfully
+revealed.
+
+4. Setup
+
+The Hacker secretly chooses their hideout from the
+18 locations, and takes that Location card out of the Location
+deck , keeping it facedown in front of them as their
+safehouse card (v1.7). The Location deck is therefore 17 cards.
+
+Consequences worth knowing: a face-up Location on the board can
+never be the hideout, and a Detective who tracks every card they have
+seen (hand, board, discards) narrows the hideout by elimination — if
+the deck runs out, the missing card gives it away. Burn the Safehouse
+(§5.2a) is the Hacker's once-per-game answer.
+
+The Hacker secretly gathers the Contacts cards for the people
+resident at that location (0–3 cards).
+
+Etiquette rule: always go through the motions of searching the
+Contacts deck, even if your location has population 0 — otherwise you
+leak information immediately. This is also why the Detective gets no
+special knowledge of how the starting hand was assembled.
+
+The Hacker shuffles the remaining Contacts deck (which includes the
+Weapon ) and draws until they hold 3
+cards total (residents + random draws).
+
+The Detective shuffles the Location deck and draws
+3 .
+
+The Detective takes the POI deck for designating informants and
+tracking arrests.
+
+5. Turn Structure
+The Detective always goes first. Players alternate turns.
+5.1 Detective's Turn — 4 AP (X
+X X X)
+Start of turn — mandatory, in this order:
+
+Draw a Location card. (Free, mandatory. The
+Location deck does not reshuffle — if you cannot draw,
+the endgame triggers: see §5.3.)
+Play 1 Location card face up to the board. (Free,
+mandatory. Because the draw always comes first, you can never be without
+a card to play.)
+Informant upkeep: pay 1 AP per
+informant you have from previous turns. Any informant you don't
+pay for is released (returned facedown to your hidden POI deck).
+
+Then spend remaining AP on any of:
+
+Cost
+Action
+
+X
+Make an Arrest — target any person at a face-up
+location you have played. Place the matching POI card on
+Booked (slot 1) of the jail track: that person can't
+be played or used as evidence while jailed. Multiple cards may
+share a slot (stack them; they advance together at your
+turn-end — an arrest never moves anyone already jailed; v2.3
+clarification)
+
+XXX
+Recruit Informant — target any person at a
+face-up location you have played (same reach as an Arrest —
+v2.3 clarification; you can only flip people you have canvassed):
+place their POI card facedown as an informant. (It will require
+upkeep starting next turn)
+
+XXXX
+Draw an extra Location card
+
+XXXX
+Guess the Hacker's Location — you get exactly one
+mid-game chance. Correct = you win. Wrong = play continues, but your
+guess is spent; your only remaining shot is the endgame guess
+(§5.3)
+
+Discard 3 Locations (v2.3; the v1.9 cost of 4 was a banking-era dial)
+Gain a Clue — Hacker chooses which category.
+Note the hand economy: draw-1/play-1 leaves 3 spares, so a purchase
+needs the extra-draw action or the Hacker's Overclock gift
+
+End of turn: advance each card on the jail track one
+slot. A card advancing off the third slot is released — the POI card
+returns facedown into the hidden POI deck, and that person may be played
+again.
+5.2 Hacker's Turn — 3 AP (X X
+X)
+
+Cost
+Action
+
+X
+Draw a Contact
+
+Printed play cost
+Play a Person — use their ability, then place the
+card in your discard pile. Informant check: if the
+played card matches a facedown informant, the Detective may reveal it to
+block the play. If blocked, the Detective gains a Clue (Hacker chooses
+which), the AP spent is lost, and the blocked card returns to the
+Hacker's hand
+
+Free
+Play Evidence — the card stays face up on the table
+permanently. Same informant check and penalty as above. Evidence cards,
+once played, cannot be arrested or turned into informants
+
+Printed play cost (Witnesses: X)
+Win Back a Contact — play the Contact matching a
+revealed informant to remove that informant: the POI
+card returns facedown to the Detective's hidden POI deck, and your
+Contact goes to your discard. Only works on revealed informants — this
+play cannot be blocked (the informant is the target, not an
+obstacle)
+
+Free (give the Detective a Negative Clue)
+Jailbreak — free one person from arrest
+
+Free (give the Detective 2 Location draws)
+Overclock — gain +1 AP this turn. Once per
+turn
+
+XXX
+Burn the Safehouse — relocate to a new hideout.
+Once per game. See §5.2a
+
+5.2a Burn the Safehouse (XXX, once per
+game — v1.8)
+The Hacker abandons the compromised hideout and disappears into a new
+one. Resolve in this order:
+
+The Hacker collects the Detective's Location discard
+pile and the remaining Location deck into one
+pile, and adds their old safehouse card to it. (Cards in
+the Detective's hand and face up on the board stay where they are.)
+The Hacker secretly chooses a different location from
+that pile and takes its card as the new safehouse card.
+The Hacker shuffles the rest of the pile facedown — it becomes the new
+Location deck.
+Clear the clues: every Clue token on the table — truthful and
+Negative — is returned to the supply. The Detective's
+investigation restarts from zero; clue categories can be earned
+again as normal. (v1.7 instead swapped the truthful tokens to the
+new hideout's values; v1.8 replaces that with the full clear.)
+
+Notes: the burn costs the Hacker's whole normal turn (3 AP) unless
+they Overclock first. Gathering the pile shows the Hacker every card in
+it — so, by elimination, which Locations the Detective is holding. The
+returned discards also push back the deck-exhaustion endgame (§5.3).
+Because every clue is wiped, the burn is at its strongest late — the more
+the Detective has learned, the more a burn destroys. The Detective's only
+durable knowledge across a burn is card elimination: locations they have
+seen in hand, on the board, or in their discards before the burn (minus
+what went back into the pile) — and the burn returns the discards, so
+even that mostly resets.
+Contacts deck: if the Contacts deck runs out,
+reshuffle the discard pile into a new deck. The Hacker can and will
+cycle through the full deck over the course of a game. There is
+no hand limit for the Hacker.
+
+Card flow: a person played for their ability goes to
+the Hacker's discard after resolving (retrievable via Shizuoka Inc or the
+reshuffle). A card played as Evidence stays on the table for the rest of
+the game.
+5.3 Endgame triggers
+Two events force the final showdown. In both cases the Detective gets
+one final Location guess , granted even if the mid-game
+guess was already spent. Correct = the Detective wins; wrong = the
+Hacker is exonerated and wins.
+
+Evidence complete: the moment the Hacker completes
+all 3 pieces of Evidence, the Detective makes the final guess
+immediately — the Hacker's turn ends on the spot, and
+nothing else resolves first.
+
+Location deck exhausted: if the Detective cannot
+make their mandatory start-of-turn draw, the city has gone cold. The
+Detective must make the final guess by the end of that turn. (The deck
+never reshuffles, so every board discard, forced hand discard, bought
+Clue, and Overclock draw quietly shortens the game — a built-in
+timer. The deck starts at 17 since v1.7 — the Hacker holds their
+safehouse card — and the one exception to "never reshuffles" is Burn the
+Safehouse (§5.2a), which folds the discard pile back in and resets some
+of the timer.)
+
+6. Informants
+
+The Detective recruits an informant by paying XXX
+and placing a POI card facedown — only a person
+at a face-up location they have played (v2.3
+clarification, same reach as an Arrest).
+Each subsequent Detective turn, every informant costs 1 AP
+upkeep (paid after the mandatory location draw and play) or
+must be released.
+Anansi the Spider (v2.0): when the Hacker plays
+Anansi as Evidence, they remove one informant of their choice — a
+facedown one by pointing at its position (it returns to the POI deck
+unseen ) or a revealed one by name. Blocking Anansi's
+Evidence commit is therefore a premium block.
+Iceden rider (v2.0, restated for v2.1 set play):
+when the Hacker plays a Motive set containing an Iceden
+Collective member , the gang springs a locked contact — the
+Hacker removes one revealed informant of their choice,
+free (the Win Back effect with no Contact card spent). Once per set (a
+set holds at most one Iceden member — affiliations are distinct). Facedown informants are out of
+reach. If the set completes all 3 Evidence, the final guess happens
+immediately and the rider is skipped. If there is no revealed
+informant, nothing happens. A set holding BOTH Anansi and an Iceden
+member resolves Anansi's removal first, then the win-back.
+When the Hacker plays a person (for an ability or as Evidence)
+matching a facedown informant, the Detective may reveal
+it to block the play. Blocking earns the Detective a
+Clue (Hacker's choice of category).
+A revealed informant stays in play face up — it
+continues to block that person and still requires upkeep. The Detective
+may release any informant (revealed or not) on their turn by declining
+upkeep.
+Winning back a revealed informant: the Hacker may
+play the matching Contact for its printed cost (Witnesses cost
+X ) to remove a revealed informant — or get
+one free via the Iceden rider above —
+thematically, convincing the contact to stop ratting. The POI card
+returns facedown to the hidden POI deck (the Detective may re-recruit it
+later at full XXX cost), and the Hacker's Contact goes to their discard
+— it does not count as Evidence. Facedown informants
+cannot be targeted this way. This rule exists to break a deadlock:
+without it, the Detective could hold enough Witnesses as informants
+indefinitely to lock the Hacker out of the 3 Witness cards their
+Evidence requires.
+
+OmniSuperUltra Corp's "Reveal an informant": the Hacker chooses
+any one facedown informant and flips it face up. The revealed informant
+behaves exactly like one the Detective revealed: it keeps blocking its
+person and keeps costing upkeep. The ability's value is intel —
+the Hacker learns which person is burned and can route around it, while
+the Detective must keep paying for a scouted asset or release it.
+The POI deck is hidden. POI cards only leave it to
+become informants or to sit on the jail track; whenever a person is
+released from either, their card goes back facedown into the hidden
+deck. The Hacker therefore only ever knows where a person was last
+seen — a released informant vanishes back into anonymity and could
+be re-recruited (or arrested) later without the Hacker knowing.
+
+7. Evidence (Hacker's Win
+Objectives)
+The Hacker must establish all three:
+
+The Weapon — 1 unique card shuffled into the
+Contacts deck. Find it and play it (free, like all Evidence). The Weapon
+has no POI copy, so it can never be an informant, never be blocked, and
+never be arrested.
+The Witnesses — reveal/play 3 Witness
+cards (all 7 "None"-affiliation people are Witnesses —
+v2.0 adds Anansi the Spider, the only Witness with an ability).
+The Motive — play 3 sets of 3 people
+(v1.9). Each set holds 3 unique people from 3 DIFFERENT
+affiliations — any affiliations, including None (Witnesses),
+with at most TWO gangs per set (at least one member
+must be a citizen or corporate voice — v2.3; the v1.9 one-gang cap was
+measured far too harsh under complete-trio play, and no cap far too
+loose), and no two sets may use the same three
+affiliations (each completed set's affiliation trio must be
+unique; 19 of the 20 affiliation trios are legal — only the all-gang trio is not). v2.1: a set
+is played as a COMPLETE trio — all 3 cards at once, in a single
+action. Motive cards are never banked one at a time; there are no
+partial sets on the table. Completed sets may be played in
+any order. Each card of the set gets the informant check (§5.2/§6), in
+declared order — ONE accepted block bounces the WHOLE set back
+to the Hacker's hand (the informant is revealed and the
+Detective earns the Clue as usual; declining every check lets the set
+land). A set containing an Iceden Collective member
+fires the gang's rider (§6) once. (v1.6–v1.8: two
+sets of one-per-all-6-affiliations, played sequentially — replaced
+because it made Witnesses the choke point of the whole Evidence race:
+5 of the 6 None people were required across Evidence, which is what
+informant blocks and arrests squeezed.)
+
+No double-counting: a card counts toward exactly one
+piece of Evidence. Witnesses used in a None motive slot are separate cards
+from the 3 played as Witness evidence — but under v1.9 the Hacker can
+avoid None motive slots entirely, so only 3 of the 6 None people are
+required.
+Played Evidence is safe: it can't be arrested and can't be an
+informant.
+
+8. Card Lists
+8.1 People (25 total)
+Ability distribution: 7 Witnesses (None; Anansi carries an Evidence
+rider) · Iceden Collective: 2× draw, 4× hand-discard — and every Iceden
+member carries the gang's Evidence rider (§6: committed as Motive
+Evidence, win back one revealed informant free) · Crimson Clan &
+Chimera: 3× board-discard each · OmniSuperUltra Corp: 3× reveal
+informant · Shizuoka Inc: 3× discard retrieval.
+
+Name
+Affiliation
+Home Location
+Cost & Ability
+
+Eddie the Doorman
+None
+Xistential Club
+Witness
+
+Marisol the Janitor
+None
+OmniSuperUltra Corporate Office
+Witness
+
+Gus the Noodle Guy
+None
+Shizuoka Megamall
+Witness
+
+Dot the Birdwatcher
+None
+Nature Reserve #42
+Witness
+
+Felix the Concierge
+None
+Platinum Extraluxx Apartments
+Witness
+
+Ma Kettle
+None
+Trailer Towers
+Witness
+
+Zero Kelvin
+Iceden Collective
+The Back Alley
+X — Draw 3 Contacts (v2.3: was XX)
+
+Permafrost
+Iceden Collective
+Dark City Central Station
+X — Draw 3 Contacts (v2.3: was XX)
+
+Blackice
+Iceden Collective
+Xistential Club
+XX — Force the Detective to discard a Location from hand
+
+Sleet
+Iceden Collective
+Shizuoka Megamall
+XX — Force the Detective to discard a Location from hand
+
+Frostbyte
+Iceden Collective
+The Back Alley
+XX — Force the Detective to discard a Location from hand
+
+Hoarfrost
+Iceden Collective
+Dark City Central Station
+XX — Force the Detective to discard a Location from hand
+
+Mother Carmine
+Crimson Clan
+Platinum Extraluxx Apartments
+XX — Discard a Location from the board (informants can
+block)
+
+Rust
+Crimson Clan
+Suburb Tower #2013
+XX — Discard a Location from the board (informants can
+block)
+
+Little Garnet
+Crimson Clan
+Nature Reserve #42
+XX — Discard a Location from the board (informants can
+block)
+
+Manticore
+Chimera
+Dirty Mel's
+XX — Discard a Location from the board (informants can
+block)
+
+Basilisk
+Chimera
+Resident Block #8008315
+XX — Discard a Location from the board (informants can
+block)
+
+Wyrm
+Chimera
+Shipyard
+XX — Discard a Location from the board (informants can
+block)
+
+Deckard Voss
+OmniSuperUltra Corp
+Dark City Central Station
+XX — Reveal an informant (v2.3: was XXX — playtest showed it priced out of use)
+
+Priya Nakamura-Smith
+OmniSuperUltra Corp
+OmniSuperUltra Corporate Office
+XX — Reveal an informant (v2.3: was XXX — playtest showed it priced out of use)
+
+Bradford Chase XVI
+OmniSuperUltra Corp
+Platinum Extraluxx Apartments
+XX — Reveal an informant (v2.3: was XXX — playtest showed it priced out of use)
+
+Kenji Watanabe
+Shizuoka Inc
+OmniSuperUltra Corporate Office
+X — Gain a card from the discard pile
+
+Yumi Sato
+Shizuoka Inc
+Shizuoka Megamall
+X — Gain a card from the discard pile
+
+Hana Mori
+Shizuoka Inc
+Suburb Tower #2013
+X — Gain a card from the discard pile
+
+Anansi the Spider
+None
+Little Ghana
+Witness. When played as Evidence , his testimony
+names the mole: remove ONE informant of your choice — a facedown one
+by pointing at its position (it returns to the POI deck
+unseen ) or a revealed one by name. If this commit
+completes all 3 Evidence, the final guess happens immediately and
+the removal is skipped. Played as a person he is a plain witness
+
+8.2 Locations (19 total)
+Downtown
+
+Location
+Pop.
+Residents
+Affiliation
+
+OmniSuperUltra Corporate Office #beebee
+3
+OmniSuperUltra Corp, Shizuoka Inc, None
+OmniSuperUltra Corp
+
+Shizuoka Megamall
+3
+Iceden Collective, None, Shizuoka Inc
+Shizuoka Inc
+
+Dark City Central Station
+3
+Iceden Collective, OmniSuperUltra Corp, Iceden Collective
+None
+
+The Back Alley
+2
+Iceden Collective, Iceden Collective
+Iceden Collective
+
+Xistential Club
+2
+Iceden Collective, None
+Crimson Clan
+
+Sewers
+0
+—
+Chimera
+
+The Hive
+
+Location
+Pop.
+Residents
+Affiliation
+
+Platinum Extraluxx Apartments Unit 1337x
+3
+OmniSuperUltra Corp, Crimson Clan, None
+OmniSuperUltra Corp
+
+Suburb Tower #2013
+2
+Shizuoka Inc, Crimson Clan
+Shizuoka Inc
+
+Nature Reserve #42
+2
+None, Crimson Clan
+Crimson Clan
+
+Resident Block #8008315
+1
+Chimera
+Chimera
+
+Dirty Mel's
+1
+Chimera
+Iceden Collective
+
+Garbage Dump
+0
+—
+None
+
+Boonies
+
+Location
+Pop.
+Residents
+Affiliation
+
+Shipyard
+1
+Chimera
+OmniSuperUltra Corp
+
+Trailer Towers
+1
+None
+None
+
+Warehouse
+0
+—
+Shizuoka Inc
+
+The Junction
+0
+—
+Iceden Collective
+
+Tower Furnace
+0
+—
+Crimson Clan
+
+Junktown
+0
+—
+Chimera
+
+Little Ghana
+Boonies
+1
+Anansi the Spider
+None
+
+Balance check (verified): Populations sum to 24 =
+the People count. Resident affiliations tally exactly: None ×6, Iceden Collective
+×6, Crimson Clan ×3, Chimera ×3, OmniSuperUltra Corp ×3, Shizuoka Inc ×3. Each borough contains
+exactly one location of each of the 6 affiliations. Population
+distribution is 0×6, 1×4, 2×4, 3×4.
+
+9. Edge-Case Rulings
+
+Empty Detective hand is legal — and never blocks
+play. "Discard 3 Locations for a Clue" typically empties the
+hand, but since the mandatory draw precedes the mandatory play each
+turn, the Detective always has a card to play. The real cost of a bought
+Clue is losing hand flexibility (choice of which location to
+play) and the Iceden Collective discard-from-hand attacks having nothing to hit.
+Location cards in hand have no other mechanical function.
+No Evidence double-counting (§7): each played card
+serves exactly one Evidence requirement.
+Contacts deck reshuffles (§5.2): an empty Contacts
+deck is never a wall — reshuffle the discard. The Location deck, by
+contrast, never reshuffles (§5.3).
+Iceden Collective's forced discard is random: when a Iceden Collective
+ability forces the Detective to discard a Location from hand, the Hacker
+pulls a card blindly from the Detective's (hidden) hand.
+People are unique individuals. Contact/POI matching
+works by card identity, so in the final game each of the 24 people is a
+distinct named character — the three OmniSuperUltra Corp people share an ability but
+are not interchangeable copies.
+Exhausted clues: a Clue earned after all three
+truthful categories are revealed has no effect (§3) — at that point the
+Detective knows the location and only needs the AP (or an endgame
+trigger) to call it.
+
+10. Game Data (Playtest Deck
+Mapping)
+For playtesting, the game is proxied with a standard deck of playing
+cards. The final game will not use playing card names or
+suits — these mappings exist only so the prototype can be
+played before custom cards are produced.
+10.1 People (24 cards)
+
+Card
+Name
+Affiliation
+Ability
+
+K ♥
+Zero Kelvin
+Iceden Collective
+XX — Draw 3
+
+K ♦
+Permafrost
+Iceden Collective
+XX — Draw 3
+
+Q ♥
+Blackice
+Iceden Collective
+XX — Discard a location from hand
+
+Q ♦
+Sleet
+Iceden Collective
+XX — Discard a location from hand
+
+J ♥
+Frostbyte
+Iceden Collective
+XX — Discard a location from hand
+
+J ♦
+Hoarfrost
+Iceden Collective
+XX — Discard a location from hand
+
+10 ♥
+Mother Carmine
+Crimson Clan
+XX — Discard a location from the board
+
+9 ♥
+Rust
+Crimson Clan
+XX — Discard a location from the board
+
+8 ♥
+Little Garnet
+Crimson Clan
+XX — Discard a location from the board
+
+10 ♦
+Manticore
+Chimera
+XX — Discard a location from the board
+
+9 ♦
+Basilisk
+Chimera
+XX — Discard a location from the board
+
+8 ♦
+Wyrm
+Chimera
+XX — Discard a location from the board
+
+K ♠
+Eddie the Doorman
+None
+Witness
+
+K ♣
+Marisol the Janitor
+None
+Witness
+
+Q ♠
+Gus the Noodle Guy
+None
+Witness
+
+Q ♣
+Dot the Birdwatcher
+None
+Witness
+
+J ♠
+Felix the Concierge
+None
+Witness
+
+J ♣
+Ma Kettle
+None
+Witness
+
+10 ♠
+Deckard Voss
+OmniSuperUltra Corp
+XX — Reveal an informant (v2.3: was XXX — playtest showed it priced out of use)
+
+9 ♠
+Priya Nakamura-Smith
+OmniSuperUltra Corp
+XX — Reveal an informant (v2.3: was XXX — playtest showed it priced out of use)
+
+8 ♠
+Bradford Chase XVI
+OmniSuperUltra Corp
+XX — Reveal an informant (v2.3: was XXX — playtest showed it priced out of use)
+
+10 ♣
+Kenji Watanabe
+Shizuoka Inc
+X — Gain card from discard
+
+9 ♣
+Yumi Sato
+Shizuoka Inc
+X — Gain card from discard
+
+8 ♣
+Hana Mori
+Shizuoka Inc
+X — Gain card from discard
+
+10.2 Locations (18 cards)
+
+Card
+Location
+Borough
+Affiliation
+Pop.
+Residents (cards)
+
+7 ♥
+The Back Alley
+Downtown
+Iceden Collective
+2
+K ♥ Zero Kelvin, J ♥ Frostbyte
+
+7 ♠
+Dark City Central Station
+Downtown
+None
+3
+K ♦ Permafrost, J ♦ Hoarfrost, 10 ♠ Deckard Voss
+
+2 ♥
+Xistential Club
+Downtown
+Crimson Clan
+2
+K ♠ Eddie the Doorman, Q ♥ Blackice
+
+2 ♦
+Sewers
+Downtown
+Chimera
+0
+—
+
+2 ♠
+OmniSuperUltra Corporate Office #beebee
+Downtown
+OmniSuperUltra Corp
+3
+K ♣ Marisol the Janitor, 10 ♣ Kenji Watanabe, 9 ♠ Priya
+Nakamura-Smith
+
+2 ♣
+Shizuoka Megamall
+Downtown
+Shizuoka Inc
+3
+Q ♦ Sleet, Q ♠ Gus the Noodle Guy, 9 ♣ Yumi Sato
+
+6 ♥
+Dirty Mel's
+The Hive
+Iceden Collective
+1
+10 ♦ Manticore
+
+6 ♠
+Garbage Dump
+The Hive
+None
+0
+—
+
+3 ♥
+Nature Reserve #42
+The Hive
+Crimson Clan
+2
+Q ♣ Dot the Birdwatcher, 8 ♥ Little Garnet
+
+3 ♦
+Resident Block #8008315
+The Hive
+Chimera
+1
+9 ♦ Basilisk
+
+3 ♠
+Platinum Extraluxx Apartments Unit 1337x
+The Hive
+OmniSuperUltra Corp
+3
+J ♠ Felix the Concierge, 10 ♥ Mother Carmine, 8 ♠ Bradford Chase
+XVI
+
+3 ♣
+Suburb Tower #2013
+The Hive
+Shizuoka Inc
+2
+8 ♣ Hana Mori, 9 ♥ Rust
+
+5 ♥
+The Junction
+Boonies
+Iceden Collective
+0
+—
+
+5 ♠
+Trailer Towers
+Boonies
+None
+1
+J ♣ Ma Kettle
+
+4 ♥
+Tower Furnace
+Boonies
+Crimson Clan
+0
+—
+
+4 ♦
+Junktown
+Boonies
+Chimera
+0
+—
+
+4 ♠
+Shipyard
+Boonies
+OmniSuperUltra Corp
+1
+8 ♦ Wyrm
+
+4 ♣
+Warehouse
+Boonies
+Shizuoka Inc
+0
+—
+
+11. Variant — Hacker Crew (3–4
+Players)
+Untested table variant, added 2026-08-13. Every base rule is
+unchanged; a crew game is played and tracked as a normal 2-player
+session.
+Three or four players: one Detective , and the other
+2–3 players jointly playing the single Hacker side as a
+crew . The crew shares everything the Hacker owns — the
+hideout (all crew members know it), the Contacts deck, the hand, the
+Evidence zone — and wins or loses together. The Hacker turn is still
+exactly 3 AP with the same actions. What changes is who may say
+yes : every AP and every card in the crew's hand has an individual
+owner, and using it requires that owner's consent.
+11.1 The Main Token
+
+Give the Main token to a random crew member at
+setup. It passes clockwise to the next crew member at the start of
+every Hacker turn.
+The Main holder receives every leftover : any AP or
+card share not assigned by a rule below (the odd AP with a crew of 2,
+the Overclock bonus AP, a Zero Kelvin / Permafrost card no single
+contributor can claim).
+
+11.2 Action Points
+
+Each Hacker turn, the 3 AP are owned individually. Crew of
+2: the Main holder owns 2, the other crew member owns 1.
+Crew of 3: 1 each.
+Any crew member may physically take any action, but each AP spent
+needs its owner's agreement — an owner may veto the
+spend. Actions costing more than 1 AP pool AP from several owners, and
+every contributor must agree.
+Overclock's bonus AP belongs to the Main holder.
+Unspent AP is lost at end of turn, as normal.
+
+11.3 Cards
+
+The crew's hand is one shared pool, hidden from the Detective as
+usual, but each card has an owner. Playing a card requires its owner's
+agreement (the same veto as AP).
+Opening hand (3 cards): with a crew of 2 the Main
+holder takes 2 and the other takes 1; with a crew of 3, 1 each.
+Draw Contact: the card belongs to whoever's AP paid
+for the draw.
+Zero Kelvin / Permafrost (draw 3): the owner of the
+played person card takes 2 of the drawn cards; the remaining card goes
+to the crew member who contributed the AP for the play. If the owner
+paid all the AP themselves, they take all 3; if no single other
+contributor can claim it (two other crew members each chipped in 1),
+the card is a leftover and goes to the Main holder.
+
+11.4 Communication
+
+Whispering is allowed: the crew may confer
+privately at the table at any time. The Detective sees that a
+conference happens — and how long it takes — but never its
+content.
+

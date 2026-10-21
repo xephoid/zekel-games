@@ -20,6 +20,9 @@ importers:
       '@zekel/cybernoir-2127':
         specifier: workspace:*
         version: link:packages/cybernoir-2127
+      '@zekel/dev':
+        specifier: ^0.1.1
+        version: 0.1.1
       '@zekel/fractured-fist':
         specifier: workspace:*
         version: link:packages/fractured-fist
@@ -27,8 +30,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.0
       '@zekel/mcp':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.1.1
+        version: 0.1.1
       '@zekel/neither-guts-nor-gears':
         specifier: workspace:*
         version: link:packages/neither-guts-nor-gears
@@ -59,36 +62,54 @@ importers:
 
   packages/adventurer-olympics:
     devDependencies:
+      '@zekel/dev':
+        specifier: ^0.1.1
+        version: 0.1.1
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
 
   packages/cybernoir-2127:
     devDependencies:
+      '@zekel/dev':
+        specifier: ^0.1.1
+        version: 0.1.1
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
 
   packages/fractured-fist:
     devDependencies:
+      '@zekel/dev':
+        specifier: ^0.1.1
+        version: 0.1.1
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
 
   packages/neither-guts-nor-gears:
     devDependencies:
+      '@zekel/dev':
+        specifier: ^0.1.1
+        version: 0.1.1
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
 
   packages/sweetlands-imperium:
     devDependencies:
+      '@zekel/dev':
+        specifier: ^0.1.1
+        version: 0.1.1
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
 
   packages/warble-way-galaxy:
     devDependencies:
+      '@zekel/dev':
+        specifier: ^0.1.1
+        version: 0.1.1
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
@@ -473,6 +494,7 @@ packages:
     engines: {node: ^22.20 || ^24.12 || >=25}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-android-arm-eabi@4.64.10':
     resolution: {integrity: sha512-oJ9ZfVIZjSjts0ZIYA48+5T0vurE5fQfX/Liad2U52Y6EN99x/OCdjGGuKMDP6jSk2i2lY6jwwA3X0drEc4PBg==}
@@ -508,66 +530,79 @@ packages:
     resolution: {integrity: sha512-ble2WR7kWfzZFJUd3ODMGCJn1XDszptfRC0QvWc0h9/EA6MxnrQ1mvbjPZifEdgHyfHhDrwWeKeJONDITcrHSg==}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm-musleabihf@4.64.10':
     resolution: {integrity: sha512-DMCYegihxBMKvLpODdk4OsvIgxtHTi+Oddf1Pm3d6wMVNjcBiG2pqyXjMPy55HgG1gCdEFr9VfhB1CmvuKn1lw==}
     cpu: [arm]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-arm64-gnu@4.64.10':
     resolution: {integrity: sha512-HQ6HuVH9TmhvPWIas7MA/KeAROgdwqH3REpUU6hZq47NW7m1b1QCrHgM+M3+N/B8DfMt88x1/z79ppRc9RflCQ==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-musl@4.64.10':
     resolution: {integrity: sha512-avBhxba1DdctX0kxKkN3JWdTSg72QsxSn6FdfhZ9MkL3TTYDOXqxY1GqbC7VNttlgviK7tCe2No5btfRkFgeIg==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-loong64-gnu@4.64.10':
     resolution: {integrity: sha512-UtQMex7fiXq0W/GqcWRpy6XKqUbXgQeGKB+Bd5rJngmHzpI+3kjwpWFLAhKg02onFsIMSh+Zx0zp9JIMQ7/05A==}
     cpu: [loong64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-loong64-musl@4.64.10':
     resolution: {integrity: sha512-0Aum2pUsCSuOopi6oka+nR1DTj/nfvc1xjL979lvh6kXUjNa30TCX7sKFjyMsrX7bK3bNVs0FsJwQcE2HCWX1Q==}
     cpu: [loong64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-ppc64-gnu@4.64.10':
     resolution: {integrity: sha512-4dgsouKal3qfMFORgtNigLPt7K3HXiO6jTr7+nFJv1GWu1OkZx0kvQIXbK4sjrIGnaLBk0s80eQCQ9hPIelLrw==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-ppc64-musl@4.64.10':
     resolution: {integrity: sha512-d7NE89try3jisYzBD7J9M5iwfgcrXYC4dwHEjQ3HIWBftvwch1U/cy3iZ26SthtUOyClKiu7iqYiFjQEwiOlqQ==}
     cpu: [ppc64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-riscv64-gnu@4.64.10':
     resolution: {integrity: sha512-dqB5ChSBp91JWXxpCKAS5ZVAE38esKQvdfyqANm0lF5JPiQrXnYwgG3oVBQmuNRcQ1WHkA3j5qYLsrl2CtfhCA==}
     cpu: [riscv64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-musl@4.64.10':
     resolution: {integrity: sha512-7GMf3vbQQslorWLmfsbi5fdt9RVnglk205XpOMFvW6UY5jE5oJc6JLieQJPHtsYlZ2EO0PtC06nY9Hz/IG8guw==}
     cpu: [riscv64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-s390x-gnu@4.64.10':
     resolution: {integrity: sha512-tuKbkB23DKc5LG+irPSUnZZztRHqC3CNmyxeWloueBteHB+i+1HkRCMzAE41lseLDlarybeLhqfibFitKOxKMg==}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.64.10':
     resolution: {integrity: sha512-ntHtQOMw7oIshHRF1swV3vyBw+beQt9PeZ04O3D32EeDZUMoHMJuZKp4/fDllH/+xogeK0GUCONVfjjKusqKLg==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-musl@4.64.10':
     resolution: {integrity: sha512-Dlh8q8r145aYgh+N3gNIG1dz35Fz/FCxe5hs/43orDsffjP8S1P4Xz5I4FpSJsDS4LpQw1QmswZkQlUbkCldjQ==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-openbsd-x64@4.64.10':
     resolution: {integrity: sha512-VBJhHWz/55u45CWFv9OmfSRDgJDVENESgFxSAn13gIKJpTuFJbP4/7ymMZhDfeKFx1zGn1XBsLnNB7Ryy71qww==}
@@ -640,12 +675,16 @@ packages:
   '@vitest/utils@2.1.9':
     resolution: {integrity: sha512-v0psaMSkNJ3A2NMrUEHFRzJtDPFn+/VWZ5WxImB21T9fjucJRmS7xCS3ppEnARb9y11OAzaD+P2Ps+b+BGX5iQ==}
 
+  '@zekel/dev@0.1.1':
+    resolution: {integrity: sha512-nHTql8mlNs/cB28edR8mZEVDsCvOHhIIE7Ca1q5JNMBuN/8Zh9gtcfnUGMKnA6hF6igMFC4U3vImM5dDtWdt9Q==}
+    engines: {node: '>=22.13.0'}
+
   '@zekel/game-kit@0.1.0':
     resolution: {integrity: sha512-44b/ifoEuGHqOUd0i+l21pwMDu6XvGQyKzuN4vRxGtNuSZm6nGgaaVSefoFf9QKDRQ3PYEdXNpoQTICWf1U4Lg==}
     engines: {node: '>=22.13.0'}
 
-  '@zekel/mcp@0.1.0':
-    resolution: {integrity: sha512-EpnQvGxT7Xzn8nezu2ygJhdMpwIUc9dv2J8XAKmTAGgSuRP5XxblBQwjH0ZX/+XV6K1tgTeiHvAaEDD1HRcorQ==}
+  '@zekel/mcp@0.1.1':
+    resolution: {integrity: sha512-poT41NIUB8VpjQlUDNYE3Be8BsuvcSgA/W+3A/r1Ddd0X3MQjGAEzSMYpbeTRXMSx1oQ/JHmERYAeaRurWLDUA==}
     engines: {node: '>=22.13.0'}
 
   accepts@2.0.0:
@@ -1690,9 +1729,26 @@ snapshots:
       loupe: 3.2.1
       tinyrainbow: 1.2.0
 
+  '@zekel/dev@0.1.1':
+    dependencies:
+      '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.3)
+      '@zekel/game-kit': 0.1.0
+      '@zekel/mcp': 0.1.1
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - '@aws-sdk/credential-providers'
+      - '@cfworker/json-schema'
+      - '@mongodb-js/zstd'
+      - gcp-metadata
+      - kerberos
+      - mongodb-client-encryption
+      - snappy
+      - socks
+      - supports-color
+
   '@zekel/game-kit@0.1.0': {}
 
-  '@zekel/mcp@0.1.0':
+  '@zekel/mcp@0.1.1':
     dependencies:
       '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.3)
       '@zekel/game-kit': 0.1.0
