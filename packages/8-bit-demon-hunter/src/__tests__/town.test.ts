@@ -168,6 +168,25 @@ describe('talking to townsfolk', () => {
     expect(getLegalMoves(before).map((m) => m.move_id)).not.toContain(`claim_reward:${giver.id}:power`);
   });
 
+  it('claiming from a giver who also completes someone else\'s find goes on to the reward', () => {
+    let s = fresh();
+    const people = townPeople(s);
+    const giver = people[0]!;
+    const other = people[1]!;
+    const target = people.find((x) => x.id !== giver.id && x.id !== other.id && x.attributes.occupation !== giver.attributes.occupation)!;
+    giver.task = { ...giver.task, type: 'FIND_PERSON', targetId: target.attributes.pet, targetName: target.attributes.pet, amount: 1, currentAmount: 0, description: `Find someone with a ${target.attributes.pet}`, isCompleted: false };
+    other.task = { ...other.task, type: 'FIND_PERSON', targetId: giver.attributes.occupation, targetName: giver.attributes.occupation, amount: 1, currentAmount: 0, description: `Find a ${giver.attributes.occupation}`, isCompleted: false };
+    s = apply(s, { type: 'talk', person: giver.id });
+    s = apply(s, { type: 'accept_task' });
+    s = apply(s, { type: 'talk', person: other.id }); // wants a person of the giver's trade
+    s = apply(s, { type: 'accept_task' });
+    s = apply(s, { type: 'talk', person: target.id }); // the giver's find is done
+    const r = applyText(s, { type: 'claim_reward', person: giver.id, reward: 'power' });
+    expect(r.summary).toContain(`Task complete: Find a ${giver.attributes.occupation}`); // meeting the giver finished the other find
+    expect(person(r.state, giver.id).taskCompleted || person(r.state, giver.id).confessed).toBe(true); // and the claim still went through
+    expect(r.state.player.activeTasks).not.toContain(giver.id);
+  });
+
   it('claiming from a giver who owes nothing yet just talks to them; the inn, leaving and asking around end a conversation by themselves', () => {
     let s = fresh();
     const giver = townPeople(s)[0]!;

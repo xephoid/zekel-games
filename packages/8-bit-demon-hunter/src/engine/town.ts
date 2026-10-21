@@ -201,6 +201,11 @@ export function claimReward(state: DemonHunterState, reward: 'clue' | 'power', p
     if (!target) refuse(`There is no one called "${personId}" in ${currentTown(state).name}.`);
     if (!state.dialogue || state.dialogue.personId !== target.id || state.dialogue.stage !== 'reward') {
       talk(state, target.id, lines);
+      // Meeting the giver may itself have completed another find (a Locksmith
+      // asked for by someone else): that took the conversation; go on to the
+      // reward they owe (or their confession) rather than stopping there.
+      const owes = state.player.activeTasks.includes(target.id) && target.task.isCompleted && !target.taskCompleted;
+      if (owes && (!state.dialogue || state.dialogue.stage !== 'reward')) talk(state, target.id, lines);
       if (!state.dialogue || state.dialogue.stage !== 'reward') return;
     }
   }
