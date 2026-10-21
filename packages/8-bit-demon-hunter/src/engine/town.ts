@@ -84,9 +84,9 @@ export function talk(state: DemonHunterState, personId: string, lines: string[])
       const giver = allPeople(state).find((x) => x.task === task);
       if (giver) givers.push(`${giver.name} (${giver.id}) in ${state.towns.find((t) => t.id === giver.attributes.townId)?.name ?? '?'}`);
     }
-    state.dialogue = { personId: person.id, stage: 'closing' };
     lines.push(`Gist: "You found me! I am indeed the one you are looking for." Task complete: ${found.map((t) => t.description).join('; ')}. Claim the reward from ${givers.join(' and ')} when you are in their town (claim_reward with their id and your choice of reward; no need to talk first).`);
-    return;
+    // ...and the conversation goes on to their own business below (their offer,
+    // or the reward they owe), so nobody has to be talked to twice.
   }
 
   // 1. The giver of an accepted task.

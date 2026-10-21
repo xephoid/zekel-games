@@ -51,7 +51,7 @@ export function startCombat(state: DemonHunterState, enemyId: string, cause: Com
     gauntlet: `A ${def.name} comes at you.`,
     lair: `The ${def.name} rises to meet you.`,
     flying: `The ${def.name} fires at you as you fly past!`,
-    resume: `${def.name} comes at you again.`,
+    resume: `The ${def.name} comes at you again.`,
   };
   lines.push(why[cause]);
   lines.push(`Combat: you (HP ${p.hp}/${p.maxHp}, strength ${p.strength}, speed ${p.agility}, range ${p.range}) vs the ${def.name}, ${condition(enemy)}.`);

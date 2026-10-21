@@ -138,7 +138,10 @@ describe('talking to townsfolk', () => {
     const r = applyText(s, { type: 'talk', person: target.id });
     expect(r.summary).toContain('You found me');
     expect(r.summary).toContain(`Claim the reward from ${giver.name}`);
-    s = r.state;
+    expect(r.summary).toContain('Can you help me'); // and their own offer, in the same breath
+    expect(r.state.dialogue?.stage).toBe('offer');
+    s = apply(r.state, { type: 'accept_task' });
+    expect(s.player.activeTasks).toContain(target.id);
     expect(person(s, giver.id).task.isCompleted).toBe(true);
   });
 
