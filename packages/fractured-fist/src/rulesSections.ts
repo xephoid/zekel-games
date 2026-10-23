@@ -1,7 +1,7 @@
 // Sectioned rules for Fractured Fist (docs/rules-teaching.md). getRulesText()
 // derives from these (renderRulesText), so the blob and the sections are one
 // source. Every move type in the moveSchema is governed by at least one
-// section — locked by __tests__/rulesTeaching.test.ts.
+// section — locked by __tests__/spokenAndTeaching.test.ts.
 //
 // The rules describe THIS implementation, which follows the React app
 // (antigravity-fist-and-form, the designer's current version). Where the
