@@ -4,7 +4,7 @@
 // only hand-written part is the REASON a type is missing, checked against
 // live state in the same order the engine checks it, with the live values
 // quoted ("you have 0 actions left"). checkGateConsistency stays as the lock
-// (__tests__/rulesTeaching.test.ts).
+// (__tests__/spokenAndTeaching.test.ts).
 
 import type { MoveGateStatus, SessionState } from '@zekel/game-kit';
 import { FOCUS_RELOADS_PER_TURN, getCard } from './cards.js';
