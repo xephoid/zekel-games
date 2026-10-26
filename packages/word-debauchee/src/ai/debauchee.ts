@@ -90,7 +90,7 @@ function buriedFrom(hand: readonly ClueId[], play: readonly ClueId[]): ClueId {
 
 /** The medium tier's reveal: the commonest letter first, and a letter with
  *  more copies still to come before one with a single copy. */
-function quietestLetter(left: Map<string, number>): string {
+export function quietestLetter(left: Map<string, number>): string {
   let best = '';
   let bestScore = -Infinity;
   for (const [ch, n] of left) {

@@ -202,6 +202,37 @@ Mixed tables work: human and AI guessers share the build area and turn order. In
 `server` mode a human guesser's tile is the suggestion, as the rules intend; AI tiles
 are the same.
 
+Built 2026-10-26 (`ai/guesser.ts`, `ai.ts`). As built: every tier checks on the tile
+that completes its target, continues a row that already spells a prefix of it, and
+re-completes an unchecked shared synonym sitting whole on the table (moving its last
+tile into place) so it may check it; burned words and words answered "no" are never
+targets. Easy keeps building whatever is already down, else a random synonym of a
+random candidate. Medium spells the most-shared synonym and calls "Reveal!" while more
+than 40 cards fit. Hard values a target at (share of candidates listing it) × (letters
+minus reveals so far and reveals still to come, with the guessers laying one tile each
+per lap on the same row), and calls "Reveal!" only when that value, estimated after one
+more letter over a sample of candidate cards and priced at one point, beats the value
+now. Two first drafts were wrong and the harness caught both: hard priced "now" and
+"after" with different payout models and so called a reveal nearly every turn; easy
+picked a fresh target every turn and almost never finished a word.
+
+`scripts/harness.mjs` (after `pnpm build`): all-AI rounds per debauchee tier ×
+guesser tier. 200 rounds per pairing, laps timer, 2026-10-26:
+
+| debauchee | guessers | stumped, 2 guessers | stumped, 3 guessers | guesser pay per crack (2 / 3) |
+|---|---|---|---|---|
+| easy | easy / medium / hard | 26 % / 12 % / 31 % | 13 % / 8 % / 24 % | 3.1 / 2.2 / 4.0 · 3.8 / 2.6 / 5.0 |
+| medium | easy / medium / hard | 31 % / 20 % / 32 % | 15 % / 14 % / 17 % | 2.6 / 1.7 / 2.9 · 3.3 / 2.1 / 4.1 |
+| hard | easy / medium / hard | 74 % / 61 % / 80 % | 63 % / 44 % / 70 % | 2.4 / 1.3 / 3.2 · 2.6 / 1.4 / 4.0 |
+
+What it shows about the AI, not about the game: medium guessers crack the most rounds
+and hard guessers the fewest, because hard goes for payout and medium for a crack; hard
+guessers take about twice as much per crack. The hard debauchee stumps most tables and,
+oddly, prefers ●○○ words: against a guesser who reads the card list, a common word
+hides among many similar cards. Reveals per crack run 2.5 to 4.6, far above the design
+notes' "0–1 for a ●○○ word", which assumed a 30-second sand timer at a bigger table;
+under laps with two or three guessers a 5-letter synonym needs two laps at best.
+
 ## 8. MCP surface
 
 - `createSession`: 2–8 players; options `seed`, `tiles` (`table` | `server`), `timer`
@@ -318,5 +349,6 @@ scaffold, `rules/` (the docs moved here), `words.csv` with the four judgment col
 open. Milestone 2 built: the engine (deal, clues, build area, reveals, checks, burns,
 both timers, scoring, round and game end), legal moves, views, next step and rules
 sections, 77 tests. Milestone 3 built: the candidate solver (`ai/solver.ts`) and the
-AI debauchee in three tiers (`ai/debauchee.ts`), 89 tests. Not yet on the server: the
-MCP seam is milestone 5.
+AI debauchee in three tiers (`ai/debauchee.ts`), 89 tests. Milestone 4 built: the AI
+guessers in three tiers (`ai/guesser.ts`), the dispatcher (`ai.ts`) and the harness
+(`scripts/harness.mjs`), 98 tests. Not yet on the server: the MCP seam is milestone 5.
