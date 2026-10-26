@@ -21,8 +21,8 @@ importers:
         specifier: workspace:*
         version: link:packages/cybernoir-2127
       '@zekel/dev':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.2
+        version: 0.1.2
       '@zekel/fractured-fist':
         specifier: workspace:*
         version: link:packages/fractured-fist
@@ -63,8 +63,8 @@ importers:
   packages/adventurer-olympics:
     devDependencies:
       '@zekel/dev':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.2
+        version: 0.1.2
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
@@ -72,8 +72,8 @@ importers:
   packages/cybernoir-2127:
     devDependencies:
       '@zekel/dev':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.2
+        version: 0.1.2
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
@@ -81,8 +81,8 @@ importers:
   packages/fractured-fist:
     devDependencies:
       '@zekel/dev':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.2
+        version: 0.1.2
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
@@ -90,8 +90,8 @@ importers:
   packages/neither-guts-nor-gears:
     devDependencies:
       '@zekel/dev':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.2
+        version: 0.1.2
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
@@ -99,8 +99,8 @@ importers:
   packages/sweetlands-imperium:
     devDependencies:
       '@zekel/dev':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.2
+        version: 0.1.2
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
@@ -108,8 +108,8 @@ importers:
   packages/warble-way-galaxy:
     devDependencies:
       '@zekel/dev':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.2
+        version: 0.1.2
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
@@ -675,8 +675,8 @@ packages:
   '@vitest/utils@2.1.9':
     resolution: {integrity: sha512-v0psaMSkNJ3A2NMrUEHFRzJtDPFn+/VWZ5WxImB21T9fjucJRmS7xCS3ppEnARb9y11OAzaD+P2Ps+b+BGX5iQ==}
 
-  '@zekel/dev@0.1.1':
-    resolution: {integrity: sha512-nHTql8mlNs/cB28edR8mZEVDsCvOHhIIE7Ca1q5JNMBuN/8Zh9gtcfnUGMKnA6hF6igMFC4U3vImM5dDtWdt9Q==}
+  '@zekel/dev@0.1.2':
+    resolution: {integrity: sha512-0bnTZPG9GR9VVGwG0pbuwXDDfi5isefrPngq9rX1/T1AkVjOpo037AmgLBT9PjzrAs8grDAJut/py3ybOxdxeA==}
     engines: {node: '>=22.13.0'}
 
   '@zekel/game-kit@0.1.0':
@@ -1729,7 +1729,7 @@ snapshots:
       loupe: 3.2.1
       tinyrainbow: 1.2.0
 
-  '@zekel/dev@0.1.1':
+  '@zekel/dev@0.1.2':
     dependencies:
       '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.3)
       '@zekel/game-kit': 0.1.0

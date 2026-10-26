@@ -30,7 +30,7 @@
     "@zekel/8-bit-demon-hunter": "workspace:*",
     "@zekel/adventurer-olympics": "workspace:*",
     "@zekel/cybernoir-2127": "workspace:*",
-    "@zekel/dev": "^0.1.1",
+    "@zekel/dev": "^0.1.2",
     "@zekel/fractured-fist": "workspace:*",
     "@zekel/game-kit": "^0.1.0",
     "@zekel/mcp": "^0.1.1",
