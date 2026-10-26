@@ -162,10 +162,21 @@ The game's own idea of the role: give away as little as possible. Three tiers:
   (*Shortest synonym*, *First letter*, *Last letter*, *Goes with*, then the rest by a
   fixed stinginess order); reveals the word's most common letter first (E, A, …) and
   repeated letters early, since they say the least.
-- **hard**: runs the guesser solver (section 7) against itself. Word choice: the one
-  whose best three clues leave the largest candidate set in the deck. Clue choice: the
-  three whose answers leave the most candidates. Reveal choice: the letter whose
-  revelation prunes the candidate set least.
+- **hard**: runs the guesser solver (section 7) against itself and keeps the
+  *crack chance* low: the share of candidate cards that list the most-shared synonym,
+  which is exactly the target a solver-guesser would spell. Word choice: the dealt word
+  whose best play gives the lowest chance (longer on ties). Clue choice: the three whose
+  answers give the lowest chance (more candidates, then the gift order, on ties). Reveal
+  choice: the letter that keeps the chance lowest.
+
+  Built 2026-10-26. The candidate *count* was tried first and rejected: for HAPPY,
+  "Letters: 5" leaves 8 cards and "Shortest synonym: 4" leaves 17, so by count the
+  gift card looked stingy. By crack chance, the deck says something the design notes
+  do not: against a guesser who knows the card list, **Category and Type together
+  give away more than Shortest synonym** (HAPPY with Letters, Shortest synonym,
+  Category, Type in hand: the hard tier buries Category). Worth a look at the table:
+  if human guessers also lean on category plus type, those two cards may want fewer
+  copies, or the gift order in the medium tier wants revising.
 
 Judgment answers come from the card's new fields; *Rhymes with* must not be on the
 synonym list (checked). The AI debauchee never sees the build area as anything but
@@ -306,4 +317,6 @@ scaffold, `rules/` (the docs moved here), `words.csv` with the four judgment col
 `words.csv` → `words.ts` / `words.md` pipeline, clue and tile data, data tests. Q12
 open. Milestone 2 built: the engine (deal, clues, build area, reveals, checks, burns,
 both timers, scoring, round and game end), legal moves, views, next step and rules
-sections, 77 tests. Not yet on the server: the MCP seam is milestone 5.
+sections, 77 tests. Milestone 3 built: the candidate solver (`ai/solver.ts`) and the
+AI debauchee in three tiers (`ai/debauchee.ts`), 89 tests. Not yet on the server: the
+MCP seam is milestone 5.
