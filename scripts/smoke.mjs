@@ -1,5 +1,5 @@
 // End-to-end check: start examples/serve.mjs (the real @zekel/mcp server with
-// all seven games) and, through the MCP tools, play an easy all-AI game of each
+// all eight games) and, through the MCP tools, play an easy all-AI game of each
 // to the end, read Warble Way Galaxy's lore, and check a human seat is asked
 // for its setup. Build first:  pnpm build && pnpm smoke
 
@@ -48,8 +48,8 @@ child.stdin.write(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initia
 
 const listed = (await tool('list_games', {})).body;
 const ids = (listed.games ?? listed).map((g) => g.game_id ?? g.id).sort();
-const expected = ['8-bit-demon-hunter', 'adventurer-olympics', 'cybernoir-2127', 'fractured-fist', 'neither-guts-nor-gears', 'sweetlands-imperium', 'warble-way-galaxy'];
-check(JSON.stringify(ids) === JSON.stringify(expected), `list_games shows the seven games (${ids.join(', ')})`);
+const expected = ['8-bit-demon-hunter', 'adventurer-olympics', 'cybernoir-2127', 'fractured-fist', 'neither-guts-nor-gears', 'sweetlands-imperium', 'warble-way-galaxy', 'word-debauchee'];
+check(JSON.stringify(ids) === JSON.stringify(expected), `list_games shows the eight games (${ids.join(', ')})`);
 
 for (const game_id of expected) {
   const players =
@@ -74,7 +74,7 @@ for (const game_id of expected) {
 const lore = await tool('get_lore', {});
 check(!lore.isError && lore.body.topics?.length >= 5, `get_lore lists ${lore.body.topics?.length} Warble Way Galaxy topics`);
 
-for (const game_id of ['fractured-fist', 'sweetlands-imperium', 'cybernoir-2127', 'neither-guts-nor-gears', 'adventurer-olympics']) {
+for (const game_id of ['fractured-fist', 'sweetlands-imperium', 'cybernoir-2127', 'neither-guts-nor-gears', 'adventurer-olympics', 'word-debauchee']) {
   const created = await tool('create_session', {
     game_id,
     players: [{ player_id: 'p1', kind: 'human', name: 'Zeke' }, { player_id: 'p2', kind: 'ai', difficulty: 'easy' }],
