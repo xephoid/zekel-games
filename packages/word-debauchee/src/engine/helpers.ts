@@ -38,6 +38,8 @@ export function currentGuesser(state: WordDebaucheeState): string {
 /** Whose action the game waits on. */
 export function activeSeatId(state: WordDebaucheeState): string {
   switch (state.phase) {
+    case 'setup':
+      return (state.seats.find((s) => !s.ai) ?? state.seats[0]!).id;
     case 'choose_word':
     case 'play_clues':
     case 'answer_clues':

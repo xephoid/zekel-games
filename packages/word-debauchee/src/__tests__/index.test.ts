@@ -54,8 +54,26 @@ describe('the module seam', () => {
     const step = wordDebauchee.describeNextStep(s)!;
     expect(step.status).toBe('human_to_move');
     expect(step.human_response?.private).toBe(true);
+    const aiFirst = wordDebauchee.createSession([human('p1'), ai('p2')], { seed: 5, firstDebauchee: 'p2' });
+    const aiStep = wordDebauchee.describeNextStep(aiFirst)!;
+    expect(aiStep.status).toBe('ai_to_move');
+    expect(aiStep.instruction).toContain('AI seat');
+    expect(aiStep.human_response).toBeUndefined();
     expect(wordDebauchee.getChoiceOwed(s, 'p2')).toBe('which-word');
     expect(wordDebauchee.getChoiceOwed(s, 'p1')).toBeNull();
+  });
+
+  it('lists the setup step while the table owes the first debauchee, and declares gates that agree with the legal moves', () => {
+    const s = wordDebauchee.createSession([human('p1'), ai('p2')], { seed: 5 });
+    expect(s.gameState.phase).toBe('setup');
+    expect(wordDebauchee.getSetupChecklist(s)).toHaveLength(1);
+    expect(wordDebauchee.getSetupChecklist(s)[0]!.move_type).toBe('choose_first_debauchee');
+    expect(wordDebauchee.describeNextStep(s)!.status).toBe('human_to_move');
+    expect(wordDebauchee.getChoiceOwed(s, 'p1')).toBe('first-debauchee');
+    const t = wordDebauchee.applyMove(s, 'p1', { type: 'choose_first_debauchee', player: 'p2' }).newState;
+    expect(wordDebauchee.getSetupChecklist(t)).toEqual([]);
+    expect(t.gameState.round!.debauchee).toBe('p2');
+    expect(wordDebauchee.describeMoveGates(t, 'p1').length).toBeGreaterThan(5);
   });
 
   it('maps engine refusals onto GameError codes', () => {

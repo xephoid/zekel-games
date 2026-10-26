@@ -17,5 +17,5 @@ registerDevHooks('fractured-fist', fracturedFist);
 registerDevHooks('neither-guts-nor-gears', neitherGutsNorGears);
 registerDevHooks('sweetlands-imperium', sweetlandsImperium);
 registerDevHooks('warble-way-galaxy', warbleWayGalaxy);
-// 8-bit Demon Hunter has no dev hooks yet; the tools use their generic behaviour.
+// 8-bit Demon Hunter and Word Debauchee have no dev hooks yet; the tools use their generic behaviour.
 markDevHooksLoaded();

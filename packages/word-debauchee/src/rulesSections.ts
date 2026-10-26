@@ -43,8 +43,8 @@ export const WORD_DEBAUCHEE_RULE_SECTIONS: RuleSectionShape[] = [
     title: 'Setup',
     text:
       'Tip all 144 tiles face up in the middle of the table and spread them so everyone can reach them: the pool. Leave an open space beside it: the build area. ' +
-      'The word cards and the two clue decks are shuffled. Whoever most recently got away with something is the first debauchee (the server picks at random unless told).',
-    tags: {},
+      'The word cards and the two clue decks are shuffled. Whoever most recently got away with something is the first debauchee: the table says who (with no person at the table, the server draws).',
+    tags: { move_types: ['choose_first_debauchee'], phases: ['setup'] },
   },
   {
     id: 'pick-a-word',

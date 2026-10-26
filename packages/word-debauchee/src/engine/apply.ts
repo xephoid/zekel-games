@@ -2,14 +2,14 @@
 // and a plain-words summary for the table. The summary never carries the
 // secret word, the dealt words or the clue hand before the round ends.
 
-import { clue, type ClueCard, type ClueId } from '../data/clues.js';
+import { clue, clueByName, type ClueCard, type ClueId } from '../data/clues.js';
 import { cardFor, isSynonymOf } from '../data/deck.js';
 import type { Card } from '../data/wordCard.js';
 import type { WordDebaucheeState } from '../types.js';
 import { notYourTurn, refuse, RuleError } from './errors.js';
 import { clone, currentGuesser, isGuesser, listNames, nameOf, normaliseWord, round, turnsPerReveal, unrevealedLetters } from './helpers.js';
 import type { WordDebaucheeMove } from './moves.js';
-import { CLUES_PLAYED, endRound } from './round.js';
+import { CLUES_PLAYED, endRound, resolveSeat, setFirstDebauchee } from './round.js';
 
 export interface ApplyResult {
   newState: WordDebaucheeState;
@@ -22,7 +22,13 @@ export function applyMove(prev: WordDebaucheeState, playerId: string, move: Word
   const state = clone(prev);
   state.turn++;
   const lines: string[] = [];
+  if (state.phase === 'setup' && move.type !== 'choose_first_debauchee') {
+    refuse('First the table says who is the first debauchee (whoever most recently got away with something).');
+  }
   switch (move.type) {
+    case 'choose_first_debauchee':
+      chooseFirstDebauchee(state, playerId, move.player, lines);
+      break;
     case 'choose_word':
       chooseWord(state, playerId, move.word, lines);
       break;
@@ -59,6 +65,17 @@ export function applyMove(prev: WordDebaucheeState, playerId: string, move: Word
   return { newState: state, summary: lines.join(' ') };
 }
 
+// --- setup ------------------------------------------------------------------
+
+function chooseFirstDebauchee(state: WordDebaucheeState, playerId: string, player: string, lines: string[]): void {
+  if (state.phase !== 'setup') refuse('The first debauchee has already been chosen.');
+  if (state.seats.find((x) => x.id === playerId)?.ai) notYourTurn('A person at the table says who is the first debauchee.');
+  const first = resolveSeat(state.seats, player);
+  if (!first) refuse(`"${player}" is not at the table. Seats: ${state.seats.map((x) => `${x.name} (${x.id})`).join(', ')}.`);
+  setFirstDebauchee(state, first.id);
+  lines.push(`${first.name} most recently got away with something and is the first debauchee. ${first.name} draws three word cards.`);
+}
+
 // --- the debauchee's half ---------------------------------------------------
 
 function requireDebauchee(state: WordDebaucheeState, playerId: string, doing: string): void {
@@ -89,6 +106,7 @@ function playClues(state: WordDebaucheeState, playerId: string, cards: ClueId[],
   requireDebauchee(state, playerId, 'plays the clues');
   const r = round(state);
   if (!Array.isArray(cards) || cards.length !== CLUES_PLAYED) refuse(`Play exactly ${CLUES_PLAYED} of the ${r.hand.length} cards in hand.`);
+  cards = cards.map((c) => clueByName(String(c))?.id ?? c);
   const left = [...r.hand];
   for (const id of cards) {
     const at = left.indexOf(id);
@@ -127,6 +145,7 @@ function answerClue(state: WordDebaucheeState, playerId: string, cardId: ClueId,
   if (state.phase !== 'answer_clues') refuse('No clue is waiting for an answer.');
   requireDebauchee(state, playerId, 'answers the clues');
   const r = round(state);
+  cardId = clueByName(String(cardId))?.id ?? cardId;
   const played = r.played.find((p) => p.card === cardId && p.answer === null);
   if (!played) refuse(`${String(cardId)} is not waiting for an answer. Waiting: ${r.played.filter((p) => p.answer === null).map((p) => p.card).join(', ')}.`);
   const c = clue(cardId);

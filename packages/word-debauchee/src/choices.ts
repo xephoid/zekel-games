@@ -39,7 +39,8 @@ export const WORD_DEBAUCHEE_CHOICES: ChoiceRow[] = [
     description: 'Who is the first debauchee (whoever most recently got away with something)',
     owner: 'player',
     when: 'setup',
-    resolvedBy: ['options.firstDebauchee'],
+    resolvedBy: ['choose_first_debauchee', 'options.firstDebauchee'],
+    distinguishedBy: 'player',
   },
   {
     id: 'how-many-rounds',

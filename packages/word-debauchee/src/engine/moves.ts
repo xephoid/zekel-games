@@ -4,6 +4,8 @@
 import type { ClueId } from '../data/clues.js';
 
 export type WordDebaucheeMove =
+  /** Setup, any human seat: who most recently got away with something (a seat id or name). */
+  | { type: 'choose_first_debauchee'; player: string }
   /** Debauchee: keep one of the three dealt words; the other two go under the deck. */
   | { type: 'choose_word'; word: string }
   /** Debauchee: play three of the four clue cards in hand. */
@@ -34,5 +36,5 @@ export type WordDebaucheeMove =
 export type MoveType = WordDebaucheeMove['type'];
 
 export const MOVE_TYPES: readonly MoveType[] = [
-  'choose_word', 'play_clues', 'answer_clue', 'place', 'move', 'check', 'call_reveal', 'burn', 'timer_out', 'reveal',
+  'choose_first_debauchee', 'choose_word', 'play_clues', 'answer_clue', 'place', 'move', 'check', 'call_reveal', 'burn', 'timer_out', 'reveal',
 ];

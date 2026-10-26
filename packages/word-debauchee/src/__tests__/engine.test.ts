@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clue } from '../data/clues.js';
+import { clue, type ClueId } from '../data/clues.js';
 import { cardFor } from '../data/deck.js';
 import { TILE_TOTAL } from '../data/tiles.js';
 import { createState, defaultRounds, payouts } from '../engine/round.js';
@@ -43,6 +43,27 @@ describe('setup', () => {
     expect(createState(seats(3), { seed: 43 }).wordDeck).not.toEqual(a.wordDeck);
   });
 
+  it('asks a human table who the first debauchee is, and draws only for an all-AI table', () => {
+    const asked = createState(seats(3), { seed: 7 });
+    expect(asked.phase).toBe('setup');
+    expect(asked.round).toBeNull();
+    expect(getLegalMoves(asked, 'ben').map((m) => m.move_id)).toEqual(['choose_first_debauchee:ann', 'choose_first_debauchee:ben', 'choose_first_debauchee:cat']);
+    expect(() => play(asked, 'ann', { type: 'choose_word', word: 'x' })).toThrow(/First the table says/);
+    expect(() => play(asked, 'ann', { type: 'choose_first_debauchee', player: 'zed' })).toThrow(/not at the table/);
+    const { state, summary } = play(asked, 'ben', { type: 'choose_first_debauchee', player: 'Cat' });
+    expect(summary).toContain('Cat most recently got away with something');
+    expect(state.phase).toBe('choose_word');
+    expect(state.round!.debauchee).toBe('cat');
+    expect(state.debaucheeOrder).toEqual(['cat', 'ann', 'ben']);
+    expect(() => play(state, 'ben', { type: 'choose_first_debauchee', player: 'ann' })).toThrow(/already been chosen/);
+    const mixed = createState(seats(3, [0]), { seed: 7 });
+    expect(mixed.phase).toBe('setup');
+    expect(() => play(mixed, 'ann', { type: 'choose_first_debauchee', player: 'ben' })).toThrow(/person at the table/);
+    const allAI = createState(seats(3, [0, 1, 2]), { seed: 7 });
+    expect(allAI.phase).toBe('choose_word');
+    expect(start(3, { firstDebauchee: 'Ben' }).round!.debauchee).toBe('ben');
+  });
+
   it('lets the table hold the tiles unless an AI sits down', () => {
     expect(start(3).settings.tiles).toBe('table');
     expect(start(3, {}, [1]).settings.tiles).toBe('server');
@@ -73,6 +94,9 @@ describe('the debauchee picks a word and plays clues', () => {
     expect(() => play(s, 'ann', { type: 'play_clues', cards: [hand[0]!, hand[0]!, hand[0]!] })).toThrow(/not in hand/);
     const numbers = s.numberDeck.length;
     const words = s.wordClueDeck.length;
+    // Cards may be named as printed.
+    const byName = play(s, 'ann', { type: 'play_clues', cards: getLegalMoves(s, 'ann')[0]!.move.type === 'play_clues' ? (getLegalMoves(s, 'ann')[0]!.move as { cards: ClueId[] }).cards.map((c) => clue(c).name as ClueId) : [] });
+    expect(byName.state.round!.played).toHaveLength(3);
     const legal = getLegalMoves(s, 'ann');
     expect(legal.length).toBeGreaterThanOrEqual(1);
     const { state } = play(s, 'ann', legal[0]!.move);

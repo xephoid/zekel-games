@@ -26,6 +26,12 @@ export function getLegalMoves(state: WordDebaucheeState, playerId: string): Lega
   const add = (move_id: string, description: string, move: WordDebaucheeMove): void => {
     out.push({ move_id, description, move });
   };
+  if (state.phase === 'setup') {
+    if (state.seats.find((s) => s.id === playerId)?.ai === false) {
+      for (const s of state.seats) add(`choose_first_debauchee:${s.id}`, `${s.name} is the first debauchee`, { type: 'choose_first_debauchee', player: s.id });
+    }
+    return out;
+  }
   if (state.phase === 'game_over' || !state.round) return out;
   const r = state.round;
   const me = playerId === r.debauchee;

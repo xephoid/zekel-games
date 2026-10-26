@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CLUES, clue, clueDeck, NUMBER_CLUES, WORD_CLUES } from '../data/clues.js';
+import { CLUES, clue, clueByName, clueDeck, NUMBER_CLUES, WORD_CLUES } from '../data/clues.js';
 import { cardFor } from '../data/deck.js';
 import type { Card } from '../data/wordCard.js';
 
@@ -67,5 +67,13 @@ describe('edge answers', () => {
 
   it('rejects an unknown card id', () => {
     expect(() => clue('weight' as never)).toThrow();
+  });
+
+  it('finds a card by its printed name in any case', () => {
+    expect(clueByName('Shortest synonym')?.id).toBe('shortest_synonym');
+    expect(clueByName('half the alphabet')?.id).toBe('half_alphabet');
+    expect(clueByName('LETTERS')?.id).toBe('letters');
+    expect(clueByName('first_vowel')?.id).toBe('first_vowel');
+    expect(clueByName('weight')).toBeUndefined();
   });
 });

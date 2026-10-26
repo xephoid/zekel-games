@@ -351,4 +351,14 @@ both timers, scoring, round and game end), legal moves, views, next step and rul
 sections, 77 tests. Milestone 3 built: the candidate solver (`ai/solver.ts`) and the
 AI debauchee in three tiers (`ai/debauchee.ts`), 89 tests. Milestone 4 built: the AI
 guessers in three tiers (`ai/guesser.ts`), the dispatcher (`ai.ts`) and the harness
-(`scripts/harness.mjs`), 98 tests. Not yet on the server: the MCP seam is milestone 5.
+(`scripts/harness.mjs`), 98 tests. Milestone 5 built: the MCP seam (`index.ts`,
+`choices.ts`, `guidance.ts`, `moveGates.ts`), registered in the root README, the serve
+example, the smoke, `scripts/dev.ts` and `GAMES.md`; the smoke plays an all-AI game
+through the real server. Main was merged in the same day (CLAUDE.md, GAMES.md and the
+per-game `src/dev` convention); checked against `building-a-game.md`: the first
+debauchee is now a setup step a person at the table answers (the server draws only
+for an all-AI table), there is a setup checklist, move gates agree with the legal
+moves (locked by test), clue cards are accepted by their printed names, and the zone
+table sits at the top of `types.ts`. No `src/dev` hooks yet (like Demon Hunter). 109
+tests. Next: milestone 6 (Bribe, Open hand, The House), then a game from the human
+seat through the real server.

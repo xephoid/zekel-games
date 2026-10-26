@@ -1,9 +1,21 @@
 // Word Debauchee — the session state. Canonical design: PLAN.md in this
 // package; rules/rules.md is the rule.
 //
-// HIDDEN from everyone but the debauchee (and so from every other seat's
-// view): the three dealt word cards, the chosen word, the clue hand, and the
-// order of the decks. Everything else is what the table can see.
+// Who holds the truth, and who may see it (building-a-game.md, "Physical-first"):
+//
+// | Zone                         | Truth held by | Seen by                 |
+// |------------------------------|---------------|-------------------------|
+// | Word deck (500 cards)        | Server        | Nobody (order hidden)   |
+// | The three dealt words        | Server        | The debauchee only      |
+// | The chosen word, its card    | Server        | The debauchee only, until the round ends |
+// | Number and word clue decks   | Server        | Nobody (order hidden)   |
+// | The clue hand of four        | Server        | The debauchee only      |
+// | Clues played and answered    | Server        | Everyone                |
+// | Revealed letters, burned words, checks, scores | Server | Everyone     |
+// | Tiles: pool and build area   | The table (`tiles: table`) or the server (`tiles: server`) | Everyone |
+//
+// There is no private human-held zone: the only hidden things are dealt by
+// the server to the debauchee's seat and shown in that seat's view alone.
 
 import type { ClueId } from './data/clues.js';
 
@@ -11,6 +23,7 @@ export type TilesMode = 'table' | 'server';
 export type TimerMode = 'laps' | 'sand';
 
 export type Phase =
+  | 'setup' // a human names the first debauchee
   | 'choose_word' // the debauchee picks one of three dealt words
   | 'play_clues' // the debauchee plays three of four clue cards
   | 'answer_clues' // a human debauchee answers the judgment clues played
@@ -112,7 +125,8 @@ export interface WordDebaucheeState {
   /** HIDDEN. Top of each clue deck first. */
   numberDeck: ClueId[];
   wordClueDeck: ClueId[];
-  /** Seat ids in debauchee order, starting with the first debauchee. */
+  /** Seat ids in debauchee order, starting with the first debauchee. Empty
+   *  during setup, until a human names the first debauchee. */
   debaucheeOrder: string[];
   roundsPlayed: number;
   round: Round | null;

@@ -11,6 +11,7 @@ import type {
   Game,
   GameResult,
   LegalMove,
+  MoveGateStatus,
   NextStep,
   PhysicalSetupStep,
   PlayerChoice,
@@ -18,6 +19,7 @@ import type {
   ReportVoice,
   RuleSection,
   SessionState,
+  SetupStep,
 } from '@zekel/game-kit';
 import { GameError, renderRulesText, seatDisplayName } from '@zekel/game-kit';
 import { chooseAIMove } from './ai.js';
@@ -33,6 +35,7 @@ import { MOVE_TYPES, type WordDebaucheeMove } from './engine/moves.js';
 import { createState, DEFAULT_TILES_PER_REVEAL, MAX_PLAYERS, MIN_CRACK_PAYOUT, MIN_PLAYERS } from './engine/round.js';
 import { SCOREKEEPER_VOICE, SESSION_START_GUIDANCE } from './guidance.js';
 import { getLegalMoves as legal } from './legalMoves.js';
+import { moveGates } from './moveGates.js';
 import { describeNextStep as nextStep } from './nextStep.js';
 import { WORD_DEBAUCHEE_RULE_SECTIONS } from './rulesSections.js';
 import type { Seat, WordDebaucheeOptions, WordDebaucheeState } from './types.js';
@@ -63,6 +66,7 @@ const clueIds = CLUES.map((c) => c.id);
 
 const moveSchema = {
   oneOf: [
+    { type: 'object', required: ['type', 'player'], properties: { type: { const: 'choose_first_debauchee' }, player: { type: 'string', description: 'setup: the first debauchee, by seat id or name' } } },
     { type: 'object', required: ['type', 'word'], properties: { type: { const: 'choose_word' }, word: { type: 'string', description: 'one of the three dealt words (private view)' } } },
     { type: 'object', required: ['type', 'cards'], properties: { type: { const: 'play_clues' }, cards: { type: 'array', minItems: 3, maxItems: 3, items: { enum: clueIds }, description: 'three of the four clue card ids in hand' } } },
     { type: 'object', required: ['type', 'card'], properties: { type: { const: 'answer_clue' }, card: { enum: ['rhymes_with', 'opposite', 'register', 'goes_with'] }, text: { type: 'string', description: 'the answer in your own words; omit to use the card\'s answer' } } },
@@ -98,6 +102,8 @@ function session(state: SessionState<WordDebaucheeState>, gameState: WordDebauch
 function narrate(state: WordDebaucheeState, playerId: string, move: WordDebaucheeMove): string {
   const who = nameOf(state, playerId);
   switch (move.type) {
+    case 'choose_first_debauchee':
+      return `${who} names the first debauchee.`;
     case 'choose_word':
       return `${who} looks at the three cards and keeps one.`;
     case 'play_clues':
@@ -122,6 +128,7 @@ function narrate(state: WordDebaucheeState, playerId: string, move: WordDebauche
 }
 
 const CHOICE_FOR_PHASE: Record<string, string | null> = {
+  setup: 'first-debauchee',
   choose_word: 'which-word',
   play_clues: 'which-clues',
   answer_clues: 'judgment-answer',
@@ -240,6 +247,22 @@ export class WordDebaucheeGame implements Game<WordDebaucheeState, WordDebauchee
     return state.gameState.phase;
   }
 
+  getSetupChecklist(state: SessionState<WordDebaucheeState>): SetupStep[] {
+    if (state.gameState.phase !== 'setup') return [];
+    return [
+      {
+        move_type: 'choose_first_debauchee',
+        count: 1,
+        description: 'The table says who is the first debauchee: whoever most recently got away with something.',
+        ask_human_for: 'who goes first as debauchee (a seat id or name)',
+      },
+    ];
+  }
+
+  describeMoveGates(state: SessionState<WordDebaucheeState>, playerId: string): MoveGateStatus[] {
+    return moveGates(state.gameState, playerId);
+  }
+
   describeNextStep(state: SessionState<WordDebaucheeState>): NextStep | null {
     return nextStep(state.gameState) as NextStep;
   }
@@ -269,11 +292,11 @@ export class WordDebaucheeGame implements Game<WordDebaucheeState, WordDebauchee
 
   getPhysicalSetup(state: SessionState<WordDebaucheeState>): PhysicalSetupStep[] {
     const s = state.gameState;
-    const first = s.round ? nameOf(s, s.round.debauchee) : 'the first debauchee';
+    const first = s.round ? nameOf(s, s.round.debauchee) : 'whoever most recently got away with something';
     if (s.settings.tiles !== 'server') {
       return [
         { kind: 'action', text: `Tip all ${TILE_TOTAL} tiles face up in the middle of the table and spread them so everyone can reach them: the pool. Leave an open space beside it: the build area.` },
-        { kind: 'action', text: `${first} is the first debauchee. The word cards and clue cards are dealt here: ${first} reads their three words in their private view.` },
+        { kind: 'action', text: `${first} is the first debauchee. The word cards and clue cards are dealt here: the debauchee reads their three words in their private view.` },
         ...(s.settings.timer === 'sand' ? [{ kind: 'action' as const, text: 'Have the 30-second sand timer ready; report timer_out whenever it runs out.' }] : []),
       ];
     }

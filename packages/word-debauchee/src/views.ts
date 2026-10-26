@@ -53,6 +53,7 @@ export interface DebaucheeView extends PublicView {
 }
 
 const PHASE_TEXT: Record<Phase, string> = {
+  setup: 'The table is saying who is the first debauchee.',
   choose_word: 'The debauchee is choosing a word from three cards.',
   play_clues: 'The debauchee is choosing three clue cards to play.',
   answer_clues: 'The debauchee is answering the clues played.',

@@ -54,16 +54,6 @@ export function createState(seats: Seat[], options?: WordDebaucheeOptions): Word
   s = numbers.nextSeed;
   const wordClues = shuffle(clueDeck('word'), s);
   s = wordClues.nextSeed;
-  let firstIndex: number;
-  if (options?.firstDebauchee !== undefined) {
-    firstIndex = seats.findIndex((x) => x.id === options.firstDebauchee);
-    if (firstIndex < 0) invalidOptions(`firstDebauchee "${options.firstDebauchee}" is not a seat.`);
-  } else {
-    const p = pick(seats, s);
-    s = p.nextSeed;
-    firstIndex = seats.indexOf(p.value);
-  }
-  const debaucheeOrder = seats.map((_, i) => seats[(firstIndex + i) % seats.length]!.id);
   const state: WordDebaucheeState = {
     seed,
     settings,
@@ -72,16 +62,38 @@ export function createState(seats: Seat[], options?: WordDebaucheeOptions): Word
     wordDeck: words.items,
     numberDeck: numbers.items,
     wordClueDeck: wordClues.items,
-    debaucheeOrder,
+    debaucheeOrder: [],
     roundsPlayed: 0,
     round: null,
     history: [],
-    phase: 'choose_word',
+    phase: 'setup',
     turn: 0,
     winners: null,
   };
-  startRound(state);
+  if (options?.firstDebauchee !== undefined) {
+    const first = resolveSeat(seats, options.firstDebauchee);
+    if (!first) invalidOptions(`firstDebauchee "${options.firstDebauchee}" is not a seat.`);
+    setFirstDebauchee(state, first.id);
+  } else if (seats.every((x) => x.ai)) {
+    // No human to ask: the server draws.
+    setFirstDebauchee(state, pick(seats, s).value.id);
+  }
+  // Otherwise the table says who most recently got away with something (choose_first_debauchee).
   return state;
+}
+
+/** A seat by id or by name, in any case. */
+export function resolveSeat(seats: readonly Seat[], text: string): Seat | undefined {
+  const want = String(text).trim().toLowerCase();
+  return seats.find((x) => x.id.toLowerCase() === want) ?? seats.find((x) => x.name.trim().toLowerCase() === want);
+}
+
+/** Fix the debauchee order from the first debauchee and deal the first round. */
+export function setFirstDebauchee(state: WordDebaucheeState, firstId: string): void {
+  const seats = state.seats;
+  const firstIndex = seats.findIndex((x) => x.id === firstId);
+  state.debaucheeOrder = seats.map((_, i) => seats[(firstIndex + i) % seats.length]!.id);
+  startRound(state);
 }
 
 /** Deal the next round: three word cards and two clue cards from each deck to

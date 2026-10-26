@@ -29,7 +29,38 @@ export interface NextStepShape {
 
 const NO_HINTS = 'Never say, spell or hint at the secret word, and never suggest a letter or a word to a guesser.';
 
+const AI_DOING: Record<string, string> = {
+  choose_word: 'is choosing a word from three cards',
+  play_clues: 'is choosing three clue cards to play',
+  answer_clues: 'is answering the clues played',
+  reveal: 'owes a reveal and is choosing a letter',
+  build: 'is on turn to place a tile, move one, or call "Reveal!"',
+};
+
+function aiStep(state: WordDebaucheeState, active: string, status: 'ai_to_move' | 'human_to_move'): NextStepShape {
+  const r = state.round!;
+  const notes = r.played.map((p) => `${clue(p.card).name}: ${p.answer ?? '(not yet answered)'}`);
+  if (r.revealed.length) notes.push(`Revealed so far: ${r.revealed.join(' ')} (${r.revealed.length}).`);
+  if (state.settings.tiles === 'server' && r.buildArea.length) notes.push(`Build area: ${r.buildArea.join(' / ')}.`);
+  return {
+    status,
+    active_player_id: active,
+    instruction: `${nameOf(state, active)} is an AI seat and ${AI_DOING[state.phase] ?? 'is acting'}. Let the server play it (run_ai_turn), then relay what it did. ${NO_HINTS}`,
+    facts: { phase: state.phase, turn_owner_id: active, progress: { current: r.number, total: state.settings.rounds, of: 'rounds' }, notes },
+  };
+}
+
 export function describeNextStep(state: WordDebaucheeState): NextStepShape {
+  if (state.phase === 'setup') {
+    const active = activeSeatId(state);
+    return {
+      status: 'human_to_move',
+      active_player_id: active,
+      instruction: `Setup: ask the table who most recently got away with something; that player is the first debauchee. Any person at the table may report it; do NOT pick for them. Seats: ${state.seats.map((s) => `${s.name} (${s.id})`).join(', ')}.`,
+      human_response: { ask: 'who is the first debauchee', example: 'Ann goes first', records_as: 'the first debauchee, by seat id or name' },
+      facts: { phase: 'Setup', turn_owner_id: active, notes: ['The next debauchee is always the player to the left.'] },
+    };
+  }
   if (state.phase === 'game_over' || !state.round) {
     const winners = state.winners ?? [];
     return {
@@ -43,6 +74,7 @@ export function describeNextStep(state: WordDebaucheeState): NextStepShape {
   const ai = state.seats.find((s) => s.id === active)?.ai ?? false;
   const status = ai ? 'ai_to_move' : 'human_to_move';
   const deb = nameOf(state, r.debauchee);
+  if (ai) return aiStep(state, active, status);
   const progress = { current: r.number, total: state.settings.rounds, of: 'rounds' };
   const clueLines = r.played.map((p) => `${clue(p.card).name}: ${p.answer ?? '(not yet answered)'}`);
   const revealed = r.revealed.length ? `Revealed so far: ${r.revealed.join(' ')} (${r.revealed.length}).` : 'Nothing revealed yet.';
