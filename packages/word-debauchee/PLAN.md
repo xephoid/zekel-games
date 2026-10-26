@@ -281,6 +281,22 @@ One commit per piece, in this order:
 6. Bribe, Open hand, The House (if ruled in).
 7. Designer playtest; rulings recorded at the top of this file.
 
+## 11a. How the engine does it (milestone 2 notes)
+
+- A "Check!" rides on the tile that completes the word (`check: true` on `place` or
+  `move`), or follows as its own move by the same player before anyone else acts.
+  With the table's own tiles, `check { word }` is trusted as declared.
+- With the table's own tiles the server keeps no guesser turn order: any guesser may
+  check or call a reveal, and the table reports the timer (sand or lap) itself. With
+  server-held tiles the server counts laps and refuses a reported timer under `laps`.
+- A round ends straight into the next deal; the result is in the public view's
+  `last_round` and the summary. The three played clue cards go under their decks at
+  the round's end, the buried fourth as soon as it is buried.
+- Removing a tile from a row closes the gap; an emptied row disappears.
+- Answers to the four judgment clues: a human debauchee answers in their own words or
+  takes the card's answer; the word itself is refused, and a rhyme on the synonym list
+  is refused. An AI debauchee answers from the card.
+
 ## 12. Status
 
 2026-10-26: plan written and Q1–Q11 ruled (see the top). Milestone 1 built: package
@@ -288,4 +304,6 @@ scaffold, `rules/` (the docs moved here), `words.csv` with the four judgment col
 (a generated first pass: the rhymes were picked by ear, the registers lean
 "everyday" with no slang, and ANGRY→hangry, NERVOUS→service are loose), the
 `words.csv` → `words.ts` / `words.md` pipeline, clue and tile data, data tests. Q12
-open.
+open. Milestone 2 built: the engine (deal, clues, build area, reveals, checks, burns,
+both timers, scoring, round and game end), legal moves, views, next step and rules
+sections, 77 tests. Not yet on the server: the MCP seam is milestone 5.
