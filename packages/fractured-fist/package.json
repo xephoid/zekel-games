@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@zekel/game-kit": "^0.1.0",
-    "@zekel/dev": "^0.1.1"
+    "@zekel/dev": "^0.1.2"
   },
   "engines": {
     "node": ">=22.13.0"
