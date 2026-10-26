@@ -362,3 +362,33 @@ moves (locked by test), clue cards are accepted by their printed names, and the 
 table sits at the top of `types.ts`. No `src/dev` hooks yet (like Demon Hunter). 109
 tests. Next: milestone 6 (Bribe, Open hand, The House), then a game from the human
 seat through the real server.
+
+## 13. Against the runbooks (2026-10-26)
+
+Checked after merging main, which moved to `@zekel/dev` 0.1.2 (the runbooks ship
+with it: `node_modules/@zekel/dev/docs/README.md` has the order). The tool checks
+run today: `pnpm harness` 0 errored games at 2, 3, 5 and 8 players (n=30 each),
+`pnpm human-seat-sweep` 35 of 35 runs clean, `pnpm check-summaries` no problems,
+`pnpm choice-catalog` generates 15 rows. The gaps are in the records and the
+later steps, step by step:
+
+| Step | Record | Have | Missing |
+|---|---|---|---|
+| Plan | `PORT-PLAN.md` | this file: scope, zones, moves, data, AI, milestones, Q1–Q12 with the rulings | the file name; a feature inventory with one row per printed rule and its page; the second, independent enumeration from the rules alone (a rulebook-only game needs it); the rules encoding (`src/dev/verify/`: pinned rules text + `encoding.ts`, `verify-lint` clean); a triaged risk register and divergence ledger; the review block recording Zeke's sign-off on coverage (the Q1–Q11 rulings stand in) |
+| Build | `PORT-NOTES.md` | zone table in `types.ts`; data tests; rules sections and move gates; setup checklist, next step, scoreboard, physical setup, guidance, reference data; printed names accepted; tiles conserved (engine test); smoke, harness and tests green | the file; the three printed variants (Bribe, Open hand, The House: milestone 6) |
+| Post-port | `POST-PORT.md` | sweep, summaries and catalog clean; no-leak tests; every choice owned by a player except the round count | the file; the two-pass rulebook walk (rule → code → test); a test that rebuilds the table from the views; a game walked from a human seat; the grep sweep for stubs; the schema note |
+| AI | `AI-NOTES.md` | three tiers for both roles, seeded, deterministic (tests); `scripts/harness.mjs` per tier pairing | the file; a written stronger-tier check (hard guessers against medium guessers head to head); no strategy archetypes or MCTS; the AI never burns a word or reports the sand (both are table reports) and rarely moves a tile: an open AI gap; the catalog's AI-policy column |
+| Desync | a `GAMES.md` cell | — | not run (needs Ollama); likely needs `src/dev` desync hooks for how a person says a tile move; the table-tiles mode is the real case |
+| Relay | `RELAY-NOTES.md` | — | not run |
+| Balance | `BALANCE.md` | `getBalanceAxes`: tiers, timer, players | `src/dev/index.ts` with `analysis.isDeadTurn` (today every turn reads as dead) and `leaderScalar`; sweeps for tiers and timer (the harness reports both unexercised); the file |
+| Integration | `INTEGRATION-NOTES.md` | — | `STRATEGY-GUIDE.md`; a LibreChat run; the file |
+| Viz (optional) | `VIZ-NOTES.md` | — | nothing started; no `webAssetsDir` |
+
+And, outside the steps: a real game played by a person with a real chat
+assistant, with the date and model written down.
+
+In the runbooks' order the next work is: milestone 6 (the variants, build
+scope), then `PORT-NOTES.md` and the plan's missing sections, then the rules
+encoding and the second enumeration, then the post-port walk from a human seat
+and `POST-PORT.md`, then `AI-NOTES.md` with the `src/dev` hooks, then the three
+harness steps and integration.
