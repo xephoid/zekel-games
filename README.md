@@ -14,6 +14,8 @@ Zekel Games' own board games, as game modules for the [zekel MCP server](https:/
 
 Each package holds one game's rules, its AI opponents and its tests. A game depends only on `@zekel/game-kit`, the interface every zekel game implements. The rules live here and nowhere else: the server knows none of them.
 
+[`GAMES.md`](./GAMES.md) shows how far each game has got through the checks.
+
 ## Serving the games
 
 Register the games you want on `@zekel/mcp` and start it. `examples/serve.mjs` does this for all seven:

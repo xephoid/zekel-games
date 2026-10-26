@@ -79,6 +79,8 @@ at [zekel-mcp/packages/dev/docs](https://github.com/xephoid/zekel-mcp/tree/main/
   finished mostly reports problems the earlier step would have fixed.
 
 A game is done only when every step except the optional one has passed.
+`GAMES.md` (repo root) shows where each game stands, step by step. Update
+its row when you run a step.
 
 ## Rules for this repo
 
