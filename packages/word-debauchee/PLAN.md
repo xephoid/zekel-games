@@ -246,6 +246,15 @@ hides among many similar cards. Reveals per crack run 2.5 to 4.6, far above the 
 notes' "0–1 for a ●○○ word", which assumed a 30-second sand timer at a bigger table;
 under laps with two or three guessers a 5-letter synonym needs two laps at best.
 
+The variants, 100 rounds per pairing, 2 guessers (`--bribe`, `--open-hand`),
+2026-10-26: under **Bribe** the guessers crack far more (hard against hard: 24 %
+stumped, against 61–80 % without), since a clue from the deck narrows the card list
+more than a letter does, and each costs the same point. Under **Open hand** a hard
+debauchee picking from the whole set is nearly uncrackable (96 % stumped against hard
+guessers, 77 % against medium) while an easy one is cracked as usual; the kind variant
+for new players is kind only when the debauchee is new too. Both are AI behaviour, for
+the playtest to weigh.
+
 ## 8. MCP surface
 
 - `createSession`: 2–8 players; options `seed`, `tiles` (`table` | `server`), `timer`
