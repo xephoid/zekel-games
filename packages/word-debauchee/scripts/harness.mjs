@@ -3,7 +3,7 @@
 // difficulty. This shows what the AI does, not whether the game is balanced;
 // balance is the designer's playtest. Build first:
 //   pnpm --filter @zekel/word-debauchee build:words && pnpm build
-//   node packages/word-debauchee/scripts/harness.mjs [rounds-per-pairing] [guessers]
+//   node packages/word-debauchee/scripts/harness.mjs [rounds-per-pairing] [guessers] [--bribe] [--open-hand]
 
 import { chooseAIMove } from '../dist/ai.js';
 import { cardFor } from '../dist/data/deck.js';
@@ -11,14 +11,19 @@ import { applyMove } from '../dist/engine/apply.js';
 import { activeSeatId } from '../dist/engine/helpers.js';
 import { createState } from '../dist/engine/round.js';
 
-const ROUNDS = Number(process.argv[2] ?? 200);
-const GUESSERS = Number(process.argv[3] ?? 2);
+const args = process.argv.slice(2);
+const flags = new Set(args.filter((a) => a.startsWith('--')));
+const numbers = args.filter((a) => !a.startsWith('--'));
+const ROUNDS = Number(numbers[0] ?? 200);
+const GUESSERS = Number(numbers[1] ?? 2);
+// Variants: --bribe (a clue instead of a letter on "Reveal!"), --open-hand (any three clues from the set).
+const VARIANTS = { bribe: flags.has('--bribe'), openHand: flags.has('--open-hand') };
 const TIERS = ['easy', 'medium', 'hard'];
 
 function playRounds(debTier, guessTier, rounds, seed) {
   const seats = [{ id: 'd', name: 'Debauchee', ai: true }, ...Array.from({ length: GUESSERS }, (_, i) => ({ id: `g${i}`, name: `Guesser ${i + 1}`, ai: true }))];
   const results = [];
-  let s = createState(seats, { seed, firstDebauchee: 'd', rounds });
+  let s = createState(seats, { seed, firstDebauchee: 'd', rounds, ...VARIANTS });
   // The same seat stays debauchee: rotate by re-dealing with firstDebauchee pinned each round.
   let guard = 0;
   while (s.phase !== 'game_over') {
@@ -41,7 +46,7 @@ function fmt(n, d = 2) {
   return Number.isFinite(n) ? n.toFixed(d) : '-';
 }
 
-console.log(`Word Debauchee harness: ${ROUNDS} debauchee rounds per pairing, ${GUESSERS} AI guesser(s), laps timer.\n`);
+console.log(`Word Debauchee harness: ${ROUNDS} debauchee rounds per pairing, ${GUESSERS} AI guesser(s), laps timer${VARIANTS.bribe ? ', Bribe' : ''}${VARIANTS.openHand ? ', Open hand' : ''}.\n`);
 console.log('debauchee  guessers   rounds  cracked  stump%   reveals/crack  guesser pay/crack  debauchee pay/round');
 const byDifficulty = new Map();
 for (const d of TIERS) {

@@ -2,7 +2,7 @@
 // plain-words description. Fill-in moves (a judgment answer, a declared
 // word, a burned word) carry a template.
 
-import { clue, type ClueId } from './data/clues.js';
+import { CLUES, clue, type ClueId } from './data/clues.js';
 import { LETTERS } from './data/tiles.js';
 import type { WordDebaucheeMove } from './engine/moves.js';
 import { currentGuesser, isGuesser, nameOf, unrevealedLetters } from './engine/helpers.js';
@@ -44,6 +44,15 @@ export function getLegalMoves(state: WordDebaucheeState, playerId: string): Lega
 
     case 'play_clues': {
       if (!me) return out;
+      if (state.settings.openHand) {
+        // Any three of the 22 cards with a number clue among them: 1,320 combinations, so a template.
+        const names = (kind: 'number' | 'word') => CLUES.filter((c) => c.kind === kind).map((c) => c.name).join(', ');
+        add('play_clues', `Play any three different clue cards, at least one a number clue. Number clues: ${names('number')}. Word clues: ${names('word')}.`, {
+          type: 'play_clues',
+          cards: ['<a number clue>', '<any clue>', '<any clue>'] as unknown as ClueId[],
+        });
+        return out;
+      }
       const seen = new Set<string>();
       for (const combo of combinations([...r.hand.keys()], 3)) {
         const cards = combo.map((i) => r.hand[i]!) as ClueId[];
@@ -59,13 +68,16 @@ export function getLegalMoves(state: WordDebaucheeState, playerId: string): Lega
     }
 
     case 'answer_clues':
-      if (!me) return out;
-      for (const p of r.played) {
-        if (p.answer !== null) continue;
-        const c = clue(p.card);
-        add(`answer_clue:${p.card}:card`, `${c.name}: answer with the card's own answer`, { type: 'answer_clue', card: p.card });
-        add(`answer_clue:${p.card}:own`, `${c.name}: answer in your own words (${c.prompt})`, { type: 'answer_clue', card: p.card, text: '<your answer>' });
+      if (me) {
+        for (const p of r.played) {
+          if (p.answer !== null) continue;
+          const c = clue(p.card);
+          add(`answer_clue:${p.card}:card`, `${c.name}: answer with the card's own answer`, { type: 'answer_clue', card: p.card });
+          add(`answer_clue:${p.card}:own`, `${c.name}: answer in your own words (${c.prompt})`, { type: 'answer_clue', card: p.card, text: '<your answer>' });
+        }
       }
+      // A bribed clue is answered mid-round, while the guessers are still talking.
+      if (r.bribed.length) add('burn', 'A guesser said a word aloud: burn it for this round', { type: 'burn', word: '<word>' });
       return out;
 
     case 'reveal':
@@ -74,9 +86,15 @@ export function getLegalMoves(state: WordDebaucheeState, playerId: string): Lega
 
     case 'build': {
       if (isGuesser(state, playerId)) {
+        const bribes = (): void => {
+          if (!state.settings.bribe) return;
+          add('call_reveal:number', `Reveal! — but take a number clue instead of a letter (Bribe; counts as a reveal)`, { type: 'call_reveal', clue: 'number' });
+          add('call_reveal:word', `Reveal! — but take a word clue instead of a letter (Bribe; counts as a reveal)`, { type: 'call_reveal', clue: 'word' });
+        };
         if (!server) {
           add('check', 'Check! — say the word on the table', { type: 'check', word: '<word>' });
           add('call_reveal', `Reveal! — ask ${nameOf(state, r.debauchee)} for a letter instead of more time`, { type: 'call_reveal' });
+          bribes();
         } else if (currentGuesser(state) === playerId) {
           for (const l of LETTERS) {
             if ((r.pool[l] ?? 0) <= 0) continue;
@@ -89,6 +107,7 @@ export function getLegalMoves(state: WordDebaucheeState, playerId: string): Lega
             add(`move:${row}`, `Move a tile of ${text} (row ${row}: set index, and to_row/to_index or leave to_row out to return it)`, { type: 'move', row, index: 0 });
           });
           add('call_reveal', `Reveal! — ask ${nameOf(state, r.debauchee)} for a letter instead of acting`, { type: 'call_reveal' });
+          bribes();
         }
         if (server && r.lastTouched && r.lastTouched.by === playerId) {
           const row = r.lastTouched.row;

@@ -29,6 +29,10 @@ export interface PublicView {
     clues: ClueView[];
     revealed: string[];
     revealed_count: number;
+    /** Bribe variant: clue cards taken instead of letters; each counts as a reveal. */
+    bribed: ClueId[];
+    /** Letters revealed plus bribed clues: what the crack payout is cut by. */
+    reveals_for_scoring: number;
     burned: string[];
     checks: CheckRecord[];
     /** `server` tiles only. */
@@ -79,6 +83,8 @@ export function getPublicView(state: WordDebaucheeState): PublicView {
           clues: r.played.map((p) => ({ card: p.card, name: clue(p.card).name, asks: clue(p.card).prompt, answer: p.answer })),
           revealed: [...r.revealed],
           revealed_count: r.revealed.length,
+          bribed: [...r.bribed],
+          reveals_for_scoring: r.revealed.length + r.bribed.length,
           burned: [...r.burned],
           checks: r.checks.map((c) => ({ ...c })),
           ...(server

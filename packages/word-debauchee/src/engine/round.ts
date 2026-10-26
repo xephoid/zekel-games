@@ -26,18 +26,33 @@ function invalidOptions(message: string): never {
   throw new RuleError('INVALID_OPTIONS', message);
 }
 
+function flag(options: WordDebaucheeOptions | undefined, key: 'bribe' | 'openHand' | 'house'): boolean {
+  const v = options?.[key];
+  if (v !== undefined && typeof v !== 'boolean') invalidOptions(`${key} must be true or false.`);
+  return v === true;
+}
+
 export function settingsFrom(seats: Seat[], options: WordDebaucheeOptions | undefined): Settings {
-  const anyAI = seats.some((s) => s.ai);
-  const tiles = options?.tiles ?? (anyAI ? 'server' : 'table');
+  const bribe = flag(options, 'bribe');
+  const openHand = flag(options, 'openHand');
+  let house: string | null = null;
+  if (flag(options, 'house')) {
+    const ai = seats.find((s) => s.ai);
+    if (!ai) invalidOptions('The House needs an AI seat to be the house.');
+    house = ai.id;
+  }
+  // An AI guesser needs the server to hold the tiles; the house only ever listens.
+  const aiGuesser = seats.some((s) => s.ai && s.id !== house);
+  const tiles = options?.tiles ?? (aiGuesser ? 'server' : 'table');
   if (tiles !== 'table' && tiles !== 'server') invalidOptions(`tiles must be "table" or "server", not "${String(tiles)}".`);
-  if (anyAI && tiles === 'table') invalidOptions('An AI seat needs the server to hold the tiles: set tiles to "server" or leave it out.');
+  if (aiGuesser && tiles === 'table') invalidOptions('An AI seat that guesses needs the server to hold the tiles: set tiles to "server" or leave it out.');
   const timer = options?.timer ?? 'laps';
   if (timer !== 'laps' && timer !== 'sand') invalidOptions(`timer must be "laps" or "sand", not "${String(timer)}".`);
   const tilesPerReveal = options?.tilesPerReveal ?? DEFAULT_TILES_PER_REVEAL;
   if (!Number.isInteger(tilesPerReveal) || tilesPerReveal < 1) invalidOptions('tilesPerReveal must be a whole number of at least 1.');
   const rounds = options?.rounds ?? defaultRounds(seats.length);
   if (!Number.isInteger(rounds) || rounds < 1) invalidOptions('rounds must be a whole number of at least 1.');
-  return { tiles, timer, tilesPerReveal, rounds };
+  return { tiles, timer, tilesPerReveal, rounds, bribe, openHand, house };
 }
 
 export function createState(seats: Seat[], options?: WordDebaucheeOptions): WordDebaucheeState {
@@ -70,7 +85,14 @@ export function createState(seats: Seat[], options?: WordDebaucheeOptions): Word
     turn: 0,
     winners: null,
   };
-  if (options?.firstDebauchee !== undefined) {
+  if (settings.house) {
+    // The House: the house is the debauchee every round; nobody to ask.
+    if (options?.firstDebauchee !== undefined && resolveSeat(seats, options.firstDebauchee)?.id !== settings.house) {
+      invalidOptions('Under The House the house is the debauchee every round; leave firstDebauchee out.');
+    }
+    state.debaucheeOrder = [settings.house];
+    startRound(state);
+  } else if (options?.firstDebauchee !== undefined) {
     const first = resolveSeat(seats, options.firstDebauchee);
     if (!first) invalidOptions(`firstDebauchee "${options.firstDebauchee}" is not a seat.`);
     setFirstDebauchee(state, first.id);
@@ -100,12 +122,13 @@ export function setFirstDebauchee(state: WordDebaucheeState, firstId: string): v
  *  the next debauchee; the guessers follow clockwise from the debauchee's left. */
 export function startRound(state: WordDebaucheeState): void {
   const n = state.seats.length;
-  const debauchee = state.debaucheeOrder[state.roundsPlayed % n]!;
+  const debauchee = state.debaucheeOrder[state.roundsPlayed % state.debaucheeOrder.length]!;
   const at = state.seats.findIndex((x) => x.id === debauchee);
   const guessers: string[] = [];
   for (let i = 1; i < n; i++) guessers.push(state.seats[(at + i) % n]!.id);
   const dealtWords = state.wordDeck.splice(0, WORDS_DEALT);
-  const hand: ClueId[] = [...state.numberDeck.splice(0, CLUES_DEALT_PER_DECK), ...state.wordClueDeck.splice(0, CLUES_DEALT_PER_DECK)];
+  // Open hand: no deal; the debauchee takes any three cards from the whole set.
+  const hand: ClueId[] = state.settings.openHand ? [] : [...state.numberDeck.splice(0, CLUES_DEALT_PER_DECK), ...state.wordClueDeck.splice(0, CLUES_DEALT_PER_DECK)];
   const round: Round = {
     number: state.roundsPlayed + 1,
     debauchee,
@@ -114,6 +137,7 @@ export function startRound(state: WordDebaucheeState): void {
     hand,
     played: [],
     revealed: [],
+    bribed: [],
     burned: [],
     checks: [],
     guessers,
@@ -129,7 +153,7 @@ export function startRound(state: WordDebaucheeState): void {
 
 /** The scoring table. Stumped: the debauchee scores the word's letters.
  *  Cracked: every guesser scores the synonym's letters minus the tiles
- *  revealed, at least 1; the debauchee scores nothing. */
+ *  revealed (a bribed clue counts as one), at least 1; the debauchee scores nothing. */
 export function payouts(outcome: Outcome, word: string, synonym: string | null, revealed: number, debauchee: string, guessers: readonly string[]): Record<string, number> {
   const out: Record<string, number> = {};
   if (outcome === 'stumped') {
@@ -155,7 +179,8 @@ export function endRound(state: WordDebaucheeState, outcome: Outcome, synonym: s
     outcome,
     synonym,
     revealed: r.revealed.length,
-    payouts: payouts(outcome, word, synonym, r.revealed.length, r.debauchee, r.guessers),
+    bribes: r.bribed.length,
+    payouts: payouts(outcome, word, synonym, r.revealed.length + r.bribed.length, r.debauchee, r.guessers),
   };
   for (const [id, n] of Object.entries(result.payouts)) state.scores[id] = (state.scores[id] ?? 0) + n;
   state.history.push(result);
@@ -169,26 +194,56 @@ export function endRound(state: WordDebaucheeState, outcome: Outcome, synonym: s
     lines.push(`The last letter is down: the word was ${word}. ${guessersNamed} ${r.guessers.length === 1 ? 'is' : 'are'} stumped. ${nameOf(state, r.debauchee)} scores ${word.length}.`);
   } else {
     const each = result.payouts[r.guessers[0]!]!;
+    const bribes = r.bribed.length ? ` and ${r.bribed.length} bribed clue${r.bribed.length === 1 ? '' : 's'}` : '';
     lines.push(
-      `Cracked with ${synonym!.toUpperCase()} after ${r.revealed.length} reveal${r.revealed.length === 1 ? '' : 's'}: ` +
+      `Cracked with ${synonym!.toUpperCase()} after ${r.revealed.length} reveal${r.revealed.length === 1 ? '' : 's'}${bribes}: ` +
         `${guessersNamed} score${r.guessers.length === 1 ? 's' : ''} ${each} each. The word was ${word}. ${nameOf(state, r.debauchee)} scores 0.`,
     );
   }
-  lines.push(`Scores: ${state.seats.map((x) => `${x.name} ${state.scores[x.id]}`).join(', ')}.`);
+  lines.push(scoreLine(state));
 
   if (state.roundsPlayed >= state.settings.rounds) {
     state.round = null;
     state.phase = 'game_over';
-    const best = Math.max(...Object.values(state.scores));
-    state.winners = state.seats.filter((x) => state.scores[x.id] === best).map((x) => x.id);
-    lines.push(
-      state.winners.length === 1
-        ? `Game over. ${nameOf(state, state.winners[0]!)} wins with ${best}.`
-        : `Game over. ${listNames(state.winners.map((w) => nameOf(state, w)))} share the win with ${best}.`,
-    );
+    state.winners = winners(state);
+    const best = state.scores[state.winners[0]!]!;
+    if (state.settings.house) {
+      const house = nameOf(state, state.settings.house);
+      const team = state.scores[state.seats.find((x) => x.id !== state.settings.house)!.id]!;
+      const houseScore = state.scores[state.settings.house]!;
+      lines.push(
+        houseScore > team ? `Game over. The house wins, ${houseScore} to ${team}.`
+          : team > houseScore ? `Game over. The table beats ${house}, ${team} to ${houseScore}.`
+            : `Game over. The table and the house tie at ${team}.`,
+      );
+    } else {
+      lines.push(
+        state.winners.length === 1
+          ? `Game over. ${nameOf(state, state.winners[0]!)} wins with ${best}.`
+          : `Game over. ${listNames(state.winners.map((w) => nameOf(state, w)))} share the win with ${best}.`,
+      );
+    }
   } else {
     startRound(state);
-    lines.push(`Every tile goes back to the pool. ${nameOf(state, state.round!.debauchee)} is the next debauchee and draws three word cards.`);
+    const next = nameOf(state, state.round!.debauchee);
+    lines.push(`Every tile goes back to the pool. ${state.settings.house ? `${next} is the house and stays debauchee; they draw` : `${next} is the next debauchee and draws`} three word cards.`);
   }
   return lines;
+}
+
+/** "Scores: Ann 4, Ben 2, Cat 2." Under The House: the house against the table. */
+export function scoreLine(state: WordDebaucheeState): string {
+  const house = state.settings.house;
+  if (house) {
+    const team = state.seats.find((x) => x.id !== house)!;
+    return `Scores: the house (${nameOf(state, house)}) ${state.scores[house]}, the table ${state.scores[team.id]}.`;
+  }
+  return `Scores: ${state.seats.map((x) => `${x.name} ${state.scores[x.id]}`).join(', ')}.`;
+}
+
+/** Highest total wins; ties share. Under The House the people are one team:
+ *  all of them win, or the house does, or everyone shares a tie. */
+export function winners(state: WordDebaucheeState): string[] {
+  const best = Math.max(...Object.values(state.scores));
+  return state.seats.filter((x) => state.scores[x.id] === best).map((x) => x.id);
 }

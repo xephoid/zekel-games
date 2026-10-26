@@ -4,6 +4,7 @@
 
 import { clue } from './data/clues.js';
 import { activeSeatId, currentGuesser, nameOf, turnsPerReveal } from './engine/helpers.js';
+import { CLUES_PLAYED, scoreLine } from './engine/round.js';
 import type { WordDebaucheeState } from './types.js';
 
 export interface HumanResponseShape {
@@ -63,10 +64,14 @@ export function describeNextStep(state: WordDebaucheeState): NextStepShape {
   }
   if (state.phase === 'game_over' || !state.round) {
     const winners = state.winners ?? [];
+    const house = state.settings.house;
+    const verdict = house
+      ? winners.includes(house) && winners.length === 1 ? 'The house wins.' : winners.includes(house) ? 'The table and the house tie.' : 'The table beats the house.'
+      : winners.length === 1 ? `${nameOf(state, winners[0]!)} wins.` : `${winners.map((w) => nameOf(state, w)).join(' and ')} share the win.`;
     return {
       status: 'game_over',
       active_player_id: null,
-      instruction: `The game is over. ${winners.length === 1 ? `${nameOf(state, winners[0]!)} wins.` : `${winners.map((w) => nameOf(state, w)).join(' and ')} share the win.`} Final scores: ${state.seats.map((s) => `${s.name} ${state.scores[s.id]}`).join(', ')}.`,
+      instruction: `The game is over. ${verdict} Final ${scoreLine(state).replace(/^Scores/, 'scores')}`,
     };
   }
   const r = state.round;
@@ -76,9 +81,12 @@ export function describeNextStep(state: WordDebaucheeState): NextStepShape {
   const deb = nameOf(state, r.debauchee);
   if (ai) return aiStep(state, active, status);
   const progress = { current: r.number, total: state.settings.rounds, of: 'rounds' };
-  const clueLines = r.played.map((p) => `${clue(p.card).name}: ${p.answer ?? '(not yet answered)'}`);
-  const revealed = r.revealed.length ? `Revealed so far: ${r.revealed.join(' ')} (${r.revealed.length}).` : 'Nothing revealed yet.';
+  // The first three played were the debauchee's; anything after was bribed.
+  const clueLines = r.played.map((p, i) => `${clue(p.card).name}: ${p.answer ?? '(not yet answered)'}${i >= CLUES_PLAYED ? ' (bribed)' : ''}`);
+  const bribes = r.bribed.length ? ` Bribed clues: ${r.bribed.length}, each counting as a reveal.` : '';
+  const revealed = (r.revealed.length ? `Revealed so far: ${r.revealed.join(' ')} (${r.revealed.length}).` : 'Nothing revealed yet.') + bribes;
   const server = state.settings.tiles === 'server';
+  const bribeTalk = state.settings.bribe ? ' Under Bribe, a guesser who calls "Reveal!" may take the top card of either clue deck instead of a letter; it counts as a reveal.' : '';
 
   switch (state.phase) {
     case 'choose_word':
@@ -89,6 +97,14 @@ export function describeNextStep(state: WordDebaucheeState): NextStepShape {
         facts: { phase: 'Choosing the word', turn_owner_id: active, progress, notes: ['The other two cards go under the deck.'] },
       };
     case 'play_clues':
+      if (state.settings.openHand) {
+        return {
+          status, active_player_id: active,
+          instruction: `Open hand: ${deb} chooses any three different clue cards from the whole set, at least one of them a number clue, and lays them face up. Ask which three (the card names are in get_legal_moves). The server answers the number and fact clues from the card. ${NO_HINTS}`,
+          human_response: { ask: 'which three clue cards to play', example: 'Letters, Syllables and Category', records_as: 'the three cards played', private: true },
+          facts: { phase: 'Playing clues', turn_owner_id: active, progress, notes: ['Open hand: no deal; any three cards, one a number clue.'] },
+        };
+      }
       return {
         status, active_player_id: active,
         instruction: `${deb} holds two number clues and two word clues (private view) and plays three of them face up. Ask which three; the fourth is buried. The server answers the number and fact clues from the card. ${NO_HINTS}`,
@@ -120,7 +136,7 @@ export function describeNextStep(state: WordDebaucheeState): NextStepShape {
         const who = nameOf(state, currentGuesser(state));
         return {
           status, active_player_id: active,
-          instruction: `${who}'s turn to act: place one tile from the pool into the build area, move one tile, or call "Reveal!". A tile that completes a word may be checked in the same action. Guessers talk freely but never say a word they want spelled (any word said aloud is burned: report it) and never suggest a letter. ${NO_HINTS}`,
+          instruction: `${who}'s turn to act: place one tile from the pool into the build area, move one tile, or call "Reveal!". A tile that completes a word may be checked in the same action. Guessers talk freely but never say a word they want spelled (any word said aloud is burned: report it) and never suggest a letter.${bribeTalk} ${NO_HINTS}`,
           human_response: { ask: 'one action: a tile to place (which letter, which row), a tile to move, or "Reveal!"', example: 'I put a D on the end of GLA and check', records_as: 'one tile placed or moved, with a check if called, or a reveal called' },
           facts: { phase: 'Building', turn_owner_id: active, progress, notes },
         };
@@ -128,7 +144,7 @@ export function describeNextStep(state: WordDebaucheeState): NextStepShape {
       const timer = state.settings.timer === 'sand' ? 'When the sand runs out, report it' : 'When the turn comes back round to the first guesser, report it';
       return {
         status, active_player_id: active,
-        instruction: `The guessers build with the table's tiles, one tile per turn, talking but never saying a word they want spelled. Report only: a "Check!" with the word on the table (the server answers yes or no), a "Reveal!" called by a guesser on their turn, any word a guesser says aloud (it is burned), and the timer. ${timer}: ${deb} then reveals a letter. ${NO_HINTS}`,
+        instruction: `The guessers build with the table's tiles, one tile per turn, talking but never saying a word they want spelled. Report only: a "Check!" with the word on the table (the server answers yes or no), a "Reveal!" called by a guesser on their turn, any word a guesser says aloud (it is burned), and the timer. ${timer}: ${deb} then reveals a letter.${bribeTalk} ${NO_HINTS}`,
         human_response: { ask: 'what happened at the table: a check, a reveal called, a word said aloud, or the timer', example: 'Check: GLAD', records_as: 'the check, reveal, burned word or timer' },
         facts: { phase: 'Building', turn_owner_id: active, progress, notes },
       };

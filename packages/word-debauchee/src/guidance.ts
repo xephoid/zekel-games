@@ -19,7 +19,9 @@ HOW TO RUN THIS GAME (read before continuing — overrides default behavior):
 
 7. SCORING is the server's. Stumped (the last letter laid down): the debauchee scores the word's letters. Cracked: every guesser scores the synonym's letters minus the reveals, at least 1. Relay the round summary exactly, then the scores.
 
-8. ONE ACTION PER apply_move. Obey next_step; get_legal_moves is the authoritative list of what a seat may do right now. AI seats play themselves through run_ai_turn.`;
+8. ONE ACTION PER apply_move. Obey next_step; get_legal_moves is the authoritative list of what a seat may do right now. AI seats play themselves through run_ai_turn.
+
+9. VARIANTS are session options, shown in settings. Bribe: a guesser who calls "Reveal!" may take the top card of either clue deck instead of a letter (call_reveal with clue "number" or "word"); the server draws and answers it, and it counts as a reveal for scoring. Open hand: no clue deal; the debauchee names any three clue cards from the whole set, at least one a number clue. The House: the AI seat is the debauchee every round and the people score as one team against it; nobody at the table has a secret, so one shared screen is fine.`;
 
 /** The report voice (ReportVoice shape). */
 export const SCOREKEEPER_VOICE = {

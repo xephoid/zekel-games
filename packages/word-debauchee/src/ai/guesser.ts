@@ -5,6 +5,7 @@
 // that completes it, and decides when a reveal is worth the point it costs.
 // It never reads the secret word or the debauchee's hand.
 
+import { CLUES, clue, type ClueKind } from '../data/clues.js';
 import { LETTERS } from '../data/tiles.js';
 import { letterCounts, unrevealedLetters } from '../engine/helpers.js';
 import type { WordDebaucheeMove } from '../engine/moves.js';
@@ -17,6 +18,8 @@ import { candidates, crackChance, heard, synonymWeights, type HeardClue } from '
 export const MEDIUM_REVEAL_THRESHOLD = 40;
 /** Hard estimates the next reveal over at most this many candidate cards. */
 const REVEAL_SAMPLE = 30;
+/** Hard estimates a bribed clue (every card of a deck, per candidate) over at most this many. */
+const BRIBE_SAMPLE = 12;
 
 export interface Target {
   /** Upper case, as the tiles spell it. */
@@ -84,7 +87,8 @@ function revealsBefore(state: WordDebaucheeState, t: Target): number {
  *  so far and still to come, at least 1. `extraReveals` prices a reveal
  *  called now. */
 function payoutIf(state: WordDebaucheeState, t: Target, extraReveals = 0): number {
-  return Math.max(1, t.word.length - state.round!.revealed.length - extraReveals - revealsBefore(state, t));
+  const r = state.round!;
+  return Math.max(1, t.word.length - r.revealed.length - r.bribed.length - extraReveals - revealsBefore(state, t));
 }
 
 /** A shared synonym already complete on the table costs one action to check,
@@ -120,28 +124,73 @@ function completeRow(r: Round, word: string): number {
   return r.buildArea.indexOf(word);
 }
 
-/** Hard: is a reveal worth its point? Compare the best target's expected
- *  payout now with the expectation after one more letter (estimated over a
- *  sample of candidate cards, each revealing what a careful debauchee would). */
-function revealPays(state: WordDebaucheeState, clues: readonly HeardClue[], best: Target | undefined, count: number): boolean {
+/** The expected value of the best target after one more thing is known:
+ *  the chance it scores times what it would pay, one reveal dearer. */
+function valueAfter(state: WordDebaucheeState, clues: readonly HeardClue[], revealed: readonly string[]): number {
   const r = state.round!;
-  if (best && best.progress > 0) return false;
-  const now = best ? (best.weight / count) * payoutIf(state, best) : 0;
+  const next = crackChance(clues, revealed);
+  if (!next.target) return 0;
+  const word = next.target.toUpperCase();
+  const prefix = prefixRow(r, word);
+  const target: Target = { word, weight: 0, row: prefix?.row ?? null, progress: prefix?.length ?? 0, complete: r.buildArea.includes(word) };
+  return next.chance * payoutIf(state, target, 1);
+}
+
+/** What a letter reveal is expected to be worth, over a sample of candidate
+ *  cards, each revealing what a careful debauchee would. */
+function letterValue(state: WordDebaucheeState, clues: readonly HeardClue[]): number {
+  const r = state.round!;
   const cands = candidates(clues, r.revealed).slice(0, REVEAL_SAMPLE);
-  if (cands.length === 0) return false;
+  if (cands.length === 0) return 0;
   let after = 0;
   for (const c of cands) {
     const left = unrevealedLetters({ ...r, word: c.word });
     if (left.size === 0) continue;
-    const next = crackChance(clues, [...r.revealed, quietestLetter(left)]);
-    if (!next.target) continue;
-    const word = next.target.toUpperCase();
-    const prefix = prefixRow(r, word);
-    const target: Target = { word, weight: 0, row: prefix?.row ?? null, progress: prefix?.length ?? 0, complete: r.buildArea.includes(word) };
-    after += next.chance * payoutIf(state, target, 1);
+    after += valueAfter(state, clues, [...r.revealed, quietestLetter(left)]);
   }
-  after /= cands.length;
-  return after > now;
+  return after / cands.length;
+}
+
+/** Bribe: what the top card of a clue deck is expected to be worth. The deck's
+ *  order is hidden, so every card of that kind is weighed by its printed copies
+ *  less the copies already on the table. */
+function bribeValue(state: WordDebaucheeState, clues: readonly HeardClue[], kind: ClueKind): number {
+  const r = state.round!;
+  const cands = candidates(clues, r.revealed).slice(0, BRIBE_SAMPLE);
+  if (cands.length === 0) return 0;
+  const onTable = new Map<string, number>();
+  for (const p of r.played) onTable.set(p.card, (onTable.get(p.card) ?? 0) + 1);
+  const deck = CLUES.filter((c) => c.kind === kind).map((c) => ({ id: c.id, weight: Math.max(0, c.copies - (onTable.get(c.id) ?? 0)) })).filter((c) => c.weight > 0);
+  const total = deck.reduce((a, c) => a + c.weight, 0);
+  if (total === 0) return 0;
+  let after = 0;
+  for (const c of cands) {
+    for (const d of deck) after += (d.weight / total) * valueAfter(state, [...clues, { card: d.id, answer: clue(d.id).answer(c) }], r.revealed);
+  }
+  return after / cands.length;
+}
+
+/** Hard: is a reveal worth its point, and under Bribe, is a clue worth more
+ *  than a letter? Returns the call, or null when building beats both. */
+function bestReveal(state: WordDebaucheeState, clues: readonly HeardClue[], best: Target | undefined, count: number): WordDebaucheeMove | null {
+  if (best && best.progress > 0) return null;
+  const now = best ? (best.weight / count) * payoutIf(state, best) : 0;
+  const options: { move: WordDebaucheeMove; value: number }[] = [{ move: { type: 'call_reveal' }, value: letterValue(state, clues) }];
+  if (state.settings.bribe) {
+    for (const kind of ['number', 'word'] as const) {
+      const deck = kind === 'number' ? state.numberDeck : state.wordClueDeck;
+      if (deck.length) options.push({ move: { type: 'call_reveal', clue: kind }, value: bribeValue(state, clues, kind) });
+    }
+  }
+  options.sort((a, b) => b.value - a.value);
+  const top = options[0]!;
+  return top.value > now ? top.move : null;
+}
+
+/** Medium under Bribe: take a clue of the kind the table has heard least. */
+function bribeHeardLeast(r: Round): ClueKind {
+  const numbers = r.played.filter((p) => clue(p.card).kind === 'number').length;
+  return numbers < r.played.length - numbers ? 'number' : 'word';
 }
 
 export function chooseGuesserMove(state: WordDebaucheeState, playerId: string, tier: Tier, seed: number): WordDebaucheeMove {
@@ -169,9 +218,12 @@ export function chooseGuesserMove(state: WordDebaucheeState, playerId: string, t
   const ranked = [...targets].sort(tier === 'medium' ? rankMedium : rankHard(state, count));
   const best = ranked[0];
   if (tier === 'medium') {
-    if (count > MEDIUM_REVEAL_THRESHOLD && !(best && best.progress > 0)) return { type: 'call_reveal' };
-  } else if (revealPays(state, clues, best, count)) {
-    return { type: 'call_reveal' };
+    if (count > MEDIUM_REVEAL_THRESHOLD && !(best && best.progress > 0)) {
+      return state.settings.bribe ? { type: 'call_reveal', clue: bribeHeardLeast(r) } : { type: 'call_reveal' };
+    }
+  } else {
+    const call = bestReveal(state, clues, best, count);
+    if (call) return call;
   }
   if (best) return tileToward(best);
   return { type: 'call_reveal' };

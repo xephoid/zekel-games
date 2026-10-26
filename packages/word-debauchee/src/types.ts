@@ -11,6 +11,7 @@
 // | Number and word clue decks   | Server        | Nobody (order hidden)   |
 // | The clue hand of four        | Server        | The debauchee only      |
 // | Clues played and answered    | Server        | Everyone                |
+// | Bribed clues (Bribe variant) | Server        | Everyone                |
 // | Revealed letters, burned words, checks, scores | Server | Everyone     |
 // | Tiles: pool and build area   | The table (`tiles: table`) or the server (`tiles: server`) | Everyone |
 //
@@ -48,6 +49,15 @@ export interface WordDebaucheeOptions {
   rounds?: number;
   /** Seat id of the first debauchee. Default: random. */
   firstDebauchee?: string;
+  /** Bribe variant: a guesser who calls "Reveal!" may take a clue from either deck
+   *  instead of a letter; it counts as a revealed tile for scoring. */
+  bribe?: boolean;
+  /** Open hand variant: no clue deal; the debauchee plays any three clue cards from
+   *  the whole set, at least one of them a number clue. */
+  openHand?: boolean;
+  /** The House variant: the AI seat is the debauchee every round and the people
+   *  score as one team against it. Needs an AI seat; the tiles may be the table's. */
+  house?: boolean;
 }
 
 export interface Settings {
@@ -55,6 +65,10 @@ export interface Settings {
   timer: TimerMode;
   tilesPerReveal: number;
   rounds: number;
+  bribe: boolean;
+  openHand: boolean;
+  /** The House: the seat id of the house, or null when the variant is off. */
+  house: string | null;
 }
 
 export interface Seat {
@@ -84,6 +98,8 @@ export interface RoundResult {
   outcome: Outcome;
   synonym: string | null;
   revealed: number;
+  /** Bribe variant: clues taken instead of letters; each counts as a reveal. */
+  bribes: number;
   payouts: Record<string, number>;
 }
 
@@ -94,11 +110,14 @@ export interface Round {
   dealtWords: string[];
   /** HIDDEN until the round ends. */
   word: string | null;
-  /** HIDDEN. The four clue cards dealt; three are played. */
+  /** HIDDEN. The four clue cards dealt; three are played (none dealt under Open
+   *  hand). Once played, every card the round holds, so they return to their decks. */
   hand: ClueId[];
   played: PlayedClue[];
   /** Letters of the secret word laid face up, in reveal order. */
   revealed: string[];
+  /** Bribe variant: clues taken instead of letters, in order; each counts as a reveal. */
+  bribed: ClueId[];
   /** Words said aloud by a guesser, lower case: they cannot score this round. */
   burned: string[];
   checks: CheckRecord[];

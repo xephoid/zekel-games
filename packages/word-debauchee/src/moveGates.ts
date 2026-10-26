@@ -70,7 +70,7 @@ export function moveGates(state: WordDebaucheeState, playerId: string): MoveGate
         break;
       case 'place':
       case 'move':
-        if (state.phase !== 'build') gate('routine', state.phase === 'reveal' ? `a reveal is owed first: ${deb} lays down a letter` : 'the guessers are not building yet');
+        if (state.phase !== 'build') gate('routine', state.phase === 'reveal' ? `a reveal is owed first: ${deb} lays down a letter` : r?.bribed.length && state.phase === 'answer_clues' ? `${deb} answers the bribed clue first` : 'the guessers are not building yet');
         else if (!server) gate('gated', 'the table holds its own tiles; the server tracks none');
         else if (!guesser) gate('routine', 'the debauchee only listens');
         else if (type === 'move' && r!.buildArea.length === 0) gate('routine', 'the build area is empty');

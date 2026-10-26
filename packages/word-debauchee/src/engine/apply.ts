@@ -2,7 +2,7 @@
 // and a plain-words summary for the table. The summary never carries the
 // secret word, the dealt words or the clue hand before the round ends.
 
-import { clue, clueByName, type ClueCard, type ClueId } from '../data/clues.js';
+import { CLUES, clue, clueByName, type ClueCard, type ClueId, type ClueKind } from '../data/clues.js';
 import { cardFor, isSynonymOf } from '../data/deck.js';
 import type { Card } from '../data/wordCard.js';
 import type { WordDebaucheeState } from '../types.js';
@@ -48,7 +48,7 @@ export function applyMove(prev: WordDebaucheeState, playerId: string, move: Word
       check(state, playerId, move, lines);
       break;
     case 'call_reveal':
-      callReveal(state, playerId, lines);
+      callReveal(state, playerId, move, lines);
       break;
     case 'burn':
       burn(state, playerId, move.word, lines);
@@ -98,32 +98,50 @@ function chooseWord(state: WordDebaucheeState, playerId: string, word: string, l
   r.word = w;
   state.wordDeck.push(...r.dealtWords.filter((x) => x !== w));
   state.phase = 'play_clues';
-  lines.push(`${nameOf(state, playerId)} keeps a word; the other two cards go under the deck. ${nameOf(state, playerId)} now draws two number clues and two word clues and plays three.`);
+  lines.push(
+    `${nameOf(state, playerId)} keeps a word; the other two cards go under the deck. ${nameOf(state, playerId)} now ` +
+      (state.settings.openHand ? 'chooses any three clue cards from the whole set, at least one a number clue.' : 'draws two number clues and two word clues and plays three.'),
+  );
 }
 
 function playClues(state: WordDebaucheeState, playerId: string, cards: ClueId[], lines: string[]): void {
   if (state.phase !== 'play_clues') refuse(state.phase === 'choose_word' ? 'Choose the word first.' : 'The clues have been played this round.');
   requireDebauchee(state, playerId, 'plays the clues');
   const r = round(state);
-  if (!Array.isArray(cards) || cards.length !== CLUES_PLAYED) refuse(`Play exactly ${CLUES_PLAYED} of the ${r.hand.length} cards in hand.`);
-  cards = cards.map((c) => clueByName(String(c))?.id ?? c);
-  const left = [...r.hand];
-  for (const id of cards) {
-    const at = left.indexOf(id);
-    if (at < 0) refuse(`"${String(id)}" is not in hand (or not twice). In hand: ${r.hand.join(', ')}.`);
-    left.splice(at, 1);
+  if (!Array.isArray(cards) || cards.length !== CLUES_PLAYED) {
+    refuse(state.settings.openHand ? `Play exactly ${CLUES_PLAYED} clue cards from the whole set.` : `Play exactly ${CLUES_PLAYED} of the ${r.hand.length} cards in hand.`);
   }
-  const kinds = new Set(cards.map((id) => clue(id).kind));
-  if (!kinds.has('number') || !kinds.has('word')) refuse('At least one number clue and one word clue must be among the three.');
+  cards = cards.map((c) => clueByName(String(c))?.id ?? c);
+  for (const id of cards) if (!CLUES.some((c) => c.id === id)) refuse(`"${String(id)}" is not a clue card. The cards: ${CLUES.map((c) => c.name).join(', ')}.`);
+  if (state.settings.openHand) {
+    // Open hand: any three different cards from the whole set, at least one a number clue.
+    if (new Set(cards).size !== cards.length) refuse('Play three different clue cards.');
+    if (!cards.some((id) => clue(id).kind === 'number')) refuse('At least one of the three must be a number clue.');
+    for (const id of cards) {
+      const deck = clue(id).kind === 'number' ? state.numberDeck : state.wordClueDeck;
+      const at = deck.indexOf(id);
+      if (at < 0) refuse(`No ${clue(id).name} card is left in its deck.`);
+      deck.splice(at, 1);
+    }
+  } else {
+    const left = [...r.hand];
+    for (const id of cards) {
+      const at = left.indexOf(id);
+      if (at < 0) refuse(`"${String(id)}" is not in hand (or not twice). In hand: ${r.hand.join(', ')}.`);
+      left.splice(at, 1);
+    }
+    const kinds = new Set(cards.map((id) => clue(id).kind));
+    if (!kinds.has('number') || !kinds.has('word')) refuse('At least one number clue and one word clue must be among the three.');
+    // The fourth card goes under its deck now; the played three follow at the round's end.
+    const buried = left[0]!;
+    (clue(buried).kind === 'number' ? state.numberDeck : state.wordClueDeck).push(buried);
+  }
   const card = secretCard(state);
   const debauchee = state.seats.find((s) => s.id === playerId)!;
   r.played = cards.map((id) => {
     const c = clue(id);
     return { card: id, answer: c.judgment && !debauchee.ai ? null : c.answer(card) };
   });
-  // The fourth card goes under its deck now; the played three follow at the round's end.
-  const buried = left[0]!;
-  (clue(buried).kind === 'number' ? state.numberDeck : state.wordClueDeck).push(buried);
   r.hand = cards;
   const answered = r.played.filter((p) => p.answer !== null);
   const pending = r.played.filter((p) => p.answer === null);
@@ -165,11 +183,13 @@ function answerClue(state: WordDebaucheeState, playerId: string, cardId: ClueId,
   if (r.played.every((p) => p.answer !== null)) beginBuild(state, lines);
 }
 
+/** The guessers build: at the start of the round, and again after every reveal
+ *  or bribed clue (the timer flips, the lap starts over). */
 function beginBuild(state: WordDebaucheeState, lines: string[]): void {
   state.phase = 'build';
   const r = round(state);
   r.turnsSinceReveal = 0;
-  lines.push(timerLine(state) + (state.settings.tiles === 'server' ? ` ${nameOf(state, currentGuesser(state))} to place a tile.` : ' The guessers build.'));
+  lines.push(timerLine(state) + (state.settings.tiles === 'server' ? ` ${nameOf(state, currentGuesser(state))} to act.` : ' The guessers build.'));
 }
 
 function timerLine(state: WordDebaucheeState): string {
@@ -351,11 +371,46 @@ function checkWord(state: WordDebaucheeState, playerId: string, word: string, li
   return false;
 }
 
-function callReveal(state: WordDebaucheeState, playerId: string, lines: string[]): void {
+/** "number", "word", "number clue", "a word clue" → the deck. */
+export function clueKindFrom(text: unknown): ClueKind {
+  const t = String(text).trim().toLowerCase();
+  if (/^(a |the )?number( clue)?s?$/.test(t)) return 'number';
+  if (/^(a |the )?word( clue)?s?$/.test(t)) return 'word';
+  refuse(`"${String(text)}" is not a clue deck: say "number" or "word".`);
+}
+
+function callReveal(state: WordDebaucheeState, playerId: string, m: { clue?: string }, lines: string[]): void {
   requireBuild(state);
   requireTurn(state, playerId);
   const r = round(state);
-  lines.push(`${nameOf(state, playerId)}: "Reveal!"`);
+  const who = nameOf(state, playerId);
+  if (m.clue !== undefined) {
+    // Bribe: the caller draws the top card of a clue deck instead of getting a letter.
+    if (!state.settings.bribe) refuse('Bribe is not on in this game: a "Reveal!" gets a letter, not a clue.');
+    const kind = clueKindFrom(m.clue);
+    const deck = kind === 'number' ? state.numberDeck : state.wordClueDeck;
+    if (deck.length === 0) refuse(`The ${kind} clue deck is empty.`);
+    if (state.settings.tiles === 'server') r.turnIndex = (r.turnIndex + 1) % r.guessers.length;
+    r.lastTouched = null;
+    const id = deck.shift()!;
+    r.bribed.push(id);
+    r.hand.push(id);
+    const c = clue(id);
+    const debauchee = state.seats.find((s) => s.id === r.debauchee)!;
+    const answer = c.judgment && !debauchee.ai ? null : c.answer(secretCard(state));
+    r.played.push({ card: id, answer });
+    const count = r.revealed.length + r.bribed.length;
+    lines.push(`${who}: "Reveal!" and takes a ${kind} clue instead of a letter: ${c.name}. It counts as a reveal (${count} so far).`);
+    if (answer === null) {
+      state.phase = 'answer_clues';
+      lines.push(`${debauchee.name} answers ${c.name} in their own words (${c.prompt}).`);
+    } else {
+      lines.push(spoken(c, answer));
+      beginBuild(state, lines);
+    }
+    return;
+  }
+  lines.push(`${who}: "Reveal!"`);
   if (state.settings.tiles === 'server') {
     r.turnIndex = (r.turnIndex + 1) % r.guessers.length;
   }
@@ -364,7 +419,7 @@ function callReveal(state: WordDebaucheeState, playerId: string, lines: string[]
 }
 
 function burn(state: WordDebaucheeState, playerId: string, word: string, lines: string[]): void {
-  if (state.phase !== 'build' && state.phase !== 'reveal') refuse('Words burn only while the guessers are building.');
+  if (state.phase !== 'build' && state.phase !== 'reveal' && state.phase !== 'answer_clues') refuse('Words burn only while the guessers are building.');
   const r = round(state);
   const w = normaliseWord(word);
   if (!/^[A-Z]+$/.test(w)) refuse(`"${word}" is not a word of letters.`);
@@ -406,12 +461,11 @@ function reveal(state: WordDebaucheeState, playerId: string, letterIn: string, l
     }
   }
   r.revealed.push(letter);
-  lines.push(`${nameOf(state, playerId)} reveals ${letter}${from}. Revealed so far: ${r.revealed.join(' ')} (${r.revealed.length} of ${r.word!.length}).`);
+  const bribes = r.bribed.length ? `, plus ${r.bribed.length} bribed clue${r.bribed.length === 1 ? '' : 's'}` : '';
+  lines.push(`${nameOf(state, playerId)} reveals ${letter}${from}. Revealed so far: ${r.revealed.join(' ')} (${r.revealed.length} of ${r.word!.length}${bribes}).`);
   if (r.revealed.length >= r.word!.length) {
     lines.push(...endRound(state, 'stumped', null));
     return;
   }
-  state.phase = 'build';
-  r.turnsSinceReveal = 0;
-  lines.push(timerLine(state) + (state.settings.tiles === 'server' ? ` ${nameOf(state, currentGuesser(state))} to act.` : ''));
+  beginBuild(state, lines);
 }

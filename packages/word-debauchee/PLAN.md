@@ -119,10 +119,23 @@ length; cracked pays every guesser synonym length minus reveals, minimum 1. The 
 ends when every seat has been debauchee once (5–8 players) or twice (2–4), highest total
 wins, ties share.
 
-**Variants** are options: `laps` and `duel` are part of the core flow above; `bribe`
-(call reveal may take a clue instead of a letter, counted as a reveal) and `openHand`
-(the debauchee picks any three cards from the whole set, one of them a number clue) come
-after the core, as `bribe: true` and `openHand: true`. See Q7 for *The House*.
+**Variants** are options: `laps` and `duel` are part of the core flow above; the other
+three were built in milestone 6:
+
+- `bribe`: "Reveal!" takes an optional `clue` field, `number` or `word` (printed names
+  such as "a word clue" accepted). The server draws the top card of that deck, answers
+  it like a played clue (a human debauchee answers a judgment clue in their own words
+  first, mid-round, while the guessers may still burn words), and the card counts as a
+  reveal: the crack payout is cut by letters revealed plus clues bribed. The timer flips
+  as after a letter. The bribed cards go back under their decks with the played three.
+- `openHand`: no clue deal. `play_clues` takes any three different cards from the whole
+  set, at least one a number clue; the server lifts each from its deck. The legal-move
+  menu lists one fill-in entry naming every card rather than the 1,320 combinations.
+- `house`: the first AI seat is the house, debauchee every round; the others guess every
+  round and, since every guesser scores the same, their score is the team's. No setup
+  step. The tiles may be the table's own (an AI that only listens needs none); server
+  tiles are still forced when an AI seat guesses. Rounds default to a normal game's at
+  that table size (Q13). Winners: the house, or every person, or everyone on a tie.
 
 ## 5. Data
 
@@ -300,6 +313,11 @@ Numbered for the designer; my suggested answer follows each.
 - **Q10 — First debauchee.** Suggest: random unless `firstDebauchee` is given.
 - **Q11 — Variants in v1.** Suggest: all four from rules.md, *Laps* and *Duel* in the
   core, *Bribe* and *Open hand* as the last step before playtest.
+- **Q13 — The House, how long** (open). The printed variants don't say. Built, as an
+  assumption until you rule: as many rounds as a normal game at that table size (twice
+  round with 2–4 seats, once with 5–8), overridable with `rounds`. The AI debauchee
+  under Open hand: medium always plays Letters, Vowels, Consonants (the stingiest
+  three); hard picks greedily, one card at a time, by crack chance.
 - **Q12 — Difficulty rule** (open). The design notes' rule needs every synonym's
   grade and the deck grades only 650 of 3,041 synonyms; with deck grades alone one
   card in 500 is ●○○. Built, as an assumption until you rule: ●○○ for grade 1–2,
@@ -360,8 +378,12 @@ debauchee is now a setup step a person at the table answers (the server draws on
 for an all-AI table), there is a setup checklist, move gates agree with the legal
 moves (locked by test), clue cards are accepted by their printed names, and the zone
 table sits at the top of `types.ts`. No `src/dev` hooks yet (like Demon Hunter). 109
-tests. Next: milestone 6 (Bribe, Open hand, The House), then a game from the human
-seat through the real server.
+tests. Milestone 6 built: the `bribe`, `openHand` and `house` options (§4), in the
+engine, the menu, the gates, the next step, the views, the catalog, the rules text and
+both AIs (the hard guesser prices a letter against a clue from either deck; the hard
+debauchee searches the whole set greedily under Open hand); The House added to
+rules.md (Q7); Q13 opened; 119 tests. Next: a game from the human seat through the
+real server, then the records the runbooks ask for (§13).
 
 ## 13. Against the runbooks (2026-10-26)
 
@@ -375,7 +397,7 @@ later steps, step by step:
 | Step | Record | Have | Missing |
 |---|---|---|---|
 | Plan | `PORT-PLAN.md` | this file: scope, zones, moves, data, AI, milestones, Q1–Q12 with the rulings | the file name; a feature inventory with one row per printed rule and its page; the second, independent enumeration from the rules alone (a rulebook-only game needs it); the rules encoding (`src/dev/verify/`: pinned rules text + `encoding.ts`, `verify-lint` clean); a triaged risk register and divergence ledger; the review block recording Zeke's sign-off on coverage (the Q1–Q11 rulings stand in) |
-| Build | `PORT-NOTES.md` | zone table in `types.ts`; data tests; rules sections and move gates; setup checklist, next step, scoreboard, physical setup, guidance, reference data; printed names accepted; tiles conserved (engine test); smoke, harness and tests green | the file; the three printed variants (Bribe, Open hand, The House: milestone 6) |
+| Build | `PORT-NOTES.md` | zone table in `types.ts`; data tests; rules sections and move gates; setup checklist, next step, scoreboard, physical setup, guidance, reference data; printed names accepted; tiles conserved (engine test); smoke, harness and tests green | the file (the three printed variants were built on 2026-10-26, milestone 6) |
 | Post-port | `POST-PORT.md` | sweep, summaries and catalog clean; no-leak tests; every choice owned by a player except the round count | the file; the two-pass rulebook walk (rule → code → test); a test that rebuilds the table from the views; a game walked from a human seat; the grep sweep for stubs; the schema note |
 | AI | `AI-NOTES.md` | three tiers for both roles, seeded, deterministic (tests); `scripts/harness.mjs` per tier pairing | the file; a written stronger-tier check (hard guessers against medium guessers head to head); no strategy archetypes or MCTS; the AI never burns a word or reports the sand (both are table reports) and rarely moves a tile: an open AI gap; the catalog's AI-policy column |
 | Desync | a `GAMES.md` cell | — | not run (needs Ollama); likely needs `src/dev` desync hooks for how a person says a tile move; the table-tiles mode is the real case |
@@ -387,8 +409,7 @@ later steps, step by step:
 And, outside the steps: a real game played by a person with a real chat
 assistant, with the date and model written down.
 
-In the runbooks' order the next work is: milestone 6 (the variants, build
-scope), then `PORT-NOTES.md` and the plan's missing sections, then the rules
+In the runbooks' order the next work is: `PORT-NOTES.md` and the plan's missing sections, then the rules
 encoding and the second enumeration, then the post-port walk from a human seat
 and `POST-PORT.md`, then `AI-NOTES.md` with the `src/dev` hooks, then the three
 harness steps and integration.

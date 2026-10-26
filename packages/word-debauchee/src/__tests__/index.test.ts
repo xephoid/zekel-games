@@ -95,7 +95,7 @@ describe('the module seam', () => {
     expect(wordDebauchee.getRulesSections().length).toBeGreaterThan(8);
     expect(wordDebauchee.getSessionStartGuidance()).toContain('SECRET');
     expect((wordDebauchee.getReferenceData() as { word_cards: number }).word_cards).toBe(500);
-    expect(wordDebauchee.getBalanceAxes().map((a) => a.name)).toEqual(['tiers', 'timer', 'players']);
+    expect(wordDebauchee.getBalanceAxes().map((a) => a.name)).toEqual(['tiers', 'timer', 'players', 'variants']);
   });
 
   it('suggests a medium move to the seat on the move, and nothing at a table with its own tiles while building', () => {

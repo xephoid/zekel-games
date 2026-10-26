@@ -8,7 +8,8 @@ export type WordDebaucheeMove =
   | { type: 'choose_first_debauchee'; player: string }
   /** Debauchee: keep one of the three dealt words; the other two go under the deck. */
   | { type: 'choose_word'; word: string }
-  /** Debauchee: play three of the four clue cards in hand. */
+  /** Debauchee: play three of the four clue cards in hand (Open hand: any three
+   *  from the whole set, at least one a number clue). */
   | { type: 'play_clues'; cards: ClueId[] }
   /** Human debauchee: answer a judgment clue in their own words, or with the card's
    *  answer when `text` is omitted. */
@@ -23,8 +24,9 @@ export type WordDebaucheeMove =
   /** Guesser: "Check!". `server` tiles: a row you just completed. `table` tiles: the
    *  word on the table, trusted as declared. */
   | { type: 'check'; word?: string; row?: number }
-  /** Guesser, on your turn: "Reveal!" instead of acting. */
-  | { type: 'call_reveal' }
+  /** Guesser, on your turn: "Reveal!" instead of acting. Bribe variant: `clue`
+   *  takes the top card of that clue deck instead of a letter. */
+  | { type: 'call_reveal'; clue?: 'number' | 'word' }
   /** Anyone, any time: a guesser said this word aloud; it cannot score this round. */
   | { type: 'burn'; word: string }
   /** Anyone: the sand ran out (`sand` timer), or at a table with its own tiles, the

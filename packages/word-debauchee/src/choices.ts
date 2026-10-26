@@ -35,12 +35,21 @@ export const WORD_DEBAUCHEE_CHOICES: ChoiceRow[] = [
     balanceAxis: 'timer',
   },
   {
+    id: 'variants',
+    description: 'Which printed variants are on: Bribe (a clue instead of a letter on "Reveal!"), Open hand (the debauchee picks any three clue cards), The House (the AI is debauchee every round, the people one team)',
+    owner: 'player',
+    when: 'setup',
+    resolvedBy: ['options.bribe', 'options.openHand', 'options.house'],
+    balanceAxis: 'variants',
+  },
+  {
     id: 'first-debauchee',
     description: 'Who is the first debauchee (whoever most recently got away with something)',
     owner: 'player',
     when: 'setup',
     resolvedBy: ['choose_first_debauchee', 'options.firstDebauchee'],
     distinguishedBy: 'player',
+    dependsOn: 'The House is off (the house is the debauchee every round)',
   },
   {
     id: 'how-many-rounds',
@@ -62,7 +71,7 @@ export const WORD_DEBAUCHEE_CHOICES: ChoiceRow[] = [
   },
   {
     id: 'which-clues',
-    description: 'Which three of the four clue cards to play, and so which to bury',
+    description: 'Which three of the four clue cards to play, and so which to bury (Open hand: any three from the whole set, one a number clue)',
     owner: 'player',
     when: 'in-game',
     resolvedBy: ['play_clues'],
@@ -128,6 +137,15 @@ export const WORD_DEBAUCHEE_CHOICES: ChoiceRow[] = [
     owner: 'player',
     when: 'in-game',
     resolvedBy: ['call_reveal'],
+  },
+  {
+    id: 'bribe',
+    description: 'On "Reveal!", whether to take a letter or the top card of the number or the word clue deck instead',
+    owner: 'player',
+    when: 'in-game',
+    resolvedBy: ['call_reveal'],
+    distinguishedBy: 'clue',
+    dependsOn: 'the Bribe variant is on',
   },
   {
     id: 'burned-word',

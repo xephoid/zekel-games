@@ -137,8 +137,11 @@ export const WORD_DEBAUCHEE_RULE_SECTIONS: RuleSectionShape[] = [
     text:
       'Laps instead of sand: drop the timer; the debauchee reveals a letter each time the turn comes back round to the first guesser (the digital default). ' +
       'Two-player duel: one guesser, no turn order; they place tiles freely while the sand runs; play four rounds each. ' +
-      'Bribe and Open hand are in the printed rules and not yet in this edition.',
-    tags: {},
+      'Bribe (the bribe option): when a guesser calls "Reveal!", the guessers may take a clue instead of a letter: the caller draws the top card of either clue deck and the debauchee answers it. A bribed clue counts as a revealed tile for scoring. ' +
+      'Open hand (the openHand option), kinder for new players: skip the draw and let the debauchee choose any three clue cards from the whole set, at least one of them a number clue. ' +
+      'The House (the house option): the AI seat is the debauchee every round and the people at the table score as one team against it; every guesser\'s score is the team\'s. ' +
+      'Good for a table sharing one screen, since nobody has a secret to hide. The game runs as many rounds as a normal game at that table size unless set otherwise, and the tiles may be the table\'s own.',
+    tags: { move_types: ['call_reveal', 'play_clues'], phases: ['build', 'play_clues'] },
   },
 ];
 

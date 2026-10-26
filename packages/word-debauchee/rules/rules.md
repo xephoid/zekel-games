@@ -167,6 +167,10 @@ finishes MERRY. Each guesser scores 5 − 3 = 2.
   three clue cards from the whole set, at least one of them a number clue.
 - **Two-player duel.** One guesser, no turn order: they place tiles freely while the sand
   runs. Play four rounds each.
+- **The House.** For the digital edition: the computer is the debauchee every round and
+  everyone at the table guesses, scoring as one team against it. Nobody at the table has
+  a secret, so one shared screen is fine. Play as many rounds as a normal game at that
+  table size; highest total wins, the table or the house.
 
 ## Appendix: letter tiles
 

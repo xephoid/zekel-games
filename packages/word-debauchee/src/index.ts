@@ -59,6 +59,12 @@ const optionsSchema = {
     tilesPerReveal: { type: 'integer', minimum: 1, description: `Two-player duel under laps: tiles between reveals (default ${DEFAULT_TILES_PER_REVEAL}).` },
     rounds: { type: 'integer', minimum: 1, description: 'Rounds in the game. Default: once round the table with 5–8 players, twice with 2–4.' },
     firstDebauchee: { type: 'string', description: 'player_id of the first debauchee (whoever most recently got away with something). Default: random.' },
+    bribe: { type: 'boolean', description: 'Bribe variant: a guesser who calls "Reveal!" may take the top card of either clue deck instead of a letter; it counts as a reveal for scoring.' },
+    openHand: { type: 'boolean', description: 'Open hand variant: no clue deal; the debauchee plays any three clue cards from the whole set, at least one a number clue.' },
+    house: {
+      type: 'boolean',
+      description: 'The House variant: the AI seat is the debauchee every round and the people score as one team against it. Needs an AI seat; the tiles may be the table\'s own.',
+    },
   },
 } as const;
 
@@ -68,12 +74,12 @@ const moveSchema = {
   oneOf: [
     { type: 'object', required: ['type', 'player'], properties: { type: { const: 'choose_first_debauchee' }, player: { type: 'string', description: 'setup: the first debauchee, by seat id or name' } } },
     { type: 'object', required: ['type', 'word'], properties: { type: { const: 'choose_word' }, word: { type: 'string', description: 'one of the three dealt words (private view)' } } },
-    { type: 'object', required: ['type', 'cards'], properties: { type: { const: 'play_clues' }, cards: { type: 'array', minItems: 3, maxItems: 3, items: { enum: clueIds }, description: 'three of the four clue card ids in hand' } } },
+    { type: 'object', required: ['type', 'cards'], properties: { type: { const: 'play_clues' }, cards: { type: 'array', minItems: 3, maxItems: 3, items: { enum: clueIds }, description: 'three of the four clue card ids in hand (Open hand: any three, one a number clue)' } } },
     { type: 'object', required: ['type', 'card'], properties: { type: { const: 'answer_clue' }, card: { enum: ['rhymes_with', 'opposite', 'register', 'goes_with'] }, text: { type: 'string', description: 'the answer in your own words; omit to use the card\'s answer' } } },
     { type: 'object', required: ['type', 'letter'], properties: { type: { const: 'place' }, letter: { type: 'string', minLength: 1, maxLength: 1 }, row: { type: 'integer', minimum: 0, description: 'omit for a new row' }, index: { type: 'integer', minimum: 0, description: 'omit for the end of the row' }, check: { type: 'boolean', description: 'call "Check!" on the row this tile completes' } } },
     { type: 'object', required: ['type', 'row', 'index'], properties: { type: { const: 'move' }, row: { type: 'integer', minimum: 0 }, index: { type: 'integer', minimum: 0 }, to_row: { anyOf: [{ type: 'integer', minimum: 0 }, { const: 'new' }], description: 'omit to return the tile to the pool' }, to_index: { type: 'integer', minimum: 0 }, check: { type: 'boolean' } } },
     { type: 'object', required: ['type'], properties: { type: { const: 'check' }, word: { type: 'string', description: 'table tiles: the word on the table' }, row: { type: 'integer', minimum: 0, description: 'server tiles: the row you just completed' } } },
-    { type: 'object', required: ['type'], properties: { type: { const: 'call_reveal' } } },
+    { type: 'object', required: ['type'], properties: { type: { const: 'call_reveal' }, clue: { enum: ['number', 'word'], description: 'Bribe variant: take the top card of this clue deck instead of a letter' } } },
     { type: 'object', required: ['type', 'word'], properties: { type: { const: 'burn' }, word: { type: 'string', description: 'a word a guesser said aloud' } } },
     { type: 'object', required: ['type'], properties: { type: { const: 'timer_out' } } },
     { type: 'object', required: ['type', 'letter'], properties: { type: { const: 'reveal' }, letter: { type: 'string', minLength: 1, maxLength: 1 } } },
@@ -117,7 +123,7 @@ function narrate(state: WordDebaucheeState, playerId: string, move: WordDebauche
     case 'check':
       return `${who} calls "Check!"`;
     case 'call_reveal':
-      return `${who} calls "Reveal!"`;
+      return move.clue ? `${who} calls "Reveal!" and takes a ${move.clue} clue instead of a letter.` : `${who} calls "Reveal!"`;
     case 'burn':
       return `${who} reports a word said aloud.`;
     case 'timer_out':
@@ -193,15 +199,15 @@ export class WordDebaucheeGame implements Game<WordDebaucheeState, WordDebauchee
     if (s.phase !== 'game_over') return null;
     const winners = s.winners ?? [];
     const best = winners.length ? s.scores[winners[0]!] : 0;
-    return {
-      game_over: true,
-      winners,
-      scores: { ...s.scores },
-      summary:
-        winners.length === 1
-          ? `${nameOf(s, winners[0]!)} is the best debauchee with ${best}.`
-          : `${winners.map((w) => nameOf(s, w)).join(' and ')} share the win with ${best}.`,
-    };
+    const house = s.settings.house;
+    const summary = house
+      ? winners.length === 1 && winners[0] === house
+        ? `The house (${nameOf(s, house)}) wins with ${best}.`
+        : winners.includes(house) ? `The table and the house tie at ${best}.` : `The table beats the house with ${best}.`
+      : winners.length === 1
+        ? `${nameOf(s, winners[0]!)} is the best debauchee with ${best}.`
+        : `${winners.map((w) => nameOf(s, w)).join(' and ')} share the win with ${best}.`;
+    return { game_over: true, winners, scores: { ...s.scores }, summary };
   }
 
   applyMove(state: SessionState<WordDebaucheeState>, playerId: string, move: WordDebaucheeMove): ApplyMoveResult<WordDebaucheeState> {
@@ -293,14 +299,19 @@ export class WordDebaucheeGame implements Game<WordDebaucheeState, WordDebauchee
   getPhysicalSetup(state: SessionState<WordDebaucheeState>): PhysicalSetupStep[] {
     const s = state.gameState;
     const first = s.round ? nameOf(s, s.round.debauchee) : 'whoever most recently got away with something';
+    const variants: PhysicalSetupStep[] = [];
+    if (s.settings.house) variants.push({ kind: 'action', text: `The House: ${nameOf(s, s.settings.house)} (the AI) is the debauchee every round; everyone else guesses and scores as one team. Nobody at the table has a secret, so one shared screen is fine.` });
+    if (s.settings.bribe) variants.push({ kind: 'action', text: 'Bribe is on: a guesser who calls "Reveal!" may take the top card of either clue deck instead of a letter (the server draws and answers it); it counts as a reveal.' });
+    if (s.settings.openHand) variants.push({ kind: 'action', text: 'Open hand is on: no clue deal; the debauchee picks any three clue cards from the whole set, at least one a number clue.' });
     if (s.settings.tiles !== 'server') {
       return [
         { kind: 'action', text: `Tip all ${TILE_TOTAL} tiles face up in the middle of the table and spread them so everyone can reach them: the pool. Leave an open space beside it: the build area.` },
+        ...variants,
         { kind: 'action', text: `${first} is the first debauchee. The word cards and clue cards are dealt here: the debauchee reads their three words in their private view.` },
         ...(s.settings.timer === 'sand' ? [{ kind: 'action' as const, text: 'Have the 30-second sand timer ready; report timer_out whenever it runs out.' }] : []),
       ];
     }
-    return [{ kind: 'action', text: `No physical pieces: the server holds the tiles, the build area and the cards. ${first} is the first debauchee.` }];
+    return [{ kind: 'action', text: `No physical pieces: the server holds the tiles, the build area and the cards. ${first} is the first debauchee.` }, ...variants];
   }
 
   getBalanceAxes(): BalanceAxis[] {
@@ -325,6 +336,13 @@ export class WordDebaucheeGame implements Game<WordDebaucheeState, WordDebauchee
         description: 'Table size: tiles per lap go up with the number of guessers, so reveals per crack go down.',
         levers: ['players'],
         recipe: 'vary the number of seats from 2 to 8.',
+      },
+      {
+        name: 'variants',
+        kind: 'config',
+        description: 'The printed variants: Bribe (a clue instead of a letter), Open hand (the debauchee picks any three clues) and The House (one AI debauchee against the table as a team).',
+        levers: ['sweep'],
+        recipe: 'vary options.bribe, options.openHand and options.house across the batch; the house needs an AI seat.',
       },
     ];
   }

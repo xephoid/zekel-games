@@ -4,8 +4,8 @@
 // card, reveal the letters that say least. hard: run the guesser solver
 // against itself and keep the candidate set as large as it can.
 
-import { clue, type ClueId } from '../data/clues.js';
-import { cardFor } from '../data/deck.js';
+import { CLUES, clue, type ClueId } from '../data/clues.js';
+import { CARDS, cardFor } from '../data/deck.js';
 import type { Card } from '../data/wordCard.js';
 import { unrevealedLetters } from '../engine/helpers.js';
 import type { WordDebaucheeMove } from '../engine/moves.js';
@@ -125,14 +125,71 @@ export function hardestPlay(card: Card, hand: readonly ClueId[]): { play: ClueId
   return { play: best, chance: bestChance, count: bestCount };
 }
 
+// ---- Open hand: any three cards from the whole set, at least one a number clue ----
+
+const ALL_IDS: readonly ClueId[] = CLUES.map((c) => c.id);
+const NUMBER_IDS: readonly ClueId[] = CLUES.filter((c) => c.kind === 'number').map((c) => c.id);
+
+/** Easy: a random number clue and two other random cards. */
+function randomOpenPlay(seed: number): ClueId[] {
+  const first = pick(NUMBER_IDS, seed);
+  const rest = ALL_IDS.filter((id) => id !== first.value);
+  const second = pick(rest, first.nextSeed);
+  const third = pick(rest.filter((id) => id !== second.value), second.nextSeed);
+  return [first.value, second.value, third.value];
+}
+
+/** Medium: the three stingiest cards in the gift order (all number clues). */
+export const STINGIEST_OPEN_PLAY: readonly ClueId[] = GIFT_ORDER.slice(-CLUES_PLAYED);
+
+/** Hard: greedy. The card that leaves a solver-guesser the lowest crack
+ *  chance, then the next given the first, then the third; the third must be a
+ *  number clue when neither of the first two is. (All 1,320 triples would be
+ *  the exact answer; greedy is a few dozen solver runs instead.) */
+export function hardestOpenPlay(card: Card): { play: ClueId[]; chance: number; count: number } {
+  const play: ClueId[] = [];
+  let chance = 1;
+  let count = CARDS.length;
+  for (let k = 0; k < CLUES_PLAYED; k++) {
+    const needNumber = k === CLUES_PLAYED - 1 && !play.some((id) => clue(id).kind === 'number');
+    let best: ClueId | null = null;
+    let bestChance = Infinity;
+    let bestCount = -1;
+    for (const id of ALL_IDS) {
+      if (play.includes(id) || (needNumber && clue(id).kind !== 'number')) continue;
+      const next = crackChance(answersFor(card, [...play, id]), []);
+      if (next.chance < bestChance || (next.chance === bestChance && (next.count > bestCount || (next.count === bestCount && giftRank(id) > giftRank(best!))))) {
+        best = id;
+        bestChance = next.chance;
+        bestCount = next.count;
+      }
+    }
+    play.push(best!);
+    chance = bestChance;
+    count = bestCount;
+  }
+  return { play, chance, count };
+}
+
+/** The hard tier's play for this word: from the hand dealt, or under Open hand from the whole set. */
+function bestPlay(card: Card, hand: readonly ClueId[], openHand: boolean): { play: ClueId[]; chance: number; count: number } {
+  return openHand ? hardestOpenPlay(card) : hardestPlay(card, hand);
+}
+
 export function chooseDebaucheeMove(state: WordDebaucheeState, playerId: string, tier: Tier, seed: number): WordDebaucheeMove {
   const r = state.round;
   if (!r || r.debauchee !== playerId) throw new Error(`${playerId} is not the debauchee`);
+  const openHand = state.settings.openHand;
   switch (state.phase) {
     case 'choose_word':
-      return { type: 'choose_word', word: chooseWord(r.dealtWords.map((w) => cardFor(w)!), r.hand, tier, seed) };
+      return { type: 'choose_word', word: chooseWord(r.dealtWords.map((w) => cardFor(w)!), r.hand, tier, seed, openHand) };
     case 'play_clues': {
       const card = cardFor(r.word!)!;
+      if (openHand) {
+        if (tier === 'easy') return { type: 'play_clues', cards: randomOpenPlay(seed) };
+        if (tier === 'medium') return { type: 'play_clues', cards: [...STINGIEST_OPEN_PLAY] };
+        return { type: 'play_clues', cards: hardestOpenPlay(card).play };
+      }
       if (tier === 'easy') return { type: 'play_clues', cards: validPlays(r.hand)[0]! };
       if (tier === 'medium') return { type: 'play_clues', cards: stingiestPlay(r.hand) };
       return { type: 'play_clues', cards: hardestPlay(card, r.hand).play };
@@ -149,7 +206,7 @@ export function chooseDebaucheeMove(state: WordDebaucheeState, playerId: string,
   }
 }
 
-function chooseWord(dealt: Card[], hand: readonly ClueId[], tier: Tier, seed: number): string {
+function chooseWord(dealt: Card[], hand: readonly ClueId[], tier: Tier, seed: number, openHand: boolean): string {
   if (tier === 'easy') return pick(dealt, seed).value.word;
   if (tier === 'medium') {
     return [...dealt].sort((a, b) => slowness(b) - slowness(a) || a.synonyms.length - b.synonyms.length || a.word.localeCompare(b.word))[0]!.word;
@@ -158,7 +215,7 @@ function chooseWord(dealt: Card[], hand: readonly ClueId[], tier: Tier, seed: nu
   let best = dealt[0]!;
   let bestChance = Infinity;
   for (const card of dealt) {
-    const { chance } = hardestPlay(card, hand);
+    const { chance } = bestPlay(card, hand, openHand);
     if (chance < bestChance || (chance === bestChance && card.letters > best.letters)) {
       best = card;
       bestChance = chance;
