@@ -15,6 +15,8 @@ Zekel Games' own board games, as game modules for the [zekel MCP server](https:/
 
 Each package holds one game's rules, its AI opponents and its tests. A game depends only on `@zekel/game-kit`, the interface every zekel game implements. The rules live here and nowhere else: the server knows none of them.
 
+[`GAMES.md`](./GAMES.md) shows how far each game has got through the checks.
+
 ## Serving the games
 
 Register the games you want on `@zekel/mcp` and start it. `examples/serve.mjs` does this for all eight:
@@ -40,6 +42,21 @@ pnpm build      # builds every game
 pnpm test       # every game's tests
 pnpm smoke      # serves all eight and plays each through the real MCP tools
 ```
+
+## Building and checking a game
+
+The tools from [`@zekel/dev`](https://www.npmjs.com/package/@zekel/dev) run on these games from this repo. Build first: the tools that play games start `examples/serve.mjs`, which serves the built packages.
+
+```
+pnpm build
+pnpm harness -- --game=fractured-fist --n=50 --players=2   # AI-vs-AI batch + balance analysis
+pnpm desync-bot -- --game=cybernoir-2127                   # a small model keeps its own copy of the board
+pnpm verify-hunt -- --game=cybernoir-2127 --mode=random --games=1000   # the rules checker
+pnpm verify-lint -- --game=cybernoir-2127                  # checks the encoding against the pinned rules text
+pnpm tool <command> [args]                                 # any @zekel/dev command
+```
+
+Each game's extra parts for the tools sit in its own `src/dev/` folder and ship as `@zekel/<game>/dev`: its balance-analysis settings, sweeps over its options, the rules-checker's encoding and adapter, and the pinned rules text the checker reads. `scripts/devHooks.ts` registers them. A game's own code never loads `src/dev/` (`tests/devBoundary.test.ts` checks), so someone who only plays a game doesn't need `@zekel/dev`.
 
 ## Not done yet
 

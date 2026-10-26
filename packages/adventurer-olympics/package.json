@@ -1,6 +1,6 @@
 {
   "name": "@zekel/adventurer-olympics",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Adventurer Olympics, a Zekel Games board game, as a game module for the zekel MCP server.",
   "license": "Apache-2.0",
   "repository": {
@@ -17,6 +17,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./dev": {
+      "types": "./dist/dev/index.d.ts",
+      "default": "./dist/dev/index.js"
+    },
     "./*": {
       "types": "./dist/*.d.ts",
       "default": "./dist/*.js"
@@ -32,10 +36,17 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@zekel/game-kit": "^0.1.0"
+    "@zekel/game-kit": "^0.1.0",
+    "@zekel/dev": "^0.1.1"
+  },
+  "peerDependenciesMeta": {
+    "@zekel/dev": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "@zekel/game-kit": "^0.1.0"
+    "@zekel/game-kit": "^0.1.0",
+    "@zekel/dev": "^0.1.1"
   },
   "engines": {
     "node": ">=22.13.0"

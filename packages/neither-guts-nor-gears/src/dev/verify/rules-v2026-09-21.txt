@@ -1,0 +1,921 @@
+# Neither Guts nor Gears — pinned rules text (v2026-09-21)
+
+This is the pinned plain-text rules for the blind rules encoding (port-planning
+runbook section 3b, docs/rules-verification.md). It is a verbatim copy of the
+operative rules of port/neither-guts-nor-gears/GAME-DESIGN.md (version
+2026-09-21), minus markdown code fences and image embed lines (the three map
+images are visual references only; section 13's text map data is retained).
+The map-coordinate lines themselves are kept as plain text lines. All wording
+is unchanged. Citation checks string-search THIS file after whitespace
+collapsing. Any later rules ruling updates this pin together with the rules.
+
+# Neither Guts nor Gears
+
+## Consolidated game design and developer handoff
+
+Version: 2026-09-21. Players: 2–6.
+
+This document combines **Neither Guts nor Gears — Game Design Document**, incorporating the September 18–19, 2026 revisions, with all 74 designer-confirmed rulings from the subsequent clarification conversation. The rulings are integrated into the rules where they apply. This document is the consolidated rules source for the developer; the original Word document and conversation are not required to understand the rules below.
+
+All costs and statistics are the current values. Superseded wording and historical cost comparisons are omitted from the operative rules. Section 16 maps every clarification to its location here. Section 13 contains complete text transcriptions of the maps, so this Markdown file remains usable by itself. The accompanying original map images are visual references.
+
+The rules decisions are confirmed. This handoff is not a completed Zekel port plan or approval of an implementation. Section 15 identifies the implementation work and bounded editorial interpretations that the developer must carry into port planning.
+
+## Contents
+
+1. [Overview and design principles](#1-overview-and-design-principles)
+2. [Components and limits](#2-components-and-limits)
+3. [Factions](#3-factions)
+4. [Setup](#4-setup)
+5. [Round structure](#5-round-structure)
+6. [Actions and collector payments](#6-actions-and-collector-payments)
+7. [Units buildings and research](#7-units-buildings-and-research)
+8. [Heroes](#8-heroes)
+9. [Battle](#9-battle)
+10. [Battle strategy cards](#10-battle-strategy-cards)
+11. [Treaties](#11-treaties)
+12. [Victory and continued participation](#12-victory-and-continued-participation)
+13. [Map layouts and exact tile data](#13-map-layouts-and-exact-tile-data)
+14. [Worked examples](#14-worked-examples)
+15. [Zekel implementation handoff](#15-zekel-implementation-handoff)
+16. [Clarification coverage](#16-clarification-coverage)
+
+## 1 Overview and design principles
+
+Six factions—three wizard factions and three human or robot factions using the robot rules—compete on a small hex map for five resources and four paths to victory. Players build collectors, units, buildings, and research; move and fight in one-hit-kill battles; claim heroes as their culture grows; and enter binding treaties.
+
+**Diplomacy first.** Diplomacy is the intended winning path. Non-violent solutions should be the best option available.
+
+**War is expensive.** Battles resolve quickly and lethally, but rebuilding requires collector commitments and access to the center over multiple rounds.
+
+**Collector economy.** Resources do not stockpile. Collectors produce resources when placed to pay for an action and remain committed until upkeep. Costs therefore limit both the size of a purchase and total spending across the round. Spending collectors on one purchase can prevent another purchase that round. Tile access and the distribution of collectors among resource types matter as well as total collector count.
+
+**Culture is the clock.** Cultural victory requires 35 culture per player: 70 at two players, 140 at four, 210 at six (designer ruling #119, 2026-10-01; ruling #108 had it at 50 per player, #99 at 25). A typical game is expected to run about 20 rounds. There is no round cap.
+
+**No elimination at four or more players.** A player whose Leader dies stays in the game but cannot initiate victory. They can share a direct Culture Treaty partner's victory. There is no automatic recovery or free replacement base after losing all map presence. At two or three players, the first Leader kill ends the game. If every Leader is dead and nobody has won, the game is a draw.
+
+**Fixed center.** The printed maps share the same 12 central resource tiles: 8 ore, 2 oil, and 2 ether. Only water and wood scale with player count. Economy heroes can temporarily overwrite the resource at their location.
+
+The five resources are **Water, Wood, Ore, Oil, and Ether**. On the printed maps, water and wood surround the center; ore, oil, and ether occur in the center.
+
+There are four victory paths: Military, Cultural, Economic, and Technological. Check victory immediately when a condition is met by an eligible player. If two players meet a condition at the same moment, first-player order decides. Full eligibility, thresholds, and shared-victory rules are in section 12.
+
+## 2 Components and limits
+
+| Component | Supply | Use or limit |
+| --- | --- | --- |
+| Map board | 1 | Hex map with Technology and Culture tracks; three layouts by player count. |
+| Faction boards | 6 | Hold buildings and off-map pieces. |
+| First-player token | 1 | Determines first-player order. |
+| Building tokens | 3 per ordinary building type | One per player of the relevant species. Ordinary buildings are one per player. |
+| Base tokens | 3 per player | Includes the free starting base. Castles and Homes are map pieces. |
+| Mana Reserve tokens | 4 per wizard player | Maximum four; not subject to the ordinary one-building limit. |
+| Hero units and hero cards | 20 each | Unique shared hero pool. |
+| Battle strategy cards | 20 | Exact deck composition in section 10; discards can be reshuffled. |
+| Subject tokens | 30 | Ten per wizard player (designer ruling #118, 2026-10-01; was five); kept off the map on the faction board. |
+| Core tokens | 45 (two-player box) | Fifteen per robot player plus the Economic spend's extra on the map in play — 16 / 20 / 30 per robot player (designer rulings #89, #91, #115, #120 and #133); distinguish unpurchased supply from owned unallocated reserve. |
+| Collector tokens | by map, per player | Surfs for wizards: the Economic spend's count — 12 / 16 / 26 by layout (designer rulings #89, #91, #115, #120 and #133). Fixed typed platforms for robots: one water, wood and ore collector per tile of that resource on the map in play, plus 4 oil and 2 ether on every map (designer ruling #116, 2026-10-01). |
+| Other unit tokens | 15 per unit type | Five per player of the relevant species for each non-collector, non-Core, non-Subject type. Only one active spy assignment per player despite physical supply. |
+| Research cards | Per faction | Wizard and robot technology catalogs in section 7. |
+| Action cards | 54 | Three Build, three Move/Battle, and three Research per player in the physical supply. Start with one of each; set the rest aside. A second card of each kind comes from the stated hero effects, and a third from research (§6.5, §7.6, §7.10; designer ruling #86, 2026-09-25). |
+| Treaty tokens | 30 | Five per player, one per treaty type. Exchange matching tokens with a partner. |
+| Alternate resource tiles | 3 | One per Economy hero with an overlay (Ida, Derrick, Mayhew — Dowser lost hers, designer ruling #106, 2026-09-26); follow that hero. |
+| Modifier tokens | Physical quantity not specified | Mark Enhance, Dehance, Ice Blast, and battle-card modifiers. No gameplay limit on effects from token scarcity is specified. |
+
+### Robot collector supply
+
+| Collector type | Two players | Three to four | Five to six |
+| --- | ---: | ---: | ---: |
+| Water | 4 | 7 | 10 |
+| Wood | 3 | 6 | 9 |
+| Ore | 3 | 5 | 5 |
+| Oil | 1 | 1 | 1 |
+| Ether | 1 | 1 | 1 |
+| **Total** | **12** | **20** | **26** |
+
+These limits are fixed by type, not an interchangeable pool (designer rulings #89 and #91, 2026-09-25: the printed 3/3/3/1/1 plus the spend's extra, shared among water, wood and ore in proportion to the map's tiles of each). The starting water and wood collectors count toward these limits.
+
+Destroyed non-hero unit tokens, collectors, platforms, Cores, and bases return to their available recruitment supply. They may be bought again at normal costs, prerequisites, and placement restrictions. A destroyed Core returning to supply is **not** an owned unallocated Core and cannot be reassigned without being purchased again.
+
+A killed non-Leader hero is permanently removed and cannot be claimed again. Leaders cannot be replaced.
+
+## 3 Factions
+
+Faction determines identity and color. There are two mechanical species rule sets: wizard and robot. The robot side includes two human factions that field robots. Species restrictions on heroes apply to the mechanical side, not the fictional ancestry of its people.
+
+| Faction | Side | Color | Identity |
+| --- | --- | --- | --- |
+| The Covenant | Wizard | White | The binding old order of wizards. Holds that robots are an abomination and must be destroyed. |
+| The Schism | Wizard | Red | Broke from the Covenant. Also considers robots an abomination, but other wizards are the priority enemy. |
+| The Brass Circle | Wizard | Blue | Wizards who let the gears in. Open-minded about robots. |
+| The Ledger | Robot | Purple | Non-wizard humans who funded robot research. See robots as line items and want them owned. |
+| The Foundry | Robot | Yellow | Non-wizard humans who built the robots with the Ledger's money. Want robots free. |
+| The Unbolted | Robot | Green | Robots who took themselves apart from their owners. Believe all humans must die for them to be free. |
+
+Design note: Covenant, Schism, and Circle all describe groups bound by agreement, and each name expresses its relationship to the others. The two human factions are institutions. The robots are a condition rather than an organization. These identities are lore, not additional movement, combat, or diplomatic restrictions.
+
+## 4 Setup
+
+1. Select the map for the player count: two-player, three-to-four-player, or five-to-six-player.
+2. Each player chooses a faction and takes its color, board, buildings, action cards, and research cards.
+3. Each player starts with one Build, one Move/Battle, and one Research card. Set the remaining action cards aside.
+4. Randomly select the setup first player.
+5. In player order, each player chooses an eligible hero from the shared pool as their **Leader**. The Leader retains its hero abilities and gains +2 DEF. Starred heroes in section 8 are recommended Leaders, not mandatory selections. Observe species restrictions.
+6. In reverse player order, each player chooses an unoccupied numbered starting location and places their free starting base and Leader there.
+7. Give each wizard three Surfs (designer ruling #100, 2026-09-26; two before it). Give each robot four Cores, two water collector platforms and two wood collector platforms (designer rulings #81, #85). The Cores permit those four starting platforms to function; upkeep allows reallocation.
+8. Set aside the remaining unit supplies and prepare the shared hero pool and shuffled 20-card battle strategy deck.
+
+At three players, **all four** numbered starting locations are available; leave one unused. At five players, **all six** are available; leave one unused. There is no prescribed excluded location.
+
+The first upkeep **does rotate** the first-player token. The randomly chosen setup first player drafts a Leader first, but the next player in turn order starts round one's planning.
+
+Starting units and the starting base count toward their owner's unique-type technology progress. Wizards start with maximum mana 5; upkeep sets current mana to maximum.
+
+## 5 Round structure
+
+### 5.1 Upkeep
+
+Perform the upkeep steps:
+
+1. Rotate the first-player token, including before the first planning phase of the game.
+2. Retrieve collectors from the map so surviving collectors become available for the new round.
+3. Robots may reallocate owned Cores among platforms, regardless of distance. Unallocated Cores are held on the faction board.
+4. Wizards reset current mana to maximum.
+5. Return played action cards to their owners for planning. Unplayed cards are retained. Remove extra action cards granted by heroes that died in the preceding round instead of refreshing those cards.
+
+### 5.2 Planning
+
+Starting with first player, each player in turn places one owned action card face up on top of the **Action Stack**, or passes. Passing is final for the round. Continue until everyone has passed.
+
+Each individual action card may be added to the stack once per round. Extra hero-granted cards and researched Extra cards follow the same rule, so a player may place up to three cards of one kind in a round (designer ruling #86, 2026-09-25).
+
+### 5.3 Action phase
+
+Take the top card from the stack. Its owner is the **active player** and performs that action. Continue until the stack is empty. This is last-in, first-out: the last card placed resolves first.
+
+The owner may decline a queued action even if a legal action exists. Skipping uses the card for this round; it returns at upkeep unless a hero-death rule removes it. Skipping Build does not commit collectors.
+
+Treaty formation may occur at the start or end of the active player's action, before its effects begin or after they finish. It cannot interrupt a purchase, movement, battle, or other resolving effect. One-off collector-access agreements are separately allowed before each purchase's payment is committed.
+
+### 5.4 Culture income
+
+Award culture in first-player order, checking victory immediately after each eligible gain. **Finish all players' income before any milestone hero is claimed**, unless victory has already ended the game.
+
+| Source | Culture per round |
+| --- | --- |
+| Each wizard Subject | +1, or +2 with an Amphitheatre |
+| Each owned unallocated robot Core | +1 |
+| Robot Third Space | +5 |
+| Active treaty | Its listed amount to each partner |
+| Chronicler Ottoline Vey in play | +5 |
+
+Chronicler is the only Culture hero with automatic culture income. Foreman, Envoy, and Quartermaster provide only their printed abilities; treaties enabled by Envoy provide their own separate income. A reserved hero provides no income.
+
+### 5.5 Milestone hero claims
+
+If the game continues after all culture income, award a hero for each newly reached milestone. The milestones are **5%, 15%, 30%, 50% and 75% of the culture target**, rounded up (the printed 5, 15, 30, 50, 75 at a target of 100; designer rulings 2026-09-24, #99, #108 and #119).
+
+| Players | Culture to win | Milestones |
+| --- | ---: | --- |
+| 2 | 70 | 4, 11, 21, 35, 53 |
+| 3 | 105 | 6, 16, 32, 53, 79 |
+| 4 | 140 | 7, 21, 42, 70, 105 |
+| 5 | 175 | 9, 27, 53, 88, 132 |
+| 6 | 210 | 11, 32, 63, 105, 158 |
+
+Proceed in first-player order, with each player who is owed a hero choosing **one**. Repeat this order for players still owed heroes. A player owed two does not choose both before another player gets their first. Stop offering claims when the shared pool is exhausted; there is no replacement or recycling of killed heroes.
+
+A player without a base chooses and reserves the hero now, rather than delaying the choice or losing the reward. No ability or acquisition reward operates while the hero is reserved. A culture-producing hero claimed in this step does not retroactively add income to the income step that has already finished.
+
+### 5.6 End of round and ordering
+
+For treaty breaking, **end of round means after the culture phase**, including its hero claims. Apply the treaty's breaking conditions. If victory has ended the game, there is no subsequent treaty-breaking window that changes its winners.
+
+When order matters outside battle, use first-player order. Battle has the explicit ordering rules in sections 9 and 10.
+
+## 6 Actions and collector payments
+
+### 6.1 Collectors produce resources when committed
+
+Build and Research use the same payment system. Place available collectors onto eligible map locations. Each collector produces one resource of that location's current type. A wizard Surf can collect any resource; a robot collector can collect only its printed resource type and must have a Core to function.
+
+A collector used this way remains committed on the map until upkeep and **cannot produce or pay again that round**. It can still anchor a later collector's placement. Resources do not carry over between actions; unused resources expire when the action ends.
+
+Two collectors may not share a location. A collector may be placed:
+
+- On a location with another owned unit, or adjacent to an owned unit.
+- On or adjacent to an owned base, even when no unit is nearby.
+- Adjacent to another collector placed during this action or committed during an earlier action this round.
+- Using a partner's units and bases as placement anchors — on their location or adjacent to it, as with your own — when Shared Resources or Open Borders is active (designer rulings 2026-09-24).
+
+All occupation, permission, and collector-type restrictions still apply. A location with another player's unit or base is that player's location.
+
+Surplus placement is permitted to extend reach. A collector placed on an intervening tile may produce a resource not needed for the purchase. It still becomes committed until upkeep. This permission does not refresh earlier collectors.
+
+Collectors are non-combatants and never destroy anything. **They do not move during Move/Battle actions or retreat with armies.** Their movement is resource placement and upkeep retrieval; destruction can remove them earlier.
+
+Two designer rulings of 2026-09-26 bend the one-collector-per-location and use-it-or-lose-it rules: a robot with Collector Optimizations may put two of its own collectors on one location, and an access partner's collector may share a location with its collectors when that partner has the research too, never more than two on a location (ruling #102); a wizard with Haste has each committed Surf produce two of its tile's resource and banks whatever a purchase does not spend for later purchases in the same round, in full or in part, the bank emptying at upkeep (ruling #101). Neither changes the Economic spend, which needs its full count of collectors on distinct tiles.
+
+### 6.2 Access and complete payment are agreed before commitment
+
+For each purchase, declare the purchase and propose a complete legal collector payment. Obtain any required access agreement before committing those collectors. If permission is refused, revise the placements or choose another purchase without spending the collectors in the rejected proposal.
+
+Shared Resources and Open Borders automatically grant collection access on a partner's locations and adjacency to a partner's units. Peace, Culture Treaty, and Shared Tactics do not. Without an access-granting treaty, the location's owner may permit a specified collector on a specified location to pay for a **Build or Research** action. Agree on access separately for each purchase before committing its payment. This is not automatic consent and does not establish a treaty.
+
+An authorized collector may remain beside the consenting player's combat units until upkeep without passive destruction for lacking its own combat protection. The agreement's protection covers that collector's stay after payment. It does not make the collector immune to attacks or protect it from unrelated players.
+
+When an ability permits two purchases in an action, resolve this payment procedure separately for each. Each uses separate collectors. Failure or revision of the second purchase does not undo the first.
+
+### 6.3 Build or recruit
+
+Normally buy **one unit, building, or base per Build action**, paying its listed cost. Foreman Hadrik Stoll permits two unit or building purchases, each paid with separate collectors. Base buildings remain subject to their base-placement and three-base limits.
+
+A robot may buy a Core together with the platform it will occupy in the same Build purchase, paying both costs. An owned unallocated Core may instead be installed in a newly built platform. An Infiltrator is the explicit no-Core exception.
+
+Newly built map units are placed at any owned base. Subjects go on the faction board; unallocated Cores go into the off-map owned reserve; spies are assignments to heroes rather than separate map units.
+
+A newly recruited collector is immediately available, including for a second purchase in the same Build action when Foreman permits one. It must still satisfy placement, resource type, and Core requirements.
+
+Build a new base **on a tile containing an owned unit and no opposing unit**. This requirement applies even when the player has no bases. There is no adjacent-placement recovery exception. Maximum bases: three, including the starting base. A baseless player cannot place new map units or heroes until a base is rebuilt; milestone heroes can be reserved under section 8.
+
+An Economic victory attempt is a special Build spend described in section 12: pay its complete resource requirement and build nothing.
+
+### 6.4 Move or battle
+
+Move any number of your eligible mobile units from **one location to one adjacent location**. Immobile Combat Platforms and collectors cannot move this way. Coreless platforms cannot act.
+
+If the destination contains opposing combat units, begin a battle. Open Borders permits shared occupation without combat. Peace prohibits entry into the partner's locations and an attack on a location holding a Peace partner's units. Other treaties do not grant movement access or make partners military allies.
+
+If a destination contains only unprotected opposing non-combat pieces or Coreless platforms, no battle is fought; entering combat units remove those pieces under section 9. Collectors and other non-combat pieces do not destroy anything. Authorized collector occupation has the exception in section 6.2.
+
+Archmage Elara's spell, if used, occurs at the start of a Move/Battle action before movement. Movement after that spell is optional. See her roster entry for its separate resolution restrictions.
+
+### 6.5 Research
+
+Normally make **one** of these purchases:
+
+- Unlock one eligible unresearched technology, paying its research cost and meeting its building prerequisite.
+- Buy one battle strategy card, paying **1 water + 1 wood + 1 ore + either 1 ether or 1 oil**, then drawing randomly from the shared deck. This purchase requires the Embassy or Defense Research Station.
+- Research an **Extra action card** (designer ruling #86, 2026-09-25): the Extra Build, Extra Move/Battle and Extra Research Card technologies each cost **1 water + 1 wood + 1 ore + 1 of the species' own resource — ether for wizards, oil for robots** (designer ruling #128, 2026-10-08; before it, either 1 ether or 1 oil, the price of a battle strategy card), and each may be researched once. The player takes the matching spare action card from the supply and keeps it for the rest of the game; it is not tied to any hero. Wizards unlock them through the Library of Enchantment (Build), the Library of Evocation (Move/Battle) and the Library of Illusion (Research); robots through the Advanced Research Station (all three).
+
+Professor Anselm Kettering allows up to two Research purchases: two technologies, two battle cards, or one of each. Normal prerequisites apply to both, and each requires payment from separate collectors.
+
+Dr. Elayn Smyth's free research is a hero reward, not a normal Research purchase; it waives both resource cost and prerequisite building.
+
+## 7 Units buildings and research
+
+### 7.1 Shared combat and piece definitions
+
+A hit lands when **DMG is greater than or equal to DEF**. One hit kills; damage is not accumulated as hit points. AoE attacks hit every unit on the opposing side of the battle and never allies. That includes the opposing side's collectors at the battle location, which die to any hit (designer ruling 2026-09-24).
+
+Units with DMG 0 cannot attack and their DMG cannot be increased. They can use eligible support abilities. A **combat unit** has an Init, DMG, and DEF line, including heroes, Clerics, Enchantresses, and Wall Platforms even when DMG is zero. Only combat units protect locations or destroy unprotected enemy bases, collectors, and Coreless platforms.
+
+Collectors have no combat stats and die to any hit. Subjects and unallocated Cores are off the map and cannot be attacked there. Spy assignments have no separate combat piece: their host heroes retain their hero stats, rather than becoming statless units. An allocated Core is destroyed when its platform is destroyed.
+
+An Open Borders ally's combat units protect your bases, collectors, and platforms as their own. Shared Resources alone does not establish that military alliance, but collection permission still protects a visiting collector from the consenting player's passive removal.
+
+### 7.2 Wizard units
+
+| Unit | Cost | Init | DMG | DEF | Abilities and requirements |
+| --- | --- | ---: | --- | ---: | --- |
+| Surf | 2 water | — | — | — | Collector; may collect any resource. Maximum = the Economic spend's count on the map in play: 12 / 16 / 26 (designer rulings #89, #91, #115, #120 and #133). |
+| Subject | 1 water + 1 wood | — | — | — | Off-map faction-board token. +1 culture per round, or +2 with Amphitheatre. Maximum 10 (designer ruling #118, 2026-10-01; was 5). |
+| Evoker | 2 wood + 1 ore | 50 | 2 | 1 | Wizard Missile costs 1 mana per attack. Researched Ice Blast costs 3 mana and gives one unit −100 Init. Researched Fiery Explosion costs 3 mana and deals 2 DMG AoE, plus the Evoker's DMG bonuses (designer ruling 2026-09-24). |
+| Illusionist | 2 wood + 1 ore | — | — | — | Requires Library of Illusion. Assigns a hero as a spy; no separate map piece. Maximum one active assignment. |
+| Dragon | 2 wood + 2 ore + 1 ether | 10 | 3 AoE | 2 | No mana cost. Requires Dragon Hoard. |
+| Enchantress | 1 water + 1 wood + 1 ether | 75 | 0 | 1 | Requires Library of Enchantment. Enhance: +2 DMG to one unit for 2 mana (designer ruling #109, 2026-09-27; was +1). Researched Dehance: −1 DEF to one unit for 2 mana. |
+| Cleric | 2 water + 1 ether | 2 | 0 | 1 | Requires Temple. Each Cleric may prevent one death per initiative pass for 5 mana, including its own or an allied unit's death in the same battle. |
+
+### 7.3 Wizard spies
+
+Recruiting an Illusionist is public, including its purchase. Privately choose one owned hero to carry the spy abilities. Hero identity, ownership, location, and Leader status stay public; the **assignment** is secret. Keep the relevant hero-card information concealed so that physically selecting the spy does not reveal it.
+
+The assigned hero must be in the battle to use the spy abilities:
+
+- **Decoy:** when that hero is attacked, including by Spy Attack or Invisible, reveal the spy. The hero takes no damage from the attack and may move to an eligible adjacent allied-unit space, or, if none is eligible, an eligible empty adjacent space. The movement is optional; the attack avoidance is the effect of revealing. Opponents cannot use Decoy to occupy the originating attack's starting hex while the battle continues. Decoy moves only its individual hero, not the whole army.
+- **Invisible, if researched:** on the hero's activation, reveal the spy to instantly kill one opposing hero in the same battle. This replaces the normal attack. It cannot be used against a side with a standing Wall Platform in the battle (designer ruling #93, 2026-09-25), nor against the side of a wizard whose Castle is on the battle tile (designer ruling #98, 2026-09-25), nor against a side with Envoy Sable Marrow in the battle (designer ruling #105, 2026-09-26). Decoy and Cleric protection can prevent that death as applicable.
+
+Only one Illusionist assignment may be active at a time. Revealing ends the spy assignment. Appointing a replacement on a subsequent Build action requires **another normal Illusionist purchase for 2 wood + 1 ore**, consuming one purchase. It is not a free reassignment.
+
+There is no Detection: no one may inspect another player's spy card (designer ruling #121, 2026-10-01, removed the wizard research and the robot Infiltrator ability).
+
+### 7.4 Wizard mana and persistent battle modifiers
+
+Maximum mana begins at 5. Each Mana Reserve adds 5 to maximum, up to four Reserves and maximum mana 25. Current mana resets to maximum during upkeep. Mana spent across different battles in a round comes from this same pool.
+
+**Mana Shield**, if researched, is available when an Evoker, Enchantress, or Cleric is hit. Spend mana to reduce that hit's DMG by 1 per mana. If the resulting DMG is less than the unit's DEF, it survives. No hero, Dragon, or other unit receives Mana Shield eligibility from this research.
+
+Enhance and Dehance may be cast repeatedly on the same unit during a battle, with each cast adding to the effect. Each activation still permits only one activated action. All spell and battle-card modifiers, including Ice Blast, last for the rest of that battle. DMG and DEF cannot fall below zero; inherent DMG-0 units cannot gain attack damage.
+
+### 7.5 Wizard buildings
+
+Ordinary buildings are placed on the faction board and are one per player. They cannot be lost even if every base is destroyed. Castles are bases on the map. Mana Reserve is the other repeatable building, limited to four.
+
+| Building | Cost | Effect |
+| --- | --- | --- |
+| Castle | 3 wood + 1 ore | Additional or replacement base on the map. Spawns map units. Three-base total limit; starting Castle is free. In a battle on its tile, no spy (Invisible or Spy Attack) can kill a hero on its owner's side (designer ruling #98, 2026-09-25). |
+| Library of Evocation | 2 wood + 1 water | Permits Ice Blast, Fiery Explosion, Mana Shield and Extra Move/Battle Card research. |
+| Library of Illusion | 2 wood + 1 ore | Unlocks Illusionist recruitment and Invisible and Extra Research Card research. |
+| Library of Enchantment | 1 water + 2 wood + 1 ore | Unlocks Enchantress recruitment and Dehance and Extra Build Card research. Designer ruling #125, 2026-10-08, added the water (was 2 wood + 1 ore). |
+| Dragon Hoard | 2 ore + 1 water + 1 ether | Unlocks Dragon recruitment. |
+| Temple | 2 wood + 2 water | Unlocks Cleric recruitment. |
+| Embassy | 2 wood | Unlocks treaty formation and battle-card purchases. |
+| Amphitheatre | 3 wood + 1 water | Adds +1 culture per Subject per round, making each Subject worth +2 total. |
+| Mana Reserve | 2 wood + 1 water | +5 maximum mana. Maximum four. |
+
+### 7.6 Wizard research
+
+| Research | Prerequisite | Cost | Effect |
+| --- | --- | --- | --- |
+| Ice Blast | Library of Evocation | 2 water + 1 wood (designer ruling #127, 2026-10-08; was 1 water + 1 wood) | Evoker may spend 3 mana to give one unit −100 Init for the battle. |
+| Fiery Explosion | Library of Evocation | 1 wood + 1 ore | Evoker may spend 3 mana to use its 2 DMG AoE spell. |
+| Mana Shield | Library of Evocation | 2 ether | Evokers, Enchantresses, and Clerics may reduce an incoming hit's DMG at 1 mana per point. |
+| Invisible | Library of Illusion | 1 water + 1 wood | An assigned Illusionist hero may reveal on activation to instantly kill an opposing hero. |
+| Dehance | Library of Enchantment | 1 water + 1 wood | Enchantress may spend 2 mana to give one unit −1 DEF for the battle. |
+| Extra Move/Battle Card | Library of Evocation | 1 water + 1 wood + 1 ore + 1 ether (designer ruling #128) | A second Move/Battle action card for the rest of the game (designer ruling #86, 2026-09-25). |
+| Extra Research Card | Library of Illusion | 1 water + 1 wood + 1 ore + 1 ether (designer ruling #128) | A second Research action card for the rest of the game (designer ruling #86, 2026-09-25). |
+| Extra Build Card | Library of Enchantment | 1 water + 1 wood + 1 ore + 1 ether (designer ruling #128) | A second Build action card for the rest of the game (designer ruling #86, 2026-09-25). |
+| Haste | Library of Enchantment | 2 ore + 1 ether (designer ruling #126, 2026-10-08; was 1 ether + 1 ore) | Each committed Surf produces two of its tile's resource. Surplus production from any purchase is banked and may pay later purchases this round, in full or in part; the bank empties at upkeep. The Economic spend still needs its full count of collectors on distinct tiles (designer ruling #101, 2026-09-26). |
+
+### 7.7 Robot Cores
+
+Robot platforms function only with an allocated Core, **except Infiltrators**, which need no Core. A Core is allocated when a platform is built, either from owned unallocated reserve or through a combined Core-plus-platform purchase. During upkeep, Cores may be reallocated to any platform regardless of distance.
+
+A Coreless platform is not a unit, cannot act, and provides no protection. It is destroyed when left uncontested with enemy combat units. When an operating platform is destroyed, its allocated Core is destroyed too; both tokens return to purchase supply.
+
+Owned **unallocated Cores** are a public off-map reserve on the faction board. Each produces +1 culture in the culture phase and may be allocated during upkeep. They cannot be attacked in this reserve. They are distinct from unpurchased supply and destroyed Core tokens awaiting repurchase.
+
+### 7.8 Robot units
+
+| Unit | Cost excluding a separate Core | Init | DMG | DEF | Notes |
+| --- | --- | ---: | --- | ---: | --- |
+| Core | 1 water | — | — | — | Maximum 15 owned tokens; can be purchased with its platform in one Build purchase. |
+| Water collector | 1 water | — | — | — | Water only; one per water tile on the map in play (7 / 10 / 21; designer ruling #116). Needs a Core. |
+| Wood collector | 1 water | — | — | — | Wood only; one per wood tile on the map in play (6 / 8 / 19; designer ruling #116). Needs a Core. |
+| Ore collector | 1 wood | — | — | — | Ore only; one per ore tile on the map in play (7 / 7 / 8; designer ruling #116). Needs a Core. |
+| Oil collector | 1 ore | — | — | — | Oil only; four per robot player on every map (designer ruling #116). Needs a Core. |
+| Ether collector | 1 oil | — | — | — | Ether only; two per robot player on every map (designer ruling #116). Needs a Core. |
+| Spinner Platform | 1 wood (designer ruling #131, 2026-10-18; was 2) | 5 | 2 | 1 | Requires Combat Frame Production. Base DEF is **1**, not 2. |
+| Spitter Platform | 1 wood + 1 ore | 95 | 1 | 1 | Requires Combat Frame Production. |
+| Infiltrator Platform | 1 water + 1 wood + 1 oil | — | — | — | Requires Diplomatic Research Station. No Core required. Assigns a hero as a spy; no separate map piece. |
+| Immobile Combat Platform | 2 wood + 2 ore | 98 | 6 | 1 | Exists only at a base. Cannot move, Rally, or retreat. DMG 6 / DEF 1 by designer ruling #94 (2026-09-25; was 3 / 3): it can kill a Leader, and a single surviving small unit can take it out. |
+| Large Combat Platform | 2 wood + 1 ore + 1 oil | 60 | 3 AoE (designer ruling #130, 2026-10-09; was 2) | 3 | Requires Combat Frame Production. |
+| Wall Platform | 2 wood (designer ruling #132, 2026-10-18; was 3) | 1 | 0 | 3 (designer ruling #107, 2026-09-26; was 4) | Requires Defense Research Station. Moves normally. Must be targeted first by single-target attacks while it stands, and while it stands no spy (Invisible or Spy Attack) can kill a hero on its side (designer ruling #93, 2026-09-25). |
+
+### 7.9 Robot spies
+
+Recruiting an Infiltrator is public and requires its normal cost and Diplomatic Research Station, but **no Core**. Privately assign one owned hero to carry its abilities. The hero remains a normal hero with a secret spy assignment and must be in the battle to use that assignment.
+
+- **Spy Attack:** reveal the spy on the hero's activation to instantly kill an opposing hero in the same battle. It replaces the normal attack. It cannot be used against a side with a standing Wall Platform in the battle (designer ruling #93, 2026-09-25), nor against the side of a wizard whose Castle is on the battle tile (designer ruling #98, 2026-09-25), nor against a side with Envoy Sable Marrow in the battle (designer ruling #105, 2026-09-26). Decoy or Cleric protection can prevent the death.
+
+Only one Infiltrator may be active at a time. Revealing expends the Infiltrator assignment. A replacement may be recruited on a subsequent Build action through a normal purchase. The host hero is not itself expended merely because the assignment is revealed.
+
+### 7.10 Robot buildings and research
+
+Robot faction-board buildings are one per player and cannot be lost. Home is a map base and may be rebuilt or added within the three-base limit.
+
+| Building | Cost | Effect |
+| --- | --- | --- |
+| Home | 3 wood + 1 ore | Additional or replacement base; spawns map units. Starting Home is free. |
+| Combat Frame Production | 2 wood + 1 ore | Unlocks Spinner, Spitter, and Large Combat Platforms. |
+| Diplomatic Research Station | 2 wood + 1 water | Unlocks Infiltrator recruitment and treaty formation. |
+| Defense Research Station | 2 wood + 1 ore | Unlocks Wall Platform recruitment and battle-card purchases. |
+| Third Space | 3 wood + 1 water + 1 ore | +5 culture per round. |
+| Advanced Research Station | 2 ore + 1 wood | Unlocks research of the Extra Build, Extra Move/Battle and Extra Research Cards. A building type, so it counts toward technology like any other (designer ruling #86, 2026-09-25). |
+
+| Research | At | Cost | Effect |
+| --- | --- | --- | --- |
+| Metal Platforms | Home | 2 wood + 1 ore + 1 oil | All robot platforms gain +1 DEF. Heroes are not affected. This does not give statless pieces a combat stat line. |
+| Extra Build Card | Advanced Research Station | 1 water + 1 wood + 1 ore + 1 oil (designer ruling #128) | A second Build action card for the rest of the game (designer ruling #86, 2026-09-25). |
+| Extra Move/Battle Card | Advanced Research Station | 1 water + 1 wood + 1 ore + 1 oil (designer ruling #128) | A second Move/Battle action card for the rest of the game (designer ruling #86, 2026-09-25). |
+| Extra Research Card | Advanced Research Station | 1 water + 1 wood + 1 ore + 1 oil (designer ruling #128) | A second Research action card for the rest of the game (designer ruling #86, 2026-09-25). |
+| Collector Optimizations | Home | 1 oil + 2 ore | Two of your collectors may share one location. An access partner's collector (Shared Resources or Open Borders) may share a location with yours only if that partner has this research too. Never more than two collectors on a location. The Economic spend still needs its full count of distinct tiles (designer ruling #102, 2026-09-26). |
+| Core Integration | Home | 1 oil + 2 water | The Core bought together with a platform costs nothing (it still comes from the Core supply). A Core bought on its own still costs 1 water (designer ruling #103, 2026-09-26). |
+| Self Destruct | Home | 2 ore + 1 wood + 1 oil | In battle, any of your robot units (not heroes) with printed DMG 1 or more may self-destruct on its activation instead of attacking: its current DMG + 3 is dealt to every other unit and hero in the battle, every side — your own pieces and allies included — with the reactions of an area attack (Decoy, Mana Shield, Cleric); collectors on the tile, every side, are destroyed as by any area attack. The unit is lost and its Core returns to the supply. Killing your own Leader this way earns no Military credit (designer ruling #111, 2026-09-27). |
+
+### 7.11 Combat reference
+
+This table describes unmodified combat stat lines. Buffs, debuffs, research, and Leader status change actual matchups. Non-combat collectors are removed by any hit rather than acquiring a numeric DEF from this table.
+
+| Damage | Example attackers at this damage | Newly reached base-defense tier |
+| ---: | --- | --- |
+| 1 | Spitter; non-military heroes | DEF 1: Spinner, Spitter, Evoker, Enchantress, Cleric. |
+| 2 | Spinner, Evoker, Large Combat | DEF 2: Dragon. |
+| 3 | Dragon, Immobile Combat, ordinary military heroes | DEF 3: Immobile Combat, Large Combat, Wall Platform (ruling #107), non-military heroes. |
+| 4 | Evo Angel; Elara's separate spell | DEF 4: military heroes. |
+| 5 | DMG 3 plus a +2 hero bonus | DEF 5: non-military Leaders. |
+| 6 | DMG 4 plus a +2 bonus, or DMG 3 plus +2 and +1 | DEF 6: military Leaders. |
+
+Metal Platforms raises numeric platform DEF by one. A normal military hero can threaten ordinary high-tier units, but Leader DEF generally requires additional bonuses or an instant-kill spy ability. Identical +2 hero bonuses do not stack.
+
+## 8 Heroes
+
+### 8.1 Claiming and reserving heroes
+
+There are 20 unique heroes in a shared finite pool. Each player chooses one Leader at setup and earns one additional hero at each of five culture milestones, which scale with player count (section 5.5; 4, 11, 21, 35, and 53 at two players). Maximum six heroes per player. Each crossed milestone gives a claim, even when several are crossed in one round. Use the alternating claim order in section 5.5. Dead non-Leader heroes never return to the pool. No heroes can be claimed once the available pool is exhausted.
+
+Place a claimed hero at any owned base. With no base, choose and reserve the hero now. It is owned and unavailable to others, but **none of its benefits work until it is placed**: no culture, tech point, action card, treaty unlock, purchase bonus, or one-time reward. Smyth's reward waits until placement in this case. Do not retroactively award missed income.
+
+Hero identity, ownership, location, and Leader designation are public. Concealing hero cards protects spy assignment, not those public facts. Spy recruitment is public; assignment is not broadcast to the table.
+
+### 8.2 Stats and effects
+
+| Hero category | Init | DMG | DEF |
+| --- | ---: | ---: | ---: |
+| Non-military: Culture, Economy, Technology | 30 | 1 | 3 |
+| Military, including Chaimidious and Elara | 70 | 3 | 4 |
+| Evo Angel | 80 | 4 | 4 |
+| Leader adjustment | Unchanged | Unchanged | +2 |
+
+A non-military Leader has DEF 5; a military Leader has DEF 6. Hero battle bonuses affect allied units only, with each roster entry's stated exclusions. Identical hero effects do not stack. Captain Rook and Kestrel Nine therefore do not supply +4 from their identical +2 effects.
+
+If a hero granting an extra action card dies, that card remains usable for the rest of the round, including an already queued action. Remove it during the next upkeep. This applies to Marshal, Quartermaster, and Archivist. Current-battle stat bonuses cease when their source is removed, with simultaneous-AoE handling as in section 9.5.
+
+Motherboard and Technomancer Greymore supply their five bonus points (designer ruling #113, 2026-09-30; #110 had four) only while alive, owned, and not reserved. Remove the bonus if they die before victory. Other Technology heroes do not grant an extra point merely because of their category. Only Chronicler supplies the Culture hero income bonus.
+
+### 8.3 Economy overlays
+
+Each Economy hero carries an alternate resource tile that follows it and overwrites the resource at its occupied location. If two Economy heroes occupy the same location, choose one overlay as active. If one player owns both, that player chooses; if different players own them, resolve the choice in first-player order. The active choice cannot be switched until one of the heroes moves.
+
+The printed terrain remains the underlying map resource. The overlay is tied to the hero's presence, not a permanently edited map tile. Section 15 distinguishes this representation from extra powers or permissions: an overlay does not waive a robot collector's type, permit a second collector on the tile, or refresh a spent collector.
+
+### 8.4 Complete roster
+
+An asterisk marks a recommended Leader. A species restriction applies both at setup and to later claims. Unmarked heroes are available to either species.
+
+| No. | Hero | Type | Effect |
+| ---: | --- | --- | --- |
+| 1 | Marshal Corvin Ashlock | Military | Gain one extra Move/Battle action card. Remove it at the upkeep after Marshal dies. |
+| 2 | Archmage Chaimidious * | Military | Gain a battle strategy card. |
+| 3 | Evo Angel * — robots only | Military | Uses Init 80, DMG 4, DEF 4 instead of ordinary military stats. |
+| 4 | Archmage Elara * — wizards only | Military | At the start of a Move/Battle action, before movement, may spend 5 mana to deal 4 damage to all units in an adjacent space except your own units and those of Open Borders or Peace allies. Movement afterward is optional. This is **not a battle**: battle cards, Clerics, Decoy, and Wall targeting do not apply. |
+| 5 | Warden Hesper Quill | Military | All other allied units in the battle gain +1 DEF. If Warden dies in an area attack, its bonus applies throughout that attack before casualties are removed. |
+| 6 | Captain Rook Malvane | Military | All other allied units in the battle gain +2 DMG, subject to the DMG-0 restriction. Does not stack with an identical hero effect. |
+| 7 | Kestrel Nine | Military | All other allied units in the battle gain +2 DMG, subject to the DMG-0 restriction. Does not stack with an identical hero effect. |
+| 8 | Chronicler Ottoline Vey * | Culture | +5 culture per round during the income step (designer ruling #114, 2026-09-30; +2 under the 2026-09-24 ruling). No income while reserved. |
+| 9 | Foreman Hadrik Stoll | Culture | May make two unit or building purchases per Build action, each paid with separate collectors. A collector bought in the first purchase may help pay the second. |
+| 10 | Envoy Sable Marrow * | Culture | Unlocks treaties. Existing treaties survive Envoy's death; forming new ones still requires an unlock held by either partner. In a battle Envoy is in, no spy (Invisible or Spy Attack) can kill a hero on Envoy's side (designer ruling #105, 2026-09-26). |
+| 11 | Quartermaster Bertram Hollis | Culture | Gain one extra Build action card. Remove it at the upkeep after Quartermaster dies. |
+| 12 | Dowser Wren Calloway | Economy | When placed, grants free collectors at once: two Surfs for a wizard (designer ruling #124, 2026-10-08; four before it); for a robot, four collectors, the owner choosing the type of each, each with a Core already in it; the grant stops at the supply limits (designer rulings #106, 2026-09-26, and #117, 2026-10-01 — one collector before it; her water overlay is gone). |
+| 13 | Prospector Ida Marrs | Economy | Occupied space becomes Ore while its overlay is active. |
+| 14 | Derrick Prime * — robots only | Economy | Occupied space becomes Oil while its overlay is active. |
+| 15 | Conjurer Mayhew * — wizards only | Economy | Occupied space becomes Ether while its overlay is active. |
+| 16 | Archivist Solenne Dray | Technology | Gain one extra Research action card. Remove it at the upkeep after Archivist dies. |
+| 17 | Professor Anselm Kettering | Technology | May make two Research purchases: technologies, battle cards, or one of each. Normal prerequisites and separate collector payments apply. |
+| 18 | Dr. Elayn Smyth * | Technology | Gain one unresearched technology from your species' list for free, waiving both cost and prerequisite building. Choose immediately, except that a reserved Smyth's reward waits until placement. |
+| 19 | Motherboard * — robots only | Technology | +5 bonus tech points while alive, owned, and in play (designer ruling #113, 2026-09-30; #110 had +4, printed +1). Robots only (designer ruling #123, 2026-10-01; either species before it). |
+| 20 | Technomancer Greymore * — wizards only | Technology | +5 bonus tech points while alive, owned, and in play (designer ruling #113, 2026-09-30; #110 had +4, printed +1). |
+
+### 8.5 Hero lore
+
+| Hero | Lore |
+| --- | --- |
+| Marshal Corvin Ashlock | Former head of the Ledger's private security. Sold his campaign maps to both sides the week the war started. |
+| Warden Hesper Quill | Siege-witch cast out of the Covenant for shielding a robot column. Now shields whoever pays. |
+| Captain Rook Malvane | Schism battle-mage who thinks the Covenant fights too politely. Drills any army into one that does not. |
+| Kestrel Nine | Decommissioned targeting core from the first uprising. Rents its firing solutions to wizards without irony. |
+| Chronicler Ottoline Vey | Writes the official history of whichever faction feeds her. Her version tends to become the true one. |
+| Foreman Hadrik Stoll | Ran the Foundry's assembly floors before the robots walked out. Can stand up two of anything before lunch. |
+| Envoy Sable Marrow | The only person both an Archmage and an Unbolted have agreed to sit across from. Nobody knows what she is. |
+| Quartermaster Bertram Hollis | Kept the Ledger's supply lines running through three embargoes. Finds a way to build when there is no way. |
+| Dowser Wren Calloway | Non-magical, and the wizards hate that she still finds water where they cannot. |
+| Prospector Ida Marrs | Mapped the ore ring before any faction claimed it. Still has the maps, still sells them. |
+| Archivist Solenne Dray | Curates the last library that holds both spellbooks and schematics. Lends to anyone who returns them. |
+| Professor Anselm Kettering | Dr. Smyth's former teacher. Insists he did the important half of the work. |
+
+## 9 Battle
+
+### 9.1 Trigger sides and protection
+
+Movement into opposing combat units begins a battle. A location containing only unprotected opposing collectors, non-combat pieces, or Coreless platforms does not require a battle: entering combat units remove those pieces. Only combat units destroy or protect pieces; permission for a collector is the explicit passive-destruction exception.
+
+Open Borders and Peace establish military allies. No other treaty does. Open Borders allies sharing a location **must** participate on the same side when it is attacked. There may be more than two players but no more than two sides. Existing occupants are defenders. A player may not attack a location holding a Peace partner's units.
+
+Record the originating attack's source hex. Opponents may not retreat or Decoy into that hex while this battle continues. It remains available for a stalemate return.
+
+### 9.2 Battle cards
+
+Each participant secretly commits an eligible battle strategy card **or no card**. Passing is permitted even when holding cards. Reveal all initial commitments together. Use the Counter/Extra batches and remaining-card sequence in section 10 before unit activations.
+
+### 9.3 Initiative passes
+
+Activate units from highest to lowest current initiative. Across opposing sides, defenders act first on a tie. Allied owners may agree on the order of tied units. If they disagree, the tied unit's owner who comes earlier in first-player order chooses which tied allied unit goes next. Each unit's own owner still chooses its action.
+
+Each unit has at most one activation per pass. On activation, choose **one attack or one activated combat ability**, or voluntarily pass. A passed activation is used for that pass. An Evoker cannot use both Wizard Missile and Ice Blast in one activation. Spy Attack and Invisible replace the hero's normal attack. Reactions such as Mana Shield, Decoy, and Cleric prevention follow their own eligibility and timing rather than consuming an extra offensive activation.
+
+Choose one target for a single-target attack. An AoE attack hits every opposing unit in the battle. A standing opposing Wall Platform must be the target of single-target attacks; AoE also hits it along with the other opposing units. Pay mana costs for spells as required. A robot unit whose owner has researched Self Destruct (section 7.10) may, on its activation instead of attacking, blow itself up: current DMG + 3 to every other unit and hero in the battle on every side, resolved as an area attack; the unit is then lost (designer ruling #111, 2026-09-27).
+
+Ice Blast immediately changes the remaining order for a target that has not yet activated. A target that already activated does not get another turn; the reduced initiative applies to its place in the next pass. The reduction persists for the battle, including negative initiative values.
+
+### 9.4 Single-target reaction order
+
+1. Declare the attack and target.
+2. If the target has eligible Decoy, its owner may reveal the spy to avoid the attack and optionally move the hero as permitted.
+3. If the attack would hit an eligible wizard, its owner may spend mana on Mana Shield.
+4. If the target would still die, an eligible Cleric may prevent the death.
+5. If no defense prevents death, remove the target.
+
+Every defensive option is optional. Declining one leaves later eligible defenses available. Instant-kill hero attacks do not create Mana Shield eligibility for heroes; Decoy and Cleric prevention remain the stated defenses against them. Elara's separate non-battle spell has its explicit exclusions.
+
+### 9.5 Area attacks and Clerics
+
+Resolve eligible protection choices **before simultaneous casualty removal** from an area attack. A Cleric that would die in the same attack may save another unit and then die itself. It may instead save itself.
+
+Each individual Cleric may prevent one death per initiative pass for **5 mana**. Two unused Clerics and 10 mana allow two saves. The Cleric may save its owner's or an allied player's unit in the same battle. The Cleric's owner chooses, pays, and consumes that Cleric's use for the pass; the recipient does not pay instead.
+
+Warden's DEF bonus applies throughout the area attack that kills Warden. Determine survival using that bonus, resolve protection, then remove casualties together. Do not recalculate the same hit against other units after removing Warden. Later attacks use their now-reduced DEF.
+
+Example: 4 DMG AoE kills a non-Leader Warden at DEF 4, but another military hero at DEF 5 including Warden's bonus survives. After casualty removal, that survivor's DEF is 4 for future attacks.
+
+### 9.6 Retreat
+
+After an initiative pass, if both sides remain, players may choose to retreat. Defenders declare first. Each allied player independently decides whether to retreat; one may leave while another continues fighting.
+
+Retreat withdraws **all of that player's mobile units together to one adjacent destination**. It cannot withdraw only a Leader while leaving mobile escorts fighting, and cannot split the withdrawing units among destinations. Immobile Combat Platforms remain; collectors also remain because their movement is limited to placement and upkeep retrieval. Decoy remains an individual-hero exception.
+
+Use an eligible adjacent space with allied units first. If none exists, use an eligible empty adjacent space. A distant allied army does not take priority over an adjacent empty destination. If no eligible adjacent destination exists, the player cannot retreat.
+
+For this purpose, a hex without units can count as empty despite containing bases or Coreless platforms owned by the retreating player or an Open Borders partner. Other players' pieces prevent it from qualifying as empty. Peace restrictions and other entry restrictions still apply. The protected attack-origin restriction also applies to retreat and Decoy.
+
+Retreat cards use these rules and withdraw all mobile units of the playing player, not every allied player's units. A card does not authorize an otherwise illegal destination or move an immobile unit.
+
+### 9.7 Stalemate and battle completion
+
+If a full initiative pass ends with **no unit killed**, the battle ends in a stalemate. All surviving attacking units still in that battle return together to the originating attack's source hex. This includes attacking Rally reinforcements from other locations; they do not return to their individual arrival hexes. Units that already left the battle are not moved again. The origin's protection ends with the battle.
+
+If the battle continues, repeat the initiative order for another pass, with persistent modifiers and mana already spent still in effect. Clerics' once-per-pass availability resets for the new pass. End combat when only one side remains, subject to immediate victory checks that may end the game earlier.
+
+At battle completion, an enemy combat presence destroys any unprotected opposing base, collector, or Coreless platform left in that location. Open Borders allies provide protection. Apply the authorized-collector exception only for the consenting player's passive removal, not as protection against unrelated enemies or attacks.
+
+Destroying an operating robot platform destroys its allocated Core. Return non-hero pieces to supply for repurchase. Killed non-Leader heroes are permanently removed, Leaders are not replaced, and leader-kill credit belongs solely to the owner of the killing unit or ability—not to every participating ally.
+
+## 10 Battle strategy cards
+
+### 10.1 Deck and purchases
+
+The shared deck contains exactly **20 cards**. Draws are random and card identities in hand are secret except to entitled Shared Tactics partners. A normal card purchase is a Research purchase requiring the Embassy or Defense Research Station and the payment in section 6.5.
+
+Played cards, including countered cards, go to a **public discard pile**, not back to their owners' hands. When the draw deck is depleted, the discard pile can be reshuffled to replenish it. This replaces the old rule that drawing stops permanently when the deck runs out. Recycling does not create extra copies. Cards still held by players or resolving in a battle are not available discards.
+
+| Copies | Type | Effect |
+| ---: | --- | --- |
+| 2 | Bonus | +1 DEF to all your units in the battle. |
+| 2 | Bonus | +1 DMG to all your units in the battle, subject to inherent DMG-0 immunity to increases. |
+| 2 | Bonus | −1 DEF to all opposing units in the battle. |
+| 2 | Bonus | −1 DMG to all opposing units in the battle. |
+| 2 | Extra | Play **up to two** additional battle strategy cards. |
+| 2 | Counter | Counter a battle strategy card that has not yet resolved. |
+| 2 | Rally | Move any number of your own eligible mobile units from adjacent locations into this battle. |
+| 4 | Retreat | Immediately retreat all your mobile units from this battle using normal retreat rules. |
+| 2 | Initiative | −100 Initiative to all opposing units in the battle. |
+
+### 10.2 Counter and Extra batches
+
+1. Reveal the initial simultaneous card-or-no-card commitments.
+2. Resolve that batch's **Counters first**, in first-player order. Choose a Counter's target when it resolves, after seeing revealed cards. It may target any eligible unresolved card, including a pending Extra, another unresolved Counter, or a deferred Bonus/Rally/Retreat/Initiative card. It cannot target an already resolved card.
+3. Resolve the batch's surviving **Extras**, in first-player order. Each player chooses zero, one, or two additional cards. Select and reveal the chosen cards **together**, before either acts. Added cards wait; they cannot interrupt the current batch.
+4. Once that batch's Extras finish, collect their added cards as the next batch. Resolve its Counters first and surviving Extras second, with the same first-player ordering. Repeat if an Extra adds another batch.
+
+An Extra must survive its batch's Counters before its owner selects or reveals additional cards. If countered, it grants no additional plays; the cards that could have been selected remain secret in hand.
+
+An Extra can add another Extra; that new card joins the next batch under the same process. Ordinary card ownership, sharing, and finite-hand constraints still apply. A Counter newly added by one original Extra cannot cancel another Extra that resolves in the original batch before added cards may act.
+
+### 10.3 Remaining effects
+
+Leave Bonus, Rally, Retreat, and Initiative cards unresolved while the Counter/Extra batches run. After those batches finish, resolve the surviving remaining cards in this fixed order:
+
+1. **Rally**
+2. **Retreat**
+3. **Bonus**
+4. **Initiative**
+
+Use first-player order within each type. Thus reinforcements enter before Retreat cards withdraw units, and the stat modifiers apply after those movements. Modifiers last for the remainder of the battle.
+
+When playing a partner's card through Shared Tactics, **“your” means the player playing the card**, not its owner. The card's ownership is not transferred by that interpretation. The source owner-first priority when both partners participate still applies.
+
+## 11 Treaties
+
+### 11.1 Formation and ownership
+
+Treaties are binding agreements between two players. Both must agree and exchange their matching tokens. A player may hold only **one active treaty per other player** and has **one token per treaty type**, so that type cannot simultaneously be committed to several partners.
+
+Wizards unlock treaties with an Embassy, robots with a Diplomatic Research Station, and either species with an active Envoy. Only one partner needs an unlock when forming the treaty. A player without an unlock may accept an unlocked player's offer; two players without any unlock cannot form a treaty together.
+
+Form treaties only at the **start or end of an active player's action**, before or after its effects. One partner must be that active player. No treaty formation interrupts a resolving effect or battle. Treaty formation is distinct from a one-off access decision before collector payment. If the other player declines an offer, the same player cannot offer them that same treaty again until the next round (designer ruling 2026-09-22).
+
+The unlock is needed to form the agreement, not maintain it. Existing treaties remain active if Envoy dies and neither partner now has an unlock. Any new treaty still requires at least one unlocked partner.
+
+### 11.2 Effects income and breaking
+
+Each active treaty pays its culture amount to **both** players during the income step, and each treaty type pays its own amount (designer ruling #112, 2026-09-29): **Open Borders +5, Shared Resources +4, Peace +3, Shared Tactics +2, Culture Treaty +1** each per round. (Every treaty paid +2 under rulings #88 and #96, and +5 before them.)
+
+| Treaty | Effect | Unilateral breaking condition | Culture to each partner |
+| --- | --- | --- | ---: |
+| Open Borders | Units may share locations without battle and must fight on the same side when attacked there. Allied combat units protect the partner's bases and pieces. Grants collection access to the partner's locations and collector placement adjacent to the partner's units. Does **not** share battle cards or victory. | End of round, provided allied units do not share a space. | +5 |
+| Shared Resources | Grants collection on the partner's locations and collector placement adjacent to the partner's units. Does not create military allies or general movement access. | End of round, if no unit is collecting from a partner's space. | +4 |
+| Peace | No combat between partners. Partners' units may not enter each other's locations. No automatic collection access; a one-off collection agreement may be made. | End of round only. | +3 |
+| Culture Treaty | Direct partners share an eligible partner's victory. Does not create military allies; partners may fight. Shared victory does not chain. Available only at four or more players. No automatic collection access. | Outside the culture phase, only when no action or battle is resolving. | +1 |
+| Shared Tactics | Partners privately share existing hands immediately and show new draws while active. Either may play a card the other owns. If both are in a battle, the card's owner decides first whether to play it; the partner may play it only if the owner does not. No automatic collection access or military alliance. | End of round. | +2 |
+
+“End of round” means after the culture phase. Either partner may break a treaty when its breaking condition permits. A broken treaty may be formed again later, subject to the normal conditions.
+
+Players cannot bypass breaking conditions by mutually agreeing to replace a treaty. Break the old treaty legally first, then form the new one at a later legal formation window. For example, a Peace treaty cannot be exchanged for Shared Resources at the start of a Build action; Peace must first be broken at end of round.
+
+A Culture Treaty break cannot occur after an attack is declared but before its outcome, nor after a winning outcome has already ended the game. The printed phrase “any time except the culture phase” is superseded by these explicit timing restrictions.
+
+### 11.3 Collection agreements
+
+Open Borders and Shared Resources grant the collection permissions described in section 6.2. Other treaties need a separate one-off agreement for collection access. Such an agreement can authorize a collector on a specified location for Build **or Research**, and prevents passive destruction by that consenting player's units for the collector's stay until upkeep. It does not create movement access, military alliance, card sharing, shared victory, or immunity from attacks.
+
+## 12 Victory and continued participation
+
+### 12.1 Eligibility and immediate resolution
+
+Only a player with a **living Leader** can trigger a victory condition. Check immediately after a condition is met by an eligible player; the first successful condition ends the game. First-player order decides genuinely simultaneous successful conditions.
+
+At four or more players, a dead-Leader player can share a direct Culture Treaty partner's victory but **cannot initiate** victory themselves—even with a Culture Treaty and even if their own culture, economy, technology, or kill total reaches a threshold. Open Borders grants no shared victory.
+
+If every Leader is dead and nobody has won, the game ends in a **draw**. This is an explicit confirmed addition, not a round limit. Do not replace a victory that has already ended the game with a later draw evaluation.
+
+### 12.2 Military
+
+Kill the required number of other players' Leaders: one at two or three players, two at four to six (designer ruling #95, 2026-09-25; was a majority). Credit belongs only to the owner of the unit or ability delivering the killing effect. Participating allies and providers of a damage bonus do not also receive credit.
+
+| Players | Leader kills needed by an eligible player |
+| ---: | ---: |
+| 2 | 1 |
+| 3 | 1; the first Leader kill ends the game |
+| 4 | 2 |
+| 5 | 2 (designer ruling #95, 2026-09-25; was 3) |
+| 6 | 2 (designer ruling #95, 2026-09-25; was 3) |
+
+Leaders are heroes with +2 DEF and cannot be replaced. Their death does not remove the player's other possessions at four or more players.
+
+### 12.3 Cultural
+
+Reach **35 culture per player** with a living Leader: 70 at two players, 105 at three, 140 at four, 175 at five, 210 at six (designer ruling #119, 2026-10-01; #108 had 50 per player, #99 25). Each of the five milestones for the player count (section 5.5) grants a hero claim. Income is awarded before hero claims, with immediate victory checks as specified in section 5.
+
+### 12.4 Economic
+
+In one Build action, commit **the map's count of collectors on distinct tiles — 12 at two players, 16 at three to four, 26 at five to six** (designer ruling #133, 2026-10-19, set the three-to-four player count to 16; it was 20 under #91 and #120) — producing at least **3 water + 3 wood + 3 ore + 1 ether + 1 oil**; the remaining collectors may collect anything (designer ruling #89, 2026-09-25; the printed rule was eleven collectors on eleven tiles, the mix alone). Build nothing; the spend is the action. Each collector must be available and legally placed, with access agreed before commitment.
+
+The robot supply is exactly this many collectors (§2). Wizards use Surfs on the appropriate tile types. Access may come from owned reach, Open Borders, Shared Resources, or one-off agreements. The design expects diplomacy to help obtain central access; it is not a formal requirement to hold a treaty.
+
+### 12.5 Technological
+
+Earn one permanent point per **unique unit type, building type, and research** acquired from the player's species list. Starting units and the starting base count. Loss of the last unit of a type does not remove its earned point. Rebuilding or duplicating a type does not earn another point. Additional bases and Mana Reserves do not create new unique types.
+
+| Species | Unit types | Building types | Research types | Required total | Eligible bonus-point heroes | Fewest ordinary types needed with all available bonuses |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Wizard | 7 | 9 | 9 | 26 | Technomancer Greymore | 21 |
+| Robot | 12 | 6 | 7 | 26 | Motherboard | 21 |
+
+The three Extra action card technologies (§6.5) each earn the normal research point and raise the required total by three (designer ruling #90, 2026-09-25: wizards 22 → 25, robots 19 → 22). The first battle strategy card a player **buys, or gains from Archmage Chaimidious**, earns one point as its own acquired type (rulings #87 and #122, 2026-10-01; before #122 only a bought card counted), and since designer ruling #129 (2026-10-08) that type is part of the required total: 26 for both species (it was 25, the card counting without raising it). The Advanced Research Station is an ordinary building type and raised the robot total from 18 to 19 (ruling #86). Haste (#101), Collector Optimizations and Core Integration (#102, #103) are ordinary research types and raise the totals to 26 and 24; Self Destruct (#111, 2026-09-27) makes the robot total 25. Removing Detection (designer ruling #121, 2026-10-01) makes the wizard total 25. Motherboard (robots only, designer ruling #123) and Technomancer Greymore (wizards only) each give **five** bonus points while alive, owned and in play (designer ruling #113, 2026-09-30; #110 had four). So each species has 26 points available for a target of 25, before the hero bonuses.
+
+Motherboard and Greymore each contribute five bonus points while alive, owned, and in play (ruling #113). They are optional substitutes for ordinary points, not mandatory checklist items. Their death removes their bonus; acquired-type points remain. Archivist, Kettering, and Smyth do not supply a separate hero bonus point. Research acquired through Smyth earns the normal point for that research type.
+
+### 12.6 Continuing after loss
+
+At four or more players, a player with a dead Leader retains surviving units, buildings, bases, research, treaties, culture, and other assets. They continue taking turns and making decisions. They may help a partner win and share that victory through a direct Culture Treaty.
+
+Even losing every map unit and base does not create a free recovery mechanism. The player retains surviving off-map assets and may negotiate; returning to the map requires an ordinary legal route. A no-base player reserves milestone heroes but gets no benefit from them until placement. There is no special permission to build a base adjacent to, rather than on, an owned unit.
+
+## 13 Map layouts and exact tile data
+
+### 13.1 Source artwork and totals
+
+Blue is water, green is wood, mountains are ore, derricks are oil, and cauldrons are ether. Numbered tiles are starting locations. Black background hexes are not playable tiles. The three layouts are one printed board: a smaller game covers the hexes it does not use, so a tile keeps its resource and its name at every player count. Designer ruling #97 (2026-09-25): C3 is water and C2 is ore on every layout (they were the other way round), and the three-to-four player layout no longer uses its top row (C2, D1, E1, F1, G2); its top starting locations are now C3 (start 4) and G3 (start 3). The layouts share the same oil, ether and ore tiles except that the two-player and three-to-four player layouts do not reach C2.
+
+| Layout | Water | Wood | Ore | Oil | Ether | Total |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 5–6 players | 21 | 19 | 8 | 2 | 2 | 52 |
+| 3–4 players | 10 | 8 | 7 | 2 | 2 | 29 |
+| 2 players | 7 | 6 | 7 | 2 | 2 | 24 |
+
+The original artwork is included as `assets/map-5-6-players.png`, `assets/map-3-4-players.png`, and `assets/map-2-players.png`. The text below is a complete transcription, not just tile totals, and does not require those files.
+
+### 13.2 Coordinate convention
+
+The following coordinates are a developer transcription convention, not new gameplay. Columns `c` increase left to right. Doubled rows `r` increase top to bottom. On the source drawings, the central top water tile on the two larger maps is `(0,0)`; successive vertically aligned hexes differ by 2 in `r`. Adjacent columns are staggered by 1 in `r`.
+
+A tile `(c,r)` has potential neighbors at **`(c,r-2)`, `(c,r+2)`, `(c-1,r-1)`, `(c-1,r+1)`, `(c+1,r-1)`, `(c+1,r+1)`**. A potential neighbor exists only if listed in the chosen layout. Each column's list is `row=resource`; `@number` identifies a printed starting location. Resource codes: **Wa = Water, Wo = Wood, Or = Ore, Oi = Oil, Et = Ether**. No omitted coordinate is playable.
+
+### 13.3 Five to six player layout
+
+The layout coordinate listing below reproduces the operative map data of
+section 13.3 verbatim (in the source it is set as a code block, which carries no
+display semantics):
+
+c=-4: 4=Wa@5, 6=Wo, 8=Wo, 10=Wa@6
+c=-3: 3=Wo, 5=Wa, 7=Wa, 9=Wa, 11=Wo
+c=-2: 2=Or, 4=Wa, 6=Wa, 8=Wa, 10=Wo, 12=Wa
+c=-1: 1=Wo, 3=Wa, 5=Wo, 7=Et, 9=Wo, 11=Wo, 13=Wo
+c=0: 0=Wa@4, 2=Or, 4=Or, 6=Oi, 8=Oi, 10=Or, 12=Or, 14=Wa@1
+c=1: 1=Wo, 3=Wa, 5=Wa, 7=Et, 9=Or, 11=Or, 13=Wo
+c=2: 2=Wa, 4=Wa, 6=Wo, 8=Wo, 10=Or, 12=Wa
+c=3: 3=Wo, 5=Wo, 7=Wo, 9=Wo, 11=Wo
+c=4: 4=Wa@3, 6=Wa, 8=Wa, 10=Wa@2
+
+
+### 13.4 Three to four player layout
+
+The layout coordinate listing below reproduces the operative map data of
+section 13.4 verbatim (in the source it is set as a code block, which carries no
+display semantics):
+
+c=-2: 4=Wa@4, 6=Wa, 8=Wa, 10=Wo, 12=Wa@1
+c=-1: 3=Wa, 5=Wo, 7=Et, 9=Wo, 11=Wo, 13=Wo
+c=0: 2=Or, 4=Or, 6=Oi, 8=Oi, 10=Or, 12=Or, 14=Wa
+c=1: 3=Wa, 5=Wa, 7=Et, 9=Or, 11=Or, 13=Wo
+c=2: 4=Wa@3, 6=Wo, 8=Wo, 10=Or, 12=Wa@2
+
+
+### 13.5 Two player layout
+
+The layout coordinate listing below reproduces the operative map data of
+section 13.5 verbatim (in the source it is set as a code block, which carries no
+display semantics):
+
+c=-2: 4=Wa, 6=Wa, 8=Wa, 10=Wo@1
+c=-1: 3=Wa, 5=Wo, 7=Et, 9=Wo, 11=Wo
+c=0: 2=Or, 4=Or, 6=Oi, 8=Oi, 10=Or, 12=Or
+c=1: 3=Wa, 5=Wa, 7=Et, 9=Or, 11=Or
+c=2: 4=Wa@2, 6=Wo, 8=Wo, 10=Or
+
+
+At three or five players, all numbered sites remain available. Reverse player order selects which site is left unused.
+
+## 14 Worked examples
+
+These examples illustrate confirmed rules and provide expected outcomes for implementation checks. They are rules walkthroughs, not results from an implemented engine or a playtest.
+
+### 14.1 Collector spending over a round
+
+A wizard has three unused Surfs and two Build cards queued. The first Build buys an Evoker for 2 wood and 1 ore using all three collectors. They stay committed. The second Build cannot reuse them to buy a Subject, and may be skipped. At upkeep, surviving collectors become available again.
+
+In a different state, the wizard has three unused Surfs and active Foreman. The first purchase spends two Surfs on water to recruit a new Surf. One original Surf remains unused and the new Surf is immediately available. If legal water and wood placements exist, those two pay for a Subject as Foreman's second purchase. The two purchases use four distinct collectors. Both new and old committed collectors stay out until upkeep.
+
+A surplus ore placement used to reach that wood is legal, but requires another available collector; the four-collector example cannot silently add a fifth placement. Any unused ore expires rather than funding a later action.
+
+### 14.2 Counter before Extra
+
+The first player commits an Extra; the next player commits a Counter. Reveal together. The Counter stage precedes the Extra stage, so the Counter can cancel the Extra even though its player comes later in first-player order. The Extra's potential additional cards are not selected, revealed, or spent. The two played cards are discarded.
+
+### 14.3 Extras create a later batch
+
+Two players commit the two Extras, with no initial Counter. The first Extra reveals a Counter and a Bonus. They wait. The second original Extra still resolves and may reveal its own cards. Only then does the added-card batch begin. Its Counter may cancel an unresolved deferred Bonus or another eligible unresolved card, but not either original Extra, which has already resolved. Remaining effects later resolve Rally, Retreat, Bonus, Initiative.
+
+### 14.4 Allied protection and area casualties
+
+A Dragon's 3 DMG AoE would kill an Evoker and a Cleric on the defending side. The Cleric has not used its save this pass and its owner has at least 5 mana. The owner saves the Evoker and spends 5 mana; the Cleric then dies in the simultaneous casualty removal. This is also legal if the Evoker belongs to an allied participant. The recipient does not pay the Cleric's cost.
+
+Separately, a 4 DMG AoE hits Warden at DEF 4 and another military hero at DEF 5 including Warden's bonus. Warden dies; the other hero survives this attack, then drops to DEF 4 for later attacks. It is not killed retroactively.
+
+### 14.5 Retreat and stalemate
+
+An army attacks from X. A Rally brings additional attacking units from Y. One allied defender may retreat while another stays, but may not use X as its retreat or Decoy destination while the battle continues. A player's retreating mobile units all use one eligible adjacent destination; its collectors and Immobile Combat Platforms remain.
+
+If a later full pass kills nobody, all attacking survivors still in the battle return to X, including the reinforcements from Y. Previously withdrawn units do not move again.
+
+### 14.6 Culture income before hero claims
+
+In a two-player game, the first player has culture 14 and receives 16 culture, reaching 30 and crossing milestones 15 and 30. A later player has culture 4 and receives 1, crossing milestone 5. Assuming no victory and enough eligible heroes, finish all income, then let the first player choose one hero, the later player choose one, and the first player choose a second. A newly claimed Chronicler does not add her +5 to this completed income step.
+
+If instead the later player reaches the culture target (50 at two players) with a living Leader, the game ends during income before any of those hero claims. The first player cannot claim Motherboard ahead of that income to trigger a technological victory.
+
+### 14.7 Loss and victory eligibility
+
+A player keeps the permanent point for having acquired Evoker even after their last Evoker dies. If Motherboard dies, its temporary bonus point disappears. If Quartermaster dies with an extra Build card already queued, that action remains; the card is removed at upkeep.
+
+A dead-Leader player reaching the culture target does not trigger victory even with a Culture Treaty. They may share a later eligible partner's victory. If every Leader dies before anybody wins, the game ends in a draw. At two or three players, the first Leader kill already ends the game instead.
+
+## 15 Zekel implementation handoff
+
+### 15.1 Physical play and information ownership
+
+The server is the bookkeeper for a physical table and the decision-maker for AI seats. Preserve human choices and make the next owed choice explicit. The following is an implementation plan derived from the rules and Zekel's interface, not additional gameplay:
+
+| Information | Exposure and handling |
+| --- | --- |
+| Map, current terrain overlays, pieces, bases, culture, mana, technology achievements, faction buildings, public supplies, treaties, action stack, public discard | Public shared state. Show exact observable changes. |
+| Hero identity, ownership, location, Leader status, reserved ownership | Public. A concealed hero card does not hide these facts. |
+| Spy recruitment | Public purchase. Never disclose its chosen hero in the public purchase result. |
+| Spy assignment | Owner-private; reveal only under spy effects. |
+| Battle-card hand | Owner-private. Share with the current Shared Tactics partner; do not broadcast to other seats. |
+| Secret card-or-no-card commitment | Hidden until every required participant has committed, then reveal together. |
+| Shared strategy deck | One server-owned shuffled deck with conservation across deck, hands, commitments/resolution, and discard. Physical and digital dealing must follow the repository's shared-deck contract. |
+| Unallocated owned Cores, available and spent collectors, Subjects | Public tracked quantities or pieces. Unallocated Cores and Subjects have no map coordinates. |
+
+Write the repository's explicit public/shared, AI-private, server-dealt human-private, and opaque human-private classifications at the top of the module's types file. Do not make a human report a secret through a public narration channel, or expose a spy through legal-move labels shown to opponents.
+
+### 15.2 Actions choices and logs
+
+Plan state transitions for setup picks, upkeep reallocation, planning passes, stack resolution, treaty offers and acceptance, collector payment proposals, card commitments, Counter targets, Extra selections, unit activations, optional defenses, retreat, hero claims, placement, and victory.
+
+Keep one decision/action per MCP move. A Build purchase can carry its complete declared payment, but the server must stop for another person's access consent. Do not combine a human's choice with a later unasked purchase, reaction, or target selection. Resume the originating action after the owed decision is settled.
+
+Expose printed faction, hero, unit, building, research, card, and treaty names through resolvers. Give map locations stable coordinate labels derived from section 13, and provide a reference that a physical player can follow. Enumerate legal choices and a numbered menu. Required human pendings must identify the deciding seat and the exact question, including out-of-turn defenses and treaty acceptance.
+
+Use setup checklists, a complete choice catalog, public/player views, rich event logging, and phase-aware next-step guidance. Logs must identify collector placements, exact payments, movement origins and destinations, cards actually revealed, targets, mana and culture deltas, protection used, casualties including installed Cores, hero claims, terrain changes, action-card removal, treaty effects, and victory credit. Do not leak hidden hand contents, spy assignments, or private inspections into public logs.
+
+### 15.3 Data and verification work
+
+The developer should transcribe the catalogs exactly, enforce component caps, and verify all three maps against their tile totals, starts, adjacency, and common center. Distinguish destroyed supply from owned reserve and permanent acquired-type progress from living-hero bonuses.
+
+Use section 14 as initial expected-behavior fixtures. Additional important invariants include exactly 20 battle cards across all zones, no double spending of a collector in a round, one activation per unit per pass, one Cleric save per Cleric per pass, first-player card batch order, private commitment preservation, valid treaty tokens, and no terminal victory initiated by a dead-Leader player.
+
+Follow the repository's ordered port-planning, build, post-port, AI-development, desync, relay, and applicable balance gates. A reviewed port plan must still inventory the entire document and its choices; these confirmed design rulings do not substitute for that coverage review. AI evaluation should account for species, player count/map, Leader choice, treaties, and victory incentives without treating faction lore as forced player behavior. A physical human playthrough remains necessary before calling a port shippable.
+
+### 15.4 Editorial interpretations and remaining implementation details
+
+These are bounded readings used to express the source consistently, not extra designer rulings:
+
+- Ordinary unit-spawn text applies to map units; Subjects and unallocated Cores use their explicit off-map zones, and spy types use hero assignments. Statless pieces do not acquire combat stats from Metal Platforms. A spy host retains its printed hero stats.
+- A resource overlay is represented over the printed terrain and follows its hero; removing that presence removes its contribution. Already committed payments are historical events, not recalculated when terrain later changes. Exact simultaneous overlay-choice ordering, if a previously unaddressed interaction arises, belongs in the port-plan ambiguity register rather than being silently invented.
+- “Gain a battle strategy card” is a direct hero reward, not a paid Research purchase. The normal purchase unlock is not a cost of that direct grant. Research prerequisites are explicitly waived for Smyth. Resolved one-time acquisitions are not undone merely because the granting hero later dies.
+- The source lists Castle and Home as building types, so Foreman's unit-or-building permission includes a base purchase subject to all normal base limits. Combining a Core with its platform remains one permitted purchase, not an extra free purchase.
+- The spare action-card components are the researched Extra cards of §6.5 (designer ruling #86, 2026-09-25, replacing the earlier reading that they granted nothing). Modifier markers track legal effects; their unspecified manufacturing count is not an invented gameplay cap.
+- The numerical resource and piece costs are fixed rules. Choice menus, pagination, coordinate-label presentation, secure input, persistence, and AI heuristics are engineering work. If implementation exposes a reachable interaction not decided here, record the precise case in the port plan instead of silently assigning a new rule.
+
+The original rulebook-only review questions and its four-question cross-check are answered. This is not a claim that an implementation has been built, mechanically verified, or balance-tested.
+
+## 16 Clarification coverage
+
+The following index maps every designer-confirmed ruling to the integrated rule. It is provided for review; the developer does not need the separate decision log to use this document.
+
+| Ruling | Confirmed subject | Integrated section |
+| ---: | --- | --- |
+| 1 | Collectors committed until upkeep; no repeated payment | 6.1 |
+| 2 | Earlier collectors anchor later placements | 6.1 |
+| 3 | Surplus collector placement | 6.1 |
+| 4 | Bases anchor collection | 6.1 |
+| 5 | Newly recruited collectors immediately available | 6.3 |
+| 6 | Access and complete payment agreed before commitment | 6.2 |
+| 7 | Shared Resources and Open Borders grant collection access | 6.2, 11.2 |
+| 8 | Open Borders grants partner-unit adjacency anchors | 6.1, 11.2 |
+| 9 | Open Borders does not share victory | 11.2, 12.1 |
+| 10 | Open Borders does not share battle cards | 11.2 |
+| 11 | One-off access applies to Research too | 6.2, 11.3 |
+| 12 | Action cards refresh; once per round per card | 5.1–5.2 |
+| 13 | Queued actions may be skipped | 5.3 |
+| 14 | First upkeep rotates the setup first player | 4, 5.1 |
+| 15 | Hero identity and position public; assignment secret | 7.3, 8.1 |
+| 16 | Spy recruitment public | 7.3, 7.9 |
+| 17 | Optional secret no-card commitment | 9.2 |
+| 18 | Played and countered cards discarded; recycle discard | 10.1 |
+| 19 | Counter targets chosen at resolution | 10.2 |
+| 20 | Additional cards selected and revealed together | 10.2 |
+| 21 | Extra permits zero to two additional cards | 10.1–10.2 |
+| 22 | Initial Counter can stop an earlier player's Extra | 10.2, 14.2 |
+| 23 | Counter Extra before added cards are selected or shown | 10.2 |
+| 24 | Added cards cannot interrupt the original Extra batch | 10.2, 14.3 |
+| 25 | Counter-first then Extra resolution batches | 10.2 |
+| 26 | Rally, Retreat, Bonus, Initiative type order | 10.3 |
+| 27 | Borrowed card uses playing player's perspective | 10.3 |
+| 28 | One attack or activated ability per activation | 9.3 |
+| 29 | Decoy, Shield, Cleric, casualty reaction order | 9.4 |
+| 30 | Dying Cleric can save another area-attack victim | 9.5 |
+| 31 | Warden bonus applies throughout killing area attack | 9.5 |
+| 32 | Save limit is per Cleric per initiative pass | 9.5 |
+| 33 | Immediate initiative reordering; no second activation | 9.3 |
+| 34 | Retreat one adjacent hex | 9.6 |
+| 35 | Retreating units use one destination | 9.6 |
+| 36 | Allied players choose retreat independently | 9.6 |
+| 37 | All mobile units of withdrawing player retreat | 9.6 |
+| 38 | Friendly bases and Coreless platforms can be empty destinations | 9.6 |
+| 39 | Destroyed platform loses its installed Core | 7.7, 9.7 |
+| 40 | Destroyed non-hero pieces return to purchase supply | 2, 9.7 |
+| 41 | Killed non-Leader heroes permanently removed | 2, 8.1 |
+| 42 | Dead hero's extra action card removed next upkeep | 5.1, 8.2 |
+| 43 | Acquired-type technology points are permanent | 12.5 |
+| 44 | Hero bonus points lost with the hero | 8.2, 12.5 |
+| 45 | Treaties survive loss of their unlock | 11.1 |
+| 46 | Smyth waives cost and building prerequisite | 8.4 |
+| 47 | Kettering permits any two Research purchases | 6.5, 8.4 |
+| 48 | Baseless player claims and reserves hero | 5.5, 8.1 |
+| 49 | Reserved heroes provide no benefits before placement | 8.1 |
+| 50 | All culture income before hero claims | 5.4–5.5 |
+| 51 | Hero claims alternate one per player per cycle | 5.5 |
+| 52 | Treaty formation only at action boundaries | 5.3, 11.1 |
+| 53 | Replacement respects treaty-breaking restrictions | 11.2 |
+| 54 | Culture Treaty cannot break during action or battle | 11.2 |
+| 55 | Rebuilt bases require owned-unit tile | 6.3 |
+| 56 | Unallocated Cores are public off-map reserve | 7.7 |
+| 57 | Infiltrator needs no Core | 7.8–7.9 |
+| 58 | Replacement Illusionist costs a normal purchase | 7.3 |
+| 59 | Kill credit belongs to killing unit or ability's owner | 12.2 |
+| 60 | Spinner base DEF 1 | 7.8, 7.11 |
+| 61 | Fixed robot collector distribution | 2 |
+| 62 | All numbered starts available at three and five players | 4, 13 |
+| 63 | Only Motherboard and Greymore supply hero tech points | 8.2, 12.5 |
+| 64 | Shared Tactics immediately shares existing hands privately | 11.2 |
+| 65 | Collectors do not move with armies or retreat | 6.1, 9.6 |
+| 66 | No special recovery after losing all map presence | 12.6 |
+| 67 | Units may pass an activation | 9.3 |
+| 68 | First-player fallback for allied initiative disagreement | 9.3 |
+| 69 | Opponents cannot retreat or Decoy into attack origin | 9.1, 9.6 |
+| 70 | Attacking Rally survivors return to original attack hex | 9.7 |
+| 71 | Only Chronicler generates Culture hero income | 5.4, 8.4 |
+| 72 | Permitted collectors avoid consenting player's passive destruction | 6.2, 11.3 |
+| 73 | Clerics may save allied units using owner's mana | 9.5 |
+| 74 | Living Leader required to initiate victory; all dead means draw | 12.1 |

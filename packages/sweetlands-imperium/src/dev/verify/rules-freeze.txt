@@ -1,0 +1,243 @@
+# Sweetlands Imperium — Canonical Rules Freeze (working draft)
+
+This is the **source-of-truth ruleset** for the port. The PDF (`Sweetlands Imperium (1).pdf`)
+is a design doc with contradictions and open questions; this file resolves them so the
+port can be faithful to *something*. Once frozen, the port → post-port lifecycle checks
+against THIS file, not the PDF.
+
+Legend: ✅ **locked** (decided) · 🅿️ **proposed** (my recommended default — confirm or change) ·
+❓ **your call** (I can't sensibly default; need your decision).
+
+---
+
+## 0. Scope (✅ locked)
+
+- **Players:** 2–5. Each holds one of the 4 board regions; the **Unsweetened Nomads are 5-player
+  ONLY** (region-less) — so a 5-player game is always the 4 region factions + Nomads, and 2–4 player
+  games never use Nomads.
+- **Naming:** final art names are canonical (Milkshake / Fudge / Jellybean / Cheesecake / Quiche).
+- **Source:** PDF pages 1–7 (design text), page 8 (board), pages 9–13 (faction art). Rendered
+  to `pages/*.png`; text in `sweetlands.txt`.
+
+---
+
+## 1. Components (reconciling the PDF)
+
+| Component | PDF says | Resolution |
+|---|---|---|
+| Single-color Intel | "62 (7x6)" — math wrong (7×6=42) | 🅿️ **60** single-color (10 each of R/O/Y/G/B/P) so 60+8+12 = **80** total ✓ |
+| Treat Intel | 8 | ✅ 8 — match the **8 treat locations** (see below) |
+| Double Intel | 12 (2x6) | ✅ 12 — **2 per color, same-color** (RR/OO/YY/GG/BB/PP); a double plays that color's move+action **twice** |
+| **Total Intel** | "80 total" | ✅ 80 (with the 60 above) |
+| Board | 80 spaces + 1 castle | ✅ 4 regions × 20 = 80, central castle. (Geometry transcribed in §10.) |
+| Leaders / Ambassadors / Knights | 5 each | ✅ one per faction |
+| Foes | 3 (dragon, orc, fiend) | 🅿️ name them **Dragon / Orc / Fiend** (drop the alt "Troll/Goblin" track) |
+| Faction boards | 5 | ✅ |
+| Secret objective cards | 12 | ✅ 12 (see §7) |
+| Intel tokens | 24 (4× each of 6 colors) | ✅ |
+| Sugar cubes | 30 | ✅ **hard shared bank of 30** (no per-player cap, but the 30 total IS the supply — buying is blocked when the bank is empty; discards return to it). **Sugar cubes are CUSTOM DICE: 3 blank faces (0), + a 1, a 2, a 3** (avg 1 pip). Battles roll one die per cube. |
+| Tax/influence trackers | 4 | note: 4 not 5 — Nomads don't track taxes |
+| Special locations | 4 | ✅ placed randomly at setup (the `?` slots on the board) |
+| Starting tiles | 4 | ✅ one per region |
+| Public objective trackers | 16 | see §6 |
+| Point markers / tracker | 5 markers, 0–5 track | ✅ win at 5 points |
+
+---
+
+## 2. Factions (final names + region + ability)
+
+Player colors / region numbers from the PDF "Sugar King" list (lines 229–233).
+Abilities are written in the PDF against the **old** names — mapping below.
+
+| # | Final name | Theme | Region | Player color | Ability (from old name) | Map confidence |
+|---|---|---|---|---|---|---|
+| 1 | **Arch Duchess of Milkshake** | ice cream | Region 1 | yellow | *(Ice Cream Slopes / Duke of Swirl)* **Never pays taxes** | ✅ theme matches |
+| 2 | **General Fudge** | chocolate | Region 2 | brown | *(Chocolate Mountain / Grandma Goey)* **Discard 2 Intel (not 4) to convert to any color** | ✅ theme matches |
+| 3 | **Princess Jellybean** | gummy | Region 3 | purple | ✅ **Knight always wins battles when attacking** (vs other KNIGHTS only — NOT the castle foe; designer-confirmed) | ✅ assigned |
+| 4 | **Grand Vizier Cheesecake** | cheesecake | Region 4 | white | ✅ **Treat Intel can move to any treat location** | ✅ assigned |
+| 5 | **Deposed Queen Quiche** | unsweetened | none | black | *(Unsweetened Nomads)* see below | ✅ |
+
+**Quiche / Nomads bundle (✅):** **5-player games only.** Units start **OFF the board** and choose an entry region the first
+time each unit moves (and return off-board on Recall). Having no region, always gains **+3 influence**
+and **+2 Intel** (fixed); **cannot collect taxes**; starts with **0 sugar cubes** and **no secret
+objectives**. Designed to **incite trade** (free trading is always allowed, §4) — and to **buy sugar**
+to win fights, since they start with none. Their win path is the area-control objectives (above) plus
+captures/foe. ⚠️ **Balance note:** lacking secret objectives leaves Nomads ~2.7 pts/game behind other
+factions; they are currently underpowered (see `src/games/sweetlands-imperium/BALANCE.md`) and likely
+need compensation.
+
+---
+
+## 3. Setup (✅ mostly; from PDF lines 32–44)
+
+1. Place the 4 special-location tiles randomly (into the `?` slots).
+2. Players pick factions; place units (Leader, Knight, Ambassador) at the faction's starting tile.
+   - 🅿️ Faction pick is a **human-owned setup choice** (CLAUDE.md `setupChoices.ts` pattern).
+3. Each player gets 3 sugar cubes (Nomads: 0).
+4. Secret objectives: deal 2 to each player, keep 1, pass the other right (Nomads: none).
+5. Assign first player. 🅿️ random.
+6. Each player draws 3 Intel.
+7. Each player starts with 2 influence.
+8. Taxes start at 0.
+
+---
+
+## 4. Turn structure (✅; reconciled from lines 45–69 + 173–199)
+
+On your turn, in order:
+
+1. **Recall** (optional): bring any number of your units back to your starting location.
+2. **Gain Intel** based on **Ambassador's region distance** from home: home **+1**, next **+2**,
+   then **+3**, then **+2**. (Nomads: always +2.) 🅿️ "next region" = adjacency by region number;
+   exact distance metric to confirm against board geometry (§10).
+   - **Intel deck (✅):** ONE shared **face-down** 80-card deck, server-owns the order. Drawing is
+     hidden/random. A **human draws physically and reports** what they drew; the server deals the
+     **AI** from the remainder and tracks the AI's hidden hand (this repo's report-draw pattern,
+     `src/core/reportHand.ts`). Hands are secret from opponents.
+3. **Play Phase — play exactly 1 Intel card of color C:** you **must move** — pick **any one of your
+   units** and advance it **counter-clockwise to the next space of color C** (1–6 spaces; at a
+   junction purple you may branch onto the road) — then **may** resolve C's action. The action reads
+   the relevant unit's location (e.g. influence by Leader's location), so moving a different unit and
+   then resolving is legal but may be a no-op. (Server-wide "one action per move" still applies — §9.)
+   - 🔴 **Red** — Battle / Capture / Attack castle (Knight)
+   - 🟠 **Orange** — Acquire influence (Leader)
+   - 🟡 **Yellow** — Collect taxes, then optionally Raise taxes +1 (costs 1 influence, max 3)
+   - 🟢 **Green** — Move / Push *(see §5, green is contested)*
+   - 🔵 **Blue** — Collect Intel (by Ambassador location after move)
+   - 🟣 **Purple** — Enter the castle (from the road) / Attack castle (Leader)
+   - **Double-color card:** move 1 → resolve → move again → resolve the second action.
+   - **Treat card:** move the Ambassador to a matching special-treat location (Licorice-style
+     factions may move to *any* treat location — see §2a).
+4. **Influence Phase:** spend influence — 1 per Intel **token** (max 1 of each color owned); may buy
+   1 of each; may buy 1 sugar cube for 3 influence.
+   - ✅ **Intel token effect (designer ruling — "1 targeted Intel"):** a token is a KEPT, guaranteed-color
+     play. On a later turn you may **spend a token like a single Intel card of its color** (move a unit to
+     the next space of that color + optionally take that color's action), then the token **returns to the
+     supply**. Lets you play a color you need without drawing it. (24 tokens, 4 per color — a shared supply.)
+5. 🅿️ **Pass option:** instead of playing, pass to gain **+1 influence** (PDF line 207).
+
+**Any time:** trade freely (Intel cards/tokens, sugar, influence, swap unit locations — no limits).
+**Any time on your turn:** discard 4 Intel → 1 Intel of any color (Fudge: 2 → 1).
+
+**Scoring phase (after every player has gone this round):**
+1. Score end-of-round objectives in turn order.
+2. New first player = most sugar cubes (ties: roll-off).
+
+---
+
+## 5. The Green action (✅ decided)
+
+**Green gives a choice:** either **(a) Move** normally (the standard play-phase move), **OR
+(b) discard to unlock playing unlimited Intel cards this turn.** The PDF's "push" note **meant exactly
+this "play as many Intel as you want" mechanic** — there is NO move-an-opponent's-unit effect.
+**One card per unit:** each Intel card moves exactly one unit (a double moves that one unit twice).
+
+Option (b) discards the Green card itself (no move); you may then play any number of additional Intel
+cards this turn (each still: move one unit + optional action).
+
+---
+
+## 6. Public objectives (🅿️ values reconciled)
+
+Canonical set of **5** (the PDF's "Spend five sugar cubes" entry is **crossed out in the PDF** — cut):
+
+| Objective | Points | Notes |
+|---|---|---|
+| Unit in each opposing region, all on matching-color spaces | 🅿️ 3 | |
+| Unit in each opposing region, all on special-treat spaces | 🅿️ 3 | |
+| Defeat the foe (in the castle) | 🅿️ 3 | |
+| Capture a leader | 🅿️ 1 | |
+| Leader in the castle, uncontested for 1 round | 🅿️ 1 | scores after your turn |
+
+✅ **Scoring model:** public objectives are **independently scorable, one-time each** — every player
+may score each objective once, the first time they meet it. (The 16 trackers = enough for all
+players × objectives.)
+
+✅ **Nomads & the two area-control objectives (designer ruling):** "a unit in each opposing region"
+can't apply to the region-less Nomads (they have 3 units and there are 4 regions). As the *wandering*
+faction, Nomads instead satisfy these by getting **all 3 of their units onto the qualifying space type**
+— all on the **same color** (matching-color) or all on **treat spaces** (treats), in any regions. This
+is their natural, *easier* win path (a playtested Nomad win came via units_all_treats).
+
+---
+
+## 7. Secret objectives (🅿️ value; 12 listed)
+
+Worth **2 points each** (PDF Teach, line 170), scored immediately when completed. The PDF lists 12
+under a "(10)" header — using all **12** (matches component count):
+
+1. Defeat a knight in battle
+2. Capture a leader (no double-dip with the public objective — ✅ designer ruling
+   2026-07-12: ONE capture event scores only ONE of the two; the capturer chooses
+   which when both are available; the other may still score on a later capture)
+3. Capture an ambassador
+4. Raise taxes to 3
+5. Spend 5 influence (without using it) — a deliberate one-time TRASH of 5 influence (NOT influence
+   spent on buys/taxes)
+6. Discard 5 Intel
+7. Gain 5 Intel in one turn
+8. Collect taxes from an opponent
+9. Collect 5 influence in one turn
+10. Move one unit through 3 regions in one turn
+11. Discard 5 sugar cubes
+12. Enter the castle with your leader
+
+---
+
+## 8. Combat, capture, foes, scoring details
+
+- **Battle/Capture (Knight only):** capture enemy Leaders/Ambassadors in the same region (incl. the
+  road). If an enemy Knight is present you must battle it first; can't capture a Leader/Ambassador
+  while their Knight is in-region. Captured units → owner's starting position.
+  **Battle:** each rolls their **sugar cubes** (custom dice: 3 blank / 1 / 2 / 3 — one die per cube);
+  most pips wins; **tie → defender wins.** (Jellybean always wins when attacking — §2.)
+- **Acquire influence (Orange, Leader):** by Leader's region distance — own region **+0**, next
+  **+1**, then **+2**, **+3**; in castle **+5** even if contested. Max influence **5**.
+- **Taxes (Yellow):** collect from players in your region; raise +1 (1 influence, max 3). A player who
+  can't pay sends their in-region units back to start. Special locations are tax-exempt 🅿️(non-regional ones).
+- **Foe (✅):** **exactly ONE foe per game**, chosen by the players at game start from Dragon / Orc /
+  Fiend. Dice: **Dragon 5 / Orc 3 / Fiend 2**. Must use a Knight (Red or Purple) to fight; battle is
+  a roll-off vs the foe's dice. The foe occupies the castle; a Knight must defeat it before a Leader
+  can hold the castle uncontested. 🅿️ foe choice is a shared setup decision (first human reports it).
+- **Win:** first to **5 points** (public + secret). 🅿️ if multiple cross 5 in the same scoring step,
+  tiebreak by most sugar cubes, then roll-off.
+
+---
+
+## 9. AI policy seed (from PDF lines 209–218 — for the ai-development gate later)
+
+Draw cards by Ambassador location; execute in order. Red: Knight moves+attacks (prioritize leaders,
+else random). Orange: Leader moves (castle road only if foe defeated). Yellow: Leader moves
+(raise taxes; +1 pt if taxes at 3). Green: Knight moves (no attack). Blue: move Ambassador, gain
+Intel, queue new cards. Purple: Leader moves (castle road only if no foes). Treat: move Ambassador
+to special location. *(Refined during ai-development; recorded here so it isn't lost.)*
+
+---
+
+## 10. Board topology (✅ confirmed by designer; full cell data in `src/games/sweetlands-imperium/DATA_TEMPLATE.md`)
+
+- **80 spaces = 4 regions × 20** = (12 colored ring + 6 colored road + 1 regional special + 1 random
+  special) each. Layout: Region 1 bottom, 2 right, 3 top, 4 left.
+- **Ring:** one big cycle, **regions ordered 1→2→3→4→1**, **movement always counter-clockwise**. Each
+  region's 12 ring cells are **two ROYGBP runs**; non-special spaces are adjacent only to the **next
+  color in ROYGBP** (R→O→Y→G→B→P→R…).
+- **Castle:** a single node (physically 4 spaces, one node) at the center.
+- **Roads:** each region's **first purple** ring space `[(11,6),(8,12),(2,8),(6,2)]` is a **junction**:
+  a unit there may either branch onto that region's 6-cell road (also ROYGBP) toward the castle, OR
+  continue around the ring. The road's Purple (Purple-card action) enters the castle.
+- **Special treat locations (8 total):**
+  - **4 regional** = the faction treats, one per region: **Milkshake (R1), Fudge (R2), Jellybean (R3),
+    Cheesecake (R4)** — printed on the board (the old rulebook "white" spaces).
+  - **4 random** = placed at setup into the 4 `?` slots: **ice cream, chocolate bar, gummy bear,
+    cupcake.** The 8 treat Intel cards correspond to these 8 locations.
+
+Locked into typed `data/` + `data.test.ts` (Ankh / Squirrel Island precedent).
+
+---
+
+## 11. Out of scope (explicitly cut from the PDF notes)
+
+These appear in the PDF "Notes" sections as **open questions, not rules** — excluded unless you say
+otherwise: catch-up mechanic; "draw Intel at the end"; telegraphing/reaction cards; "move another
+player's piece"; the alternate Troll/Goblin foe names; the alternate Faction-themes brainstorm list
+(Cheesecake wizard / Eclair / etc.); the long Leaders title list (Duke/Vizier/Czar/Shogun…).
