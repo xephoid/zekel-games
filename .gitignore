@@ -10,3 +10,4 @@ coverage/
 
 # Upload files made for npm publishing
 .publish/
+harness-out/
