@@ -65,7 +65,9 @@ function concrete(gs: WordDebaucheeState, entries: LegalMove<WordDebaucheeMove>[
       out.push({ ...e, move_id: 'check:listed', move: { type: 'check', word: synonym } });
       out.push({ ...e, move_id: 'check:unlisted', move: { type: 'check', word: 'ZZZZ' } });
     } else if (m.type === 'burn') {
-      out.push({ ...e, move: { type: 'burn', word: 'QUIZ' } });
+      // One burn a round: burning is always legal and changes nothing after the first, so a
+      // strategy that only burns would stall every game at the move cap.
+      if ((gs.round?.burned.length ?? 0) === 0) out.push({ ...e, move: { type: 'burn', word: 'QUIZ' } });
     } else if (m.type === 'answer_clue' && m.text === '<your answer>') {
       out.push({ ...e, move: { type: 'answer_clue', card: m.card, text: m.card === 'register' ? 'formal' : 'zzz' } });
     } else if (m.type === 'play_clues' && JSON.stringify(m.cards).includes('<')) {

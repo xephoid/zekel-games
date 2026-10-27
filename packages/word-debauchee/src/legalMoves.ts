@@ -98,8 +98,9 @@ export function getLegalMoves(state: WordDebaucheeState, playerId: string): Lega
       if (isGuesser(state, playerId)) {
         const bribes = (): void => {
           if (!state.settings.bribe) return;
-          add('call_reveal:number', `Reveal! — but take a number clue instead of a letter (Bribe; counts as a reveal)`, { type: 'call_reveal', clue: 'number' });
-          add('call_reveal:word', `Reveal! — but take a word clue instead of a letter (Bribe; counts as a reveal)`, { type: 'call_reveal', clue: 'word' });
+          // A deck bribed empty (the hunter found this) has no top card to take.
+          if (state.numberDeck.length) add('call_reveal:number', `Reveal! — but take a number clue instead of a letter (Bribe; counts as a reveal)`, { type: 'call_reveal', clue: 'number' });
+          if (state.wordClueDeck.length) add('call_reveal:word', `Reveal! — but take a word clue instead of a letter (Bribe; counts as a reveal)`, { type: 'call_reveal', clue: 'word' });
         };
         if (!server) {
           add('check', 'Check! — say the word on the table', { type: 'check', word: '<word>' });

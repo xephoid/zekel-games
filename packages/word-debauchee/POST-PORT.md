@@ -175,9 +175,9 @@ Nothing printed. The server does not hear the table (talk, hints, letters sugges
 
 ## 13. Sign-off
 
-- 2026-10-27: 1,580 tests across the repo pass (151 in this package plus the
+- 2026-10-27: 1,581 tests across the repo pass (152 in this package plus the
   checker's 29); `pnpm build` and `pnpm smoke` pass; harness 0 errored games at 2, 3,
   5 and 8 players; human-seat sweep 35/35; summaries clean; the rules checker silent on
-  48 random games.
-- Hunter batch: see the line below once run.
-- Desync and relay: `GAMES.md` row and RELAY-NOTES.md.
+  1,000 random games and a 9,600-game hunter batch after one menu bug it found was
+  fixed (§3a).
+- Desync and relay: `GAMES.md` row and RELAY-NOTES.md. Balance: BALANCE.md.

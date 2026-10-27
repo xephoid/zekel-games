@@ -119,6 +119,21 @@ describe('Bribe', () => {
     expect(() => play(table, 'ben', { type: 'call_reveal', clue: 'letters' } as never)).toThrow(/say "number" or "word"/);
   });
 
+  it('offers no bribe from a deck bribed empty (found by the rules hunter)', () => {
+    let s = toBuild(start(3, { tiles: 'server', bribe: true, timer: 'sand' }));
+    let guard = 0;
+    while (s.numberDeck.length > 0 && guard++ < 40) {
+      const who = s.round!.guessers[s.round!.turnIndex]!;
+      s = play(s, who, { type: 'call_reveal', clue: 'number' }).state;
+    }
+    expect(s.numberDeck).toHaveLength(0);
+    const menu = getLegalMoves(s, s.round!.guessers[s.round!.turnIndex]!).map((m) => m.move_id);
+    expect(menu).toContain('call_reveal:word');
+    expect(menu).not.toContain('call_reveal:number');
+    expect(() => play(s, s.round!.guessers[s.round!.turnIndex]!, { type: 'call_reveal', clue: 'number' })).toThrow(/deck is empty/);
+    lock(s);
+  });
+
   it('is played by the AI at every tier, deterministically', () => {
     for (const tier of ['easy', 'medium', 'hard']) {
       const a = allAI(3, tier, 11, { bribe: true });
