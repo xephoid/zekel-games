@@ -296,11 +296,8 @@ function moveTile(state: WordDebaucheeState, playerId: string, given: { row: num
   requireServerTiles(state);
   requireTurn(state, playerId);
   const r = round(state);
-  const m = {
-    ...given,
-    row: resolveRow(state, given.row),
-    to_row: given.to_row === undefined || given.to_row === 'new' ? given.to_row : resolveRow(state, given.to_row),
-  };
+  const toRow: number | 'new' | undefined = given.to_row === undefined ? undefined : given.to_row === 'new' ? 'new' : resolveRow(state, given.to_row);
+  const m = { ...given, row: resolveRow(state, given.row), to_row: toRow };
   const text = rowAt(state, m.row);
   if (!Number.isInteger(m.index) || m.index < 0 || m.index >= text.length) refuse(`${text} has no tile at index ${m.index}.`);
   const letter = text[m.index]!;
