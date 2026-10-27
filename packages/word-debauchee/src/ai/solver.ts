@@ -1,4 +1,4 @@
-// The candidate solver (PLAN.md §7): which cards of the deck fit the clues
+// The candidate solver (PORT-PLAN.md §7): which cards of the deck fit the clues
 // played and the letters revealed so far. The AI debauchee runs it against
 // itself to find the stingiest play; the AI guessers run it to pick a
 // synonym to spell. It reads the deck, never the secret word.

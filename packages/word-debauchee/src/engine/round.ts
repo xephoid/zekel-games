@@ -127,8 +127,8 @@ export function startRound(state: WordDebaucheeState): void {
   const guessers: string[] = [];
   for (let i = 1; i < n; i++) guessers.push(state.seats[(at + i) % n]!.id);
   const dealtWords = state.wordDeck.splice(0, WORDS_DEALT);
-  // Open hand: no deal; the debauchee takes any three cards from the whole set.
-  const hand: ClueId[] = state.settings.openHand ? [] : [...state.numberDeck.splice(0, CLUES_DEALT_PER_DECK), ...state.wordClueDeck.splice(0, CLUES_DEALT_PER_DECK)];
+  // The clue cards are drawn after the word is chosen (dealClues), as printed.
+  const hand: ClueId[] = [];
   const round: Round = {
     number: state.roundsPlayed + 1,
     debauchee,
@@ -149,6 +149,13 @@ export function startRound(state: WordDebaucheeState): void {
   };
   state.round = round;
   state.phase = 'choose_word';
+}
+
+/** Once the word is chosen: two number clues and two word clues (none under Open
+ *  hand, where the debauchee takes any three cards from the whole set). */
+export function dealClues(state: WordDebaucheeState): void {
+  const r = state.round!;
+  r.hand = state.settings.openHand ? [] : [...state.numberDeck.splice(0, CLUES_DEALT_PER_DECK), ...state.wordClueDeck.splice(0, CLUES_DEALT_PER_DECK)];
 }
 
 /** The scoring table. Stumped: the debauchee scores the word's letters.

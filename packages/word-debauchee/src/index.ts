@@ -1,4 +1,4 @@
-// Word Debauchee as a zekel game module. The rules live in engine/ (PLAN.md);
+// Word Debauchee as a zekel game module. The rules live in engine/ (PORT-PLAN.md);
 // this file adapts them to the Game interface. The server is the deck, the
 // referee, the scorekeeper and any AI seat; the tiles are the table's own or
 // held here as text. Hidden from every seat but the debauchee: the dealt
@@ -82,7 +82,7 @@ const moveSchema = {
     { type: 'object', required: ['type'], properties: { type: { const: 'call_reveal' }, clue: { enum: ['number', 'word'], description: 'Bribe variant: take the top card of this clue deck instead of a letter' } } },
     { type: 'object', required: ['type', 'word'], properties: { type: { const: 'burn' }, word: { type: 'string', description: 'a word a guesser said aloud' } } },
     { type: 'object', required: ['type'], properties: { type: { const: 'timer_out' } } },
-    { type: 'object', required: ['type', 'letter'], properties: { type: { const: 'reveal' }, letter: { type: 'string', minLength: 1, maxLength: 1 } } },
+    { type: 'object', required: ['type', 'letter'], properties: { type: { const: 'reveal' }, letter: { type: 'string', minLength: 1, maxLength: 1 }, row: { type: 'integer', minimum: 0, description: 'server tiles, when the pool has no tile of that letter: the build-area row to take it from' } } },
   ],
   description: `One action. Types: ${MOVE_TYPES.join(', ')}. get_legal_moves lists exactly which are possible now.`,
 } as const;
@@ -129,7 +129,7 @@ function narrate(state: WordDebaucheeState, playerId: string, move: WordDebauche
     case 'timer_out':
       return `${who} reports the timer.`;
     case 'reveal':
-      return `${who} reveals ${move.letter.toUpperCase()}.`;
+      return `${who} reveals ${move.letter.toUpperCase()}${move.row !== undefined ? `, taking the tile from row ${move.row} of the build area` : ''}.`;
   }
 }
 

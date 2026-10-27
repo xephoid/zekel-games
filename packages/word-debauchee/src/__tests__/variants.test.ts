@@ -1,5 +1,5 @@
 // The three printed variants as options: Bribe, Open hand and The House
-// (rules.md "Variants"; PLAN.md Q7 and Q11).
+// (rules.md "Variants"; PORT-PLAN.md Q7 and Q11).
 
 import { checkGateConsistency } from '@zekel/game-kit';
 import { describe, expect, it } from 'vitest';

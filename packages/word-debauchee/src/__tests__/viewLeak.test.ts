@@ -28,7 +28,11 @@ describe('views and summaries keep the secret', () => {
     const mine = getPlayerView(s, 'ann') as { secret: { dealt_words: string[]; word: string | null; hand: unknown[] } };
     expect(mine.secret.dealt_words).toEqual(dealt);
     expect(mine.secret.word).toBeNull();
-    expect(mine.secret.hand).toHaveLength(4);
+    expect(mine.secret.hand).toEqual([]);
+    const chosen = play(s, 'ann', { type: 'choose_word', word: dealt[0]! }).state;
+    const hand = (getPlayerView(chosen, 'ann') as { secret: { hand: unknown[] } }).secret.hand;
+    expect(hand).toHaveLength(4);
+    expect(JSON.stringify(getPlayerView(chosen, 'ben'))).not.toContain('"hand"');
     s = toBuild(s);
     const word = s.round!.word!;
     const me = getPlayerView(s, 'ann') as { secret: { word: string; card: { synonyms: string[] }; letters_left: string[] } };

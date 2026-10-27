@@ -5,11 +5,11 @@
 import { CLUES, clue, clueByName, type ClueCard, type ClueId, type ClueKind } from '../data/clues.js';
 import { cardFor, isSynonymOf } from '../data/deck.js';
 import type { Card } from '../data/wordCard.js';
-import type { WordDebaucheeState } from '../types.js';
+import type { Round, WordDebaucheeState } from '../types.js';
 import { notYourTurn, refuse, RuleError } from './errors.js';
 import { clone, currentGuesser, isGuesser, listNames, nameOf, normaliseWord, round, turnsPerReveal, unrevealedLetters } from './helpers.js';
 import type { WordDebaucheeMove } from './moves.js';
-import { CLUES_PLAYED, endRound, resolveSeat, setFirstDebauchee } from './round.js';
+import { CLUES_PLAYED, dealClues, endRound, resolveSeat, setFirstDebauchee } from './round.js';
 
 export interface ApplyResult {
   newState: WordDebaucheeState;
@@ -57,7 +57,7 @@ export function applyMove(prev: WordDebaucheeState, playerId: string, move: Word
       timerOut(state, lines);
       break;
     case 'reveal':
-      reveal(state, playerId, move.letter, lines);
+      reveal(state, playerId, move.letter, move.row, lines);
       break;
     default:
       refuse(`Unknown move type "${String((move as { type: unknown }).type)}".`);
@@ -97,6 +97,7 @@ function chooseWord(state: WordDebaucheeState, playerId: string, word: string, l
   if (!r.dealtWords.includes(w)) refuse(`Choose one of the three cards dealt.`);
   r.word = w;
   state.wordDeck.push(...r.dealtWords.filter((x) => x !== w));
+  dealClues(state);
   state.phase = 'play_clues';
   lines.push(
     `${nameOf(state, playerId)} keeps a word; the other two cards go under the deck. ${nameOf(state, playerId)} now ` +
@@ -438,7 +439,12 @@ function timerOut(state: WordDebaucheeState, lines: string[]): void {
   owedReveal(state, lines, state.settings.timer === 'sand' ? 'The sand has run out' : 'The turn has come back round');
 }
 
-function reveal(state: WordDebaucheeState, playerId: string, letterIn: string, lines: string[]): void {
+/** Build-area rows holding a tile of this letter, for a reveal when the pool has none. */
+export function rowsWith(r: Round, letter: string): number[] {
+  return r.buildArea.map((text, i) => (text.includes(letter) ? i : -1)).filter((i) => i >= 0);
+}
+
+function reveal(state: WordDebaucheeState, playerId: string, letterIn: string, rowIn: number | undefined, lines: string[]): void {
   if (state.phase !== 'reveal') refuse('No reveal is owed right now.');
   requireDebauchee(state, playerId, 'reveals letters');
   const r = round(state);
@@ -450,10 +456,21 @@ function reveal(state: WordDebaucheeState, playerId: string, letterIn: string, l
   let from = '';
   if (state.settings.tiles === 'server') {
     if ((r.pool[letter] ?? 0) > 0) {
+      // The rules take the tile from the pool while it has one; a row given here is not needed.
       r.pool[letter]!--;
     } else {
-      const row = r.buildArea.findIndex((t) => t.includes(letter));
-      if (row < 0) refuse(`There is no ${letter} tile left anywhere on the table.`);
+      const rows = rowsWith(r, letter);
+      if (rows.length === 0) refuse(`There is no ${letter} tile left anywhere on the table.`);
+      let row: number;
+      if (rowIn === undefined) {
+        if (rows.length > 1) {
+          refuse(`The pool has no ${letter}; it sits in ${rows.length} rows (${rows.map((i) => `row ${i}: ${r.buildArea[i]}`).join(', ')}). Say which row to take it from.`);
+        }
+        row = rows[0]!;
+      } else {
+        if (!rows.includes(rowIn)) refuse(`Row ${rowIn} has no ${letter}. Rows with one: ${rows.join(', ')}.`);
+        row = rowIn;
+      }
       const text = r.buildArea[row]!;
       setRow(r.buildArea, row, text.replace(letter, ''));
       from = ` (taken from ${text} in the build area, as the pool has none)`;

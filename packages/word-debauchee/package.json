@@ -17,6 +17,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./dev": {
+      "types": "./dist/dev/index.d.ts",
+      "default": "./dist/dev/index.js"
+    },
     "./*": {
       "types": "./dist/*.d.ts",
       "default": "./dist/*.js"
@@ -35,12 +39,19 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@zekel/game-kit": "^0.1.0"
+    "@zekel/game-kit": "^0.1.0",
+    "@zekel/dev": "^0.1.1"
   },
   "devDependencies": {
-    "@zekel/game-kit": "^0.1.0"
+    "@zekel/game-kit": "^0.1.0",
+    "@zekel/dev": "^0.1.2"
   },
   "engines": {
     "node": ">=22.13.0"
+  },
+  "peerDependenciesMeta": {
+    "@zekel/dev": {
+      "optional": true
+    }
   }
 }

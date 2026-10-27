@@ -1,5 +1,5 @@
-// The AI debauchee (PLAN.md §6): give away as little as possible. Three
-// tiers. easy: random word, first three cards, random letter. medium: the
+// The AI debauchee (PORT-PLAN.md §6): give away as little as possible. Three
+// tiers. easy: random word, a random valid play, random letter (the floor). medium: the
 // word that reveals slowest against its shortest synonym, bury the gift
 // card, reveal the letters that say least. hard: run the guesser solver
 // against itself and keep the candidate set as large as it can.
@@ -7,6 +7,7 @@
 import { CLUES, clue, type ClueId } from '../data/clues.js';
 import { CARDS, cardFor } from '../data/deck.js';
 import type { Card } from '../data/wordCard.js';
+import { rowsWith } from '../engine/apply.js';
 import { unrevealedLetters } from '../engine/helpers.js';
 import type { WordDebaucheeMove } from '../engine/moves.js';
 import { CLUES_PLAYED } from '../engine/round.js';
@@ -106,7 +107,7 @@ export function quietestLetter(left: Map<string, number>): string {
 /** The hard tier's play: the three cards that leave a solver-guesser the
  *  lowest chance of a scoring target; more candidates, then the medium tier's
  *  gift order, break ties. (Against the deck, Category and Type together give
- *  away more than Shortest synonym does: PLAN.md §6.) */
+ *  away more than Shortest synonym does: PORT-PLAN.md §6.) */
 export function hardestPlay(card: Card, hand: readonly ClueId[]): { play: ClueId[]; chance: number; count: number } {
   let best: ClueId[] = validPlays(hand)[0]!;
   let bestChance = Infinity;
@@ -171,18 +172,14 @@ export function hardestOpenPlay(card: Card): { play: ClueId[]; chance: number; c
   return { play, chance, count };
 }
 
-/** The hard tier's play for this word: from the hand dealt, or under Open hand from the whole set. */
-function bestPlay(card: Card, hand: readonly ClueId[], openHand: boolean): { play: ClueId[]; chance: number; count: number } {
-  return openHand ? hardestOpenPlay(card) : hardestPlay(card, hand);
-}
-
 export function chooseDebaucheeMove(state: WordDebaucheeState, playerId: string, tier: Tier, seed: number): WordDebaucheeMove {
   const r = state.round;
   if (!r || r.debauchee !== playerId) throw new Error(`${playerId} is not the debauchee`);
   const openHand = state.settings.openHand;
   switch (state.phase) {
     case 'choose_word':
-      return { type: 'choose_word', word: chooseWord(r.dealtWords.map((w) => cardFor(w)!), r.hand, tier, seed, openHand) };
+      // The clue cards are drawn after the word is chosen, so no tier may read them here.
+      return { type: 'choose_word', word: chooseWord(r.dealtWords.map((w) => cardFor(w)!), tier, seed) };
     case 'play_clues': {
       const card = cardFor(r.word!)!;
       if (openHand) {
@@ -190,7 +187,10 @@ export function chooseDebaucheeMove(state: WordDebaucheeState, playerId: string,
         if (tier === 'medium') return { type: 'play_clues', cards: [...STINGIEST_OPEN_PLAY] };
         return { type: 'play_clues', cards: hardestOpenPlay(card).play };
       }
-      if (tier === 'easy') return { type: 'play_clues', cards: validPlays(r.hand)[0]! };
+      if (tier === 'easy') {
+        const plays = validPlays(r.hand);
+        return { type: 'play_clues', cards: plays[randomInt(seed, plays.length).value]! };
+      }
       if (tier === 'medium') return { type: 'play_clues', cards: stingiestPlay(r.hand) };
       return { type: 'play_clues', cards: hardestPlay(card, r.hand).play };
     }
@@ -199,23 +199,33 @@ export function chooseDebaucheeMove(state: WordDebaucheeState, playerId: string,
       const pending = r.played.find((p) => p.answer === null)!;
       return { type: 'answer_clue', card: pending.card };
     }
-    case 'reveal':
-      return { type: 'reveal', letter: chooseLetter(state, tier, seed) };
+    case 'reveal': {
+      const letter = chooseLetter(state, tier, seed);
+      // The pool has none: take the tile from the build area, out of the longest row
+      // (the word furthest along), which costs the guessers the most.
+      if (state.settings.tiles === 'server' && (r.pool[letter] ?? 0) <= 0) {
+        const rows = rowsWith(r, letter);
+        if (rows.length > 1) return { type: 'reveal', letter, row: rows.sort((a, b) => r.buildArea[b]!.length - r.buildArea[a]!.length || a - b)[0]! };
+      }
+      return { type: 'reveal', letter };
+    }
     default:
       throw new Error(`The debauchee has no move in phase ${state.phase}`);
   }
 }
 
-function chooseWord(dealt: Card[], hand: readonly ClueId[], tier: Tier, seed: number, openHand: boolean): string {
+function chooseWord(dealt: Card[], tier: Tier, seed: number): string {
   if (tier === 'easy') return pick(dealt, seed).value.word;
   if (tier === 'medium') {
     return [...dealt].sort((a, b) => slowness(b) - slowness(a) || a.synonyms.length - b.synonyms.length || a.word.localeCompare(b.word))[0]!.word;
   }
-  // hard: the word whose best play gives a solver-guesser the lowest chance; longer on ties.
+  // hard: the clues are not drawn yet, so the word is judged by how well it can hide
+  // at best: the lowest crack chance over the stingiest three cards from the whole set
+  // (the greedy search), longer on ties.
   let best = dealt[0]!;
   let bestChance = Infinity;
   for (const card of dealt) {
-    const { chance } = bestPlay(card, hand, openHand);
+    const { chance } = hardestOpenPlay(card);
     if (chance < bestChance || (chance === bestChance && card.letters > best.letters)) {
       best = card;
       bestChance = chance;

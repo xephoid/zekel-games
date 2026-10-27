@@ -29,7 +29,7 @@ export interface WordCard {
   readonly grade: number;
   /** Lower case. A spelled word scores if and only if it is here. */
   readonly synonyms: readonly string[];
-  /** Judgment clues, a generated first pass to check at the table (PLAN.md Q4). */
+  /** Judgment clues, a generated first pass to check at the table (PORT-PLAN.md Q4). */
   readonly opposite: string | null;
   readonly goesWith: string;
   readonly rhymesWith: string | null;
@@ -57,7 +57,7 @@ export function countVowels(word: string): number {
 }
 
 /** The difficulty printed on the card, from the headword's own grade and
- *  synonym count (PLAN.md Q12: the design notes' rule needs a grade for
+ *  synonym count (PORT-PLAN.md Q12: the design notes' rule needs a grade for
  *  every synonym, which the deck does not have). ●●●: grade 5 or more, or
  *  fewer than four synonyms; ●○○: grade 1–2; ●●○ otherwise. */
 export function difficultyOf(card: WordCard): Difficulty {

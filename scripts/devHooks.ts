@@ -10,6 +10,7 @@ import { devHooks as fracturedFist } from '../packages/fractured-fist/src/dev/in
 import { devHooks as neitherGutsNorGears } from '../packages/neither-guts-nor-gears/src/dev/index.js';
 import { devHooks as sweetlandsImperium } from '../packages/sweetlands-imperium/src/dev/index.js';
 import { devHooks as warbleWayGalaxy } from '../packages/warble-way-galaxy/src/dev/index.js';
+import { devHooks as wordDebauchee } from '../packages/word-debauchee/src/dev/index.js';
 
 registerDevHooks('adventurer-olympics', adventurerOlympics);
 registerDevHooks('cybernoir-2127', cybernoir2127);
@@ -17,5 +18,6 @@ registerDevHooks('fractured-fist', fracturedFist);
 registerDevHooks('neither-guts-nor-gears', neitherGutsNorGears);
 registerDevHooks('sweetlands-imperium', sweetlandsImperium);
 registerDevHooks('warble-way-galaxy', warbleWayGalaxy);
-// 8-bit Demon Hunter and Word Debauchee have no dev hooks yet; the tools use their generic behaviour.
+registerDevHooks('word-debauchee', wordDebauchee);
+// 8-bit Demon Hunter has no dev hooks yet; the tools use their generic behaviour.
 markDevHooksLoaded();

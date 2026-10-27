@@ -5,6 +5,7 @@
 import { CLUES, clue, type ClueId } from './data/clues.js';
 import { LETTERS } from './data/tiles.js';
 import type { WordDebaucheeMove } from './engine/moves.js';
+import { rowsWith } from './engine/apply.js';
 import { currentGuesser, isGuesser, nameOf, unrevealedLetters } from './engine/helpers.js';
 import type { WordDebaucheeState } from './types.js';
 
@@ -81,7 +82,16 @@ export function getLegalMoves(state: WordDebaucheeState, playerId: string): Lega
       return out;
 
     case 'reveal':
-      if (me) for (const l of [...unrevealedLetters(r).keys()].sort()) add(`reveal:${l}`, `Reveal ${l}`, { type: 'reveal', letter: l });
+      if (me) {
+        for (const l of [...unrevealedLetters(r).keys()].sort()) {
+          if (server && (r.pool[l] ?? 0) <= 0) {
+            // The pool has none: the tile comes out of the build area, and the debauchee says which row.
+            for (const row of rowsWith(r, l)) add(`reveal:${l}:row:${row}`, `Reveal ${l}, taking it from ${r.buildArea[row]} (row ${row}) as the pool has none`, { type: 'reveal', letter: l, row });
+          } else {
+            add(`reveal:${l}`, `Reveal ${l}`, { type: 'reveal', letter: l });
+          }
+        }
+      }
       return out;
 
     case 'build': {

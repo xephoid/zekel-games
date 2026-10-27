@@ -1,4 +1,4 @@
-// Word Debauchee — the session state. Canonical design: PLAN.md in this
+// Word Debauchee — the session state. Canonical design: PORT-PLAN.md in this
 // package; rules/rules.md is the rule.
 //
 // Who holds the truth, and who may see it (building-a-game.md, "Physical-first"):

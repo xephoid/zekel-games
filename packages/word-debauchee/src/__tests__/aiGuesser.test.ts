@@ -43,8 +43,8 @@ describe('the AI guessers', () => {
     allAI(2, ['medium', 'hard'], 8, 2);
   });
 
-  it('crack some rounds and get stumped in others, at every tier', () => {
-    for (const tier of TIERS) {
+  it('crack some rounds and get stumped in others, at medium and hard (easy is the random floor)', () => {
+    for (const tier of TIERS.filter((t) => t !== 'easy')) {
       const outcomes = new Set<string>();
       for (const seed of [1, 2, 3, 4, 5, 6]) for (const h of allAI(3, [tier, tier, tier], seed, 3).history) outcomes.add(h.outcome);
       expect(outcomes.has('cracked'), `${tier} never cracks`).toBe(true);
@@ -99,7 +99,7 @@ describe('the AI guessers', () => {
     expect(after).toContain(before[1]);
   });
 
-  it('easy never calls a reveal', () => {
+  it('easy is uniformly random over the legal moves, and never a report', () => {
     for (const seed of [1, 2, 3]) {
       let s = toBuild(createState(seats(2, [1]), { seed, firstDebauchee: 'ann' }));
       for (let i = 0; i < 12 && s.round?.number === 1; i++) {
@@ -108,7 +108,8 @@ describe('the AI guessers', () => {
           continue;
         }
         const m = chooseGuesserMove(s, 'ben', 'easy', seed + i);
-        expect(m.type).not.toBe('call_reveal');
+        expect(['place', 'move', 'call_reveal', 'check']).toContain(m.type);
+        expect(getLegalMoves(s, 'ben').some((l) => JSON.stringify(l.move) === JSON.stringify(m))).toBe(true);
         s = applyMove(s, 'ben', m).newState;
       }
     }

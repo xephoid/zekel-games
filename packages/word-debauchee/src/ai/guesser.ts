@@ -1,4 +1,4 @@
-// The AI guessers (PLAN.md §7). An AI guesser cannot hear hints or give
+// The AI guessers (PORT-PLAN.md §7). An AI guesser cannot hear hints or give
 // them: it plays the deck. It keeps the cards that fit the clues and the
 // revealed letters, picks a synonym those cards share, spells it one tile a
 // turn (continuing a row that is already a prefix of it), checks on the tile
@@ -9,6 +9,7 @@ import { CLUES, clue, type ClueKind } from '../data/clues.js';
 import { LETTERS } from '../data/tiles.js';
 import { letterCounts, unrevealedLetters } from '../engine/helpers.js';
 import type { WordDebaucheeMove } from '../engine/moves.js';
+import { getLegalMoves } from '../legalMoves.js';
 import { pick, randomInt } from '../rng.js';
 import type { Round, WordDebaucheeState } from '../types.js';
 import { quietestLetter, type Tier } from './debauchee.js';
@@ -203,16 +204,10 @@ export function chooseGuesserMove(state: WordDebaucheeState, playerId: string, t
   for (const t of targets) if (t.complete) t.row = completeRow(r, t.word);
 
   if (tier === 'easy') {
-    // Keep building whatever is already down; otherwise a random candidate and
-    // a random synonym of it. Never a reveal.
-    const started = targets.filter((t) => t.progress > 0 || t.complete);
-    if (started.length) return tileToward(started[randomInt(seed, started.length).value]!);
-    const cands = candidates(clues, r.revealed);
-    const card = pick(cands, seed);
-    const mine = targets.filter((t) => card.value.synonyms.includes(t.word.toLowerCase()));
-    const from = mine.length ? mine : targets;
-    if (from.length) return tileToward(from[randomInt(card.nextSeed, from.length).value]!);
-    return anyTile(r, seed);
+    // The floor: uniformly random over the legal moves (never a report, never a fill-in).
+    const legal = getLegalMoves(state, playerId).filter((m) => m.move.type !== 'burn' && m.move.type !== 'timer_out' && !JSON.stringify(m.move).includes('<'));
+    if (legal.length === 0) return anyTile(r, seed);
+    return legal[randomInt(seed, legal.length).value]!.move;
   }
 
   const ranked = [...targets].sort(tier === 'medium' ? rankMedium : rankHard(state, count));

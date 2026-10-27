@@ -1,4 +1,4 @@
-// One move is one action (PLAN.md §4). Letters are upper case; words may be
+// One move is one action (PORT-PLAN.md §4). Letters are upper case; words may be
 // sent in any case.
 
 import type { ClueId } from '../data/clues.js';
@@ -32,8 +32,10 @@ export type WordDebaucheeMove =
   /** Anyone: the sand ran out (`sand` timer), or at a table with its own tiles, the
    *  turn came back round to the first guesser. */
   | { type: 'timer_out' }
-  /** Debauchee: lay one letter of the secret word face up. */
-  | { type: 'reveal'; letter: string };
+  /** Debauchee: lay one letter of the secret word face up. The tile comes from the
+   *  pool; when the pool has none of that letter, `row` says which build-area row to
+   *  take it from (server-held tiles; needed only when more than one row has it). */
+  | { type: 'reveal'; letter: string; row?: number };
 
 export type MoveType = WordDebaucheeMove['type'];
 

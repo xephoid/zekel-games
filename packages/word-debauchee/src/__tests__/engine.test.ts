@@ -28,12 +28,16 @@ describe('setup', () => {
     expect(r.debauchee).toBe('cat');
     expect(r.guessers).toEqual(['dev', 'ann', 'ben']);
     expect(r.dealtWords).toHaveLength(3);
-    expect(r.hand).toHaveLength(4);
-    expect(r.hand.filter((id) => clue(id).kind === 'number')).toHaveLength(2);
     expect(s.wordDeck).toHaveLength(497);
-    expect(s.numberDeck).toHaveLength(18);
-    expect(s.wordClueDeck).toHaveLength(26);
     expect(s.phase).toBe('choose_word');
+    // The clue cards are drawn once the word is chosen, as printed, so no tier can pick a word by its clues.
+    expect(r.hand).toEqual([]);
+    expect(s.numberDeck).toHaveLength(20);
+    const chosen = play(s, 'cat', { type: 'choose_word', word: r.dealtWords[0]! }).state;
+    expect(chosen.round!.hand).toHaveLength(4);
+    expect(chosen.round!.hand.filter((id) => clue(id).kind === 'number')).toHaveLength(2);
+    expect(chosen.numberDeck).toHaveLength(18);
+    expect(chosen.wordClueDeck).toHaveLength(26);
   });
 
   it('is the same game for the same seed', () => {
@@ -408,7 +412,30 @@ describe('the deck between rounds', () => {
     let s = start(3, { tiles: 'server' });
     s = toBuild(s);
     s = spell(s, secret(s).synonyms[0]!).state;
-    expect(s.numberDeck.length + s.wordClueDeck.length).toBe(48 - 4);
+    // The next round has dealt no clues yet (they come once its word is chosen).
+    expect(s.numberDeck.length + s.wordClueDeck.length).toBe(48);
     expect(cardFor(s.history[0]!.word)).toBeDefined();
+  });
+});
+
+describe('a reveal when the pool has no tile of the letter', () => {
+  it('lets the debauchee say which build-area row the tile comes from', () => {
+    let s = toBuild(start(3, { tiles: 'server', timer: 'sand' }));
+    const letter = s.round!.word![0]!;
+    s = play(s, 'ben', { type: 'timer_out' }).state;
+    s.round!.pool[letter] = 0;
+    s.round!.buildArea = [`${letter}B`, `C${letter}D`];
+    const menu = getLegalMoves(s, 'ann').filter((m) => (m.move as { letter: string }).letter === letter);
+    expect(menu.map((m) => m.move_id)).toEqual([`reveal:${letter}:row:0`, `reveal:${letter}:row:1`]);
+    expect(() => play(s, 'ann', { type: 'reveal', letter })).toThrow(/Say which row/);
+    expect(() => play(s, 'ann', { type: 'reveal', letter, row: 5 })).toThrow(/Row 5 has no/);
+    const { state, summary } = play(s, 'ann', { type: 'reveal', letter, row: 1 });
+    expect(summary).toContain(`taken from C${letter}D in the build area`);
+    expect(state.round!.buildArea).toEqual([`${letter}B`, 'CD']);
+    expect(state.round!.revealed).toEqual([letter]);
+    // One row only: no need to say which.
+    s.round!.buildArea = [`C${letter}D`];
+    expect(getLegalMoves(s, 'ann').filter((m) => (m.move as { letter: string }).letter === letter)).toHaveLength(1);
+    expect(play(s, 'ann', { type: 'reveal', letter }).state.round!.buildArea).toEqual(['CD']);
   });
 });
