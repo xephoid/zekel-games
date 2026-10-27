@@ -30,6 +30,9 @@ the move), both fixed on the game's side of the wire:
 2. **The row a tile makes.** A reader (like a person) names the row by what it reads
    after the tile: "adds O to R, making RO" became `row: "RO"`. Fix: `place` and
    `move` accept the row's letters before or after the tile (`resolveRowForTile`).
+3. **A clue card with its answer.** On seed 2 the relayer said the played cards as
+   "Syllables: 2. Vowels: 2. Half the alphabet: A–M" and the reader sent those as the
+   card names. Fix: the printed-name lookup reads the name before the colon.
 
 Each fix is locked by `engine.test.ts`. After them the three probed batches matched
 3 of 3 repetitions each.
@@ -41,7 +44,10 @@ the prose kept a correct board all game. Leaks: none in any run (the secret word
 appears in a relay; the AI's word choice is relayed as "keeps the first of the three
 cards").
 
-Seed 2, and seed 1 from seat 1: see the status line.
+Seed 1, seat 1 (the other side of the table): **NO RELAY DESYNC**, 14 of 14 batches.
+
+Seed 2, seat 0: the first run diverged on the third gap above; rerun after the fix: see
+the status line.
 
 ## Judgment per probed batch
 
@@ -52,5 +58,5 @@ Seed 2, and seed 1 from seat 1: see the status line.
 
 ## Status
 
-2026-10-27: seed 1 seat 0 clean after the two fixes. Seed 2 and the other seat were
-started; their verdicts are appended below when they finish.
+2026-10-27: seed 1 clean from both seats after the fixes; seed 2 rerunning after the
+third fix, verdict appended below when it finishes.
