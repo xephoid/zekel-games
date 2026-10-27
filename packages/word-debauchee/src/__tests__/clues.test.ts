@@ -72,6 +72,8 @@ describe('edge answers', () => {
   it('finds a card by its printed name in any case', () => {
     expect(clueByName('Shortest synonym')?.id).toBe('shortest_synonym');
     expect(clueByName('half the alphabet')?.id).toBe('half_alphabet');
+    expect(clueByName('Syllables: 2')?.id).toBe('syllables');
+    expect(clueByName('Half the alphabet: A–M')?.id).toBe('half_alphabet');
     expect(clueByName('LETTERS')?.id).toBe('letters');
     expect(clueByName('first_vowel')?.id).toBe('first_vowel');
     expect(clueByName('weight')).toBeUndefined();

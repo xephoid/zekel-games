@@ -95,7 +95,8 @@ export function clue(id: ClueId): ClueCard {
 /** A clue card by id or by the name printed on it, in any case ("Letters",
  *  "shortest synonym", "half_alphabet"); undefined when nothing matches. */
 export function clueByName(text: string): ClueCard | undefined {
-  const want = String(text).trim().toLowerCase().replace(/[\s-]+/g, '_');
+  // "Syllables: 2", as a relayer says a played card with its answer, names Syllables.
+  const want = String(text).split(':')[0]!.trim().toLowerCase().replace(/[\s-]+/g, '_');
   return CLUES.find((c) => c.id === want || c.name.toLowerCase().replace(/[\s-]+/g, '_') === want);
 }
 
