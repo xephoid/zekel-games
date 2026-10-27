@@ -234,12 +234,26 @@ function owedReveal(state: WordDebaucheeState, lines: string[], why: string): vo
   lines.push(`${why}: ${nameOf(state, round(state).debauchee)} reveals a letter.`);
 }
 
-function rowAt(state: WordDebaucheeState, row: number): string {
+/** A build-area row by its index, or by the letters it reads (as the summaries say
+ *  it: "adds X to E"), so a player acting on the words need not count rows. */
+export function resolveRow(state: WordDebaucheeState, row: number | string): number {
   const r = round(state);
-  if (!Number.isInteger(row) || row < 0 || row >= r.buildArea.length) {
-    refuse(r.buildArea.length ? `Row ${row} does not exist; rows are 0 to ${r.buildArea.length - 1}.` : 'The build area is empty.');
+  if (typeof row === 'string' && !/^\d+$/.test(row.trim())) {
+    const text = row.trim().toUpperCase();
+    const hits = r.buildArea.map((t, i) => (t === text ? i : -1)).filter((i) => i >= 0);
+    if (hits.length === 1) return hits[0]!;
+    if (hits.length === 0) refuse(r.buildArea.length ? `No row reads ${text}. Rows: ${r.buildArea.map((t, i) => `${i}: ${t}`).join(', ')}.` : 'The build area is empty.');
+    refuse(`${hits.length} rows read ${text} (rows ${hits.join(', ')}); say the row number.`);
   }
-  return r.buildArea[row]!;
+  const n = typeof row === 'string' ? Number(row) : row;
+  if (!Number.isInteger(n) || n < 0 || n >= r.buildArea.length) {
+    refuse(r.buildArea.length ? `Row ${String(row)} does not exist; rows are 0 to ${r.buildArea.length - 1}.` : 'The build area is empty.');
+  }
+  return n;
+}
+
+function rowAt(state: WordDebaucheeState, row: number): string {
+  return round(state).buildArea[resolveRow(state, row)]!;
 }
 
 function singleLetter(letter: string): string {
@@ -248,11 +262,12 @@ function singleLetter(letter: string): string {
   return l;
 }
 
-function place(state: WordDebaucheeState, playerId: string, m: { letter: string; row?: number; index?: number; check?: boolean }, lines: string[]): void {
+function place(state: WordDebaucheeState, playerId: string, given: { letter: string; row?: number | string; index?: number; check?: boolean }, lines: string[]): void {
   requireBuild(state);
   requireServerTiles(state);
   requireTurn(state, playerId);
   const r = round(state);
+  const m = { ...given, row: given.row === undefined ? undefined : resolveRow(state, given.row) };
   const letter = singleLetter(m.letter);
   if ((r.pool[letter] ?? 0) <= 0) refuse(`No ${letter} is left in the pool.`);
   r.pool[letter]!--;
@@ -276,11 +291,16 @@ function place(state: WordDebaucheeState, playerId: string, m: { letter: string;
   endTurn(state, lines);
 }
 
-function moveTile(state: WordDebaucheeState, playerId: string, m: { row: number; index: number; to_row?: number | 'new'; to_index?: number; check?: boolean }, lines: string[]): void {
+function moveTile(state: WordDebaucheeState, playerId: string, given: { row: number | string; index: number; to_row?: number | 'new' | string; to_index?: number; check?: boolean }, lines: string[]): void {
   requireBuild(state);
   requireServerTiles(state);
   requireTurn(state, playerId);
   const r = round(state);
+  const m = {
+    ...given,
+    row: resolveRow(state, given.row),
+    to_row: given.to_row === undefined || given.to_row === 'new' ? given.to_row : resolveRow(state, given.to_row),
+  };
   const text = rowAt(state, m.row);
   if (!Number.isInteger(m.index) || m.index < 0 || m.index >= text.length) refuse(`${text} has no tile at index ${m.index}.`);
   const letter = text[m.index]!;
@@ -333,17 +353,19 @@ function setRow(area: string[], row: number, text: string): void {
 
 /** "Check!" on a row (`server` tiles) or a declared word (`table` tiles).
  *  Returns true when the round ended on a "yes". */
-function check(state: WordDebaucheeState, playerId: string, m: { word?: string; row?: number }, lines: string[]): void {
+function check(state: WordDebaucheeState, playerId: string, m: { word?: string; row?: number | string }, lines: string[]): void {
   requireBuild(state);
   if (!isGuesser(state, playerId)) notYourTurn(`${nameOf(state, playerId)} is the debauchee and only answers checks.`);
   const r = round(state);
   if (state.settings.tiles === 'server') {
-    if (m.row === undefined) refuse('Say which row to check.');
-    rowAt(state, m.row);
-    if (!r.lastTouched || r.lastTouched.by !== playerId || r.lastTouched.row !== m.row) {
+    // A row by number, or by its letters; the word itself names the row too.
+    const given = m.row ?? m.word;
+    if (given === undefined) refuse('Say which row to check.');
+    const row = resolveRow(state, given);
+    if (!r.lastTouched || r.lastTouched.by !== playerId || r.lastTouched.row !== row) {
       refuse('Only the player whose tile just completed a word may check it, and only before the next tile.');
     }
-    checkRow(state, playerId, m.row, lines);
+    checkRow(state, playerId, row, lines);
   } else {
     if (!m.word) refuse('Say which word is on the table.');
     const word = normaliseWord(m.word);
@@ -444,7 +466,7 @@ export function rowsWith(r: Round, letter: string): number[] {
   return r.buildArea.map((text, i) => (text.includes(letter) ? i : -1)).filter((i) => i >= 0);
 }
 
-function reveal(state: WordDebaucheeState, playerId: string, letterIn: string, rowIn: number | undefined, lines: string[]): void {
+function reveal(state: WordDebaucheeState, playerId: string, letterIn: string, rowGiven: number | string | undefined, lines: string[]): void {
   if (state.phase !== 'reveal') refuse('No reveal is owed right now.');
   requireDebauchee(state, playerId, 'reveals letters');
   const r = round(state);
@@ -462,6 +484,7 @@ function reveal(state: WordDebaucheeState, playerId: string, letterIn: string, r
       const rows = rowsWith(r, letter);
       if (rows.length === 0) refuse(`There is no ${letter} tile left anywhere on the table.`);
       let row: number;
+      const rowIn = rowGiven === undefined ? undefined : resolveRow(state, rowGiven);
       if (rowIn === undefined) {
         if (rows.length > 1) {
           refuse(`The pool has no ${letter}; it sits in ${rows.length} rows (${rows.map((i) => `row ${i}: ${r.buildArea[i]}`).join(', ')}). Say which row to take it from.`);

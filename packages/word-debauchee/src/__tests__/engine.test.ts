@@ -428,7 +428,7 @@ describe('a reveal when the pool has no tile of the letter', () => {
     const menu = getLegalMoves(s, 'ann').filter((m) => (m.move as { letter: string }).letter === letter);
     expect(menu.map((m) => m.move_id)).toEqual([`reveal:${letter}:row:0`, `reveal:${letter}:row:1`]);
     expect(() => play(s, 'ann', { type: 'reveal', letter })).toThrow(/Say which row/);
-    expect(() => play(s, 'ann', { type: 'reveal', letter, row: 5 })).toThrow(/Row 5 has no/);
+    expect(() => play(s, 'ann', { type: 'reveal', letter, row: 5 })).toThrow(/Row 5 does not exist/);
     const { state, summary } = play(s, 'ann', { type: 'reveal', letter, row: 1 });
     expect(summary).toContain(`taken from C${letter}D in the build area`);
     expect(state.round!.buildArea).toEqual([`${letter}B`, 'CD']);
@@ -437,5 +437,30 @@ describe('a reveal when the pool has no tile of the letter', () => {
     s.round!.buildArea = [`C${letter}D`];
     expect(getLegalMoves(s, 'ann').filter((m) => (m.move as { letter: string }).letter === letter)).toHaveLength(1);
     expect(play(s, 'ann', { type: 'reveal', letter }).state.round!.buildArea).toEqual(['CD']);
+  });
+});
+
+describe('a row named by its letters', () => {
+  it('is accepted wherever a row number is, as the summaries name it', () => {
+    let s = toBuild(start(3, { tiles: 'server', timer: 'sand' }));
+    s = play(s, 'ben', { type: 'place', letter: 'G' }).state;
+    s = play(s, 'cat', { type: 'place', letter: 'L', row: 'g' }).state;
+    expect(s.round!.buildArea).toEqual(['GL']);
+    s = play(s, 'ben', { type: 'place', letter: 'A', row: 'GL' }).state;
+    s = play(s, 'cat', { type: 'place', letter: 'D', row: 'GLA' }).state;
+    expect(s.round!.buildArea).toEqual(['GLAD']);
+    const check = play(s, 'cat', { type: 'check', row: 'GLAD' });
+    expect(check.summary).toContain('"Check! GLAD."');
+    if (check.state.round?.buildArea.includes('GLAD')) {
+      s = check.state;
+      s = play(s, 'ben', { type: 'move', row: 'GLAD', index: 3, to_row: 'new' }).state;
+      expect(s.round!.buildArea).toEqual(['GLA', 'D']);
+      s = play(s, 'cat', { type: 'move', row: 'D', index: 0, to_row: 'GLA' }).state;
+      expect(s.round!.buildArea).toEqual(['GLAD']);
+      expect(() => play(s, 'ben', { type: 'place', letter: 'E', row: 'NOPE' })).toThrow(/No row reads NOPE/);
+      s = play(s, 'ben', { type: 'place', letter: 'A' }).state;
+      s = play(s, 'cat', { type: 'place', letter: 'A' }).state;
+      expect(() => play(s, 'ben', { type: 'place', letter: 'B', row: 'A' })).toThrow(/2 rows read A/);
+    }
   });
 });

@@ -16,14 +16,15 @@ export type WordDebaucheeMove =
   | { type: 'answer_clue'; card: ClueId; text?: string }
   /** Guesser, `server` tiles: one tile from the pool into the build area. A new row
    *  when `row` is omitted; at the end of the row when `index` is omitted. `check`
-   *  calls "Check!" on the row the tile completes. */
-  | { type: 'place'; letter: string; row?: number; index?: number; check?: boolean }
+   *  calls "Check!" on the row the tile completes. A row is its number or the letters
+   *  it reads ("GLA"), as the summaries name it. */
+  | { type: 'place'; letter: string; row?: number | string; index?: number; check?: boolean }
   /** Guesser, `server` tiles: move one tile in the build area to another spot
    *  (`to_row` a row index or 'new'), or back to the pool when `to_row` is omitted. */
-  | { type: 'move'; row: number; index: number; to_row?: number | 'new'; to_index?: number; check?: boolean }
+  | { type: 'move'; row: number | string; index: number; to_row?: number | 'new' | string; to_index?: number; check?: boolean }
   /** Guesser: "Check!". `server` tiles: a row you just completed. `table` tiles: the
    *  word on the table, trusted as declared. */
-  | { type: 'check'; word?: string; row?: number }
+  | { type: 'check'; word?: string; row?: number | string }
   /** Guesser, on your turn: "Reveal!" instead of acting. Bribe variant: `clue`
    *  takes the top card of that clue deck instead of a letter. */
   | { type: 'call_reveal'; clue?: 'number' | 'word' }
@@ -35,7 +36,7 @@ export type WordDebaucheeMove =
   /** Debauchee: lay one letter of the secret word face up. The tile comes from the
    *  pool; when the pool has none of that letter, `row` says which build-area row to
    *  take it from (server-held tiles; needed only when more than one row has it). */
-  | { type: 'reveal'; letter: string; row?: number };
+  | { type: 'reveal'; letter: string; row?: number | string };
 
 export type MoveType = WordDebaucheeMove['type'];
 
