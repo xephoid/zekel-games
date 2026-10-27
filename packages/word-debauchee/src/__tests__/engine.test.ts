@@ -496,3 +496,24 @@ describe('moves the words can carry', () => {
     expect(named).toBeGreaterThan(0);
   });
 });
+
+describe('a row named by what the tile makes', () => {
+  it('accepts "adds O to R, making RO" by either name', () => {
+    let s = toBuild(start(3, { tiles: 'server', timer: 'sand' }));
+    s = play(s, 'ben', { type: 'place', letter: 'R' }).state;
+    s = play(s, 'cat', { type: 'place', letter: 'O', row: 'RO' }).state;
+    expect(s.round!.buildArea).toEqual(['RO']);
+    s = play(s, 'ben', { type: 'place', letter: 'A', row: 'ROA' }).state;
+    s = play(s, 'cat', { type: 'place', letter: 'M', row: 'ROA' }).state;
+    expect(s.round!.buildArea).toEqual(['ROAM']);
+    expect(() => play(s, 'ben', { type: 'place', letter: 'S', row: 'ROAD' })).toThrow(/none makes ROAD with S/);
+    // A tile put in the middle: the made row with the index given.
+    s = play(s, 'ben', { type: 'place', letter: 'X', row: 'ROXAM', index: 2 }).state;
+    expect(s.round!.buildArea).toEqual(['ROXAM']);
+    // A move named by the row it makes.
+    s = play(s, 'cat', { type: 'move', row: 'ROXAM', index: 2, to_row: 'new' }).state;
+    expect(s.round!.buildArea).toEqual(['ROAM', 'X']);
+    s = play(s, 'ben', { type: 'move', row: 'X', index: 0, to_row: 'ROAMX' }).state;
+    expect(s.round!.buildArea).toEqual(['ROAMX']);
+  });
+});

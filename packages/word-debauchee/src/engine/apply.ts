@@ -260,6 +260,26 @@ export function resolveRow(state: WordDebaucheeState, row: number | string): num
   return n;
 }
 
+/** A row for a tile going in: by number, by the letters it reads now, or by the
+ *  letters it will read with the tile in ("adds O to R, making RO": either R or RO). */
+export function resolveRowForTile(state: WordDebaucheeState, given: number | string, letter: string, index: number | undefined): number {
+  if (typeof given !== 'string' || /^\d+$/.test(given.trim())) return resolveRow(state, given);
+  const r = round(state);
+  const text = given.trim().toUpperCase();
+  const reads = r.buildArea.map((t, i) => (t === text ? i : -1)).filter((i) => i >= 0);
+  if (reads.length === 1) return reads[0]!;
+  if (reads.length > 1) refuse(`${reads.length} rows read ${text} (rows ${reads.join(', ')}); say the row number.`);
+  const makes = r.buildArea
+    .map((t, i) => {
+      const at = index ?? t.length;
+      return at >= 0 && at <= t.length && t.slice(0, at) + letter + t.slice(at) === text ? i : -1;
+    })
+    .filter((i) => i >= 0);
+  if (makes.length === 1) return makes[0]!;
+  if (makes.length > 1) refuse(`${makes.length} rows would make ${text} (rows ${makes.join(', ')}); say the row number.`);
+  refuse(r.buildArea.length ? `No row reads ${text}, and none makes ${text} with ${letter}. Rows: ${r.buildArea.map((t, i) => `${i}: ${t}`).join(', ')}.` : 'The build area is empty.');
+}
+
 function rowAt(state: WordDebaucheeState, row: number): string {
   return round(state).buildArea[resolveRow(state, row)]!;
 }
@@ -275,8 +295,8 @@ function place(state: WordDebaucheeState, playerId: string, given: { letter: str
   requireServerTiles(state);
   requireTurn(state, playerId);
   const r = round(state);
-  const m = { ...given, row: given.row === undefined ? undefined : resolveRow(state, given.row) };
-  const letter = singleLetter(m.letter);
+  const letter = singleLetter(given.letter);
+  const m = { ...given, letter, row: given.row === undefined ? undefined : resolveRowForTile(state, given.row, letter, given.index) };
   if ((r.pool[letter] ?? 0) <= 0) refuse(`No ${letter} is left in the pool.`);
   r.pool[letter]!--;
   let row: number;
@@ -304,8 +324,10 @@ function moveTile(state: WordDebaucheeState, playerId: string, given: { row: num
   requireServerTiles(state);
   requireTurn(state, playerId);
   const r = round(state);
-  const toRow: number | 'new' | undefined = given.to_row === undefined ? undefined : given.to_row === 'new' ? 'new' : resolveRow(state, given.to_row);
-  const m = { ...given, row: resolveRow(state, given.row), to_row: toRow };
+  const fromRow = resolveRow(state, given.row);
+  const moving = r.buildArea[fromRow]?.[given.index] ?? '';
+  const toRow: number | 'new' | undefined = given.to_row === undefined ? undefined : given.to_row === 'new' ? 'new' : resolveRowForTile(state, given.to_row, moving, given.to_index);
+  const m = { ...given, row: fromRow, to_row: toRow };
   const text = rowAt(state, m.row);
   if (!Number.isInteger(m.index) || m.index < 0 || m.index >= text.length) refuse(`${text} has no tile at index ${m.index}.`);
   const letter = text[m.index]!;
