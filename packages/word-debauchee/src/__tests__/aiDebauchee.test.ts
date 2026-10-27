@@ -77,7 +77,11 @@ describe('the AI debauchee', () => {
             expect(chooseDebaucheeMove(s, 'ann', tier, seed)).toEqual(m);
             const legal = getLegalMoves(s, 'ann').map((l) => JSON.stringify(l.move));
             // play_clues legal entries may list the cards in another order
-            const ok = legal.includes(JSON.stringify(m)) || (m.type === 'play_clues' && legal.some((l) => JSON.stringify([...(JSON.parse(l).cards as string[])].sort()) === JSON.stringify([...m.cards].sort())));
+            const ok =
+              legal.includes(JSON.stringify(m)) ||
+              (m.type === 'play_clues' && legal.some((l) => JSON.stringify([...(JSON.parse(l).cards as string[])].sort()) === JSON.stringify([...m.cards].sort()))) ||
+              // The AI keeps a word by its card position, so the words about it carry no secret; the menu lists the words.
+              (m.type === 'choose_word' && m.card !== undefined && legal.some((l) => JSON.parse(l).word === s.round!.dealtWords[m.card! - 1]));
             expect(ok, `${tier} ${seed} ${s.phase} ${JSON.stringify(m)}`).toBe(true);
             s = applyMove(s, 'ann', m).newState;
           } else {
@@ -93,8 +97,8 @@ describe('the AI debauchee', () => {
     let s = createState(seats(3, [0]), { seed: 9, firstDebauchee: 'ann' });
     const dealt = s.round!.dealtWords.map((w) => cardFor(w)!);
     const slow = (c: typeof dealt[0]) => c.letters + Math.min(...c.synonyms.map((x) => x.length));
-    const chosen = chooseDebaucheeMove(s, 'ann', 'medium', 1) as { word: string };
-    expect(Math.max(...dealt.map(slow))).toBe(slow(cardFor(chosen.word)!));
+    const chosen = chooseDebaucheeMove(s, 'ann', 'medium', 1) as { card: number };
+    expect(Math.max(...dealt.map(slow))).toBe(slow(cardFor(s.round!.dealtWords[chosen.card - 1]!)!));
     s = applyMove(s, 'ann', chosen).newState;
     const playM = chooseDebaucheeMove(s, 'ann', 'medium', 1) as { cards: ClueId[] };
     const buried = s.round!.hand.filter((id) => !playM.cards.includes(id) || playM.cards.filter((x) => x === id).length < s.round!.hand.filter((x) => x === id).length);

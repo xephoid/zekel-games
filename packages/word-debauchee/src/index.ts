@@ -73,7 +73,7 @@ const clueIds = CLUES.map((c) => c.id);
 const moveSchema = {
   oneOf: [
     { type: 'object', required: ['type', 'player'], properties: { type: { const: 'choose_first_debauchee' }, player: { type: 'string', description: 'setup: the first debauchee, by seat id or name' } } },
-    { type: 'object', required: ['type', 'word'], properties: { type: { const: 'choose_word' }, word: { type: 'string', description: 'one of the three dealt words (private view)' } } },
+    { type: 'object', required: ['type'], properties: { type: { const: 'choose_word' }, word: { type: 'string', description: 'one of the three dealt words (private view)' }, card: { type: 'integer', minimum: 1, maximum: 3, description: 'or which of the three cards: 1, 2 or 3' } } },
     { type: 'object', required: ['type', 'cards'], properties: { type: { const: 'play_clues' }, cards: { type: 'array', minItems: 3, maxItems: 3, items: { enum: clueIds }, description: 'three of the four clue card ids in hand (Open hand: any three, one a number clue)' } } },
     { type: 'object', required: ['type', 'card'], properties: { type: { const: 'answer_clue' }, card: { enum: ['rhymes_with', 'opposite', 'register', 'goes_with'] }, text: { type: 'string', description: 'the answer in your own words; omit to use the card\'s answer' } } },
     { type: 'object', required: ['type', 'letter'], properties: { type: { const: 'place' }, letter: { type: 'string', minLength: 1, maxLength: 1 }, row: { anyOf: [{ type: 'integer', minimum: 0 }, { type: 'string' }], description: 'the row to add to, by number or by the letters it reads (e.g. "GLA"); omit for a new row' }, index: { type: 'integer', minimum: 0, description: 'omit for the end of the row' }, check: { type: 'boolean', description: 'call "Check!" on the row this tile completes' } } },
@@ -111,7 +111,7 @@ function narrate(state: WordDebaucheeState, playerId: string, move: WordDebauche
     case 'choose_first_debauchee':
       return `${who} names the first debauchee.`;
     case 'choose_word':
-      return `${who} looks at the three cards and keeps one.`;
+      return `${who} looks at the three cards and keeps ${move.card ? `the ${['first', 'second', 'third'][move.card - 1] ?? 'one'}` : 'one'}.`;
     case 'play_clues':
       return `${who} plays ${move.cards.map((c) => clue(c).name).join(', ')}.`;
     case 'answer_clue':

@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { clue, type ClueId } from '../data/clues.js';
 import { cardFor } from '../data/deck.js';
 import { TILE_TOTAL } from '../data/tiles.js';
+import { chooseAIMove } from '../ai.js';
+import { applyMove } from '../engine/apply.js';
+import { activeSeatId } from '../engine/helpers.js';
 import { createState, defaultRounds, payouts } from '../engine/round.js';
 import { getLegalMoves } from '../legalMoves.js';
 import { play, seats, secret, spell, start, toBuild } from './support.js';
@@ -462,5 +465,34 @@ describe('a row named by its letters', () => {
       s = play(s, 'cat', { type: 'place', letter: 'A' }).state;
       expect(() => play(s, 'ben', { type: 'place', letter: 'B', row: 'A' })).toThrow(/2 rows read A/);
     }
+  });
+});
+
+describe('moves the words can carry', () => {
+  it('lets the debauchee keep a word by its position among the three cards', () => {
+    const s = start(3, { tiles: 'server' });
+    const second = s.round!.dealtWords[1]!;
+    const { state, summary } = play(s, 'ann', { type: 'choose_word', card: 2 });
+    expect(state.round!.word).toBe(second);
+    expect(summary).toContain('keeps the second of the three cards');
+    expect(summary).not.toContain(second);
+    expect(() => play(s, 'ann', { type: 'choose_word', card: 4 })).toThrow(/1, 2 or 3/);
+    expect(() => play(s, 'ann', { type: 'choose_word' })).toThrow(/1, 2 or 3/);
+  });
+
+  it('has the AI name rows by their letters and words by their card', () => {
+    let s = createState(seats(3, [0, 1, 2]), { seed: 3, rounds: 1 });
+    const first = chooseAIMove(s, s.round!.debauchee, 'medium', 1);
+    expect(first).toMatchObject({ type: 'choose_word' });
+    expect((first as { card?: number }).card).toBeGreaterThanOrEqual(1);
+    let guard = 0;
+    let named = 0;
+    while (s.phase !== 'game_over' && guard++ < 400) {
+      const id = activeSeatId(s);
+      const m = chooseAIMove(s, id, 'medium', guard);
+      if (m.type === 'place' && typeof m.row === 'string') named++;
+      s = applyMove(s, id, m).newState;
+    }
+    expect(named).toBeGreaterThan(0);
   });
 });

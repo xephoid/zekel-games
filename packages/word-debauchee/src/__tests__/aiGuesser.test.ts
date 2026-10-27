@@ -123,7 +123,8 @@ describe('the AI guessers', () => {
       s = applyMove(s, 'ben', m).newState;
       m = chooseGuesserMove(s, 'ben', 'hard', 1);
       expect(m.type).toBe('place');
-      if (m.type === 'place') expect(m.row).toBe(0);
+      // The row by its letters (what the summaries say) or its number: either names row 0.
+      if (m.type === 'place') expect(typeof m.row === 'string' ? s.round!.buildArea.indexOf(m.row) : m.row).toBe(0);
     }
   });
 
@@ -144,7 +145,7 @@ describe('the AI guessers', () => {
     }
     expect(s.round!.buildArea[0]).toBe(best.word);
     const m = chooseGuesserMove(s, 'ben', 'medium', 1);
-    expect(m).toMatchObject({ type: 'move', row: 0, check: true });
+    expect(m).toMatchObject({ type: 'move', row: s.round!.buildArea[0], check: true });
     const r = applyMove(s, 'ben', m);
     expect(r.summary).toContain(`"Check! ${best.word}."`);
   });

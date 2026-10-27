@@ -179,7 +179,8 @@ export function chooseDebaucheeMove(state: WordDebaucheeState, playerId: string,
   switch (state.phase) {
     case 'choose_word':
       // The clue cards are drawn after the word is chosen, so no tier may read them here.
-      return { type: 'choose_word', word: chooseWord(r.dealtWords.map((w) => cardFor(w)!), tier, seed) };
+      // By position among the three cards, so the move and the words about it carry no secret.
+      return { type: 'choose_word', card: r.dealtWords.indexOf(chooseWord(r.dealtWords.map((w) => cardFor(w)!), tier, seed)) + 1 };
     case 'play_clues': {
       const card = cardFor(r.word!)!;
       if (openHand) {

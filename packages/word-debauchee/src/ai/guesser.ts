@@ -110,15 +110,24 @@ function rankHard(state: WordDebaucheeState, count: number) {
 /** The next tile toward a target: continue its prefix row, or start a new row.
  *  Checks when the tile completes the word. A complete, unchecked row is
  *  re-completed by moving its last tile into place, which lets this player check it. */
-function tileToward(t: Target): WordDebaucheeMove {
+function tileToward(r: Round, t: Target): WordDebaucheeMove {
   if (t.complete) {
-    const row = t.row ?? -1;
+    const row = rowName(r, t.row ?? -1);
     return { type: 'move', row, index: t.word.length - 1, to_row: row, to_index: t.word.length - 1, check: true };
   }
   const letter = t.word[t.progress]!;
   const last = t.progress === t.word.length - 1;
   if (t.row === null) return last ? { type: 'place', letter, check: true } : { type: 'place', letter };
-  return last ? { type: 'place', letter, row: t.row, check: true } : { type: 'place', letter, row: t.row };
+  const row = rowName(r, t.row);
+  return last ? { type: 'place', letter, row, check: true } : { type: 'place', letter, row };
+}
+
+/** A row by the letters it reads, as the summaries say it, so a person acting on
+ *  the words can send the same move; its number only when two rows read alike. */
+function rowName(r: Round, row: number): number | string {
+  const text = r.buildArea[row];
+  if (text === undefined) return row;
+  return r.buildArea.filter((t) => t === text).length === 1 ? text : row;
 }
 
 function completeRow(r: Round, word: string): number {
@@ -210,6 +219,7 @@ export function chooseGuesserMove(state: WordDebaucheeState, playerId: string, t
     return legal[randomInt(seed, legal.length).value]!.move;
   }
 
+
   const ranked = [...targets].sort(tier === 'medium' ? rankMedium : rankHard(state, count));
   const best = ranked[0];
   if (tier === 'medium') {
@@ -220,7 +230,7 @@ export function chooseGuesserMove(state: WordDebaucheeState, playerId: string, t
     const call = bestReveal(state, clues, best, count);
     if (call) return call;
   }
-  if (best) return tileToward(best);
+  if (best) return tileToward(r, best);
   return { type: 'call_reveal' };
 }
 

@@ -30,7 +30,7 @@ export function applyMove(prev: WordDebaucheeState, playerId: string, move: Word
       chooseFirstDebauchee(state, playerId, move.player, lines);
       break;
     case 'choose_word':
-      chooseWord(state, playerId, move.word, lines);
+      chooseWord(state, playerId, move, lines);
       break;
     case 'play_clues':
       playClues(state, playerId, move.cards, lines);
@@ -89,18 +89,26 @@ function secretCard(state: WordDebaucheeState): Card {
   return cardFor(w)!;
 }
 
-function chooseWord(state: WordDebaucheeState, playerId: string, word: string, lines: string[]): void {
+function chooseWord(state: WordDebaucheeState, playerId: string, m: { word?: string; card?: number }, lines: string[]): void {
   if (state.phase !== 'choose_word') refuse('The word has already been chosen this round.');
   requireDebauchee(state, playerId, 'chooses the word');
   const r = round(state);
-  const w = normaliseWord(word);
-  if (!r.dealtWords.includes(w)) refuse(`Choose one of the three cards dealt.`);
+  let w: string;
+  if (m.word !== undefined && String(m.word).trim() !== '') {
+    w = normaliseWord(String(m.word));
+    if (!r.dealtWords.includes(w)) refuse(`Choose one of the three cards dealt.`);
+  } else {
+    const n = Number(m.card);
+    if (!Number.isInteger(n) || n < 1 || n > r.dealtWords.length) refuse(`Say the word, or which of the three cards (1, 2 or 3).`);
+    w = r.dealtWords[n - 1]!;
+  }
+  const position = ['first', 'second', 'third'][r.dealtWords.indexOf(w)]!;
   r.word = w;
   state.wordDeck.push(...r.dealtWords.filter((x) => x !== w));
   dealClues(state);
   state.phase = 'play_clues';
   lines.push(
-    `${nameOf(state, playerId)} keeps a word; the other two cards go under the deck. ${nameOf(state, playerId)} now ` +
+    `${nameOf(state, playerId)} keeps the ${position} of the three cards; the other two go under the deck. ${nameOf(state, playerId)} now ` +
       (state.settings.openHand ? 'chooses any three clue cards from the whole set, at least one a number clue.' : 'draws two number clues and two word clues and plays three.'),
   );
 }
@@ -324,7 +332,7 @@ function moveTile(state: WordDebaucheeState, playerId: string, given: { row: num
       if (!Number.isInteger(index) || index < 0 || index > rest.length) refuse(`Index ${index} is off the end of ${rest}.`);
       r.buildArea[m.row] = rest.slice(0, index) + letter + rest.slice(index);
       row = m.row;
-      lines.push(`${who} shuffles ${text} into ${r.buildArea[row]}.`);
+      lines.push(`${who} moves the ${ordinal(m.index + 1)} tile of ${text} to position ${index + 1} of the same row, making ${r.buildArea[row]}.`);
     } else {
       const index = m.to_index ?? target.length;
       if (!Number.isInteger(index) || index < 0 || index > target.length) refuse(`Index ${index} is off the end of ${target}.`);
@@ -341,6 +349,12 @@ function moveTile(state: WordDebaucheeState, playerId: string, given: { row: num
     if (checkRow(state, playerId, row, lines)) return;
   }
   endTurn(state, lines);
+}
+
+function ordinal(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return `${n}${s[(v - 20) % 10] ?? s[v] ?? s[0]}`;
 }
 
 function setRow(area: string[], row: number, text: string): void {
