@@ -1,11 +1,14 @@
-# Word Debauchee — MCP port plan
+# Port plan — Word Debauchee
 
 Plan for `@zekel/word-debauchee`, a game module for the zekel MCP server, built from
 [rules.md](rules.md), [design-notes.md](design-notes.md) and the 500 cards in
 [words.csv](words.csv). The printed rule is the rule; where this plan changes or adds
 something for digital play it says so, and every open point is in section 10 for the
 designer. Questions are numbered Q1… and rulings get recorded at the top of this file,
-dated, as the Demon Hunter plan does.
+dated, as the Demon Hunter plan does. (This file was `PLAN.md` until 2026-10-26; it is
+the port-planning runbook's `PORT-PLAN.md`. Its sections are in the order the plan was
+written, not the runbook template's: §0 sources, §4a the feature inventory, §10a the
+risk register and divergence ledger, §14 the review gate.)
 
 Rulings 2026-10-26 (designer): all eleven suggestions in section 10 accepted as
 written. Both tile modes, `table` default, `server` whenever a guesser is AI (Q1);
@@ -17,6 +20,24 @@ refused as burned (Q5); `table` checks trusted as declared (Q6); *The House* is 
 variant and the `house` option (Q7); the synonym floor is four (Q8); AI guessers read
 the whole deck, never the hidden word (Q9); first debauchee random unless named (Q10);
 all four printed variants in v1, *Bribe* and *Open hand* last (Q11).
+
+## 0. Sources and extraction
+
+- **The rulebook:** `rules/rules.md`, the designer's own text (this is a Zekel Games
+  game, so there is no publisher's edition). Pinned for the rules checker as
+  `src/dev/verify/rules-v1.txt`, a verbatim copy; a ruling that changes the rules
+  updates the pin in the same change.
+- **The design notes:** `rules/design-notes.md`, the reasoning behind the numbers.
+- **The components:** no photos or scans. The 500 word cards are `rules/words.csv`
+  (one row per card, every printed field a column); the clue cards and tile counts are
+  the rulebook's appendix, transcribed into `src/data/clues.ts` and `src/data/tiles.ts`.
+  Extraction coverage: every card has every fact column; the four judgment columns
+  (opposite, goes_with, rhymes_with, register) were generated on 2026-10-26 (Q4) and are
+  to be checked at the table. Nothing illegible, nothing missing.
+- **Reference implementation:** none. This is a rulebook-only port, so the counts
+  below are the engine's correctness anchors: 144 tiles conserved across pool, build
+  area and the debauchee's row; 500 word cards across deck, dealt and chosen; 48 clue
+  cards across the two decks and the round's hand.
 
 ## 1. What the server is for this game
 
@@ -50,7 +71,7 @@ cannot see).
 `packages/word-debauchee`, same shape as the other games:
 
 ```
-package.json  README.md  LICENSE  PLAN.md (this file, moved)
+package.json  README.md  LICENSE  PORT-PLAN.md (this file, moved)
 rules/rules.md  rules/design-notes.md  rules/words.csv
 src/index.ts          Game seam: schemas, views, next_step, choices, rules text
 src/types.ts          state and move types
@@ -136,6 +157,77 @@ three were built in milestone 6:
   step. The tiles may be the table's own (an AI that only listens needs none); server
   tiles are still forced when an AI seat guesses. Rounds default to a normal game's at
   that table size (Q13). Winners: the house, or every person, or everyone on a tie.
+
+## 4a. Feature inventory (one row per printed rule)
+
+Every rule in `rules/rules.md`, in the book's order, with where the port builds it.
+The second, independent enumeration (§14) was diffed against this table.
+
+| # | Section | Rule | Detail | Built in |
+|---|---|---|---|---|
+| 1 | Head | Players, time | 2–8 players, 20–40 minutes | `round.ts` MIN/MAX_PLAYERS |
+| 2 | Head | The pitch | one debauchee, a secret word, three stingy clues; the rest spell a synonym; a letter every 30 seconds; the best debauchee wins | the whole engine |
+| 3 | Components | Letter tiles | 144, distribution in the appendix | `tiles.ts`, `tiles.test.ts` |
+| 4 | Components | Word cards | 500, one word each with facts and a synonym list | `words.csv` → `words.ts`, `words.test.ts` |
+| 5 | Components | Clue cards | 48 in two decks: 20 number, 28 word | `clues.ts`, `clues.test.ts` |
+| 6 | Components | Sand timer, score pad | one 30-second timer; a score pad | `timer: sand` reports; `scores` |
+| 7 | A word card | The facts | letters, vowels, consonants, syllables, category, type, grade, difficulty | `wordCard.ts` |
+| 8 | A word card | The synonym list is the referee | a spelled word scores if and only if it is on the list | `deck.ts` isSynonymOf, `apply.ts` checkWord |
+| 9 | A word card | Vowels | A E I O U are vowels; Y is a consonant | `wordCard.ts` isVowel |
+| 10 | A word card | Grade | the US school grade the word is usually taught in | `words.csv` grade |
+| 11 | A clue card | What a clue card is | names one thing the debauchee must tell the table; number clues answer with a number, word clues do not | `clues.ts` kind |
+| 12 | Setup 1 | The pool and the build area | tip all 144 tiles face up; an open space beside them | `freshPool`, `buildArea`; `getPhysicalSetup` |
+| 13 | Setup 2 | Three decks | shuffle the word cards; shuffle the number clues and the word clues into two separate decks | `createState` |
+| 14 | Setup 3 | First debauchee | whoever most recently got away with something | `choose_first_debauchee` (a human names them; the server draws only for an all-AI table) |
+| 15 | Round 1 | Draw three words | the debauchee draws three word cards | `startRound` WORDS_DEALT |
+| 16 | Round 1 | Choose one, bury two | secretly chooses one; the other two go under the deck; the chosen card stays hidden | `chooseWord`; `viewLeak.test.ts` |
+| 17 | Round 2 | Draw two and two | two number clues and two word clues, looked at in secret | `startRound` CLUES_DEALT_PER_DECK; debauchee view only |
+| 18 | Round 2 | Play three | choose three; lay them face up; answer each aloud, truthfully | `playClues`; the server answers fact clues from the card |
+| 19 | Round 2 | One of each kind | four cards, three played: at least one number and one word clue | `playClues` refuses otherwise |
+| 20 | Round 2 | Bury the fourth | the fourth card goes under its deck | `playClues` |
+| 21 | Round 2 | Say nothing else | nothing else may be said about the word, now or later | `answerClue` refuses the word itself; `nextStep` NO_HINTS |
+| 22 | Round 2 | Repeat on request | any guesser may ask the debauchee to repeat an answer | the played clues stay in every view |
+| 23 | Round 2 | Flip the timer | then the debauchee flips the timer | `beginBuild` |
+| 24 | Round 3 | Turn order | clockwise among the guessers from the debauchee's left, cycling until the round ends | `startRound` guessers; `turnIndex` |
+| 25 | Round 3 | One action: place | one tile from the pool into the build area | `place` |
+| 26 | Round 3 | One action: move | one tile already in the build area, or return it to the pool | `move` |
+| 27 | Round 3 | One action: call "Reveal!" | the debauchee immediately reveals a letter and restarts the timer | `callReveal` → `reveal` |
+| 28 | Round 3 | No pass | you may not pass | no pass move exists; `legalMoves.ts` |
+| 29 | Round 3 | Build anywhere | several candidate words can sit in the build area at once | rows in `buildArea` |
+| 30 | Round 3 | Never say the word | any word a guesser says aloud is burned and cannot score this round, even if on the list | `burn`; `checkWord` refuses a burned word |
+| 31 | Round 3 | Hint around it | hints like "the opposite of sad" are allowed | nothing to build: talking is the table's |
+| 32 | Round 3 | Never suggest a letter | no "starts with G", no pointing at tiles | guidance and next step; not enforceable by the server (§10a) |
+| 33 | Round 3 | The debauchee says nothing | listens, smirks, never confirms or denies a guess | the AI debauchee has no talking move; guidance |
+| 34 | Round 3 | Check on the completing tile | when your tile completes a word, say "Check!" and point | `check` on `place`/`move`, or right after by the same player |
+| 35 | Round 3 | Yes or no only | the debauchee answers only "yes" or "no" | `checkWord` summary |
+| 36 | Round 3 | A word reads one way | tiles touching, in one straight line, left to right | a row is a string read left to right |
+| 37 | Round 3 | A "no" word may stay | players can keep moving its tiles | nothing removed on "no" |
+| 38 | Round 4 | The sand runs out | the current turn finishes, then the debauchee reveals | `timer_out` (sand) / laps counted by the server |
+| 39 | Round 4 | What a reveal is | one tile matching a letter of the word, from the pool, face up in a row in front of the debauchee | `reveal` |
+| 40 | Round 4 | The debauchee picks the letter | positions are not shown | `reveal.letter`; `revealed` is a list, no positions |
+| 41 | Round 4 | Pool empty of that letter | take one from the build area instead | `reveal` falls back to the build area |
+| 42 | Round 4 | Resume | flip the timer; play resumes with the next guesser in turn order | `beginBuild` |
+| 43 | Round 5 | Round ends: cracked | a check gets "yes" | `checkWord` → `endRound('cracked')` |
+| 44 | Round 5 | Round ends: stumped | the debauchee places the last letter of the word | `reveal` → `endRound('stumped')` |
+| 45 | Round 5 | Turn the card up | the debauchee reads the word | `endRound` summary; `last_round` in the view |
+| 46 | Scoring | Stumped | the debauchee scores the word's letters; guessers nothing | `payouts` |
+| 47 | Scoring | Cracked | every guesser scores the synonym's letters minus tiles revealed, minimum 1; the debauchee nothing | `payouts`, MIN_CRACK_PAYOUT |
+| 48 | Scoring | The four example rows | GLAD/0 → 4; CHEERFUL/2 → 6; GLAD/4 → 1; never cracked → 5 | `engine.test.ts` scoring table |
+| 49 | Scoring | After the round | write the scores, return every tile to the pool, the player to the left is next debauchee | `endRound`, `startRound`, `freshPool` |
+| 50 | Winning | Game length | every player debauchee the same number of times: once each with 5–8, twice with 2–4 | `defaultRounds` |
+| 51 | Winning | Highest total wins | ties share the win | `winners` |
+| 52 | Example | Ann's round | a worked round: GLAD cracked for 4; a slower round, MERRY after three reveals for 2 | `engine.test.ts` |
+| 53 | Variants | Laps instead of sand | a reveal each time the turn comes back round to the first guesser | `timer: laps` (default) |
+| 54 | Variants | Bribe | on "Reveal!" the guessers may take a clue instead of a letter: the caller draws the top card of either clue deck, the debauchee answers it; counts as a revealed tile | `bribe` option; `callReveal` with `clue` |
+| 55 | Variants | Open hand | skip the draw; the debauchee chooses any three clue cards from the whole set, at least one a number clue | `openHand` option; `playClues` |
+| 56 | Variants | Two-player duel | one guesser, no turn order, tiles placed freely while the sand runs; four rounds each | `tilesPerReveal` under laps; `rounds` 4 with 2 seats; the sand timer reported |
+| 57 | Variants | The House | the computer is debauchee every round; the table guesses as one team; as many rounds as a normal game; highest total wins | `house` option |
+| 58 | Appendix | Tile counts | A 13 … Z 2, 144 in all | `TILE_COUNTS`; `tiles.test.ts` |
+| 59 | Appendix | Number clues | ten cards, 20 copies: Letters 4, Vowels 3, Consonants 3, Syllables 2, Grade 2, Difficulty 2, Repeats 1, First vowel 1, Shortest synonym 1, Longest synonym 1 | `NUMBER_CLUES`; `clues.test.ts` |
+| 60 | Appendix | Word clues | twelve cards, 28 copies: Category 4, Type 4, First letter 2, Last letter 2, Opens with 2, Double letter 2, Half the alphabet 2, Odd or even 2, Rhymes with 2, Opposite 2, Register 2, Goes with 2 | `WORD_CLUES`; `clues.test.ts` |
+| 61 | Appendix | Rhymes with | any real word that rhymes and is not on the synonym list, or "nothing rhymes" | `answerClue` refuses a listed synonym |
+| 62 | Appendix | Register | formal, everyday or slang | `answerClue` accepts only those three |
+| 63 | Appendix | Word card facts | difficulty ●○○/●●○/●●● as defined; twelve categories; four types | `wordCard.ts`; the difficulty rule is Q12 |
 
 ## 5. Data
 
@@ -327,6 +419,30 @@ Numbered for the designer; my suggested answer follows each.
   round with 2–4 seats, once with 5–8), overridable with `rounds`. The AI debauchee
   under Open hand: medium always plays Letters, Vowels, Consonants (the stingiest
   three); hard picks greedily, one card at a time, by crack chance.
+- **Q14 — A judgment answer on the synonym list.** Rhymes with may not be a listed
+  synonym; Opposite and Goes with are not told. Suggest: no judgment answer may be on the
+  list (the server refuses it, as it does a rhyme), and nothing the debauchee says is
+  ever burned. Built: only the rhyme is refused today.
+- **Q15 — Quoting a clue.** A guesser says "the opposite is sad": is "sad" burned?
+  Suggest: no; only a word offered as the target burns. (The table reports burns, so this
+  is a ruling for the table, not the server.)
+- **Q16 — Spelling the secret word itself.** Suggest: a "no"; the list is the referee.
+  Built so.
+- **Q17 — The used word card.** Suggest: out of the game for the session, so a word is
+  never heard twice. Built so.
+- **Q18 — Two players.** Winning says twice each (4 rounds); the duel says four rounds
+  each (8). Suggest: 4 by default; the duel sets `rounds: 8`. Built so.
+- **Q19 — Inflections.** "Gladly" when GLAD is listed. Suggest: only the exact word said
+  is burned. Built so (the table reports the word).
+- **Q20 — Checks.** One check per completing tile; after a "no" the same player checks
+  again only after another tile. Suggest: yes. Built so with server tiles.
+- **Q21 — Open hand with three number clues.** The sentence allows it. Suggest: allow it
+  (literal). Built so.
+- **Q22 — The House: who goes first, ties.** Suggest: the seat to the house's left, in seat
+  order, every round; a tie is a shared win. Built so.
+- **Q23 — A vowelless word.** SHY, CRY, SKY, DRY are in the deck. Suggest: First vowel
+  answers "none", Vowels 0. Built so.
+- **Q24 — Redrawing unknown words.** Suggest: no; choose one of the three. Built so.
 - **Q12 — Difficulty rule** (open). The design notes' rule needs every synonym's
   grade and the deck grades only 650 of 3,041 synonyms; with deck grades alone one
   card in 500 is ●○○. Built, as an assumption until you rule: ●○○ for grade 1–2,
@@ -335,6 +451,41 @@ Numbered for the designer; my suggested answer follows each.
   spreads the deck 273 / 156 / 71, against the notes' target of about half, a
   third and the rest. A graded word list for the synonyms would let the printed
   rule stand; say which you want.
+
+## 10a. Risk register and divergence ledger
+
+Every open question above, triaged the way the port-planning runbook asks, and the
+deliberate differences between the printed rules and this edition.
+
+| Question | Triage | Where it stands |
+|---|---|---|
+| Q1 tiles, Q2 timer, Q6 table checks, Q10 first debauchee | must-answer-now (they shape the move set) | ruled 2026-10-26; built |
+| Q3 the debauchee's secret, Q5 burned words, Q9 AI reads the deck | default-and-disclose | ruled; built as the defaults |
+| Q4 judgment answers on every card | default-and-disclose | generated first pass; to check at the table |
+| Q7 The House, Q11 variants | default-and-disclose | ruled; built in milestone 6 |
+| Q8 synonym floor of four | parameterize-and-measure | ruled; `words.test.ts` lists cards under four |
+| Q12 difficulty rule | parameterize-and-measure | open; built as a stand-in by headword grade; the harness reports by difficulty |
+| Q13 rounds under The House | default-and-disclose | open; built as a normal game's count |
+
+Ambiguities the second enumeration and the rules encoding raised are listed in §14 with
+their resolutions; those still open are Q14 onward in §10.
+
+**Divergence ledger** (frozen at handoff; the build authored none of its own):
+
+1. The server cannot hear the table, so two printed rules are the table's to keep, not
+   the server's: "never suggest a letter" and "say nothing else about the word". The
+   server refuses only what it can see (the word itself as a judgment answer, a listed
+   synonym as a rhyme) and burns words the table reports.
+2. Under `laps` (the digital default) there is no sand: a reveal comes when the turn
+   returns to the first guesser, the printed "Laps instead of sand" variant. The sand
+   timer is `timer: sand`, reported by the table.
+3. With server-held tiles the check must ride on the completing tile or follow at once
+   from the same player, since the server cannot see a finger pointing. With the
+   table's own tiles a check is trusted as declared (Q6).
+4. The debauchee's reveal row shows letters, never positions, as printed; the server
+   shows the count too.
+5. The 1-point minimum on a crack and the stumped payout are as printed. No other
+   number differs from the rulebook.
 
 ## 11. Milestones
 
@@ -405,10 +556,10 @@ later steps, step by step:
 
 | Step | Record | Have | Missing |
 |---|---|---|---|
-| Plan | `PORT-PLAN.md` | this file: scope, zones, moves, data, AI, milestones, Q1–Q12 with the rulings | the file name; a feature inventory with one row per printed rule and its page; the second, independent enumeration from the rules alone (a rulebook-only game needs it); the rules encoding (`src/dev/verify/`: pinned rules text + `encoding.ts`, `verify-lint` clean); a triaged risk register and divergence ledger; the review block recording Zeke's sign-off on coverage (the Q1–Q11 rulings stand in) |
-| Build | `PORT-NOTES.md` | zone table in `types.ts`; data tests; rules sections and move gates; setup checklist, next step, scoreboard, physical setup, guidance, reference data; printed names accepted; tiles conserved (engine test); smoke, harness and tests green | the file (the three printed variants were built on 2026-10-26, milestone 6) |
-| Post-port | `POST-PORT.md` | sweep, summaries and catalog clean; no-leak tests; every choice owned by a player except the round count | the file; the two-pass rulebook walk (rule → code → test); a test that rebuilds the table from the views; a game walked from a human seat; the grep sweep for stubs; the schema note |
-| AI | `AI-NOTES.md` | three tiers for both roles, seeded, deterministic (tests); `scripts/harness.mjs` per tier pairing | the file; a written stronger-tier check (hard guessers against medium guessers head to head); no strategy archetypes or MCTS; the AI never burns a word or reports the sand (both are table reports) and rarely moves a tile: an open AI gap; the catalog's AI-policy column |
+| Plan | `PORT-PLAN.md` | this file, renamed 2026-10-27: sources (§0), the feature inventory (§4a), the second enumeration (`rules/counter-pass.md`), the rules encoding (`src/dev/verify/encoding.ts`, lint clean), the risk register and divergence ledger (§10a), the review gate (§14) | the designer's answers to Q12–Q24 |
+| Build | `PORT-NOTES.md` | the file (2026-10-27); zone table in `types.ts`; data tests; rules sections and move gates; the hooks; printed names; conservation tests; smoke, harness and tests green | — |
+| Post-port | `POST-PORT.md` | the file (2026-10-27): the traceability matrix, the view-completeness test, a game walked from the human seat through the real server (two findings, both fixed), the rules checker (`src/dev/verify/`: 48 random games silent, a hunter batch), sweep, summaries, catalog | the designer's answers |
+| AI | `AI-NOTES.md` | the file (2026-10-27): easy is now a true random floor; medium beats easy 100 %, hard beats medium 60 % (CI clear of 50 %); every choice point's policy | no strategies or MCTS (by design); the AI never rearranges tiles, burns or reports the timer (recorded gaps) |
 | Desync | a `GAMES.md` cell | — | not run (needs Ollama); likely needs `src/dev` desync hooks for how a person says a tile move; the table-tiles mode is the real case |
 | Relay | `RELAY-NOTES.md` | — | not run |
 | Balance | `BALANCE.md` | `getBalanceAxes`: tiers, timer, players | `src/dev/index.ts` with `analysis.isDeadTurn` (today every turn reads as dead) and `leaderScalar`; sweeps for tiers and timer (the harness reports both unexercised); the file |
@@ -422,3 +573,65 @@ In the runbooks' order the next work is: `PORT-NOTES.md` and the plan's missing 
 encoding and the second enumeration, then the post-port walk from a human seat
 and `POST-PORT.md`, then `AI-NOTES.md` with the `src/dev` hooks, then the three
 harness steps and integration.
+
+## 14. Review gate
+
+**The second enumeration** (port-planning runbook §3a, a rulebook-only game):
+`rules/counter-pass.md`, 108 rows and 22 silent-or-vague items, written on 2026-10-27
+by a fresh model given `rules/rules.md` and nothing else. Diffed against §4a:
+
+- Every mechanical row of the second pass is in §4a, mostly at a coarser grain (one row
+  per clue card there against one per deck here; "return a tile" inside "move"; "the
+  current turn finishes" inside the sand-timer row). Non-mechanical rows it has and
+  §4a lacks: ages 10+, the score pad, the bracketed HAPPY answers. Nothing it found is
+  missing from the engine. Agreement was re-read against the page for every row that
+  carries a number (counts, copies, scoring).
+- Its 22 gaps were merged with the rules encoding's 37 below.
+
+**The rules encoding** (§3b): `src/dev/verify/encoding.ts`, 157 entries (120 rules, 27
+silent, 10 vague) and 479 not-applicable cells over 14 zones × 43 event kinds, written
+blind from `src/dev/verify/rules-v1.txt` and the types alone. `pnpm verify-lint --
+--game=word-debauchee`: no structural problem; 37 recorded gaps.
+
+**Reconciliation.** Every gap from both passes, with where it stands. "Built" means the
+engine already does this and the plan discloses it; a Q is a question for the designer.
+
+| Gap | Resolution |
+|---|---|
+| Who may check, when; is a check free; two checks a turn | built: on the completing tile, by its player, free, one per tile (Q20) |
+| A burned word that is checked | ruled Q5: refused as burned, never answered |
+| Scope of "burned": quoting a clue; inflections; words the debauchee says | Q15, Q19, Q14 |
+| Spelling the secret word itself | Q16 |
+| "Nothing else may be said" binds the debauchee | built: read so |
+| Sub-runs and crossings; vertical or diagonal words | built: a server row is one word read left to right; a table check is trusted as declared |
+| Which build-area tile a reveal takes when the pool is empty | **was a bug**: the engine chose; now the debauchee says which row (`reveal.row`), 2026-10-27 |
+| No tile of the letter anywhere | cannot happen: no word in the deck needs more of a letter than the set has (checked) |
+| Letter multiplicity; the row is the word's letters exactly | built: one reveal per occurrence, stumped at the word's length |
+| Sand running out during or between turns | the table reports it; a reveal already owed is not owed twice |
+| Unanswerable judgment clues; First vowel with no vowel | built: the card answers ("it has no opposite", "none"); Q23 |
+| Difficulty 1–3 against dots | built: one dot is 1 |
+| Where played cards and the used word card go | built: played clues under their decks; the word card out (Q17) |
+| Clue deck exhaustion | cannot happen: the cards return each round |
+| Two-player length: 4 or 8 rounds | Q18 |
+| Bribe: who decides, timer restart, duplicates, a judgment clue, where the card goes | built: the caller; the timer flips; a duplicate still counts; answered aloud (own words if human); under its deck at round end |
+| Laps: Reveal! exists, resets the lap | built so |
+| Open hand: duplicates; three number clues | built: three different cards; Q21 |
+| The House: round count, who goes first, ties, team scoring | Q13, Q22 |
+| Duel: no turns while the sand runs | built: `tilesPerReveal` under laps; under sand the table reports |
+| Tie-break beyond sharing | built: none; ties share |
+| Wrong answers, check mistakes, rule-breach penalties, burn bookkeeping | not the server's: it answers from the card and burns what the table reports |
+| Unknown words, redraw | Q24 |
+| Multiword or unspellable synonyms | cannot happen: every synonym is one word the tile set spells (checked) |
+| "The best debauchee wins" against highest total | built: highest total, as Winning says |
+| First debauchee undecidable | built: the table says; the server draws only for an all-AI table |
+
+**The clue deal** (found in the human-seat walk, 2026-10-27, not by either pass): the
+engine dealt the four clue cards with the three words, so a debauchee saw their clues
+before choosing a word and the hard tier chose by them. The rules draw the clues after
+the word is chosen. Fixed: `dealClues` runs on `choose_word`; no tier reads the hand
+before then.
+
+**Sign-off.** Coverage of the printed rules: the designer's rulings of 2026-10-26
+(Q1–Q11) stand as the review of §1–§10; §4a and the two independent passes agree on
+the mechanics. Open for the designer: Q12, Q13 and Q14–Q24 above, batched for one
+answer.
