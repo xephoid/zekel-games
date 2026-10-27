@@ -196,4 +196,8 @@ Nothing printed. The server does not hear the table (talk, hints, letters sugges
   5 and 8 players; human-seat sweep 35/35; summaries clean; the rules checker silent on
   1,000 random games and a 9,600-game hunter batch after one menu bug it found was
   fixed (§3a).
-- Desync and relay: `GAMES.md` row and RELAY-NOTES.md. Balance: BALANCE.md.
+- Desync (2026-10-27, `qwen3.8:latest` on the local Ollama, 3 seats): NO DESYNC on
+  seed 1 from seat 0 and from seat 1, on seed 2 from seat 2 in freeform mode, and on
+  seed 3 with the model setting the game up itself; no fabricated confirmation in any
+  run. Relay: RELAY-NOTES.md (one round-trip gap found and fixed: rows by their
+  letters). Balance: BALANCE.md.
