@@ -68,7 +68,23 @@ row per group, every status `implemented`.
 projection, 27 checking rules each quoting the text (`oracleCitations.test.ts`), and
 the adapter. Random-play calibration: `oracle.test.ts` plays 48 random games across
 2–5 seats, three kinds of table and the four variant settings with no error and no
-disagreement. The hunter batch is recorded in §13.
+disagreement; `pnpm verify-hunt -- --game=word-debauchee --mode=random --games=1000`
+(2026-10-27): 1,000 games, no driver error, no disagreement.
+
+**The hunter** (`--mode=hunt --pop=40 --gens=20 --games-per=12`, 9,600 games a run):
+
+1. First run: no disagreement, but 2,367 games hit the 600-move cap. The evolved
+   strategy burned a word every turn at a table with its own tiles, where nothing but a
+   timer report moves the round on. Burning is always legal and changes nothing after
+   the first, so this is the glue's problem, not the engine's: the adapter now offers
+   one burn a round.
+2. Second run: no disagreement; 5 driver errors, all one thing: the move menu offered
+   "Reveal! and take a number clue" after a strategy that bribed every turn had drained
+   the number clue deck, and the engine then refused it. **A real bug**, in the menu:
+   random play never empties a deck. Fixed in `legalMoves.ts` (no bribe from an empty
+   deck) and locked by `variants.test.ts`.
+3. Third run: 9,600 games, no driver error, no disagreement. The best surviving
+   strategy (answer clues, burn, play clues, move tiles) finds nothing.
 
 ## 4. Edge cases
 
