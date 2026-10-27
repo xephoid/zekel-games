@@ -199,5 +199,5 @@ Nothing printed. The server does not hear the table (talk, hints, letters sugges
 - Desync (2026-10-27, `qwen3.8:latest` on the local Ollama, 3 seats): NO DESYNC on
   seed 1 from seat 0 and from seat 1, on seed 2 from seat 2 in freeform mode, and on
   seed 3 with the model setting the game up itself; no fabricated confirmation in any
-  run. Relay: RELAY-NOTES.md (one round-trip gap found and fixed: rows by their
-  letters). Balance: BALANCE.md.
+  run. Relay: NO RELAY DESYNC on two seeds and both seats after three round-trip
+  fixes (RELAY-NOTES.md). Balance: BALANCE.md.

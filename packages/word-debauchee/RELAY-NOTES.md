@@ -46,8 +46,8 @@ cards").
 
 Seed 1, seat 1 (the other side of the table): **NO RELAY DESYNC**, 14 of 14 batches.
 
-Seed 2, seat 0: the first run diverged on the third gap above; rerun after the fix: see
-the status line.
+Seed 2, seat 0: the first run diverged on the third gap above; after the fix, **NO
+RELAY DESYNC**, 15 of 15 batches.
 
 ## Judgment per probed batch
 
@@ -58,5 +58,6 @@ the status line.
 
 ## Status
 
-2026-10-27: seed 1 clean from both seats after the fixes; seed 2 rerunning after the
-third fix, verdict appended below when it finishes.
+2026-10-27: passed. Seed 1 from both seats and seed 2 are clean after the three
+fixes; every fix has a unit test and the full suite passes. Re-run when a summary's
+wording or the shape of a move changes.
