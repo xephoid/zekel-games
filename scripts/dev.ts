@@ -14,9 +14,10 @@ import { fracturedFist } from '@zekel/fractured-fist';
 import { neitherGutsNorGears } from '@zekel/neither-guts-nor-gears';
 import { sweetlandsImperium } from '@zekel/sweetlands-imperium';
 import { warbleWayGalaxy } from '@zekel/warble-way-galaxy';
+import { wordDebauchee } from '@zekel/word-debauchee';
 import './devHooks.js';
 
-const games = [fracturedFist, sweetlandsImperium, warbleWayGalaxy, cybernoir2127, neitherGutsNorGears, adventurerOlympics, eightBitDemonHunter] as unknown as AnyGame[];
+const games = [fracturedFist, sweetlandsImperium, warbleWayGalaxy, cybernoir2127, neitherGutsNorGears, adventurerOlympics, eightBitDemonHunter, wordDebauchee] as unknown as AnyGame[];
 const serverPath = fileURLToPath(new URL('../examples/serve.mjs', import.meta.url));
 
 const [name, ...args] = process.argv.slice(2);

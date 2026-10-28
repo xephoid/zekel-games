@@ -1,5 +1,5 @@
 // The smallest program that serves these games: register them on @zekel/mcp
-// and start it (all seven). Run after `pnpm build`:  node examples/serve.mjs
+// and start it (all eight). Run after `pnpm build`:  node examples/serve.mjs
 // (MCP over stdio; set MCP_TRANSPORT=http for HTTP, SESSION_STORE=memory to
 // skip MongoDB.) The planned parent repo is this file with a list you choose.
 
@@ -11,13 +11,14 @@ import { fracturedFist } from '@zekel/fractured-fist';
 import { neitherGutsNorGears } from '@zekel/neither-guts-nor-gears';
 import { sweetlandsImperium } from '@zekel/sweetlands-imperium';
 import { warbleWayGalaxy } from '@zekel/warble-way-galaxy';
+import { wordDebauchee } from '@zekel/word-debauchee';
 
 await runServer({
   serverInfo: { name: 'zekel-games', version: '0.1.0' },
   instructions: SERVER_INSTRUCTIONS,
   orchestratedInstructions: ORCHESTRATED_SERVER_INSTRUCTIONS,
   registerGames: () => {
-    for (const game of [fracturedFist, sweetlandsImperium, warbleWayGalaxy, cybernoir2127, neitherGutsNorGears, adventurerOlympics, eightBitDemonHunter]) {
+    for (const game of [fracturedFist, sweetlandsImperium, warbleWayGalaxy, cybernoir2127, neitherGutsNorGears, adventurerOlympics, eightBitDemonHunter, wordDebauchee]) {
       registerGame(game);
     }
   },

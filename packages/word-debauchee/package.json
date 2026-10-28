@@ -1,0 +1,57 @@
+{
+  "name": "@zekel/word-debauchee",
+  "version": "0.1.0",
+  "description": "Word Debauchee, a Zekel Games party word game, as a game module for the zekel MCP server.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xephoid/zekel-games.git",
+    "directory": "packages/word-debauchee"
+  },
+  "homepage": "https://github.com/xephoid/zekel-games#readme",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./dev": {
+      "types": "./dist/dev/index.d.ts",
+      "default": "./dist/dev/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "rules",
+    "README.md"
+  ],
+  "scripts": {
+    "build:words": "node scripts/build-words.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@zekel/game-kit": "^0.1.0",
+    "@zekel/dev": "^0.1.1"
+  },
+  "devDependencies": {
+    "@zekel/game-kit": "^0.1.0",
+    "@zekel/dev": "^0.1.2"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "peerDependenciesMeta": {
+    "@zekel/dev": {
+      "optional": true
+    }
+  }
+}
