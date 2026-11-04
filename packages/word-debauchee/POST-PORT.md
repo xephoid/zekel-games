@@ -7,7 +7,7 @@ when the code and a test say so; what is not done says so.
 ## 1. Provenance and sources
 
 `rules/rules.md` (Zekel Games' own rulebook, pinned verbatim as
-`src/dev/verify/rules-v1.txt`), `rules/design-notes.md`, `rules/words.csv` (500 cards).
+`src/dev/verify/rules-v2-2026-11-03.txt`; the 2026-11-03 rulings added sentences, changed none), `rules/design-notes.md`, `rules/words.csv` (500 cards).
 No reference implementation. Rulings: PORT-PLAN.md top (2026-10-26, Q1–Q11); open
 questions Q12–Q24 in PORT-PLAN.md §10.
 
@@ -85,6 +85,11 @@ disagreement; `pnpm verify-hunt -- --game=word-debauchee --mode=random --games=1
    deck) and locked by `variants.test.ts`.
 3. Third run: 9,600 games, no driver error, no disagreement. The best surviving
    strategy (answer clues, burn, play clues, move tiles) finds nothing.
+4. After the rulings of 2026-11-03 (the redraw move, the stricter judgment-answer
+   check): the random run was silent again (1,000 games). The hunter first stalled
+   2,579 games by redrawing for ever, which the ruling allows; the glue now offers one
+   redraw a round (the round counts them). Rerun: 9,600 games, no driver error, no
+   disagreement.
 
 ## 4. Edge cases
 

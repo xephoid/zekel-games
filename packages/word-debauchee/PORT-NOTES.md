@@ -19,7 +19,7 @@ the build settled.
 ## 2. Provenance
 
 - Rules: `rules/rules.md` (Zekel Games' own text), pinned verbatim as
-  `src/dev/verify/rules-v1.txt`. Design notes: `rules/design-notes.md`.
+  `src/dev/verify/rules-v2-2026-11-03.txt` (v1 was re-pinned when the rulings of 2026-11-03 were written in). Design notes: `rules/design-notes.md`.
 - Cards: `rules/words.csv` (500 rows); clue cards and tiles from the appendix.
 - No reference implementation. Rulings: PORT-PLAN.md top (2026-10-26, Q1–Q11).
 

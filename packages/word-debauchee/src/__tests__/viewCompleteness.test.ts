@@ -31,6 +31,7 @@ function rebuildTable(state: WordDebaucheeState): void {
   // The clues on the table, with their answers, in play order.
   expect(v.clues.map((c) => [c.card, c.answer])).toEqual(r.played.map((p) => [p.card, p.answer]));
   // The debauchee's row of revealed tiles, the bribed clues, burned words, checks.
+  expect(v.redraws).toBe(r.redraws);
   expect(v.revealed).toEqual(r.revealed);
   expect(v.revealed_count).toBe(r.revealed.length);
   expect(v.bribed).toEqual(r.bribed);

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { quoteAppearsVerbatim } from '@zekel/dev/verify/lint';
 import { WORD_DEBAUCHEE_ORACLE_RULES } from '../rules.js';
 
-const rulesText = readFileSync(fileURLToPath(new URL('../rules-v1.txt', import.meta.url)), 'utf-8');
+const rulesText = readFileSync(fileURLToPath(new URL('../rules-v2-2026-11-03.txt', import.meta.url)), 'utf-8');
 
 describe('word-debauchee oracle rule citations', () => {
   it('every rule id is unique', () => {

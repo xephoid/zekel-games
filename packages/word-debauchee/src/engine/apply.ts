@@ -9,7 +9,7 @@ import type { Round, WordDebaucheeState } from '../types.js';
 import { notYourTurn, refuse, RuleError } from './errors.js';
 import { clone, currentGuesser, isGuesser, listNames, nameOf, normaliseWord, round, turnsPerReveal, unrevealedLetters } from './helpers.js';
 import type { WordDebaucheeMove } from './moves.js';
-import { CLUES_PLAYED, dealClues, endRound, resolveSeat, setFirstDebauchee } from './round.js';
+import { CLUES_PLAYED, dealClues, endRound, resolveSeat, setFirstDebauchee, WORDS_DEALT } from './round.js';
 
 export interface ApplyResult {
   newState: WordDebaucheeState;
@@ -31,6 +31,9 @@ export function applyMove(prev: WordDebaucheeState, playerId: string, move: Word
       break;
     case 'choose_word':
       chooseWord(state, playerId, move, lines);
+      break;
+    case 'redraw':
+      redraw(state, playerId, lines);
       break;
     case 'play_clues':
       playClues(state, playerId, move.cards, lines);
@@ -113,6 +116,18 @@ function chooseWord(state: WordDebaucheeState, playerId: string, m: { word?: str
   );
 }
 
+/** Q24 (ruled 2026-11-03): a debauchee who knows none of the three may slide them
+ *  under the deck and draw three more, as often as needed. */
+function redraw(state: WordDebaucheeState, playerId: string, lines: string[]): void {
+  if (state.phase !== 'choose_word') refuse('The word has already been chosen this round.');
+  requireDebauchee(state, playerId, 'draws the words');
+  const r = round(state);
+  state.wordDeck.push(...r.dealtWords);
+  r.dealtWords = state.wordDeck.splice(0, WORDS_DEALT);
+  r.redraws++;
+  lines.push(`${nameOf(state, playerId)} knows none of the three cards: they go under the deck and ${nameOf(state, playerId)} draws three more.`);
+}
+
 function playClues(state: WordDebaucheeState, playerId: string, cards: ClueId[], lines: string[]): void {
   if (state.phase !== 'play_clues') refuse(state.phase === 'choose_word' ? 'Choose the word first.' : 'The clues have been played this round.');
   requireDebauchee(state, playerId, 'plays the clues');
@@ -184,7 +199,10 @@ function answerClue(state: WordDebaucheeState, playerId: string, cardId: ClueId,
     answer = text.trim();
     const lower = answer.toLowerCase();
     if (lower === card.word.toLowerCase()) refuse('That is the word itself. Nothing else may be said about the word.');
-    if (cardId === 'rhymes_with' && isSynonymOf(card, lower)) refuse(`"${answer}" is on the synonym list; a rhyme must not be. Say another rhyme, or "nothing rhymes".`);
+    // Q14 (ruled 2026-11-03): no clue answer may be a word on the synonym list.
+    if (isSynonymOf(card, lower)) {
+      refuse(`"${answer}" is on the synonym list; no clue answer may be. ${cardId === 'rhymes_with' ? 'Say another rhyme, or "nothing rhymes".' : 'Say another word, or take the card\'s answer.'}`);
+    }
     if (cardId === 'register' && !['formal', 'everyday', 'slang'].includes(lower)) refuse('Register is formal, everyday or slang.');
   }
   played.answer = answer;

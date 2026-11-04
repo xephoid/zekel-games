@@ -21,11 +21,24 @@ variant and the `house` option (Q7); the synonym floor is four (Q8); AI guessers
 the whole deck, never the hidden word (Q9); first debauchee random unless named (Q10);
 all four printed variants in v1, *Bribe* and *Open hand* last (Q11).
 
+Rulings 2026-11-03 (designer): Q12–Q23 as suggested; Q24 the other way. The difficulty
+dots follow the headword's grade (Q12); The House runs a normal game's rounds for the
+table size (Q13); no clue answer may be on the synonym list and nothing the debauchee
+says is burned (Q14); repeating a clue burns nothing (Q15); spelling the secret word
+itself is a "no" (Q16); the used word card goes out of the game (Q17); two players play
+four rounds, the duel eight (Q18); only the exact word said is burned (Q19); one check
+per tile (Q20); Open hand may be three number clues (Q21); under The House the seat to
+the house's left goes first and a tie is shared (Q22); First vowel answers "none" (Q23);
+a debauchee who knows none of the three may draw three more, as often as needed
+(Q24: the `redraw` move). Written into rules.md and re-pinned as
+`src/dev/verify/rules-v2-2026-11-03.txt`.
+
 ## 0. Sources and extraction
 
 - **The rulebook:** `rules/rules.md`, the designer's own text (this is a Zekel Games
   game, so there is no publisher's edition). Pinned for the rules checker as
-  `src/dev/verify/rules-v1.txt`, a verbatim copy; a ruling that changes the rules
+  `src/dev/verify/rules-v2-2026-11-03.txt`, a verbatim copy (v1 until the rulings of
+  2026-11-03 were written in); a ruling that changes the rules
   updates the pin in the same change.
 - **The design notes:** `rules/design-notes.md`, the reasoning behind the numbers.
 - **The components:** no photos or scans. The 500 word cards are `rules/words.csv`
@@ -414,7 +427,7 @@ Numbered for the designer; my suggested answer follows each.
 - **Q10 — First debauchee.** Suggest: random unless `firstDebauchee` is given.
 - **Q11 — Variants in v1.** Suggest: all four from rules.md, *Laps* and *Duel* in the
   core, *Bribe* and *Open hand* as the last step before playtest.
-- **Q13 — The House, how long** (open). The printed variants don't say. Built, as an
+- **Q13 — The House, how long** (ruled 2026-11-03: as built). The printed variants don't say. Built, as an
   assumption until you rule: as many rounds as a normal game at that table size (twice
   round with 2–4 seats, once with 5–8), overridable with `rounds`. The AI debauchee
   under Open hand: medium always plays Letters, Vowels, Consonants (the stingiest
@@ -442,8 +455,10 @@ Numbered for the designer; my suggested answer follows each.
   order, every round; a tie is a shared win. Built so.
 - **Q23 — A vowelless word.** SHY, CRY, SKY, DRY are in the deck. Suggest: First vowel
   answers "none", Vowels 0. Built so.
-- **Q24 — Redrawing unknown words.** Suggest: no; choose one of the three. Built so.
-- **Q12 — Difficulty rule** (open). The design notes' rule needs every synonym's
+- **Q24 — Redrawing unknown words.** Suggested no; **ruled yes** (2026-11-03): a debauchee
+  who knows none of the three slides them under the deck and draws three more. Built as
+  the `redraw` move, allowed as often as needed.
+- **Q12 — Difficulty rule** (ruled 2026-11-03: the stand-in stands). The design notes' rule needs every synonym's
   grade and the deck grades only 650 of 3,041 synonyms; with deck grades alone one
   card in 500 is ●○○. Built, as an assumption until you rule: ●○○ for grade 1–2,
   ●●● for grade 5 and up or under four synonyms, ●●○ otherwise. That matches all
@@ -590,7 +605,8 @@ by a fresh model given `rules/rules.md` and nothing else. Diffed against §4a:
 
 **The rules encoding** (§3b): `src/dev/verify/encoding.ts`, 157 entries (120 rules, 27
 silent, 10 vague) and 479 not-applicable cells over 14 zones × 43 event kinds, written
-blind from `src/dev/verify/rules-v1.txt` and the types alone. `pnpm verify-lint --
+blind from the v1 pinned text and the types alone (v2 only adds sentences, so every
+quote still holds). `pnpm verify-lint --
 --game=word-debauchee`: no structural problem; 37 recorded gaps.
 
 **Reconciliation.** Every gap from both passes, with where it stands. "Built" means the
@@ -633,5 +649,6 @@ before then.
 
 **Sign-off.** Coverage of the printed rules: the designer's rulings of 2026-10-26
 (Q1–Q11) stand as the review of §1–§10; §4a and the two independent passes agree on
-the mechanics. Open for the designer: Q12, Q13 and Q14–Q24 above, batched for one
-answer.
+the mechanics. Q12–Q24 were ruled on 2026-11-03 (see the top of this file); every
+ruling that changes or adds to the rules is in rules.md and the pinned text, and the
+one that changes the engine (Q24) is built. Nothing is open.

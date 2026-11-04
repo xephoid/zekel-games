@@ -1,5 +1,5 @@
 // Transition rules for Word Debauchee, authored from the pinned rulebook
-// (rules-v1.txt, next to this file: a verbatim copy of rules/rules.md). Every
+// (rules-v2-2026-11-03.txt, next to this file: a verbatim copy of rules/rules.md). Every
 // rule cites its licensing sentence word for word; __tests__/oracleCitations.test.ts
 // string-searches the pinned text for each.
 //

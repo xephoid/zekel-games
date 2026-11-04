@@ -12,6 +12,7 @@ export interface WDVerifyRound {
   debauchee: string;
   guessers: string[];
   dealtWords: string[];
+  redraws: number;
   word: string | null;
   hand: string[];
   played: { card: string; answer: string | number | null }[];
@@ -72,6 +73,7 @@ export function projectWordDebauchee(g: WordDebaucheeState): WDVerifyState {
           debauchee: r.debauchee,
           guessers: [...r.guessers],
           dealtWords: [...r.dealtWords],
+          redraws: r.redraws,
           word: r.word,
           hand: [...r.hand],
           played: r.played.map((p) => ({ card: p.card, answer: p.answer })),

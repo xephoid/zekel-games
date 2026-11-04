@@ -64,6 +64,9 @@ function concrete(gs: WordDebaucheeState, entries: LegalMove<WordDebaucheeMove>[
     if (m.type === 'check' && m.word === '<word>') {
       out.push({ ...e, move_id: 'check:listed', move: { type: 'check', word: synonym } });
       out.push({ ...e, move_id: 'check:unlisted', move: { type: 'check', word: 'ZZZZ' } });
+    } else if (m.type === 'redraw') {
+      // One redraw a round in the glue: the rule allows any number, and a strategy that only redraws stalls at the move cap.
+      if ((gs.round?.redraws ?? 0) === 0) out.push(e);
     } else if (m.type === 'burn') {
       // One burn a round: burning is always legal and changes nothing after the first, so a
       // strategy that only burns would stall every game at the move cap.

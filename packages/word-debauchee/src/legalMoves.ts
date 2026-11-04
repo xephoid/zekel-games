@@ -40,7 +40,10 @@ export function getLegalMoves(state: WordDebaucheeState, playerId: string): Lega
 
   switch (state.phase) {
     case 'choose_word':
-      if (me) for (const w of r.dealtWords) add(`choose_word:${w}`, `Keep ${w}`, { type: 'choose_word', word: w });
+      if (me) {
+        for (const w of r.dealtWords) add(`choose_word:${w}`, `Keep ${w}`, { type: 'choose_word', word: w });
+        add('redraw', 'Know none of the three? Slide them under the deck and draw three more', { type: 'redraw' });
+      }
       return out;
 
     case 'play_clues': {

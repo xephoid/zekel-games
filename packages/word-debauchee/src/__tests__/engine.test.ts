@@ -517,3 +517,34 @@ describe('a row named by what the tile makes', () => {
     expect(s.round!.buildArea).toEqual(['ROAMX']);
   });
 });
+
+describe('the rulings of 2026-11-03', () => {
+  it('lets a debauchee who knows none of the three draw three more (Q24)', () => {
+    const s = start(3, { tiles: 'server' });
+    const first = [...s.round!.dealtWords];
+    expect(getLegalMoves(s, 'ann').map((m) => m.move_id)).toContain('redraw');
+    const { state, summary } = play(s, 'ann', { type: 'redraw' });
+    expect(summary).toContain('draws three more');
+    expect(state.round!.dealtWords).toHaveLength(3);
+    expect(state.round!.redraws).toBe(1);
+    expect(state.round!.dealtWords).not.toEqual(first);
+    expect(state.wordDeck.slice(-3)).toEqual(first);
+    expect(state.wordDeck.length + state.round!.dealtWords.length).toBe(500);
+    expect(state.phase).toBe('choose_word');
+    expect(() => play(s, 'ben', { type: 'redraw' })).toThrow(/Only the debauchee/);
+    const chosen = play(state, 'ann', { type: 'choose_word', card: 1 }).state;
+    expect(() => play(chosen, 'ann', { type: 'redraw' })).toThrow(/already been chosen/);
+  });
+
+  it('refuses any judgment answer that is on the synonym list (Q14)', () => {
+    let s = start(3, { tiles: 'server' });
+    s = play(s, 'ann', { type: 'choose_word', card: 1 }).state;
+    s.round!.hand = ['letters', 'vowels', 'opposite', 'goes_with'];
+    s = play(s, 'ann', { type: 'play_clues', cards: ['letters', 'opposite', 'goes_with'] }).state;
+    const synonym = secret(s).synonyms[0]!;
+    expect(() => play(s, 'ann', { type: 'answer_clue', card: 'opposite', text: synonym })).toThrow(/on the synonym list; no clue answer may be/);
+    expect(() => play(s, 'ann', { type: 'answer_clue', card: 'goes_with', text: synonym.toUpperCase() })).toThrow(/on the synonym list/);
+    const ok = play(s, 'ann', { type: 'answer_clue', card: 'opposite', text: 'zzz' });
+    expect(ok.summary).toContain('Opposite: zzz.');
+  });
+});

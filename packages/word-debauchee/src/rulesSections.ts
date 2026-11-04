@@ -50,8 +50,9 @@ export const WORD_DEBAUCHEE_RULE_SECTIONS: RuleSectionShape[] = [
     id: 'pick-a-word',
     title: 'The debauchee picks a word',
     text:
-      'The debauchee draws three word cards, secretly chooses one, and slides the other two under the deck. The chosen card stays hidden: only the debauchee\'s private view shows it.',
-    tags: { move_types: ['choose_word'], phases: ['choose_word'] },
+      'The debauchee draws three word cards, secretly chooses one, and slides the other two under the deck. The chosen card stays hidden: only the debauchee\'s private view shows it. ' +
+      'A debauchee who knows none of the three may slide all three under the deck and draw three more. When the round ends the card goes out of the game for the session.',
+    tags: { move_types: ['choose_word', 'redraw'], phases: ['choose_word'] },
   },
   {
     id: 'clues',
@@ -60,7 +61,7 @@ export const WORD_DEBAUCHEE_RULE_SECTIONS: RuleSectionShape[] = [
       'The debauchee draws two number clues and two word clues, looks at them in secret, and chooses three to play. They lay the three face up where everyone can see them and answer each one out loud, truthfully. ' +
       'Four cards and three to play means at least one number clue and at least one word clue are always among them. The fourth card goes under its deck. ' +
       'The server answers every number and fact clue from the card; the four judgment clues (Rhymes with, Opposite, Register, Goes with) a human debauchee answers in their own words, or with the card\'s printed answer. ' +
-      'A rhyme must not be on the synonym list. Nothing else may be said about the word, now or later, but any guesser may ask the debauchee to repeat an answer at any time. Then the timer flips.',
+      'No clue answer may be a word on the synonym list: not a rhyme, not an opposite, not a word it goes with; nothing the debauchee says is ever burned. Nothing else may be said about the word, now or later, but any guesser may ask the debauchee to repeat an answer at any time. Then the timer flips.',
     tags: { move_types: ['play_clues', 'answer_clue'], phases: ['play_clues', 'answer_clues'] },
   },
   {
@@ -78,7 +79,7 @@ export const WORD_DEBAUCHEE_RULE_SECTIONS: RuleSectionShape[] = [
     title: 'Talking',
     text:
       'Guessers may talk freely, with two exceptions. Never say the word you want spelled: any word a guesser says out loud is burned and cannot score this round, even if it is on the list. ' +
-      'Hint around it: "the opposite of sad", "what a dog does with a bone". Never tell or suggest a letter to another player: no "starts with G", no "you need an L", no pointing at tiles. ' +
+      'Hint around it: "the opposite of sad", "what a dog does with a bone". Only the exact word said is burned, and repeating a clue the debauchee gave burns nothing. Never tell or suggest a letter to another player: no "starts with G", no "you need an L", no pointing at tiles. ' +
       'The debauchee may listen, smirk and say nothing. They never confirm or deny guesses about the secret word. Report every word a guesser says aloud so the server can burn it.',
     tags: { move_types: ['burn'], phases: ['build', 'reveal'] },
   },
@@ -88,6 +89,7 @@ export const WORD_DEBAUCHEE_RULE_SECTIONS: RuleSectionShape[] = [
     text:
       'When your tile completes a word you believe is a synonym, say "Check!" and point at it. The debauchee looks at the card and answers only "yes" or "no". ' +
       'A word reads only if its tiles sit touching, in one straight line, left to right. A "no" word may stay on the table; players can keep moving its tiles. ' +
+      'One check per tile: after a "no", place or move another tile before checking again. Spelling the secret word itself is a "no": only the synonym list scores. ' +
       'A burned word cannot be checked. With the table\'s own tiles the check is trusted as declared; with server-held tiles the player whose tile just completed the row checks it, in the same action or right after.',
     tags: { move_types: ['check', 'place', 'move'], phases: ['build'] },
   },
@@ -122,7 +124,7 @@ export const WORD_DEBAUCHEE_RULE_SECTIONS: RuleSectionShape[] = [
     id: 'winning',
     title: 'Winning',
     text:
-      'The game ends once every player has been the debauchee the same number of times: once each with 5–8 players, twice each with 2–4. Highest total wins; ties share the win.',
+      'The game ends once every player has been the debauchee the same number of times: once each with 5–8 players, twice each with 2–4 (two players play four rounds; the duel plays eight). Highest total wins; ties share the win.',
     tags: { phases: ['game_over'] },
   },
   {
@@ -140,7 +142,8 @@ export const WORD_DEBAUCHEE_RULE_SECTIONS: RuleSectionShape[] = [
       'Bribe (the bribe option): when a guesser calls "Reveal!", the guessers may take a clue instead of a letter: the caller draws the top card of either clue deck and the debauchee answers it. A bribed clue counts as a revealed tile for scoring. ' +
       'Open hand (the openHand option), kinder for new players: skip the draw and let the debauchee choose any three clue cards from the whole set, at least one of them a number clue. ' +
       'The House (the house option): the AI seat is the debauchee every round and the people at the table score as one team against it; every guesser\'s score is the team\'s. ' +
-      'Good for a table sharing one screen, since nobody has a secret to hide. The game runs as many rounds as a normal game at that table size unless set otherwise, and the tiles may be the table\'s own.',
+      'Good for a table sharing one screen, since nobody has a secret to hide. The game runs as many rounds as a normal game at that table size unless set otherwise, and the tiles may be the table\'s own. ' +
+      'The seat to the house\'s left goes first each round, and a tie is a shared win.',
     tags: { move_types: ['call_reveal', 'play_clues'], phases: ['build', 'play_clues'] },
   },
 ];

@@ -133,6 +133,7 @@ export function startRound(state: WordDebaucheeState): void {
     number: state.roundsPlayed + 1,
     debauchee,
     dealtWords,
+    redraws: 0,
     word: null,
     hand,
     played: [],
