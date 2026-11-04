@@ -12,6 +12,7 @@ import type {
 } from '@zekel/game-kit';
 import { GameError } from '@zekel/game-kit';
 import { ABILITY_NAMES, ABILITY_STAT, HAZARD_CONSEQUENCE_BY_STAT, RACE_IDEALIZED, STAT_ABILITIES } from './data/abilities.js';
+import { BEING_NAMES, CARD_FLAVOUR, ITEM_TITLES, MISSION_TITLES } from './data/flavour.js';
 import { CLUB_MISSIONS, DIAMOND_PIRATES, DIAMOND_RUINS, HEART_RECRUITS, SPADE_HAZARDS } from './data/travelTables.js';
 import { HABITATS } from './data/habitats.js';
 import { PRINTED_LEVEL_TABLE } from './data/levels.js';
@@ -800,7 +801,17 @@ export class WarbleWayGalaxyGame implements Game<WarbleWayGalaxyState, WarbleMov
         spades_hazards: SPADE_HAZARDS,
         clubs_missions: CLUB_MISSIONS,
       },
-      habitats: HABITATS,
+      // What the table prints on each card beyond its numbers, keyed by card
+      // id ("AH", "10D"): a name and a line. Flavour, not rules.
+      cards: CARD_FLAVOUR,
+      // The habitat pages with what each mission, shop item and cantina being
+      // is called (`title` and `name`); an item's printed label stays `name`.
+      habitats: Object.fromEntries(Object.values(HABITATS).map((h) => [h.number, {
+        ...h,
+        missions: h.missions.map((m) => ({ ...m, title: MISSION_TITLES[m.id] })),
+        shop: h.shop.map((s) => ({ ...s, title: ITEM_TITLES[s.id] })),
+        cantina: h.cantina.map((c) => ({ ...c, name: BEING_NAMES[c.id] })),
+      }])),
       ruins: {
         note: 'Attacker/item/being lists and map grids are locked (designer-confirmed). Cells are addressed r{row}c{col}, 1-based.',
         maps: RUIN_MAPS,
