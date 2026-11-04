@@ -85,6 +85,11 @@ disagreement; `pnpm verify-hunt -- --game=word-debauchee --mode=random --games=1
    deck) and locked by `variants.test.ts`.
 3. Third run: 9,600 games, no driver error, no disagreement. The best surviving
    strategy (answer clues, burn, play clues, move tiles) finds nothing.
+4. After the rulings of 2026-11-03 (the redraw move, the stricter judgment-answer
+   check): the random run was silent again (1,000 games). The hunter first stalled
+   2,579 games by redrawing for ever, which the ruling allows; the glue now offers one
+   redraw a round (the round counts them). Rerun: 9,600 games, no driver error, no
+   disagreement.
 
 ## 4. Edge cases
 
