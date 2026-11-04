@@ -108,6 +108,8 @@ export interface Round {
   debauchee: string;
   /** HIDDEN. The three word cards dealt. */
   dealtWords: string[];
+  /** How many times the debauchee drew three more this round (Q24). */
+  redraws: number;
   /** HIDDEN until the round ends. */
   word: string | null;
   /** HIDDEN. The four clue cards dealt; three are played (none dealt under Open

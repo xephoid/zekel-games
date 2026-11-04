@@ -124,6 +124,7 @@ function redraw(state: WordDebaucheeState, playerId: string, lines: string[]): v
   const r = round(state);
   state.wordDeck.push(...r.dealtWords);
   r.dealtWords = state.wordDeck.splice(0, WORDS_DEALT);
+  r.redraws++;
   lines.push(`${nameOf(state, playerId)} knows none of the three cards: they go under the deck and ${nameOf(state, playerId)} draws three more.`);
 }
 

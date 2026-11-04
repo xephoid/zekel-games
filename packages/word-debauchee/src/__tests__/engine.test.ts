@@ -526,6 +526,7 @@ describe('the rulings of 2026-11-03', () => {
     const { state, summary } = play(s, 'ann', { type: 'redraw' });
     expect(summary).toContain('draws three more');
     expect(state.round!.dealtWords).toHaveLength(3);
+    expect(state.round!.redraws).toBe(1);
     expect(state.round!.dealtWords).not.toEqual(first);
     expect(state.wordDeck.slice(-3)).toEqual(first);
     expect(state.wordDeck.length + state.round!.dealtWords.length).toBe(500);

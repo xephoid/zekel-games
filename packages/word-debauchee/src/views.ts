@@ -27,6 +27,8 @@ export interface PublicView {
     debauchee: string;
     guessers: string[];
     clues: ClueView[];
+    /** Times the debauchee drew three more this round. */
+    redraws: number;
     revealed: string[];
     revealed_count: number;
     /** Bribe variant: clue cards taken instead of letters; each counts as a reveal. */
@@ -81,6 +83,7 @@ export function getPublicView(state: WordDebaucheeState): PublicView {
           debauchee: r.debauchee,
           guessers: [...r.guessers],
           clues: r.played.map((p) => ({ card: p.card, name: clue(p.card).name, asks: clue(p.card).prompt, answer: p.answer })),
+          redraws: r.redraws,
           revealed: [...r.revealed],
           revealed_count: r.revealed.length,
           bribed: [...r.bribed],
