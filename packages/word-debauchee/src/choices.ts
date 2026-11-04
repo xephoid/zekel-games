@@ -70,6 +70,14 @@ export const WORD_DEBAUCHEE_CHOICES: ChoiceRow[] = [
     distinguishedBy: 'word',
   },
   {
+    id: 'redraw',
+    description: 'Whether to slide all three dealt words under the deck and draw three more, knowing none of them',
+    owner: 'player',
+    when: 'in-game',
+    resolvedBy: ['redraw'],
+    dependsOn: 'the debauchee knows none of the three dealt words (Q24)',
+  },
+  {
     id: 'which-clues',
     description: 'Which three of the four clue cards to play, and so which to bury (Open hand: any three from the whole set, one a number clue)',
     owner: 'player',

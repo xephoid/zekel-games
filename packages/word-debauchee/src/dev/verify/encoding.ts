@@ -1,6 +1,6 @@
 // Word Debauchee: a machine-checkable encoding of the v1 rulebook.
 //
-// Authored from rules-v1.txt alone. Every 'rule' entry quotes the sentence that
+// Authored from rules-v1.txt alone (v2-2026-11-03 only adds sentences; every quote holds). Every 'rule' entry quotes the sentence that
 // licenses it word for word; every 'silent' or 'vague' entry names a reachable
 // situation the text does not settle. The notApplicable grid is derived at the
 // bottom of the file from the universe and the entries, so every (zone, event
@@ -1905,8 +1905,8 @@ for (const zone of zones) {
 
 const encoding: GameRulesEncoding = {
   gameId: 'word-debauchee',
-  rulesVersion: 'v1',
-  rulesFile: 'packages/word-debauchee/src/dev/verify/rules-v1.txt',
+  rulesVersion: 'v2-2026-11-03',
+  rulesFile: 'packages/word-debauchee/src/dev/verify/rules-v2-2026-11-03.txt',
   universe: { zones, counters, eventKinds },
   entries,
   notApplicable,

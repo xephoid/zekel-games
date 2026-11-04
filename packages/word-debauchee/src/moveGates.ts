@@ -19,6 +19,7 @@ export interface MoveGate {
 const SECTION: Record<MoveType, string> = {
   choose_first_debauchee: 'setup',
   choose_word: 'pick-a-word',
+  redraw: 'pick-a-word',
   play_clues: 'clues',
   answer_clue: 'clues',
   place: 'build',
@@ -60,6 +61,7 @@ export function moveGates(state: WordDebaucheeState, playerId: string): MoveGate
         gate('routine', 'the first debauchee has been chosen');
         break;
       case 'choose_word':
+      case 'redraw':
         gate('routine', state.phase === 'choose_word' ? `${deb} chooses the word` : 'the word has been chosen this round');
         break;
       case 'play_clues':

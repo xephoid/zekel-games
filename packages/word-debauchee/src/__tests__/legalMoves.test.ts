@@ -10,7 +10,7 @@ function isTemplate(move: object): boolean {
 describe('legal moves', () => {
   it('offer the debauchee the three words, then the clue combinations, then the letters to reveal', () => {
     let s = start(3, { tiles: 'server' });
-    expect(getLegalMoves(s, 'ann').map((m) => m.move.type)).toEqual(['choose_word', 'choose_word', 'choose_word']);
+    expect(getLegalMoves(s, 'ann').map((m) => m.move.type)).toEqual(['choose_word', 'choose_word', 'choose_word', 'redraw']);
     expect(getLegalMoves(s, 'ben')).toEqual([]);
     s = play(s, 'ann', getLegalMoves(s, 'ann')[0]!.move).state;
     const combos = getLegalMoves(s, 'ann');

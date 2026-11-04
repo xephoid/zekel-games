@@ -54,7 +54,8 @@ synonym*. Word clues don't: *Category*, *First letter*, *Rhymes with*, *Opposite
 ### 1. The debauchee picks a word
 
 The debauchee draws three word cards, secretly chooses one, and slides the other two
-under the deck. Keep the chosen card hidden.
+under the deck. Keep the chosen card hidden. A debauchee who knows none of the three may
+slide all three under the deck and draw three more.
 
 ### 2. The debauchee gives three clues
 
@@ -62,7 +63,8 @@ The debauchee draws **two number clues and two word clues**, looks at them in se
 and chooses **three** to play. They lay the three face up where everyone can see them and
 answer each one out loud, truthfully. (Four cards and three to play means at least one
 number clue and at least one word clue are always among them.) The fourth card goes under
-its deck.
+its deck. No clue answer may be a word on the synonym list: not a rhyme, not an opposite,
+not a word it goes with. Nothing the debauchee says is ever burned.
 
 Nothing else may be said about the word, now or later, but any guesser may ask the
 debauchee to repeat an answer at any time. Then the debauchee flips the timer.
@@ -84,7 +86,8 @@ area at once.
 
 - **Never say the word you want spelled.** Any word a guesser says out loud is *burned*
   and cannot score this round, even if it is on the list. Hint around it: "the opposite
-  of sad", "what a dog does with a bone".
+  of sad", "what a dog does with a bone". Only the exact word said is burned, and
+  repeating a clue the debauchee gave burns nothing.
 - **Never tell or suggest a letter to another player.** No "starts with G", no "you need
   an L", no pointing at tiles.
 
@@ -94,7 +97,9 @@ about the secret word.
 **Checking a word.** When your tile completes a word you believe is a synonym, say
 "Check!" and point at it. The debauchee looks at the card and answers only **"yes"** or
 **"no"**. A word reads only if its tiles sit touching, in one straight line, left to right.
-A "no" word may stay on the table; players can keep moving its tiles.
+A "no" word may stay on the table; players can keep moving its tiles. One check per tile:
+after a "no", place or move another tile before checking again. Spelling the secret word
+itself is a "no": only the synonym list scores.
 
 ### 4. The timer runs out
 
@@ -112,7 +117,8 @@ The round ends the instant one of these happens:
 - The debauchee places the **last letter** of the secret word in front of them. The
   guessers are stumped.
 
-The debauchee turns the card face up and reads the word.
+The debauchee turns the card face up and reads the word. That card then goes out of the
+game for the rest of the session.
 
 ## Scoring
 
@@ -137,6 +143,7 @@ left becomes the next debauchee.
 
 The game ends once every player has been the debauchee the same number of times:
 once each with 5–8 players, twice each with 2–4. Highest total wins; ties share the win.
+(Two players play four rounds; the duel variant plays eight.)
 
 ## Example round (4 players)
 
@@ -170,7 +177,8 @@ finishes MERRY. Each guesser scores 5 − 3 = 2.
 - **The House.** For the digital edition: the computer is the debauchee every round and
   everyone at the table guesses, scoring as one team against it. Nobody at the table has
   a secret, so one shared screen is fine. Play as many rounds as a normal game at that
-  table size; highest total wins, the table or the house.
+  table size; highest total wins, the table or the house. The player to the computer's
+  left goes first each round, and a tie is a shared win.
 
 ## Appendix: letter tiles
 
@@ -196,7 +204,7 @@ Answers for HAPPY are shown in brackets.
 | Grade | 2 | the school grade on the card, 1–12 [1] |
 | Difficulty | 2 | the difficulty on the card, 1–3 [1] |
 | Repeats | 1 | how many different letters appear more than once [1] |
-| First vowel | 1 | the position of the first vowel [2] |
+| First vowel | 1 | the position of the first vowel, or "none" [2] |
 | Shortest synonym | 1 | letters in the shortest word on the synonym list [4] |
 | Longest synonym | 1 | letters in the longest word on the synonym list [8] |
 
@@ -223,6 +231,6 @@ Answers for HAPPY are shown in brackets.
 |---|---|
 | Letters, vowels, consonants, syllables | counted |
 | Grade | 1–12, the US school grade the word is usually taught in |
-| Difficulty | ●○○ common word with everyday synonyms · ●●○ one of the two is harder · ●●● rare word or rare synonyms |
+| Difficulty | ●○○ common word with everyday synonyms · ●●○ one of the two is harder · ●●● rare word or rare synonyms. In this edition the dots follow the word's grade: 1–2 one dot; 5 and up, or fewer than four synonyms, three; otherwise two |
 | Category | Feelings · Actions · People · Places · Things · Nature · Body · Food · Size & Amount · Time · Speech · Qualities |
 | Type | Noun · Verb · Adjective · Adverb |

@@ -92,9 +92,9 @@ export function describeNextStep(state: WordDebaucheeState): NextStepShape {
     case 'choose_word':
       return {
         status, active_player_id: active,
-        instruction: `${deb} is the debauchee and has three word cards (in their private view only). Ask which one they keep. ${NO_HINTS}`,
-        human_response: { ask: 'which of the three words to keep', example: 'I keep the first one', records_as: 'the chosen word', private: true },
-        facts: { phase: 'Choosing the word', turn_owner_id: active, progress, notes: ['The other two cards go under the deck.'] },
+        instruction: `${deb} is the debauchee and has three word cards (in their private view only). Ask which one they keep; if they know none of the three, they may draw three more (redraw). ${NO_HINTS}`,
+        human_response: { ask: 'which of the three words to keep, or a redraw', example: 'I keep the first one', records_as: 'the chosen word (or card 1, 2 or 3), or a redraw', private: true },
+        facts: { phase: 'Choosing the word', turn_owner_id: active, progress, notes: ['The other two cards go under the deck.', 'A debauchee who knows none of the three may slide them under the deck and draw three more.'] },
       };
     case 'play_clues':
       if (state.settings.openHand) {

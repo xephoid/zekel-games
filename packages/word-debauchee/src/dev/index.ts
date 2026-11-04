@@ -50,7 +50,9 @@ const wordDebaucheeDesync: DesyncHooks = {
       case 'choose_first_debauchee':
         return `${String(m.player)} most recently got away with something, so they go first.`;
       case 'choose_word':
-        return `I'll keep ${String(m.word)}.`;
+        return m.card ? `I'll keep the ${['first', 'second', 'third'][Number(m.card) - 1] ?? 'first'} card.` : `I'll keep ${String(m.word)}.`;
+      case 'redraw':
+        return "I don't know any of these three; I'll put them under the deck and draw three more.";
       case 'play_clues':
         return `I play ${(m.cards as unknown[]).map(CLUE_NAME).join(', ')}.`;
       case 'answer_clue':

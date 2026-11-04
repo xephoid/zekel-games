@@ -62,7 +62,7 @@ export const NUMBER_CLUES: readonly ClueCard[] = [
   { id: 'grade', kind: 'number', name: 'Grade', copies: 2, prompt: 'the school grade on the card, 1–12', judgment: false, answer: (c) => c.grade },
   { id: 'difficulty', kind: 'number', name: 'Difficulty', copies: 2, prompt: 'the difficulty on the card, 1–3', judgment: false, answer: (c) => c.difficulty },
   { id: 'repeats', kind: 'number', name: 'Repeats', copies: 1, prompt: 'how many different letters appear more than once', judgment: false, answer: (c) => repeats(c.word) },
-  { id: 'first_vowel', kind: 'number', name: 'First vowel', copies: 1, prompt: 'the position of the first vowel', judgment: false, answer: (c) => firstVowelPosition(c.word) },
+  { id: 'first_vowel', kind: 'number', name: 'First vowel', copies: 1, prompt: 'the position of the first vowel, or "none"', judgment: false, answer: (c) => firstVowelPosition(c.word) },
   { id: 'shortest_synonym', kind: 'number', name: 'Shortest synonym', copies: 1, prompt: 'letters in the shortest word on the synonym list', judgment: false, answer: shortest },
   { id: 'longest_synonym', kind: 'number', name: 'Longest synonym', copies: 1, prompt: 'letters in the longest word on the synonym list', judgment: false, answer: longest },
 ];

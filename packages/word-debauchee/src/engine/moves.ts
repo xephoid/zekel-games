@@ -9,6 +9,8 @@ export type WordDebaucheeMove =
   /** Debauchee: keep one of the three dealt words, by the word or by its position
    *  among the three cards (1, 2 or 3); the other two go under the deck. */
   | { type: 'choose_word'; word?: string; card?: number }
+  /** Debauchee who knows none of the three: slide them under the deck and draw three more. */
+  | { type: 'redraw' }
   /** Debauchee: play three of the four clue cards in hand (Open hand: any three
    *  from the whole set, at least one a number clue). */
   | { type: 'play_clues'; cards: ClueId[] }
@@ -42,5 +44,5 @@ export type WordDebaucheeMove =
 export type MoveType = WordDebaucheeMove['type'];
 
 export const MOVE_TYPES: readonly MoveType[] = [
-  'choose_first_debauchee', 'choose_word', 'play_clues', 'answer_clue', 'place', 'move', 'check', 'call_reveal', 'burn', 'timer_out', 'reveal',
+  'choose_first_debauchee', 'choose_word', 'redraw', 'play_clues', 'answer_clue', 'place', 'move', 'check', 'call_reveal', 'burn', 'timer_out', 'reveal',
 ];
