@@ -139,6 +139,10 @@ export interface CrewMember {
   abilities: AbilityScores;
   anger_tokens: number; // 0–3; at 3 they leave with their gear (WR §10)
   gear: EquippedGear;
+  /** The printed row, card or ruin entry this being was recruited from
+   * ("h1-c4", "heart-6", "r1-b2"), so a table can show the name on that
+   * row. Absent on crew recruited before it was recorded. */
+  recruit_id?: string;
 }
 
 export type ShipDamage = 'pristine' | 'used' | 'damaged' | 'hobbled';
@@ -461,8 +465,40 @@ export interface WarbleWayGalaxyState {
    * without them is a physical human. */
   seat_kind?: 'human' | 'ai';
   digital_seat?: boolean;
+  /** The roll the last move resolved, with its arithmetic, so a table can
+   * show the dice against the number they needed. Set by a roll report and
+   * cleared by every other move; absent on sessions saved before it existed. */
+  last_roll?: LastRoll | null;
   /** A11: `ending` names which of the five victories fired (analysis reads it). */
   result: { winner: 'player' | 'galaxy'; summary: string; ending?: WarbleEnding } | null;
+}
+
+/** One side's arithmetic in a resolved roll: a label and what it added. */
+export interface RollPart {
+  label: string;
+  bonus: number;
+  /** What kind of thing added it: a carried score, a consumable, a skill, Dread. */
+  kind?: 'score' | 'item' | 'skill' | 'dread';
+  /** A carried score: which ability, and whose ("you" or the crew member). */
+  ability?: AbilityId;
+  who?: string;
+}
+
+/** A resolved roll, as the table would read it back. */
+export interface LastRoll {
+  reason: RollReason;
+  /** Ground combat only: boarding, an attack in a ruin, or a defense there. */
+  ground?: 'boarding' | 'ruin_attack' | 'ruin_defense';
+  dice: number[];
+  parts: RollPart[];
+  bonus: number;
+  /** Dice plus bonus, for a roll against a number; the player's side of a pairing roll. */
+  total: number;
+  /** The number to meet, or null for a pairing roll or a table roll. */
+  target: number | null;
+  outcome: 'pass' | 'fail' | 'win' | 'lose' | 'tie' | 'none';
+  /** A pairing roll: which dice each side took and what each side made. */
+  pairs?: { yours: number[]; theirs: number[]; rider: number[]; your_total: number; their_total: number; their_name: string };
 }
 
 /** A11: the five ways Season 1 ends in victory. */

@@ -21,16 +21,19 @@ import type {
   CrewMember,
   HabitatProgress,
   ItemDefinition,
+  LastRoll,
   MissionDefinition,
   PlayingCard,
   Race,
   RecruitDefinition,
+  RollPart,
   ShipDamage,
   SpaceCombatEncounter,
   StatId,
   WarbleEnding,
   WarbleMove,
   WarbleOptions,
+  WarblePending,
   WarbleWayGalaxyState,
 } from './types.js';
 
@@ -344,6 +347,9 @@ export function applyMove(prior: WarbleWayGalaxyState, move: WarbleMove): Engine
 function applyMoveInner(prior: WarbleWayGalaxyState, move: WarbleMove): EngineResult {
   if (prior.result !== null) throw new GameError('GAME_OVER', 'The game is over.');
   const state = structuredClone(prior);
+  // The last roll's result is about the move that made it: every move starts
+  // without one, and only a roll report sets it again.
+  delete state.last_roll;
 
   switch (move.type) {
     case 'create_character':
@@ -884,32 +890,9 @@ function applyReportRoll(state: WarbleWayGalaxyState, dice: number[]): string {
   }
 
   // Total = all dice + the ability score + declared consumables + Inspirational.
-  let bonus = pending.score_source.bonus;
-  const bonusNotes: string[] = [];
-  if (pending.score_source.ability) {
-    bonusNotes.push(`${pending.score_source.ability} +${pending.score_source.bonus} (${pending.score_source.who === 'self' ? 'you' : pending.score_source.crew_name})`);
-  }
-  for (const itemId of pending.declared_items) {
-    const item = itemById(state, itemId)!;
-    if (item.effect.kind === 'ability_bonus') {
-      bonus += item.effect.bonus;
-      bonusNotes.push(`${item.name} +${item.effect.bonus}`);
-    }
-    state.consumed_item_ids.push(itemId);
-  }
-  // Inspirational (natural LEA≥3 ANYWHERE aboard — advanced skills apply to
-  // crew too, WR §5): +3 to any roll adding a CREW member's score.
-  // Amendment A8 (was +2): measured +144% LEA-primary survival with zero
-  // collateral inflation — the aura is the leader build's whole engine.
-  if (pending.score_source.who === 'crew' && anyBeingHasAdvanced(state, 'LEA')) {
-    bonus += 3;
-    bonusNotes.push('Inspirational +3');
-  }
-  // A9b Dread: reputation rides every intimidation.
-  if (pending.reason === 'intimidate' && (state.dread ?? 0) > 0) {
-    bonus += state.dread!;
-    bonusNotes.push(`Dread +${state.dread}`);
-  }
+  const { bonus, parts } = rollBonus(state, pending);
+  const bonusNotes = parts.map((p) => p.label);
+  for (const itemId of pending.declared_items) state.consumed_item_ids.push(itemId);
   const total = dice.reduce((a, b) => a + b, 0) + bonus;
   const passed = pending.min_roll === null ? true : total >= pending.min_roll;
   const rollText = `${dice.join('+')}${bonusNotes.length ? ` + ${bonusNotes.join(' + ')}` : ''} = ${total}${
@@ -919,6 +902,22 @@ function applyReportRoll(state: WarbleWayGalaxyState, dice: number[]): string {
   // Advance the bot RNG stream so consecutive simulated rolls differ; harmless
   // in real play (the human's dice are the randomness, seed goes unused).
   state.seed = nextSeed(state.seed + dice.length);
+
+  // The result as the table reads it back, worked out before the resolution
+  // moves anything: the dice, what was added, and how the two sides compare.
+  const sides = pairingSides(state, pending);
+  const scored = sides ? scorePairing(sides, dice, bonus) : null;
+  const last: LastRoll = {
+    reason: pending.reason,
+    ...(pending.reason === 'ground_combat' ? { ground: pending.context.ground ?? 'boarding' } : {}),
+    dice: [...dice],
+    parts,
+    bonus,
+    total: scored ? scored.your_total : total,
+    target: pending.min_roll,
+    outcome: scored ? scored.outcome : pending.min_roll === null ? 'none' : passed ? 'pass' : 'fail',
+    ...(scored && sides ? { pairs: { yours: scored.yours, theirs: scored.theirs, rider: scored.rider, your_total: scored.your_total, their_total: scored.their_total, their_name: sides.their_name } } : {}),
+  };
 
   state.pending = null;
   const notes: string[] = [];
@@ -982,7 +981,139 @@ function applyReportRoll(state: WarbleWayGalaxyState, dice: number[]): string {
       break;
   }
   afterResolution(state, notes);
+  state.last_roll = last;
   return `Rolled ${rollText}. ${outcome}${notes.length ? ` ${notes.join(' ')}` : ''}`;
+}
+
+type RollPending = Extract<WarblePending, { kind: 'roll' }>;
+
+/** What a roll adds to its dice, part by part: the carried score, each
+ * declared consumable, Inspirational, Dread. The one home for that sum, so the
+ * resolution and the odds a table shows before the roll cannot disagree. */
+export function rollBonus(state: WarbleWayGalaxyState, pending: RollPending): { bonus: number; parts: RollPart[] } {
+  let bonus = pending.score_source.bonus;
+  const parts: RollPart[] = [];
+  if (pending.score_source.ability) {
+    const who = pending.score_source.who === 'self' ? 'you' : pending.score_source.crew_name;
+    parts.push({ label: `${pending.score_source.ability} +${pending.score_source.bonus} (${who})`, bonus: pending.score_source.bonus, kind: 'score', ability: pending.score_source.ability, ...(who ? { who } : {}) });
+  }
+  for (const itemId of pending.declared_items) {
+    const item = itemById(state, itemId)!;
+    if (item.effect.kind === 'ability_bonus') {
+      bonus += item.effect.bonus;
+      parts.push({ label: `${item.name} +${item.effect.bonus}`, bonus: item.effect.bonus, kind: 'item' });
+    }
+  }
+  // Inspirational (natural LEA≥3 ANYWHERE aboard — advanced skills apply to
+  // crew too, WR §5): +3 to any roll adding a CREW member's score.
+  // Amendment A8 (was +2): measured +144% LEA-primary survival with zero
+  // collateral inflation — the aura is the leader build's whole engine.
+  if (pending.score_source.who === 'crew' && anyBeingHasAdvanced(state, 'LEA')) {
+    bonus += 3;
+    parts.push({ label: 'Inspirational +3', bonus: 3, kind: 'skill' });
+  }
+  // A9b Dread: reputation rides every intimidation.
+  if (pending.reason === 'intimidate' && (state.dread ?? 0) > 0) {
+    bonus += state.dread!;
+    parts.push({ label: `Dread +${state.dread}`, bonus: state.dread!, kind: 'dread' });
+  }
+  return { bonus, parts };
+}
+
+/** The two sides of a pairing roll (WR §12, §14): who takes the higher pair
+ * and why, and what each side adds to its pair. Null for any other roll. */
+export interface PairingSides {
+  kind: 'space' | 'boarding' | 'ruin_attack' | 'ruin_defense';
+  /** true: the player's side takes the higher pair */
+  advantage: boolean;
+  /** why the player's side has the higher pair, or why not */
+  why: string;
+  /** added to the player's pair on top of the roll's bonus (Redline) */
+  your_extra: number;
+  /** added to the other side's pair; may be negative (armor, a landed volley) */
+  their_add: number;
+  /** the other side's total cannot fall below zero */
+  their_floor: boolean;
+  their_name: string;
+  /** dice after the first four, added to the player's total */
+  rider_dice: number;
+}
+
+export function pairingSides(state: WarbleWayGalaxyState, pending: RollPending): PairingSides | null {
+  if (pending.reason === 'space_combat') {
+    const enc = spaceEnc(state);
+    const pirate = pirateOf(enc);
+    const advantage = playerSpaceAdvantage(state, enc);
+    const why = pirate.special === 'space_combat_advantage'
+      ? 'These pirates have space combat advantage of their own, which cancels yours: you take the lower pair.'
+      : anyoneHasEffective(state, 'PIL')
+        ? 'Piloting aboard gives you space combat advantage: you take the higher pair.'
+        : advantage
+          ? 'A ship part gives you space combat advantage: you take the higher pair.'
+          : 'No Piloting aboard and no ship part that gives space combat advantage: you take the lower pair.';
+    return {
+      kind: 'space', advantage, why,
+      your_extra: enc.player_buff ?? 0,
+      their_add: pirate.space_attack - effectiveShipArmor(state) - (enc.pirate_debuff ?? 0),
+      their_floor: true,
+      their_name: 'the pirates',
+      rider_dice: 0,
+    };
+  }
+  if (pending.reason !== 'ground_combat') return null;
+  const ground = pending.context.ground ?? 'boarding';
+  if (ground === 'boarding') {
+    const enc = spaceEnc(state);
+    const advantage = playerGroundAdvantage(state);
+    const why = anyoneHasEffective(state, 'SWA')
+      ? 'Swashbuckling aboard gives you ground combat advantage: you take the higher pair.'
+      : anyBeingHasAdvanced(state, 'GUN')
+        ? 'Sniper (a natural Gunslinging 3 aboard) gives you ground combat advantage: you take the higher pair.'
+        : advantage
+          ? 'Armor with ground combat advantage is worn aboard: you take the higher pair.'
+          : 'No Swashbuckling aboard, no Sniper and no armor that gives ground combat advantage: you take the lower pair.';
+    return { kind: 'boarding', advantage, why, your_extra: 0, their_add: pirateOf(enc).ground_attack, their_floor: false, their_name: 'the pirates', rider_dice: 0 };
+  }
+  const { board } = boardOrThrow(state);
+  const token = tokenByName(board, pending.context.actor!);
+  const foe = board.attackers.find((a) => a.id === pending.context.target);
+  const being = tokenBeing(state, token);
+  const advantage = tokenGroundAdvantage(state, token);
+  const why = effectiveScore(state, being, 'SWA') >= 1
+    ? `${token.name} has Swashbuckling, which gives ground combat advantage: the higher pair.`
+    : (being.natural.GUN ?? 0) >= 3
+      ? `${token.name} is a Sniper (a natural Gunslinging 3), which gives ground combat advantage: the higher pair.`
+      : advantage
+        ? `${token.name} wears armor with ground combat advantage: the higher pair.`
+        : `${token.name} has no Swashbuckling, is no Sniper and wears no armor with ground combat advantage: the lower pair.`;
+  return {
+    kind: ground, advantage, why, your_extra: 0,
+    their_add: foe?.atk ?? 0, their_floor: false,
+    their_name: foe?.id ?? 'the attacker',
+    rider_dice: pending.context.rider_dice ?? 0,
+  };
+}
+
+/** One pairing roll worked through: which dice each side takes, the totals,
+ * and who wins. The first four dice pair as highest+lowest and the two
+ * middles; any dice after them ride on the player's total. */
+export function scorePairing(
+  sides: PairingSides,
+  dice: number[],
+  bonus: number,
+): { yours: number[]; theirs: number[]; rider: number[]; your_total: number; their_total: number; outcome: 'win' | 'lose' | 'tie' } {
+  const sorted = [...dice.slice(0, 4)].sort((a, b) => b - a);
+  const outer = [sorted[0]!, sorted[3]!];
+  const middle = [sorted[1]!, sorted[2]!];
+  const sum = (d: number[]) => d.reduce((a, b) => a + b, 0);
+  const [high, low] = sum(outer) >= sum(middle) ? [outer, middle] : [middle, outer];
+  const yours = sides.advantage ? high : low;
+  const theirs = sides.advantage ? low : high;
+  const rider = dice.slice(4);
+  const your_total = sum(yours) + bonus + sides.your_extra + sum(rider);
+  const raw = sum(theirs) + sides.their_add;
+  const their_total = sides.their_floor ? Math.max(0, raw) : raw;
+  return { yours, theirs, rider, your_total, their_total, outcome: your_total === their_total ? 'tie' : your_total > their_total ? 'win' : 'lose' };
 }
 
 function uniqueCrewName(state: WarbleWayGalaxyState, recruit: RecruitDefinition): string {
@@ -998,7 +1129,7 @@ function uniqueCrewName(state: WarbleWayGalaxyState, recruit: RecruitDefinition)
   return name;
 }
 
-function recruitDefinitionById(state: WarbleWayGalaxyState, recruitId: string, source: 'cantina' | 'space' | 'ruin'): RecruitDefinition {
+export function recruitDefinitionById(state: WarbleWayGalaxyState, recruitId: string, source: 'cantina' | 'space' | 'ruin'): RecruitDefinition {
   if (source === 'cantina') {
     const hit = HABITATS[state.current_habitat]!.cantina.find((r) => r.id === recruitId);
     if (!hit) throw new GameError('STORAGE_ERROR', `Recruit ${recruitId} vanished mid-roll.`);
@@ -1068,6 +1199,7 @@ function resolveRecruitRoll(
     abilities: { ...recruit.abilities },
     anger_tokens: 0,
     gear: { weapon: null, armor: null },
+    recruit_id: recruit.id,
   });
   // A being recruited inside a ruin joins the MAP where recruited ("add a
   // token to the board ... where you recruited them") and acts from the
@@ -1122,7 +1254,7 @@ export function applyArrivalAutoRepair(state: WarbleWayGalaxyState): string | nu
 // ===========================================================================
 
 /** Any natural score ≥3 anywhere aboard — advanced skills apply to crew too (WR §5). */
-function anyBeingHasAdvanced(state: WarbleWayGalaxyState, ability: AbilityId): boolean {
+export function anyBeingHasAdvanced(state: WarbleWayGalaxyState, ability: AbilityId): boolean {
   return (state.character?.abilities[ability] ?? 0) >= 3 || state.crew.some((c) => (c.abilities[ability] ?? 0) >= 3);
 }
 
@@ -1265,7 +1397,7 @@ export function partyQualifiesFor(state: WarbleWayGalaxyState, ability: AbilityI
   );
 }
 
-function legCards(state: WarbleWayGalaxyState, distance: number): number {
+export function legCards(state: WarbleWayGalaxyState, distance: number): number {
   return Math.max(0, distance - state.ship!.speed);
 }
 
@@ -1612,7 +1744,7 @@ function startHazardRoll(
 
 /** ACT basic skill (WR §4): +1d6 on ANY Moxie or Smarts roll — recruiting has
  * its own race-keyed wording; ship REPAIR is explicitly excluded. */
-function actDieFor(state: WarbleWayGalaxyState, ability: AbilityId | null): number {
+export function actDieFor(state: WarbleWayGalaxyState, ability: AbilityId | null): number {
   if (!ability) return 0;
   const stat = ABILITY_STAT[ability];
   if (stat !== 'moxie' && stat !== 'smarts') return 0;
@@ -2016,7 +2148,7 @@ export function afterResolution(state: WarbleWayGalaxyState, notes: string[]): v
 // M3 — space combat (WR §12)
 // ===========================================================================
 
-function spaceEnc(state: WarbleWayGalaxyState): SpaceCombatEncounter {
+export function spaceEnc(state: WarbleWayGalaxyState): SpaceCombatEncounter {
   const enc = state.encounter;
   if (!enc || enc.kind !== 'space_combat') throw new GameError('STORAGE_ERROR', 'No space combat encounter in state.');
   return enc;
@@ -2033,13 +2165,13 @@ function encounterOrThrow(state: WarbleWayGalaxyState, ...stages: SpaceCombatEnc
   return enc;
 }
 
-function pirateOf(enc: SpaceCombatEncounter): PirateDefinition {
+export function pirateOf(enc: SpaceCombatEncounter): PirateDefinition {
   return DIAMOND_PIRATES[enc.pirate_rank];
 }
 
 /** Player space-combat advantage: PIL basic skill aboard, or a ship part —
  * CANCELLED by pirate ♦4's own Space Combat Advantage (interpretation, PORT-NOTES). */
-function playerSpaceAdvantage(state: WarbleWayGalaxyState, enc: SpaceCombatEncounter): boolean {
+export function playerSpaceAdvantage(state: WarbleWayGalaxyState, enc: SpaceCombatEncounter): boolean {
   if (pirateOf(enc).special === 'space_combat_advantage') return false;
   if (anyoneHasEffective(state, 'PIL')) return true;
   return state.ship!.parts.some((p) => {
@@ -2050,7 +2182,7 @@ function playerSpaceAdvantage(state: WarbleWayGalaxyState, enc: SpaceCombatEncou
 
 /** The PIL score added with advantage; pirate ♦8's special trims the player's
  * space-combat bonus by 2, min 0 (interpretation, PORT-NOTES). */
-function playerSpaceBonus(state: WarbleWayGalaxyState, enc: SpaceCombatEncounter): number {
+export function playerSpaceBonus(state: WarbleWayGalaxyState, enc: SpaceCombatEncounter): number {
   if (!playerSpaceAdvantage(state, enc)) return 0;
   const pil = bestForAbility(state, 'PIL').bonus;
   const trim = pirateOf(enc).special === 'minus_2_enemy_space_bonus' ? 2 : 0;
@@ -2429,7 +2561,7 @@ export function applyFightRound(state: WarbleWayGalaxyState): string {
   );
 }
 
-function pairTotals(dice: number[]): { high: number; low: number } {
+export function pairTotals(dice: number[]): { high: number; low: number } {
   const sorted = [...dice].sort((a, b) => b - a);
   const pairA = sorted[0]! + sorted[3]!; // highest + lowest
   const pairB = sorted[1]! + sorted[2]!; // the two middles
@@ -2535,7 +2667,7 @@ export function applyBoardShip(state: WarbleWayGalaxyState): string {
 
 /** Ground-combat advantage: SWA basic aboard, Sniper (natural GUN≥3), or
  * equipped ground-combat-advantage armor (WR §4–§6). */
-function playerGroundAdvantage(state: WarbleWayGalaxyState): boolean {
+export function playerGroundAdvantage(state: WarbleWayGalaxyState): boolean {
   if (anyoneHasEffective(state, 'SWA')) return true;
   if (anyBeingHasAdvanced(state, 'GUN')) return true;
   const equipped = [state.character?.gear.armor, ...state.crew.map((c) => c.gear.armor)].filter(Boolean) as string[];
@@ -2719,13 +2851,13 @@ function currentRun(state: WarbleWayGalaxyState): RuinRun {
   return enc;
 }
 
-function boardOrThrow(state: WarbleWayGalaxyState): { run: RuinRun; board: RuinBoard; map: RuinMapDefinition } {
+export function boardOrThrow(state: WarbleWayGalaxyState): { run: RuinRun; board: RuinBoard; map: RuinMapDefinition } {
   const run = currentRun(state);
   if (!run.board) throw new GameError('ILLEGAL_MOVE', 'The encounter is not set up yet — setup_encounter first.');
   return { run, board: run.board, map: ruinMapForLevel(run.level) };
 }
 
-function occupiedCells(board: RuinBoard): Set<string> {
+export function occupiedCells(board: RuinBoard): Set<string> {
   const s = new Set<string>();
   for (const t of board.tokens) s.add(t.cell);
   for (const a of board.attackers) if (!a.defeated) s.add(a.cell);
@@ -2798,7 +2930,7 @@ export function inAttackRange(map: RuinMapDefinition, from: string, to: string, 
   return true;
 }
 
-function tokenBeing(state: WarbleWayGalaxyState, token: RuinToken): Being {
+export function tokenBeing(state: WarbleWayGalaxyState, token: RuinToken): Being {
   if (token.is_character) {
     const c = state.character!;
     return { name: c.name, natural: c.abilities, gear: c.gear, is_character: true };
@@ -2814,15 +2946,15 @@ function tokenBeing(state: WarbleWayGalaxyState, token: RuinToken): Being {
   return { name: crew.name, natural: crew.abilities, gear: crew.gear, is_character: false };
 }
 
-function movementAllowance(state: WarbleWayGalaxyState, token: RuinToken): number {
+export function movementAllowance(state: WarbleWayGalaxyState, token: RuinToken): number {
   return 3 + effectiveScore(state, tokenBeing(state, token), 'SNE');
 }
 
-function hasTeleporter(state: WarbleWayGalaxyState, token: RuinToken): boolean {
+export function hasTeleporter(state: WarbleWayGalaxyState, token: RuinToken): boolean {
   return (tokenBeing(state, token).natural.RES ?? 0) >= 3; // natural — advanced skill (WR §5)
 }
 
-function bestAttackAbility(state: WarbleWayGalaxyState, token: RuinToken): { ability: AbilityId; bonus: number } {
+export function bestAttackAbility(state: WarbleWayGalaxyState, token: RuinToken): { ability: AbilityId; bonus: number } {
   const being = tokenBeing(state, token);
   const options: Array<{ ability: AbilityId; bonus: number }> = (['SWA', 'GUN', 'DEM'] as const).map((a) => ({
     ability: a,
@@ -2831,7 +2963,7 @@ function bestAttackAbility(state: WarbleWayGalaxyState, token: RuinToken): { abi
   return options.sort((a, b) => b.bonus - a.bonus)[0]!;
 }
 
-function attackRangeOf(state: WarbleWayGalaxyState, token: RuinToken): number {
+export function attackRangeOf(state: WarbleWayGalaxyState, token: RuinToken): number {
   const being = tokenBeing(state, token);
   const gun = effectiveScore(state, being, 'GUN');
   const dem = effectiveScore(state, being, 'DEM');
@@ -2839,7 +2971,7 @@ function attackRangeOf(state: WarbleWayGalaxyState, token: RuinToken): number {
   return Math.max(gun >= 1 ? 2 + gun : 0, dem >= 1 ? dem : 0, 1);
 }
 
-function tokenGroundAdvantage(state: WarbleWayGalaxyState, token: RuinToken): boolean {
+export function tokenGroundAdvantage(state: WarbleWayGalaxyState, token: RuinToken): boolean {
   const being = tokenBeing(state, token);
   if (effectiveScore(state, being, 'SWA') >= 1) return true; // SWA basic
   if ((being.natural.GUN ?? 0) >= 3) return true; // Sniper (ruling #3)
@@ -2848,7 +2980,7 @@ function tokenGroundAdvantage(state: WarbleWayGalaxyState, token: RuinToken): bo
 }
 
 /** Personal Cloaking (natural SNE≥3): can't be targeted until it attacks (ruling #3). */
-function isCloaked(state: WarbleWayGalaxyState, token: RuinToken): boolean {
+export function isCloaked(state: WarbleWayGalaxyState, token: RuinToken): boolean {
   return (tokenBeing(state, token).natural.SNE ?? 0) >= 3 && !token.has_attacked;
 }
 
@@ -2917,6 +3049,12 @@ export function ruinStepToward(state: WarbleWayGalaxyState, beingName: string, d
 export function ruinAttackRange(state: WarbleWayGalaxyState, beingName: string): number {
   const { board } = boardOrThrow(state);
   return attackRangeOf(state, tokenByName(board, beingName));
+}
+
+/** Legal-move surface helper: a being's effective score on the ruin map. */
+export function ruinBeingScore(state: WarbleWayGalaxyState, beingName: string, ability: AbilityId): number {
+  const { board } = boardOrThrow(state);
+  return effectiveScore(state, tokenBeing(state, tokenByName(board, beingName)), ability);
 }
 
 /** Legal-move surface helper: the open I/B spot next to a being, if any. */
@@ -3000,14 +3138,14 @@ function requireRuinTurn(state: WarbleWayGalaxyState): { run: RuinRun; board: Ru
   return boardOrThrow(state);
 }
 
-function tokenByName(board: RuinBoard, name: string): RuinToken {
+export function tokenByName(board: RuinBoard, name: string): RuinToken {
   const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
   const hit = board.tokens.find((t) => norm(t.name) === norm(name)) ?? board.tokens.find((t) => norm(t.name).includes(norm(name)) && norm(name).length >= 3);
   if (!hit) throw new GameError('ILLEGAL_MOVE', `No party member on the map matches "${name}". On the map: ${board.tokens.map((t) => t.name).join('; ')}.`);
   return hit;
 }
 
-function attackerById(board: RuinBoard, id: string): RuinAttackerPlaced_ {
+export function attackerById(board: RuinBoard, id: string): RuinAttackerPlaced_ {
   const hit = board.attackers.find((a) => a.id.toLowerCase() === id.trim().toLowerCase() && !a.defeated);
   if (!hit) {
     throw new GameError(
@@ -3137,7 +3275,7 @@ export function applyRecruitAt(state: WarbleWayGalaxyState, beingName: string): 
   return `${token.name} approaches the figure at ${spot}: roll 1d6 on the ${map.id} beings list.`;
 }
 
-function adjacentSpot(map: RuinMapDefinition, board: RuinBoard, cell: string, ch: 'I' | 'B'): string | null {
+export function adjacentSpot(map: RuinMapDefinition, board: RuinBoard, cell: string, ch: 'I' | 'B'): string | null {
   const p = parseCellId(cell)!;
   // "Next to" — 8-adjacent (movement is orthogonal, but reaching over a corner
   // to a chest reads naturally; PORT-NOTES decision).
