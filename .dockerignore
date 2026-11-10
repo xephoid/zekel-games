@@ -1,0 +1,21 @@
+# Keep the image build to the committed source: no local installs, builds,
+# saved sessions, secrets or git history.
+.git
+.github
+.worktrees
+.claude
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+**/*.log
+**/.DS_Store
+.env
+.env.*
+**/*.db
+**/*.db-*
+data/
+harness-out/
+coverage/
+.publish/
+Dockerfile
+.dockerignore
