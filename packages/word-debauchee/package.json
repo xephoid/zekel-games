@@ -1,6 +1,6 @@
 {
   "name": "@zekel/word-debauchee",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Word Debauchee, a Zekel Games party word game: its rules as a game module for the zekel MCP server, and its screen for Zekel Universe.",
   "license": "Apache-2.0",
   "repository": {
