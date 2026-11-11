@@ -1,0 +1,144 @@
+// A game package has two halves: the rules, which the server loads, and the
+// screen (src/glue/, the `@zekel/<game>/glue` entry point), which Zekel
+// Universe loads in a browser. They never import each other. The server must
+// not need React, and a screen must not reach past the server for a rule: it
+// draws what the game's views and listed moves say.
+//
+// So: a file under src/glue/ imports only files under src/glue/, React, and
+// the packages a screen is written against. A file outside src/glue/ never
+// imports one inside it. Tests are checked like the code they sit beside.
+// Imports are read from each file's syntax tree, so import() and require()
+// count; one whose path is worked out at run time is refused, since nobody
+// can say where it goes. What this cannot see is code that hides the call on
+// purpose (require under another name, eval).
+
+import { lstatSync, readdirSync, readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
+import { describe, expect, it } from 'vitest';
+
+const packagesDir = fileURLToPath(new URL('../packages/', import.meta.url));
+
+/** What a screen may be written against. */
+const GLUE_PACKAGES = ['react', 'react-dom', '@zekel/glue-kit', '@zekel/primitives', '@zekel/wire-types', '@zekel/tokens'];
+/** What a screen's tests may add to that. */
+const GLUE_TEST_PACKAGES = ['vitest', '@testing-library/react', '@testing-library/dom', 'node:fs', 'node:path', 'node:url'];
+
+const isTest = (file: string): boolean => /[/\\]__tests__[/\\]|\.test\.tsx?$/.test(file);
+const named = (spec: string, list: string[]): boolean => list.some((p) => spec === p || spec.startsWith(p + '/'));
+
+function walk(dir: string, links: string[], out: string[] = []): string[] {
+  for (const name of readdirSync(dir)) {
+    const p = path.join(dir, name);
+    const st = lstatSync(p);
+    if (st.isSymbolicLink()) links.push(p);
+    else if (st.isDirectory()) walk(p, links, out);
+    else if (/\.tsx?$/.test(name)) out.push(p);
+  }
+  return out;
+}
+
+function importsIn(text: string, fileName = 'x.tsx'): { specs: string[]; computed: number } {
+  const kind = fileName.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
+  const tree = ts.createSourceFile(fileName, text, ts.ScriptTarget.Latest, true, kind);
+  const specs: string[] = [];
+  let computed = 0;
+  const note = (n: ts.Node | undefined) => {
+    if (n && (ts.isStringLiteral(n) || ts.isNoSubstitutionTemplateLiteral(n))) specs.push(n.text);
+    else computed++;
+  };
+  const visit = (n: ts.Node) => {
+    if (ts.isImportDeclaration(n)) note(n.moduleSpecifier);
+    else if (ts.isExportDeclaration(n)) { if (n.moduleSpecifier) note(n.moduleSpecifier); }
+    else if (ts.isImportEqualsDeclaration(n)) { if (ts.isExternalModuleReference(n.moduleReference)) note(n.moduleReference.expression); }
+    else if (ts.isImportTypeNode(n)) note(ts.isLiteralTypeNode(n.argument) ? n.argument.literal : undefined);
+    else if (ts.isCallExpression(n) && (n.expression.kind === ts.SyntaxKind.ImportKeyword || (ts.isIdentifier(n.expression) && n.expression.text === 'require'))) {
+      note(n.arguments.length === 1 ? n.arguments[0] : undefined);
+    } else if (ts.isMetaProperty(n) && ts.isPropertyAccessExpression(n.parent) && n.parent.name.text.startsWith('glob')) computed++; // a bundler's glob: not followed here
+    ts.forEachChild(n, visit);
+  };
+  visit(tree);
+  return { specs, computed };
+}
+
+describe('the scanner the wall is checked with', () => {
+  it('sees every way a file can name another', () => {
+    const text = [
+      "import a from './a.js'; import { b } from './b.js';",
+      "export { c } from './c.js';",
+      "import './d.css';",
+      "const e = await import('./e.js');",
+      "const g = require('./g.js');",
+      "type I = import('./i.js').I;",
+    ].join('\n');
+    expect(importsIn(text, 'x.ts')).toEqual({ specs: ['./a.js', './b.js', './c.js', './d.css', './e.js', './g.js', './i.js'], computed: 0 });
+  });
+
+  it('counts an import it cannot follow, and is not fooled by strings or comments', () => {
+    expect(importsIn('const m = await import(where);').computed).toBe(1);
+    expect(importsIn("const a = '/*'; import(where); const b = '*/';").computed).toBe(1);
+    expect(importsIn("const all = import.meta.glob('../*.ts');").computed).toBe(1);
+    expect(importsIn("// import(where)\nconst s = 'require(x)';")).toEqual({ specs: [], computed: 0 });
+  });
+});
+
+describe('a game\'s rules and its screen never import each other', () => {
+  const links: string[] = [];
+  const games = readdirSync(packagesDir).map((pkg) => {
+    const src = path.join(packagesDir, pkg, 'src');
+    const glue = path.join(src, 'glue');
+    return { pkg, src, glue, files: walk(src, links) };
+  });
+  const inGlue = (g: { glue: string }, p: string) => p === g.glue || p.startsWith(g.glue + path.sep);
+
+  it('finds at least one game with a screen', () => {
+    expect(games.filter((g) => g.files.some((f) => inGlue(g, f))).length).toBeGreaterThan(0);
+  });
+
+  it('has no symbolic links under any src/', () => {
+    expect(links.map((l) => path.relative(packagesDir, l))).toEqual([]);
+  });
+
+  it('a screen imports only its own files, React and the drawing packages', () => {
+    const leaks: string[] = [];
+    for (const g of games) {
+      for (const file of g.files.filter((f) => inGlue(g, f))) {
+        const { specs, computed } = importsIn(readFileSync(file, 'utf8'), file);
+        const where = path.relative(packagesDir, file);
+        if (computed > 0) leaks.push(`${where} -> an import worked out at run time`);
+        for (const spec of specs) {
+          if (spec.startsWith('.')) {
+            if (!inGlue(g, path.resolve(path.dirname(file), spec))) leaks.push(`${where} -> ${spec}`);
+          } else if (!named(spec, GLUE_PACKAGES) && !(isTest(file) && named(spec, GLUE_TEST_PACKAGES))) {
+            leaks.push(`${where} -> ${spec}`);
+          }
+        }
+      }
+    }
+    expect(leaks).toEqual([]);
+  });
+
+  it('nothing outside a screen imports it, or React, or the drawing packages', () => {
+    const reaches: string[] = [];
+    for (const g of games) {
+      for (const file of g.files.filter((f) => !inGlue(g, f))) {
+        const { specs, computed } = importsIn(readFileSync(file, 'utf8'), file);
+        const where = path.relative(packagesDir, file);
+        for (const spec of specs) {
+          if (spec.startsWith('.')) {
+            if (inGlue(g, path.resolve(path.dirname(file), spec))) reaches.push(`${where} -> ${spec}`);
+          } else if (named(spec, GLUE_PACKAGES) || /^@zekel\/[^/]+\/glue(\/|$)/.test(spec)) {
+            reaches.push(`${where} -> ${spec}`);
+          }
+        }
+        // The rules may work a path out at run time (lore files, word lists);
+        // only one that could land in the screen is refused.
+        if (computed > 0 && g.files.some((f) => inGlue(g, f)) && /\bglue\b/.test(readFileSync(file, 'utf8'))) {
+          reaches.push(`${where} -> an import worked out at run time, in a file that names glue`);
+        }
+      }
+    }
+    expect(reaches).toEqual([]);
+  });
+});

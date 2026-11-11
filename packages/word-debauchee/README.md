@@ -6,6 +6,14 @@ One player, the debauchee, holds a secret word and gives three stingy clues. Eve
 
 `scripts/harness.mjs` plays all-AI rounds and reports crack rates per AI tier (what the AI does, not whether the game is balanced). The rules are in [rules/rules.md](rules/rules.md), the reasoning in [rules/design-notes.md](rules/design-notes.md), the cards in [rules/words.md](rules/words.md) (generated from `rules/words.csv`: edit the CSV, then `pnpm --filter @zekel/word-debauchee build:words`). The port plan and every ruling are in [PORT-PLAN.md](PORT-PLAN.md).
 
+## The screen
+
+`@zekel/word-debauchee/glue` is the game's screen for Zekel Universe: a React
+component and the glue module Universe's table loads (`wordDebaucheeGlue`). It
+needs `react`, `@zekel/glue-kit` and `@zekel/wire-types`, which are optional
+peer dependencies: a server that only plays the game needs none of them. It
+imports its own stylesheet, so load it through a bundler.
+
 ## Use
 
 Register it on [`@zekel/mcp`](https://www.npmjs.com/package/@zekel/mcp):

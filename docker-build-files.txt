@@ -220,6 +220,10 @@ packages/word-debauchee/src/engine/errors.ts
 packages/word-debauchee/src/engine/helpers.ts
 packages/word-debauchee/src/engine/moves.ts
 packages/word-debauchee/src/engine/round.ts
+packages/word-debauchee/src/glue/WdScreen.tsx
+packages/word-debauchee/src/glue/index.ts
+packages/word-debauchee/src/glue/read.ts
+packages/word-debauchee/src/glue/wd.css
 packages/word-debauchee/src/guidance.ts
 packages/word-debauchee/src/index.ts
 packages/word-debauchee/src/legalMoves.ts

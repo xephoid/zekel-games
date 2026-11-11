@@ -1,0 +1,130 @@
+/* The Word Debauchee table: one centered column in the brief's own look
+   (docs/design/word-debauchee/). Every color is a brief token, so dark mode
+   comes with the tokens; the only drawn things are the letter tiles. */
+
+.wd-screen { --wd-line2: color-mix(in srgb, var(--border) 70%, var(--fg) 30%); color: var(--fg); font-family: var(--font-body); }
+.wd-col { max-width: 600px; margin: 0 auto; padding: 4px 16px 24px; display: flex; flex-direction: column; gap: 16px; }
+.wd-lab { font-size: 12px; font-weight: 600; color: var(--fg-muted); }
+.wd-mono { font-family: var(--font-mono); font-weight: 500; }
+.wd-big { font: 700 22px var(--font-display); }
+.wd-h2 { margin: 0 0 4px; font: 700 22px var(--font-display); }
+.wd-help { font-size: 15px; color: var(--fg-muted); line-height: 1.45; }
+.wd-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* ---- buttons ---- */
+.wd-btn { min-height: 44px; padding: 0 16px; border-radius: var(--radius-md); border: 1px solid var(--wd-line2); background: var(--card); color: var(--fg); font: 600 15px var(--font-body); cursor: pointer; }
+.wd-btn:hover:not(:disabled) { background: var(--chip); }
+.wd-btn:disabled { opacity: .5; cursor: default; }
+.wd-btn.go { background: var(--brand-orange); border-color: var(--brand-orange); color: #1C1A17; }
+.wd-btn.go:hover:not(:disabled) { background: var(--brand-orange-hover); }
+.wd-btn.quiet { border-color: transparent; background: transparent; color: var(--fg-muted); font-weight: 500; padding: 0 8px; }
+.wd-btn.quiet:hover:not(:disabled) { color: var(--fg); background: transparent; text-decoration: underline; }
+.wd-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* ---- seats ---- */
+.wd-seats { display: flex; flex-wrap: wrap; gap: 8px; }
+.wd-seat { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; background: var(--card); border: 1px solid var(--border); }
+.wd-seat.you { background: var(--you-bg); color: var(--you-fg); border-color: transparent; }
+.wd-seat.ai { background: var(--accent-tint-2); color: var(--accent); border-color: transparent; }
+.wd-seat.now { box-shadow: 0 0 0 2px var(--brand-orange); }
+.wd-seat .wd-lab { color: inherit; opacity: .85; }
+
+/* ---- clues ---- */
+.wd-clues { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.wd-clue { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 12px; min-width: 0; animation: wd-deal var(--motion-slide) var(--motion-easing) backwards; }
+.wd-clue.bribed { background: var(--you-bg); border-color: var(--you-fg); color: var(--you-fg); }
+.wd-clue.bribed .wd-lab { color: var(--you-fg); }
+.wd-clue-val { font: 700 22px var(--font-display); margin-top: 2px; overflow-wrap: anywhere; }
+.wd-clue-val.waiting { font: 500 14px var(--font-body); color: var(--fg-muted); }
+
+/* ---- tiles ---- */
+.wd-tile { box-sizing: border-box; width: 44px; height: 48px; display: inline-flex; align-items: center; justify-content: center; background: var(--card); color: var(--fg); border: 1px solid var(--border); border-bottom: 3px solid var(--wd-line2); border-radius: 6px; font: 700 24px var(--font-display); padding: 0; flex: none; }
+button.wd-tile { cursor: pointer; }
+button.wd-tile:disabled { cursor: default; color: var(--fg); }
+.wd-tile.fresh { background: var(--you-bg); color: var(--you-fg); border-color: var(--you-fg); }
+.wd-tile.lifted { transform: translateY(-6px); box-shadow: var(--shadow-lift); background: var(--you-bg); color: var(--you-fg); }
+.wd-tile.lay { background: var(--brand-green); color: #F7F1E6; border-color: var(--brand-green); border-bottom-color: rgba(0,0,0,.35); }
+[data-theme='dark'] .wd-tile.lay { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.wd-tile.pick { width: 56px; height: 60px; font-size: 30px; background: var(--you-bg); color: var(--you-fg); border-color: var(--you-fg); }
+.wd-tile.pick:hover { background: var(--brand-orange); color: #1C1A17; }
+
+.wd-letters { display: flex; align-items: center; gap: 12px; min-height: 52px; }
+.wd-letters-row { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; min-width: 0; }
+.wd-letters-note { margin-left: auto; text-align: right; flex: none; }
+.wd-letters-note strong { display: block; font-size: 15px; font-weight: 600; }
+
+/* ---- the build area ---- */
+.wd-build { display: flex; flex-direction: column; gap: 4px; min-height: 176px; background: var(--chip); border-radius: 12px; padding: 8px; }
+.wd-row { display: flex; align-items: center; min-height: 52px; border-radius: var(--radius-md); padding: 2px 4px; flex-wrap: wrap; }
+.wd-row.on { background: var(--accent-tint); }
+.wd-row.static { gap: 4px; }
+.wd-gap { width: 12px; height: 48px; padding: 0; border: 0; background: transparent; border-radius: 3px; flex: none; }
+.wd-gap:not(:disabled) { cursor: pointer; }
+.wd-gap:not(:disabled):hover { background: var(--accent-tint); }
+.wd-gap.on, .wd-gap.on:hover { background: var(--brand-orange); }
+.wd-tag { font: 500 12px var(--font-mono); color: var(--fg-muted); margin-left: auto; padding-left: 10px; white-space: nowrap; }
+.wd-tag.no { color: var(--danger); }
+.wd-row.shake { animation: wd-shake .4s ease-in-out; }
+.wd-newrow { height: 44px; width: 100%; border: 1px dashed var(--wd-line2); border-radius: var(--radius-md); background: transparent; color: var(--fg-muted); font: 500 14px var(--font-body); cursor: pointer; }
+.wd-newrow.on { background: var(--accent-tint); border-color: var(--accent); border-style: solid; color: var(--fg); }
+.wd-newrow:disabled { cursor: default; }
+.wd-empty { color: var(--fg-muted); font-size: 14px; padding: 12px 6px; }
+.wd-burnt { font: 500 13px var(--font-mono); color: var(--fg-muted); text-decoration: line-through; }
+
+/* ---- the turn ---- */
+.wd-turn { display: flex; flex-direction: column; gap: 8px; min-height: 96px; }
+.wd-caption { font-size: 15px; min-height: 22px; }
+.wd-field { min-height: 44px; box-sizing: border-box; padding: 0 12px; border: 1px solid var(--wd-line2); border-radius: var(--radius-md); background: var(--card); color: var(--fg); font: 400 15px var(--font-body); min-width: 0; flex: 1; }
+.wd-sr { position: absolute; left: -9999px; }
+
+/* ---- the pool, as a keyboard ---- */
+.wd-keys { display: flex; flex-direction: column; gap: 5px; }
+.wd-keyrow { display: flex; gap: 5px; justify-content: center; }
+.wd-key { position: relative; flex: 1 1 0; min-width: 0; max-width: 52px; height: 56px; padding: 0; border: 1px solid var(--border); border-bottom: 3px solid var(--wd-line2); border-radius: 6px; background: var(--card); color: var(--fg); font: 700 19px var(--font-display); cursor: pointer; }
+.wd-key:hover:not(:disabled) { background: var(--accent-tint); }
+.wd-key:disabled { background: transparent; color: var(--fg-muted); border-style: dashed; border-bottom-width: 1px; cursor: default; opacity: .7; }
+.wd-key .n { position: absolute; right: 4px; top: 3px; font: 500 10px var(--font-mono); color: var(--fg-muted); }
+
+/* ---- the debauchee ---- */
+.wd-secret { background: var(--you-bg); color: var(--you-fg); border-radius: 12px; padding: 14px 16px; }
+.wd-secret-word { font: 700 32px var(--font-display); letter-spacing: .02em; }
+.wd-words { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.wd-wordcard { background: var(--card); border: 1px solid var(--border); border-bottom: 3px solid var(--wd-line2); border-radius: 12px; min-height: 112px; font: 700 22px var(--font-display); color: var(--fg); cursor: pointer; animation: wd-deal var(--motion-slide) var(--motion-easing) backwards; overflow-wrap: anywhere; padding: 8px; }
+.wd-wordcard:nth-child(2), .wd-clue:nth-child(2) { animation-delay: 60ms; }
+.wd-wordcard:nth-child(3), .wd-clue:nth-child(3) { animation-delay: 120ms; }
+.wd-wordcard:hover:not(:disabled) { background: var(--accent-tint); }
+.wd-wordcard:disabled { cursor: default; }
+.wd-hand { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.wd-pick { width: 100%; text-align: left; background: var(--card); border: 1px solid var(--border); border-bottom: 3px solid var(--wd-line2); border-radius: var(--radius-md); padding: 12px; color: var(--fg); cursor: pointer; font-family: inherit; animation: wd-deal var(--motion-slide) var(--motion-easing) backwards; }
+.wd-pick:hover:not(:disabled) { background: var(--accent-tint); }
+.wd-pick.on { background: var(--accent-tint); border-color: var(--accent); }
+.wd-pick.off { opacity: .65; border-style: dashed; border-bottom-width: 1px; }
+.wd-pick:disabled { cursor: default; }
+.wd-answer { display: flex; flex-direction: column; gap: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+
+/* ---- results ---- */
+.wd-card { background: var(--card); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-card); animation: wd-turnup .45s ease-out; }
+.wd-result-word { font: 700 40px var(--font-display); letter-spacing: .02em; margin: 2px 0 6px; overflow-wrap: anywhere; }
+.wd-pay { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.wd-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.wd-table th { font-size: 12px; font-weight: 600; color: var(--fg-muted); text-align: right; padding: 6px; }
+.wd-table td { padding: 6px; border-top: 1px solid var(--line); text-align: right; }
+.wd-table th:first-child, .wd-table td:first-child, .wd-table th:nth-child(2), .wd-table td:nth-child(2) { text-align: left; }
+.wd-table-wrap { overflow-x: auto; }
+
+@keyframes wd-deal { from { transform: translateY(-60px) rotate(-3deg); box-shadow: var(--shadow-lift); } to { transform: none; } }
+@keyframes wd-turnup { from { transform: perspective(800px) rotateX(85deg); box-shadow: var(--shadow-pop); } to { transform: none; } }
+@keyframes wd-shake { 0%, 100% { transform: none; } 25% { transform: translateX(-6px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-3px); } }
+@keyframes wd-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .wd-clue, .wd-wordcard, .wd-pick, .wd-card { animation-name: wd-fade; }
+  .wd-row.shake { animation: none; }
+}
+@media (max-width: 520px) {
+  .wd-col { padding: 4px 8px 16px; gap: 12px; }
+  .wd-tile { width: 36px; height: 40px; font-size: 20px; }
+  .wd-gap { width: 8px; height: 40px; }
+  .wd-key { height: 50px; font-size: 17px; }
+  .wd-keyrow { gap: 3px; }
+  .wd-clues, .wd-words { gap: 6px; }
+}
