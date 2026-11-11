@@ -1,4 +1,8 @@
-# Running the games server on Render (staging)
+# Running the games server on Render (production)
+
+**Where each one runs.** The existing ngrok deployment is staging. Render is
+production only; there is no separate Render staging service. Create the
+Render service at launch, after the staging checks pass.
 
 The `Dockerfile` at the top of this repo builds every game and serves all of
 them over HTTP with `examples/serve.mjs`. Game sessions are kept in a SQLite
