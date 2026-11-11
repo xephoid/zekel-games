@@ -55,17 +55,27 @@ docker run --rm -p 3000:3000 -e MCP_BEARER_TOKEN \
   -v zekel-sessions:/var/data zekel-games
 ```
 
-The build only sees the files `.dockerignore` lets in: the manifests, the
-lockfile, each game's `tsconfig.json` and its `src/` (`.ts`, `.md` and `.txt`
-files, no tests or hidden files), and the few scripts the build and server
-run. Other files in your checkout, tracked or not, stay out of the image. A
-stray `.md`, `.txt` or `.ts` file you leave inside a game's `src/` would still
-go in, as it would into the npm package. To build from exactly the files git
-tracks, ignoring anything untracked:
-
-```sh
-git ls-files -z | tar --null -cf - -T - | docker build -t zekel-games -
-```
-
 The container starts as root only long enough to give the disk folder to the
 `node` user, then runs the server as `node`.
+
+## Which files go into the image
+
+The image is built only from the files named in `docker-build-files.txt`.
+That list is made from `git ls-files`, so a file git doesn't track is never
+on it: an untracked note, key or `.env` file stays out of the image even if
+it sits inside a game's `src/` with a normal-looking name. The list holds the
+workspace and lockfile, each game's `package.json` and `tsconfig.json`, and
+every tracked file in each game's `src/` except tests and hidden files.
+
+- **After adding, renaming or removing a game's source file**, add the change
+  to git (`git add`), run `pnpm docker-files`, and commit the updated list
+  with it. `pnpm test` fails while the list is out of date.
+- The build folder is mounted for one step only; the named files are copied
+  out of it and nothing else from it is kept in the image. If the list names
+  a file that isn't there, or a path that isn't a plain relative path, the
+  build stops and says so.
+- A tracked file you have edited but not committed goes in with your edits,
+  as it would with any build of your checkout.
+- The build needs BuildKit, Docker's default builder since version 23. The
+  old builder (`DOCKER_BUILDKIT=0`) refuses the Dockerfile. Render's Docker
+  builds need it too; that has not yet been tried on Render.

@@ -1,8 +1,13 @@
 # Production image: builds every game in this repo and serves them over HTTP
 # with examples/serve.mjs, keeping game sessions in SQLite. See DEPLOY.md.
 #
-# Only named files are copied in (and .dockerignore is an allowlist), so
-# private or untracked files in a local checkout never end up in the image.
+# The image is built only from the files named in docker-build-files.txt,
+# a list made from `git ls-files` (scripts/docker-build-files.mjs; the tests
+# fail if it is out of date). The build folder is mounted for one step, the
+# listed files are copied out of it, and nothing else from it is saved in
+# any layer. So untracked files in a local checkout stay out of the image,
+# whatever they are named. Needs BuildKit (Docker's default builder since
+# version 23) for the mount.
 
 # Node 24 LTS (the server needs >= 22.13 for the built-in node:sqlite).
 ARG NODE_IMAGE=node:24.16.0-bookworm-slim@sha256:2c87ef9bd3c6a3bd4b472b4bec2ce9d16354b0c574f736c476489d09f560a203
@@ -11,16 +16,9 @@ ARG NODE_IMAGE=node:24.16.0-bookworm-slim@sha256:2c87ef9bd3c6a3bd4b472b4bec2ce9d
 FROM ${NODE_IMAGE} AS build
 WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@11.6.0 --activate
-# Install first, from the manifests alone.
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY packages/ packages/
-RUN pnpm install --frozen-lockfile
-# Then build. (packages/ above already holds each game's tsconfig and src, as
-# far as .dockerignore lets them in.)
-COPY tsconfig.base.json ./
-COPY scripts/copy-assets.mjs scripts/
-COPY examples/serve.mjs examples/
-RUN pnpm build
+RUN --mount=type=bind,target=/ctx \
+    sh /ctx/scripts/docker-copy-inputs.sh /ctx /app
+RUN pnpm install --frozen-lockfile && pnpm build
 # Keep only what the server runs: the installed packages, each game's
 # package.json and dist/. Readable by the `node` user, writable only by root.
 RUN mkdir /out \

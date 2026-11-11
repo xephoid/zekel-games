@@ -1,34 +1,27 @@
-# Allowlist: the image build sees ONLY the files listed below. Everything else
-# in the checkout (untracked notes, keys, .env files, local installs, builds,
-# saved sessions, git history) never enters the build. A new game's committed
-# source under packages/<game>/src is picked up with no change here; a new kind
-# of file a game needs at run time must be added on purpose.
+# What Docker may send to the build. This is NOT what keeps private files out
+# of the image: the Dockerfile copies only the files named in
+# docker-build-files.txt (made from `git ls-files`). This list just keeps the
+# upload small and leaves out things no build needs (git history, local
+# installs and builds, hidden files, tests). Everything the list names must be
+# allowed here, or the build stops and says which file is missing.
 *
 
-# Install: the workspace manifests and the lockfile.
+!docker-build-files.txt
+!scripts/docker-copy-inputs.sh
+!docker-entrypoint.sh
+
 !package.json
 !pnpm-lock.yaml
 !pnpm-workspace.yaml
-!packages/*/package.json
-
-# Build: compiler settings, game source, and the files games read at run time
-# (lore/*.md, the rules checker's pinned rules/*.txt). Copied into dist/ by
-# scripts/copy-assets.mjs.
 !tsconfig.base.json
-!packages/*/tsconfig.json
-!packages/*/src/**/*.ts
-!packages/*/src/**/*.md
-!packages/*/src/**/*.txt
 !scripts/copy-assets.mjs
-
-# Run: the server program and the start script.
 !examples/serve.mjs
-!docker-entrypoint.sh
+!packages/*/package.json
+!packages/*/tsconfig.json
+!packages/*/src/**
 
-# Never, even inside the folders above: tests, hidden files and folders,
-# local outputs. Each folder is named twice: once for the folder and once
-# (with /**) for everything inside it, because the "!" lines above would
-# otherwise let matching files inside it back in.
+# Each folder is named twice: once for the folder and once (with /**) for
+# everything inside it, or the "!" lines above would let its files back in.
 **/__tests__
 **/__tests__/**
 **/.*

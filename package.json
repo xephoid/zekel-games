@@ -9,6 +9,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "smoke": "node scripts/smoke.mjs",
+    "docker-files": "node scripts/docker-build-files.mjs",
     "clean": "rm -rf packages/*/dist packages/*/tsconfig.tsbuildinfo",
     "tool": "tsx scripts/dev.ts",
     "harness": "tsx scripts/dev.ts ai-harness",
