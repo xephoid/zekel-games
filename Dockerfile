@@ -4,10 +4,12 @@
 # The image is built only from the files named in docker-build-files.txt,
 # a list made from `git ls-files` (scripts/docker-build-files.mjs; the tests
 # fail if it is out of date). The build folder is mounted for one step, the
-# listed files are copied out of it, and nothing else from it is saved in
-# any layer. So untracked files in a local checkout stay out of the image,
-# whatever they are named. Needs BuildKit (Docker's default builder since
-# version 23) for the mount.
+# listed files are copied out of it (never through a link), and nothing else
+# from it is saved in any layer. So untracked files in a local checkout stay
+# out of the image, whatever they are named, as long as the list and the copy
+# script are as committed. Tracked files go in as they are on disk, edits
+# included. DEPLOY.md has the details. Needs BuildKit (Docker's default
+# builder since version 23) for the mount.
 
 # Node 24 LTS (the server needs >= 22.13 for the built-in node:sqlite).
 ARG NODE_IMAGE=node:24.16.0-bookworm-slim@sha256:2c87ef9bd3c6a3bd4b472b4bec2ce9d16354b0c574f736c476489d09f560a203

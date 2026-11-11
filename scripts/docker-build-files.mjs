@@ -33,8 +33,10 @@ const TOP_LEVEL = new Set([
   'examples/serve.mjs',
 ]);
 
-// Only plain relative paths: no spaces, quotes, `..` or leading `/`.
-export const SAFE_PATH = /^(?!.*(?:^|\/)\.\.(?:\/|$))[A-Za-z0-9_@+-][A-Za-z0-9._@+/-]*$/;
+// Only plain relative paths: no spaces or quotes; no empty, `.` or `..`
+// parts; no leading or trailing `/`. (scripts/docker-copy-inputs.sh checks
+// the same in the build.)
+export const SAFE_PATH = /^(?!.*(?:^|\/)\.{1,2}(?:\/|$))(?!.*\/\/)(?!.*\/$)[A-Za-z0-9_@+-][A-Za-z0-9._@+/-]*$/;
 
 /** True for a tracked file the image needs. */
 export function isBuildInput(path) {

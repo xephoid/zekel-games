@@ -26,7 +26,7 @@ describe('docker-build-files.txt', () => {
 
   it('accepts only plain relative paths', () => {
     expect(SAFE_PATH.test('packages/g/src/lore/a-b_c.md')).toBe(true);
-    for (const p of ['/etc/passwd', '../x', 'a/../b', 'a b', 'a\nb', "a'b"]) {
+    for (const p of ['/etc/passwd', '../x', 'a/../b', 'a/./b', 'a//b', 'a/', 'a b', 'a\nb', "a'b"]) {
       expect(SAFE_PATH.test(p)).toBe(false);
     }
   });

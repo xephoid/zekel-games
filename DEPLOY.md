@@ -61,21 +61,43 @@ The container starts as root only long enough to give the disk folder to the
 ## Which files go into the image
 
 The image is built only from the files named in `docker-build-files.txt`.
-That list is made from `git ls-files`, so a file git doesn't track is never
-on it: an untracked note, key or `.env` file stays out of the image even if
-it sits inside a game's `src/` with a normal-looking name. The list holds the
-workspace and lockfile, each game's `package.json` and `tsconfig.json`, and
-every tracked file in each game's `src/` except tests and hidden files.
+That list is made from `git ls-files`. The list holds the workspace and
+lockfile, each game's `package.json` and `tsconfig.json`, and every tracked
+file in each game's `src/` except tests and hidden files.
 
+What that keeps out: a file git doesn't track (an untracked note, key or
+`.env` file) stays out of the image even if it sits inside a game's `src/`
+with a normal-looking name. This holds as long as `docker-build-files.txt`
+and `scripts/docker-copy-inputs.sh` are as committed.
+
+What it does **not** keep out:
+
+- **Anything git tracks, as it is on your disk.** A file you have `git add`ed
+  counts as tracked (even before you commit), and a tracked file you have
+  edited goes in with your edits. The build copies the bytes in your
+  checkout; it does not check them against a commit. Don't build an image
+  for sharing from a checkout with private edits.
+- **A hand-edited list.** The build reads `docker-build-files.txt` as it is;
+  it can't ask git. `pnpm test` fails if the list doesn't match git, but
+  `docker build` alone does not run that check.
+
+How the build uses the list:
+
+- The build folder is mounted for one step only; the named files are copied
+  out of it and nothing else from it is kept in any image layer.
+- The build stops before copying anything if the list names a file that
+  isn't there, a path that isn't a plain relative path, or a path that goes
+  through a link anywhere along the way (the file itself or any folder above
+  it). So a folder swapped for a link can't bring in other files.
+- **Uploading is wider than copying.** Docker still sends the build folder,
+  minus what `.dockerignore` leaves out, to the builder. Untracked files
+  under a game's `src/` are part of that upload and sit in the builder's
+  cache, though not in the image. With the normal local Docker that stays on
+  your machine; with a remote builder (for example a cloud builder set by
+  `docker buildx`) they are sent to that machine.
 - **After adding, renaming or removing a game's source file**, add the change
   to git (`git add`), run `pnpm docker-files`, and commit the updated list
   with it. `pnpm test` fails while the list is out of date.
-- The build folder is mounted for one step only; the named files are copied
-  out of it and nothing else from it is kept in the image. If the list names
-  a file that isn't there, or a path that isn't a plain relative path, the
-  build stops and says so.
-- A tracked file you have edited but not committed goes in with your edits,
-  as it would with any build of your checkout.
 - The build needs BuildKit, Docker's default builder since version 23. The
   old builder (`DOCKER_BUILDKIT=0`) refuses the Dockerfile. Render's Docker
   builds need it too; that has not yet been tried on Render.
