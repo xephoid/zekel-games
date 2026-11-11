@@ -1,0 +1,32 @@
+# What Docker may send to the build. This is NOT what keeps private files out
+# of the image: the Dockerfile copies only the files named in
+# docker-build-files.txt (made from `git ls-files`). This list just keeps the
+# upload small and leaves out things no build needs (git history, local
+# installs and builds, hidden files, tests). Everything the list names must be
+# allowed here, or the build stops and says which file is missing.
+*
+
+!docker-build-files.txt
+!scripts/docker-copy-inputs.sh
+!docker-entrypoint.sh
+
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!tsconfig.base.json
+!scripts/copy-assets.mjs
+!examples/serve.mjs
+!packages/*/package.json
+!packages/*/tsconfig.json
+!packages/*/src/**
+
+# Each folder is named twice: once for the folder and once (with /**) for
+# everything inside it, or the "!" lines above would let its files back in.
+**/__tests__
+**/__tests__/**
+**/.*
+**/.*/**
+**/node_modules
+**/node_modules/**
+**/dist
+**/dist/**
