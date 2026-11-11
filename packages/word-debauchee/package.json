@@ -1,7 +1,7 @@
 {
   "name": "@zekel/word-debauchee",
   "version": "0.1.0",
-  "description": "Word Debauchee, a Zekel Games party word game, as a game module for the zekel MCP server.",
+  "description": "Word Debauchee, a Zekel Games party word game: its rules as a game module for the zekel MCP server, and its screen for Zekel Universe.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -20,6 +20,10 @@
     "./dev": {
       "types": "./dist/dev/index.d.ts",
       "default": "./dist/dev/index.js"
+    },
+    "./glue": {
+      "types": "./dist/glue/index.d.ts",
+      "default": "./dist/glue/index.js"
     },
     "./*": {
       "types": "./dist/*.d.ts",
@@ -40,17 +44,33 @@
   },
   "peerDependencies": {
     "@zekel/game-kit": "^0.1.0",
-    "@zekel/dev": "^0.1.1"
+    "@zekel/dev": "^0.1.1",
+    "@zekel/glue-kit": "^0.1.0",
+    "@zekel/wire-types": "^0.1.0",
+    "react": "^18.3.1"
   },
   "devDependencies": {
     "@zekel/game-kit": "^0.1.0",
-    "@zekel/dev": "^0.1.2"
+    "@zekel/dev": "^0.1.2",
+    "@zekel/glue-kit": "^0.1.0",
+    "@zekel/wire-types": "^0.1.0",
+    "react": "^18.3.1",
+    "@types/react": "^18.3.12"
   },
   "engines": {
     "node": ">=22.13.0"
   },
   "peerDependenciesMeta": {
     "@zekel/dev": {
+      "optional": true
+    },
+    "@zekel/glue-kit": {
+      "optional": true
+    },
+    "@zekel/wire-types": {
+      "optional": true
+    },
+    "react": {
       "optional": true
     }
   }

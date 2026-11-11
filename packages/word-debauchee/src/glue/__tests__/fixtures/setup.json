@@ -1,0 +1,81 @@
+{
+  "key": "setup",
+  "viewer": "p1",
+  "view": {
+    "phase": "setup",
+    "phase_text": "The table is saying who is the first debauchee.",
+    "settings": {
+      "tiles": "server",
+      "timer": "laps",
+      "tilesPerReveal": 5,
+      "rounds": 8,
+      "bribe": false,
+      "openHand": false,
+      "house": null
+    },
+    "seats": [
+      {
+        "id": "p1",
+        "name": "You",
+        "ai": false,
+        "score": 0
+      },
+      {
+        "id": "p2",
+        "name": "Ben",
+        "ai": true,
+        "score": 0
+      },
+      {
+        "id": "p3",
+        "name": "Cat",
+        "ai": true,
+        "score": 0
+      },
+      {
+        "id": "p4",
+        "name": "Dev",
+        "ai": true,
+        "score": 0
+      }
+    ],
+    "round": null,
+    "last_round": null,
+    "history": [],
+    "winners": null
+  },
+  "legalMoves": [
+    {
+      "move_id": "choose_first_debauchee:p1",
+      "description": "You is the first debauchee",
+      "move": {
+        "type": "choose_first_debauchee",
+        "player": "p1"
+      }
+    },
+    {
+      "move_id": "choose_first_debauchee:p2",
+      "description": "Ben is the first debauchee",
+      "move": {
+        "type": "choose_first_debauchee",
+        "player": "p2"
+      }
+    },
+    {
+      "move_id": "choose_first_debauchee:p3",
+      "description": "Cat is the first debauchee",
+      "move": {
+        "type": "choose_first_debauchee",
+        "player": "p3"
+      }
+    },
+    {
+      "move_id": "choose_first_debauchee:p4",
+      "description": "Dev is the first debauchee",
+      "move": {
+        "type": "choose_first_debauchee",
+        "player": "p4"
+      }
+    }
+  ]
+}

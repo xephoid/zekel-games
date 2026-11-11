@@ -1,0 +1,261 @@
+{
+  "key": "answer-clue",
+  "viewer": "p1",
+  "view": {
+    "phase": "answer_clues",
+    "phase_text": "The debauchee is answering the clues played.",
+    "settings": {
+      "tiles": "server",
+      "timer": "laps",
+      "tilesPerReveal": 5,
+      "rounds": 8,
+      "bribe": true,
+      "openHand": false,
+      "house": null
+    },
+    "seats": [
+      {
+        "id": "p1",
+        "name": "You",
+        "ai": false,
+        "score": 9
+      },
+      {
+        "id": "p2",
+        "name": "Ben",
+        "ai": true,
+        "score": 7
+      },
+      {
+        "id": "p3",
+        "name": "Cat",
+        "ai": true,
+        "score": 10
+      },
+      {
+        "id": "p4",
+        "name": "Dev",
+        "ai": true,
+        "score": 7
+      }
+    ],
+    "round": {
+      "number": 5,
+      "of": 8,
+      "debauchee": "p1",
+      "guessers": [
+        "p2",
+        "p3",
+        "p4"
+      ],
+      "clues": [
+        {
+          "card": "shortest_synonym",
+          "name": "Shortest synonym",
+          "asks": "letters in the shortest word on the synonym list",
+          "answer": 4
+        },
+        {
+          "card": "syllables",
+          "name": "Syllables",
+          "asks": "how many syllables",
+          "answer": 2
+        },
+        {
+          "card": "register",
+          "name": "Register",
+          "asks": "formal, everyday or slang",
+          "answer": null
+        }
+      ],
+      "redraws": 0,
+      "revealed": [],
+      "revealed_count": 0,
+      "bribed": [],
+      "reveals_for_scoring": 0,
+      "burned": [],
+      "checks": [],
+      "build_area": [],
+      "pool": {
+        "A": 13,
+        "B": 3,
+        "C": 3,
+        "D": 6,
+        "E": 18,
+        "F": 3,
+        "G": 4,
+        "H": 3,
+        "I": 12,
+        "J": 2,
+        "K": 2,
+        "L": 5,
+        "M": 3,
+        "N": 8,
+        "O": 11,
+        "P": 3,
+        "Q": 2,
+        "R": 9,
+        "S": 6,
+        "T": 9,
+        "U": 6,
+        "V": 3,
+        "W": 3,
+        "X": 2,
+        "Y": 3,
+        "Z": 2
+      },
+      "turn": "p1",
+      "turns_until_reveal": 3
+    },
+    "last_round": {
+      "number": 4,
+      "debauchee": "p4",
+      "word": "FRUSTRATED",
+      "outcome": "cracked",
+      "synonym": "vexed",
+      "revealed": 1,
+      "bribes": 0,
+      "payouts": {
+        "p4": 0,
+        "p1": 4,
+        "p2": 4,
+        "p3": 4
+      }
+    },
+    "history": [
+      {
+        "number": 1,
+        "debauchee": "p1",
+        "word": "FIX",
+        "outcome": "cracked",
+        "synonym": "mend",
+        "revealed": 2,
+        "bribes": 0,
+        "payouts": {
+          "p1": 0,
+          "p2": 2,
+          "p3": 2,
+          "p4": 2
+        }
+      },
+      {
+        "number": 2,
+        "debauchee": "p2",
+        "word": "PRIZE",
+        "outcome": "cracked",
+        "synonym": "award",
+        "revealed": 1,
+        "bribes": 0,
+        "payouts": {
+          "p2": 0,
+          "p3": 4,
+          "p4": 4,
+          "p1": 4
+        }
+      },
+      {
+        "number": 3,
+        "debauchee": "p3",
+        "word": "HONEST",
+        "outcome": "cracked",
+        "synonym": "frank",
+        "revealed": 4,
+        "bribes": 1,
+        "payouts": {
+          "p3": 0,
+          "p4": 1,
+          "p1": 1,
+          "p2": 1
+        }
+      },
+      {
+        "number": 4,
+        "debauchee": "p4",
+        "word": "FRUSTRATED",
+        "outcome": "cracked",
+        "synonym": "vexed",
+        "revealed": 1,
+        "bribes": 0,
+        "payouts": {
+          "p4": 0,
+          "p1": 4,
+          "p2": 4,
+          "p3": 4
+        }
+      }
+    ],
+    "winners": null,
+    "secret": {
+      "dealt_words": [
+        "GENTLE",
+        "WONDERFUL",
+        "FINISH"
+      ],
+      "word": "GENTLE",
+      "card": {
+        "letters": 6,
+        "vowels": 2,
+        "consonants": 4,
+        "syllables": 2,
+        "category": "Qualities",
+        "type": "Adjective",
+        "grade": 2,
+        "difficulty": "●○○",
+        "synonyms": [
+          "mild",
+          "soft",
+          "tender",
+          "kind",
+          "calm",
+          "meek"
+        ]
+      },
+      "hand": [
+        {
+          "card": "shortest_synonym",
+          "name": "Shortest synonym",
+          "kind": "number",
+          "answer": 4
+        },
+        {
+          "card": "syllables",
+          "name": "Syllables",
+          "kind": "number",
+          "answer": 2
+        },
+        {
+          "card": "register",
+          "name": "Register",
+          "kind": "word",
+          "answer": "everyday"
+        }
+      ],
+      "letters_left": [
+        "E",
+        "G",
+        "L",
+        "N",
+        "T"
+      ]
+    }
+  },
+  "legalMoves": [
+    {
+      "move_id": "answer_clue:register:card",
+      "description": "Register: answer with the card's own answer",
+      "move": {
+        "type": "answer_clue",
+        "card": "register"
+      }
+    },
+    {
+      "move_id": "answer_clue:register:own",
+      "description": "Register: answer in your own words (formal, everyday or slang)",
+      "move": {
+        "type": "answer_clue",
+        "card": "register",
+        "text": "<your answer>"
+      }
+    }
+  ]
+}

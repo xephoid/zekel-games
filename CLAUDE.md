@@ -30,6 +30,7 @@ for the Zekel MCP server. This repo is **public**.
 |---|---|
 | A game: rules, AI, views, tests | `packages/<game>/src/` |
 | The game's extra parts for the tools (balance settings, the rules checker's files) | `packages/<game>/src/dev/`, shipped as `@zekel/<game>/dev` |
+| The game's screen for Zekel Universe (React), where it has moved here | `packages/<game>/src/glue/`, shipped as `@zekel/<game>/glue` |
 | The game's development notes (`PORT-PLAN.md`, `POST-PORT.md`, …) | `packages/<game>/` |
 
 The server, the game interface and the tools live in
@@ -57,6 +58,25 @@ the new version.
 
 TypeScript is `NodeNext` ESM: imports use `.js` endings though the source is
 `.ts`. `strict` and `noUncheckedIndexedAccess` are on.
+
+## A game's two halves
+
+A game package holds the rules, which the server loads, and may hold the
+screen, which Zekel Universe loads in a browser (`src/glue/`). **They never
+import each other**, and `tests/glueBoundary.test.ts` fails if they do.
+
+- The screen imports only its own files under `src/glue/`, React, and the
+  drawing packages from Universe: `@zekel/glue-kit`, `@zekel/primitives`,
+  `@zekel/wire-types`, `@zekel/tokens`. It draws what the game's views and
+  listed moves say; it never works a rule out for itself.
+- Nothing outside `src/glue/` imports the screen, React or those packages, so
+  the server never needs React. They are optional peer dependencies.
+- Screen tests are `.test.tsx` files under `src/glue/__tests__/` and run in a
+  page (jsdom). Captured views they draw from go in `__tests__/fixtures/`.
+- A screen imports its stylesheet (`import './wd.css'`), so the built
+  `@zekel/<game>/glue` entry is for a bundler, not for plain Node.
+- So far only Word Debauchee's screen has moved here. The other games' screens
+  are still in Universe (`apps/web/src/glue/`).
 
 ## Building a game: read the runbooks first
 

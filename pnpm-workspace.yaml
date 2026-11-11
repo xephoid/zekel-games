@@ -8,3 +8,7 @@ minimumReleaseAgeExclude:
   - '@zekel/mcp@0.1.1'
   - '@zekel/dev@0.1.1'
   - '@zekel/dev@0.1.2'
+  - '@zekel/wire-types@0.1.0'
+  - '@zekel/tokens@0.1.0'
+  - '@zekel/primitives@0.1.0'
+  - '@zekel/glue-kit@0.1.0'

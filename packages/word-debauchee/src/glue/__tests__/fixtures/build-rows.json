@@ -1,0 +1,911 @@
+{
+  "key": "build-rows",
+  "viewer": "p1",
+  "view": {
+    "phase": "build",
+    "phase_text": "The guessers are building.",
+    "settings": {
+      "tiles": "server",
+      "timer": "laps",
+      "tilesPerReveal": 5,
+      "rounds": 8,
+      "bribe": true,
+      "openHand": false,
+      "house": null
+    },
+    "seats": [
+      {
+        "id": "p1",
+        "name": "You",
+        "ai": false,
+        "score": 4
+      },
+      {
+        "id": "p2",
+        "name": "Ben",
+        "ai": true,
+        "score": 2
+      },
+      {
+        "id": "p3",
+        "name": "Cat",
+        "ai": true,
+        "score": 6
+      },
+      {
+        "id": "p4",
+        "name": "Dev",
+        "ai": true,
+        "score": 6
+      }
+    ],
+    "round": {
+      "number": 3,
+      "of": 8,
+      "debauchee": "p3",
+      "guessers": [
+        "p4",
+        "p1",
+        "p2"
+      ],
+      "clues": [
+        {
+          "card": "grade",
+          "name": "Grade",
+          "asks": "the school grade on the card, 1–12",
+          "answer": 3
+        },
+        {
+          "card": "vowels",
+          "name": "Vowels",
+          "asks": "how many of A E I O U",
+          "answer": 2
+        },
+        {
+          "card": "double_letter",
+          "name": "Double letter",
+          "asks": "whether two of the same letter sit side by side",
+          "answer": "no"
+        },
+        {
+          "card": "rhymes_with",
+          "name": "Rhymes with",
+          "asks": "any real word that rhymes with it and is not on the synonym list, or \"nothing rhymes\"",
+          "answer": "nothing rhymes"
+        }
+      ],
+      "redraws": 0,
+      "revealed": [
+        "E",
+        "T"
+      ],
+      "revealed_count": 2,
+      "bribed": [
+        "rhymes_with"
+      ],
+      "reveals_for_scoring": 3,
+      "burned": [],
+      "checks": [
+        {
+          "by": "p4",
+          "word": "BAD",
+          "yes": false
+        },
+        {
+          "by": "p4",
+          "word": "NEW",
+          "yes": false
+        }
+      ],
+      "build_area": [
+        "BAD",
+        "NEW"
+      ],
+      "pool": {
+        "A": 12,
+        "B": 2,
+        "C": 3,
+        "D": 5,
+        "E": 16,
+        "F": 3,
+        "G": 4,
+        "H": 3,
+        "I": 12,
+        "J": 2,
+        "K": 2,
+        "L": 5,
+        "M": 3,
+        "N": 7,
+        "O": 11,
+        "P": 3,
+        "Q": 2,
+        "R": 9,
+        "S": 6,
+        "T": 8,
+        "U": 6,
+        "V": 3,
+        "W": 2,
+        "X": 2,
+        "Y": 3,
+        "Z": 2
+      },
+      "turn": "p1",
+      "turns_until_reveal": 3
+    },
+    "last_round": {
+      "number": 2,
+      "debauchee": "p2",
+      "word": "PRIZE",
+      "outcome": "cracked",
+      "synonym": "award",
+      "revealed": 1,
+      "bribes": 0,
+      "payouts": {
+        "p2": 0,
+        "p3": 4,
+        "p4": 4,
+        "p1": 4
+      }
+    },
+    "history": [
+      {
+        "number": 1,
+        "debauchee": "p1",
+        "word": "FIX",
+        "outcome": "cracked",
+        "synonym": "mend",
+        "revealed": 2,
+        "bribes": 0,
+        "payouts": {
+          "p1": 0,
+          "p2": 2,
+          "p3": 2,
+          "p4": 2
+        }
+      },
+      {
+        "number": 2,
+        "debauchee": "p2",
+        "word": "PRIZE",
+        "outcome": "cracked",
+        "synonym": "award",
+        "revealed": 1,
+        "bribes": 0,
+        "payouts": {
+          "p2": 0,
+          "p3": 4,
+          "p4": 4,
+          "p1": 4
+        }
+      }
+    ],
+    "winners": null
+  },
+  "legalMoves": [
+    {
+      "move_id": "place:A:new",
+      "description": "Place A in a new row",
+      "move": {
+        "type": "place",
+        "letter": "A"
+      }
+    },
+    {
+      "move_id": "place:A:0",
+      "description": "Add A to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "A",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:A:1",
+      "description": "Add A to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "A",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:B:new",
+      "description": "Place B in a new row",
+      "move": {
+        "type": "place",
+        "letter": "B"
+      }
+    },
+    {
+      "move_id": "place:B:0",
+      "description": "Add B to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "B",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:B:1",
+      "description": "Add B to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "B",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:C:new",
+      "description": "Place C in a new row",
+      "move": {
+        "type": "place",
+        "letter": "C"
+      }
+    },
+    {
+      "move_id": "place:C:0",
+      "description": "Add C to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "C",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:C:1",
+      "description": "Add C to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "C",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:D:new",
+      "description": "Place D in a new row",
+      "move": {
+        "type": "place",
+        "letter": "D"
+      }
+    },
+    {
+      "move_id": "place:D:0",
+      "description": "Add D to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "D",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:D:1",
+      "description": "Add D to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "D",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:E:new",
+      "description": "Place E in a new row",
+      "move": {
+        "type": "place",
+        "letter": "E"
+      }
+    },
+    {
+      "move_id": "place:E:0",
+      "description": "Add E to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "E",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:E:1",
+      "description": "Add E to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "E",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:F:new",
+      "description": "Place F in a new row",
+      "move": {
+        "type": "place",
+        "letter": "F"
+      }
+    },
+    {
+      "move_id": "place:F:0",
+      "description": "Add F to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "F",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:F:1",
+      "description": "Add F to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "F",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:G:new",
+      "description": "Place G in a new row",
+      "move": {
+        "type": "place",
+        "letter": "G"
+      }
+    },
+    {
+      "move_id": "place:G:0",
+      "description": "Add G to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "G",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:G:1",
+      "description": "Add G to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "G",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:H:new",
+      "description": "Place H in a new row",
+      "move": {
+        "type": "place",
+        "letter": "H"
+      }
+    },
+    {
+      "move_id": "place:H:0",
+      "description": "Add H to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "H",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:H:1",
+      "description": "Add H to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "H",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:I:new",
+      "description": "Place I in a new row",
+      "move": {
+        "type": "place",
+        "letter": "I"
+      }
+    },
+    {
+      "move_id": "place:I:0",
+      "description": "Add I to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "I",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:I:1",
+      "description": "Add I to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "I",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:J:new",
+      "description": "Place J in a new row",
+      "move": {
+        "type": "place",
+        "letter": "J"
+      }
+    },
+    {
+      "move_id": "place:J:0",
+      "description": "Add J to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "J",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:J:1",
+      "description": "Add J to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "J",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:K:new",
+      "description": "Place K in a new row",
+      "move": {
+        "type": "place",
+        "letter": "K"
+      }
+    },
+    {
+      "move_id": "place:K:0",
+      "description": "Add K to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "K",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:K:1",
+      "description": "Add K to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "K",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:L:new",
+      "description": "Place L in a new row",
+      "move": {
+        "type": "place",
+        "letter": "L"
+      }
+    },
+    {
+      "move_id": "place:L:0",
+      "description": "Add L to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "L",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:L:1",
+      "description": "Add L to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "L",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:M:new",
+      "description": "Place M in a new row",
+      "move": {
+        "type": "place",
+        "letter": "M"
+      }
+    },
+    {
+      "move_id": "place:M:0",
+      "description": "Add M to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "M",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:M:1",
+      "description": "Add M to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "M",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:N:new",
+      "description": "Place N in a new row",
+      "move": {
+        "type": "place",
+        "letter": "N"
+      }
+    },
+    {
+      "move_id": "place:N:0",
+      "description": "Add N to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "N",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:N:1",
+      "description": "Add N to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "N",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:O:new",
+      "description": "Place O in a new row",
+      "move": {
+        "type": "place",
+        "letter": "O"
+      }
+    },
+    {
+      "move_id": "place:O:0",
+      "description": "Add O to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "O",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:O:1",
+      "description": "Add O to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "O",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:P:new",
+      "description": "Place P in a new row",
+      "move": {
+        "type": "place",
+        "letter": "P"
+      }
+    },
+    {
+      "move_id": "place:P:0",
+      "description": "Add P to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "P",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:P:1",
+      "description": "Add P to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "P",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:Q:new",
+      "description": "Place Q in a new row",
+      "move": {
+        "type": "place",
+        "letter": "Q"
+      }
+    },
+    {
+      "move_id": "place:Q:0",
+      "description": "Add Q to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "Q",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:Q:1",
+      "description": "Add Q to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "Q",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:R:new",
+      "description": "Place R in a new row",
+      "move": {
+        "type": "place",
+        "letter": "R"
+      }
+    },
+    {
+      "move_id": "place:R:0",
+      "description": "Add R to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "R",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:R:1",
+      "description": "Add R to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "R",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:S:new",
+      "description": "Place S in a new row",
+      "move": {
+        "type": "place",
+        "letter": "S"
+      }
+    },
+    {
+      "move_id": "place:S:0",
+      "description": "Add S to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "S",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:S:1",
+      "description": "Add S to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "S",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:T:new",
+      "description": "Place T in a new row",
+      "move": {
+        "type": "place",
+        "letter": "T"
+      }
+    },
+    {
+      "move_id": "place:T:0",
+      "description": "Add T to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "T",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:T:1",
+      "description": "Add T to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "T",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:U:new",
+      "description": "Place U in a new row",
+      "move": {
+        "type": "place",
+        "letter": "U"
+      }
+    },
+    {
+      "move_id": "place:U:0",
+      "description": "Add U to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "U",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:U:1",
+      "description": "Add U to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "U",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:V:new",
+      "description": "Place V in a new row",
+      "move": {
+        "type": "place",
+        "letter": "V"
+      }
+    },
+    {
+      "move_id": "place:V:0",
+      "description": "Add V to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "V",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:V:1",
+      "description": "Add V to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "V",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:W:new",
+      "description": "Place W in a new row",
+      "move": {
+        "type": "place",
+        "letter": "W"
+      }
+    },
+    {
+      "move_id": "place:W:0",
+      "description": "Add W to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "W",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:W:1",
+      "description": "Add W to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "W",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:X:new",
+      "description": "Place X in a new row",
+      "move": {
+        "type": "place",
+        "letter": "X"
+      }
+    },
+    {
+      "move_id": "place:X:0",
+      "description": "Add X to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "X",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:X:1",
+      "description": "Add X to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "X",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:Y:new",
+      "description": "Place Y in a new row",
+      "move": {
+        "type": "place",
+        "letter": "Y"
+      }
+    },
+    {
+      "move_id": "place:Y:0",
+      "description": "Add Y to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "Y",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:Y:1",
+      "description": "Add Y to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "Y",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "place:Z:new",
+      "description": "Place Z in a new row",
+      "move": {
+        "type": "place",
+        "letter": "Z"
+      }
+    },
+    {
+      "move_id": "place:Z:0",
+      "description": "Add Z to the end of BAD (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "Z",
+        "row": 0
+      }
+    },
+    {
+      "move_id": "place:Z:1",
+      "description": "Add Z to the end of NEW (set index to put it elsewhere, check to call \"Check!\")",
+      "move": {
+        "type": "place",
+        "letter": "Z",
+        "row": 1
+      }
+    },
+    {
+      "move_id": "move:0",
+      "description": "Move a tile of BAD (row 0: set index, and to_row/to_index or leave to_row out to return it)",
+      "move": {
+        "type": "move",
+        "row": 0,
+        "index": 0
+      }
+    },
+    {
+      "move_id": "move:1",
+      "description": "Move a tile of NEW (row 1: set index, and to_row/to_index or leave to_row out to return it)",
+      "move": {
+        "type": "move",
+        "row": 1,
+        "index": 0
+      }
+    },
+    {
+      "move_id": "call_reveal",
+      "description": "Reveal! — ask Cat for a letter instead of acting",
+      "move": {
+        "type": "call_reveal"
+      }
+    },
+    {
+      "move_id": "call_reveal:number",
+      "description": "Reveal! — but take a number clue instead of a letter (Bribe; counts as a reveal)",
+      "move": {
+        "type": "call_reveal",
+        "clue": "number"
+      }
+    },
+    {
+      "move_id": "call_reveal:word",
+      "description": "Reveal! — but take a word clue instead of a letter (Bribe; counts as a reveal)",
+      "move": {
+        "type": "call_reveal",
+        "clue": "word"
+      }
+    },
+    {
+      "move_id": "burn",
+      "description": "A guesser said a word aloud: burn it for this round",
+      "move": {
+        "type": "burn",
+        "word": "<word>"
+      }
+    }
+  ]
+}
