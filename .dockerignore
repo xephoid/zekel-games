@@ -1,21 +1,39 @@
-# Keep the image build to the committed source: no local installs, builds,
-# saved sessions, secrets or git history.
-.git
-.github
-.worktrees
-.claude
+# Allowlist: the image build sees ONLY the files listed below. Everything else
+# in the checkout (untracked notes, keys, .env files, local installs, builds,
+# saved sessions, git history) never enters the build. A new game's committed
+# source under packages/<game>/src is picked up with no change here; a new kind
+# of file a game needs at run time must be added on purpose.
+*
+
+# Install: the workspace manifests and the lockfile.
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!packages/*/package.json
+
+# Build: compiler settings, game source, and the files games read at run time
+# (lore/*.md, the rules checker's pinned rules/*.txt). Copied into dist/ by
+# scripts/copy-assets.mjs.
+!tsconfig.base.json
+!packages/*/tsconfig.json
+!packages/*/src/**/*.ts
+!packages/*/src/**/*.md
+!packages/*/src/**/*.txt
+!scripts/copy-assets.mjs
+
+# Run: the server program and the start script.
+!examples/serve.mjs
+!docker-entrypoint.sh
+
+# Never, even inside the folders above: tests, hidden files and folders,
+# local outputs. Each folder is named twice: once for the folder and once
+# (with /**) for everything inside it, because the "!" lines above would
+# otherwise let matching files inside it back in.
+**/__tests__
+**/__tests__/**
+**/.*
+**/.*/**
 **/node_modules
+**/node_modules/**
 **/dist
-**/*.tsbuildinfo
-**/*.log
-**/.DS_Store
-.env
-.env.*
-**/*.db
-**/*.db-*
-data/
-harness-out/
-coverage/
-.publish/
-Dockerfile
-.dockerignore
+**/dist/**

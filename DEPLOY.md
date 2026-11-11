@@ -14,9 +14,12 @@ Render persistent disk.
 | `SESSION_DB_PATH` | `/var/data/sessions.db` | Where that file lives. Must be on the disk. |
 | `PORT` | not set | Render sets it; the server listens on it. Without it the server uses 3000. |
 
-The container will not start unless `MCP_BEARER_TOKEN` is set. Without a
-token the server lets anyone use `/mcp`. `/healthz` stays open so Render can
-check the server is up.
+The container will not start unless `MCP_BEARER_TOKEN` is set to a token of
+at least 32 characters on one line, using only letters, digits and
+`- . _ ~ + / =`. Without a token the server lets anyone use `/mcp`. The
+length check cannot tell whether a token is random, so always make it with a
+random generator (below). The start script never prints the token.
+`/healthz` stays open so Render can check the server is up.
 
 ## Setting up the Render service
 
@@ -43,10 +46,25 @@ check the server is up.
 
 ## Running the image yourself
 
-```
+```sh
 docker build -t zekel-games .
-docker run --rm -p 3000:3000 -e MCP_BEARER_TOKEN=<a token> \
+# A fresh random token, kept in this shell only. `-e MCP_BEARER_TOKEN` with
+# no value passes it from the shell, so it is not typed on the command line.
+export MCP_BEARER_TOKEN="$(openssl rand -hex 32)"
+docker run --rm -p 3000:3000 -e MCP_BEARER_TOKEN \
   -v zekel-sessions:/var/data zekel-games
+```
+
+The build only sees the files `.dockerignore` lets in: the manifests, the
+lockfile, each game's `tsconfig.json` and its `src/` (`.ts`, `.md` and `.txt`
+files, no tests or hidden files), and the few scripts the build and server
+run. Other files in your checkout, tracked or not, stay out of the image. A
+stray `.md`, `.txt` or `.ts` file you leave inside a game's `src/` would still
+go in, as it would into the npm package. To build from exactly the files git
+tracks, ignoring anything untracked:
+
+```sh
+git ls-files -z | tar --null -cf - -T - | docker build -t zekel-games -
 ```
 
 The container starts as root only long enough to give the disk folder to the
