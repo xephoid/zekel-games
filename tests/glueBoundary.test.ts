@@ -6,11 +6,12 @@
 //
 // So: a file under src/glue/ imports only files under src/glue/, React, and
 // the packages a screen is written against. A file outside src/glue/ never
-// imports one inside it. Tests are checked like the code they sit beside.
-// Imports are read from each file's syntax tree, so import() and require()
-// count; one whose path is worked out at run time is refused, since nobody
-// can say where it goes. What this cannot see is code that hides the call on
-// purpose (require under another name, eval).
+// imports one inside it, its own game's or another's. Tests are checked like
+// the code they sit beside. Imports are read from each file's syntax tree, so
+// import() and require() count. One whose path is worked out at run time is
+// refused anywhere in a game, since nobody can say where it goes; no game
+// has one today. What this cannot see is code that hides the call on purpose
+// (require under another name, eval).
 
 import { lstatSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -91,6 +92,8 @@ describe('a game\'s rules and its screen never import each other', () => {
     return { pkg, src, glue, files: walk(src, links) };
   });
   const inGlue = (g: { glue: string }, p: string) => p === g.glue || p.startsWith(g.glue + path.sep);
+  /** Inside any game's screen, not only the importing game's. */
+  const inAnyGlue = (p: string) => games.some((g) => inGlue(g, p));
 
   it('finds at least one game with a screen', () => {
     expect(games.filter((g) => g.files.some((f) => inGlue(g, f))).length).toBeGreaterThan(0);
@@ -127,16 +130,12 @@ describe('a game\'s rules and its screen never import each other', () => {
         const where = path.relative(packagesDir, file);
         for (const spec of specs) {
           if (spec.startsWith('.')) {
-            if (inGlue(g, path.resolve(path.dirname(file), spec))) reaches.push(`${where} -> ${spec}`);
+            if (inAnyGlue(path.resolve(path.dirname(file), spec))) reaches.push(`${where} -> ${spec}`);
           } else if (named(spec, GLUE_PACKAGES) || /^@zekel\/[^/]+\/glue(\/|$)/.test(spec)) {
             reaches.push(`${where} -> ${spec}`);
           }
         }
-        // The rules may work a path out at run time (lore files, word lists);
-        // only one that could land in the screen is refused.
-        if (computed > 0 && g.files.some((f) => inGlue(g, f)) && /\bglue\b/.test(readFileSync(file, 'utf8'))) {
-          reaches.push(`${where} -> an import worked out at run time, in a file that names glue`);
-        }
+        if (computed > 0) reaches.push(`${where} -> an import worked out at run time`);
       }
     }
     expect(reaches).toEqual([]);
