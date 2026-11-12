@@ -78,7 +78,9 @@ import each other**, and `tests/glueBoundary.test.ts` fails if they do.
 - A screen may name pictures by address (`/art/<game>/...`). The pictures are
   not in the package; the site that shows the screen serves them.
 - Word Debauchee's and Cybernoir 2127's screens have moved here. The other
-  games' screens are still in Universe (`apps/web/src/glue/`).
+  games' screens are still in Universe (`apps/web/src/glue/`). Neither Guts
+  nor Gears has its rulebook page here (`src/glue/rulebook/`, notes in its
+  `RULEBOOK.md`), but its table screen is still in Universe.
 
 ## Building a game: read the runbooks first
 

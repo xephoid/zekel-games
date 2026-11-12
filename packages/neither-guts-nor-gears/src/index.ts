@@ -36,6 +36,7 @@ import { heroesEligibleFor } from './resolvers.js';
 import { readableText } from './names.js';
 import { NGG_CHOICES } from './choices.js';
 import { NGG_SECTIONS } from './rulesSections.js';
+import { nggRulebook } from './rulebook.js';
 import type { NGGMove, NGGState } from './types.js';
 
 /** The session's game state in its current shape: a session saved before
@@ -355,6 +356,9 @@ export class NeitherGutsNorGearsGame implements Game<NGGState, NGGMove, NGGOptio
         '5-6p': FIVE_SIX_PLAYER_TILES.map((t) => ({ ...t, label: tileLabel(t.c, t.r) })),
         coordinate_convention: 'Doubled rows: (c,r) neighbors (c,r±2), (c±1,r±1); only listed coordinates are playable. Player-facing name = the derived label (e.g. E4, G7).',
       },
+      // The rules laid out as a rulebook for the rules page (rulebook.ts); the
+      // screen draws it with the catalogues, maps and victory numbers above.
+      rulebook: nggRulebook(),
       eligible_leaders_by_species: {
         wizard: heroesEligibleFor('wizard').map((h) => h.name),
         robot: heroesEligibleFor('robot').map((h) => h.name),
