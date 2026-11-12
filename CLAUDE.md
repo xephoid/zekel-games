@@ -75,8 +75,10 @@ import each other**, and `tests/glueBoundary.test.ts` fails if they do.
   page (jsdom). Captured views they draw from go in `__tests__/fixtures/`.
 - A screen imports its stylesheet (`import './wd.css'`), so the built
   `@zekel/<game>/glue` entry is for a bundler, not for plain Node.
-- So far only Word Debauchee's screen has moved here. The other games' screens
-  are still in Universe (`apps/web/src/glue/`).
+- A screen may name pictures by address (`/art/<game>/...`). The pictures are
+  not in the package; the site that shows the screen serves them.
+- Word Debauchee's and Cybernoir 2127's screens have moved here. The other
+  games' screens are still in Universe (`apps/web/src/glue/`).
 
 ## Building a game: read the runbooks first
 

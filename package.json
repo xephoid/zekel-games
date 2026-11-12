@@ -41,6 +41,7 @@
     "@zekel/glue-kit": "^0.1.0",
     "@zekel/mcp": "^0.1.1",
     "@zekel/neither-guts-nor-gears": "workspace:*",
+    "@zekel/primitives": "^0.1.0",
     "@zekel/sweetlands-imperium": "workspace:*",
     "@zekel/warble-way-galaxy": "workspace:*",
     "@zekel/wire-types": "^0.1.0",
