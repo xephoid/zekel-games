@@ -135,14 +135,19 @@ function Choice({ m, label, onMove, disabled, main }: { m: LegalMove; label?: Re
 }
 
 /** "Capture Bo’s Leader (scores your secret goal, +2)", from the move's own fields. */
-function captureLabel(m: LegalMove, nameFor: (pid: string) => string): string {
+function captureTitle(m: LegalMove, nameFor: (pid: string) => string): string {
   const unit = asStr(m.move['targetUnit']);
   const who = `Capture ${nameFor(asStr(m.move['targetPlayerId']))}’s ${UNIT_NAME[unit as keyof typeof UNIT_NAME] ?? unit}`;
   const scores = m.move['captureLeaderScores'];
   const goal = scores === 'secret' ? ' (scores your secret goal, +2)' : scores === 'public' ? ' (scores the public goal, +1)' : '';
-  // The engine's description warns when an enemy Knight there must be beaten first.
-  const fight = /you must first beat/i.test(m.description ?? '') ? '. Beat the Knight there first; losing cancels the capture' : '';
-  return `${who}${goal}${fight}`;
+  return `${who}${goal}`;
+}
+
+/** A capture button: a short title from the move's fields, then the engine's
+ *  own full description, so nothing it says (an enemy Knight to beat first,
+ *  what a double card's second half does) is lost or reworded. */
+function captureLabel(m: LegalMove, nameFor: (pid: string) => string): ReactNode {
+  return <span className="sl-option-words"><b>{captureTitle(m, nameFor)}</b><span>{m.description}</span></span>;
 }
 
 function pickedColor(table: SlTable, picked: string | null): string {

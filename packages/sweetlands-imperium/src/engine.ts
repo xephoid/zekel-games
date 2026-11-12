@@ -315,6 +315,10 @@ export function applyMove(
 ): { newState: SweetlandsState; summary: string } {
   const state = structuredClone(prev) as SweetlandsState;
   const summary = dispatch(state, playerId, move);
+  // A game that has ended asks nothing more: no move can answer a question
+  // once it is over (an Intel draw a winning Blue play opened, or a double red
+  // card's second capture).
+  if (state.phase === 'game_over') state.pending = null;
   syncCastleClaim(state);
   state.activePlayerId = currentActorId(state);
   return { newState: state, summary };
@@ -657,8 +661,6 @@ function doPlayIntel(state: SweetlandsState, playerId: string, move: Extract<Swe
   // report (doReportIntelDraw), so don't advance here while one is outstanding.
   if (endsPlayStep && !state.pending) p.turn.step = 'influence';
   scoreSecretObjectives(state, p);
-  // A game that has ended asks nothing more.
-  if ((state.phase as string) === 'game_over' && state.pending?.kind === 'capture_choice') state.pending = null;
   return summary;
 }
 

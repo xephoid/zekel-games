@@ -229,6 +229,18 @@ describe("a double red card asks a human for its second capture", () => {
     expect(B(r.newState).units.leader).toEqual({ zone: 'ring', region: 2, ringIndex: 3 }); // no second capture
   });
 
+  it('a Blue play that wins leaves no Intel draw waiting', () => {
+    const BLUE: IntelCard = { cardId: 'test-blue', kind: 'single', color: 'blue' };
+    const s = standoff(['unit_through_3_regions'], BLUE);
+    const a = A(s);
+    a.kind = 'human';
+    a.points = 3;
+    a.turn.unitRegionsVisited = { ambassador: [1, 2, 3] }; // the secret is met once this play scores
+    const r = applyMove(s, 'a', { type: 'play_intel', cardId: BLUE.cardId, unit: 'ambassador', takeAction: true });
+    expect(r.newState.phase).toBe('game_over');
+    expect(r.newState.pending).toBeNull();
+  });
+
   it('an AI seat is not asked: its second capture takes a leader first', () => {
     const r = playDouble(standoff([], DOUBLE), { targetPlayerId: 'b', targetUnit: 'ambassador' });
     expect(r.newState.pending).toBeNull();

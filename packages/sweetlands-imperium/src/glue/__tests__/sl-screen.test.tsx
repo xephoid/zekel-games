@@ -337,11 +337,11 @@ describe('Red captures: the player picks who', () => {
     render(<SlScreen {...props} />);
     fireEvent.click(screen.getByRole('button', { name: 'Red card: Battle' }));
     fireEvent.click(within(panel()).getAllByRole('button').find((b) => b.classList.contains('sl-option'))!);
-    expect(within(panel()).getByRole('button', { name: 'Capture AI (easy)’s Leader (scores your secret goal, +2)' })).toBeTruthy();
-    expect(within(panel()).getByRole('button', { name: 'Capture AI (easy)’s Leader (scores the public goal, +1)' })).toBeTruthy();
+    expect(within(panel()).getByRole('button', { name: /^Capture AI \(easy\)’s Leader \(scores your secret goal, \+2\)/ })).toBeTruthy();
+    expect(within(panel()).getByRole('button', { name: /^Capture AI \(easy\)’s Leader \(scores the public goal, \+1\)/ })).toBeTruthy();
     // the shared sentence speaks for no one option
     expect(within(panel()).getByText('Taking the action captures one enemy piece there. Pick which:')).toBeTruthy();
-    fireEvent.click(within(panel()).getByRole('button', { name: 'Capture AI (easy)’s Ambassador' }));
+    fireEvent.click(within(panel()).getByRole('button', { name: /^Capture AI \(easy\)’s Ambassador/ }));
     expect(props.onMove).toHaveBeenCalledWith(CAPTURES[2]);
   });
 
@@ -352,7 +352,21 @@ describe('Red captures: the player picks who', () => {
     render(<SlScreen {...slProps({ legalMoves: guarded })} />);
     fireEvent.click(screen.getByRole('button', { name: 'Red card: Battle' }));
     fireEvent.click(within(panel()).getAllByRole('button').find((b) => b.classList.contains('sl-option'))!);
-    expect(within(panel()).getByRole('button', { name: 'Capture AI (easy)’s Ambassador. Beat the Knight there first; losing cancels the capture' })).toBeTruthy();
+    // each button carries the engine's own words, warning included
+    const amb = within(panel()).getByRole('button', { name: /^Capture AI \(easy\)’s Ambassador/ });
+    expect(amb.textContent).toContain("you must first beat p2's knight in that region; losing that battle cancels the capture");
+  });
+
+  it("keeps a double card's own words about its second half on each button", () => {
+    const doubled = CAPTURES.map((m) => (m.move['takeAction']
+      ? { ...m, description: `${m.description} (a double resolves Red twice: this is the first capture. After your knight moves again you choose the second capture, if there is more than one way it can go)` }
+      : m)) as LegalMove[];
+    render(<SlScreen {...slProps({ legalMoves: doubled })} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Red card: Battle' }));
+    fireEvent.click(within(panel()).getAllByRole('button').find((b) => b.classList.contains('sl-option'))!);
+    const buttons = within(panel()).getAllByRole('button', { name: /^Capture / });
+    expect(buttons).toHaveLength(3);
+    for (const b of buttons) expect(b.textContent).toContain('you choose the second capture');
   });
 
   it("a double red card's second capture gets its own panel", () => {
@@ -363,7 +377,7 @@ describe('Red captures: the player picks who', () => {
     const props = slProps({ legalMoves: SECOND });
     render(<SlScreen {...props} />);
     expect(within(panel()).getByRole('heading', { name: 'Second capture' })).toBeTruthy();
-    fireEvent.click(within(panel()).getByRole('button', { name: 'Capture AI (easy)’s Leader' }));
+    fireEvent.click(within(panel()).getByRole('button', { name: /^Capture AI \(easy\)’s Leader/ }));
     expect(props.onMove).toHaveBeenCalledWith(SECOND[0]);
   });
 });
