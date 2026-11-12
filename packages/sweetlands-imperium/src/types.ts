@@ -284,6 +284,11 @@ export interface ColorPlayParams {
   entryRegion?: RegionId;
   targetPlayerId?: string;
   targetUnit?: UnitType;
+  /** Red capture of a LEADER when BOTH the public "Capture a leader" (1) and the
+   *  secret one (2) are still open: which of the two this capture scores. One
+   *  capture scores only one (rules §7 item 2); the other stays open for a later
+   *  capture. Left out = the 2-point secret. */
+  captureLeaderScores?: 'public' | 'secret';
   raiseTaxes?: boolean;
   battleTotal?: number;
 }
@@ -313,6 +318,7 @@ export type SweetlandsMove =
       // action params (used when takeAction resolves the relevant color)
       targetPlayerId?: string; // Red capture/battle target
       targetUnit?: UnitType; // Red capture target unit
+      captureLeaderScores?: 'public' | 'secret'; // which "capture a leader" objective this capture scores
       raiseTaxes?: boolean; // Yellow: raise your region's tax after collecting
       // treat-card destination (slot identified by region + kind)
       treatRegion?: RegionId;

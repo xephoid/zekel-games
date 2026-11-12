@@ -769,8 +769,20 @@ function actionBattleCapture(state: SweetlandsState, p: PlayerState, move: Color
   if (targets.length === 0) return 'no capture target in range';
   // if an enemy knight is in-region, must battle it first
   const enemyKnight = state.players.find((o) => o.playerId !== p.playerId && regionOf(o.units.knight) === knightRegion);
-  // choose target: explicit, else prioritize leaders
-  let chosen = targets.find((t) => t.owner.playerId === move.targetPlayerId && t.unit === move.targetUnit)
+  // WHO you capture is the player's choice: "capture a leader" and "capture an
+  // ambassador" are different secret objectives. getLegalMoves offers one option
+  // per target (redActionVariants), so these fallbacks only cover a move that
+  // named no exact target, mainly a DOUBLE red card, whose second capture happens
+  // in a region that could not be known when the move was built:
+  //   1. the exact owner and unit named;
+  //   2. the same kind of unit named, any owner ("I am hunting ambassadors");
+  //   3. the same owner named, any unit;
+  //   4. the only target, when there is just one;
+  //   5. leaders first (the AI's policy when nothing was named).
+  const chosen = targets.find((t) => t.owner.playerId === move.targetPlayerId && t.unit === move.targetUnit)
+    ?? (move.targetUnit ? targets.find((t) => t.unit === move.targetUnit) : undefined)
+    ?? (move.targetPlayerId ? targets.find((t) => t.owner.playerId === move.targetPlayerId) : undefined)
+    ?? (targets.length === 1 ? targets[0]! : undefined)
     ?? targets.find((t) => t.unit === 'leader') ?? targets[0]!;
   if (enemyKnight && enemyKnight.playerId !== chosen.owner.playerId) {
     const r = battleKnight(state, p, enemyKnight);
@@ -783,9 +795,36 @@ function actionBattleCapture(state: SweetlandsState, p: PlayerState, move: Color
   chosen.owner.units[chosen.unit] = isNomads(chosen.owner.faction)
     ? { zone: 'offboard' }
     : { zone: 'start', region: chosen.owner.homeRegion! };
-  if (chosen.unit === 'leader') { p.progress.capturedLeader = true; scorePublic(state, p, 'capture_leader'); }
+  let scoring = '';
+  if (chosen.unit === 'leader') { p.progress.capturedLeader = true; scoring = scoreLeaderCapture(state, p, move.captureLeaderScores); }
   else if (chosen.unit === 'ambassador') p.progress.capturedAmbassador = true;
-  return `captured ${chosen.owner.playerId}'s ${chosen.unit}`;
+  return `captured ${chosen.owner.playerId}'s ${chosen.unit}${scoring}`;
+}
+
+/** Settle the two "Capture a leader" objectives for ONE capture.
+ *
+ *  Designer ruling (rules §7 item 2, 2026-07-12): one capture scores only ONE of
+ *  the public "Capture a leader" (1 point) and the secret one (2 points). The
+ *  capturer chooses which when both are still open, and the other may still score
+ *  on a later capture. So both are settled here, once per capture; `secretMet`
+ *  never scores 'capture_leader' itself (a flag that stays set can't express
+ *  "one per capture"). */
+function scoreLeaderCapture(state: SweetlandsState, p: PlayerState, prefer?: 'public' | 'secret'): string {
+  const secretScored = (p.secretObjectivesScored ??= []);
+  const secretOpen = p.secretObjectives.includes('capture_leader') && !secretScored.includes('capture_leader');
+  const publicOpen = !p.publicObjectivesScored.includes('capture_leader');
+  // Both open: the capturer's pick, defaulting to the 2-point secret.
+  const take = secretOpen && publicOpen ? (prefer ?? 'secret') : secretOpen ? 'secret' : publicOpen ? 'public' : null;
+  if (take === 'secret') {
+    secretScored.push('capture_leader');
+    addPoints(state, p, SECRET_OBJECTIVE_POINTS);
+    return ` (scored the secret "capture a leader", +${SECRET_OBJECTIVE_POINTS}${publicOpen ? '; the public one stays open for a later capture' : ''})`;
+  }
+  if (take === 'public') {
+    scorePublic(state, p, 'capture_leader');
+    return ` (scored the public "capture a leader", +1${secretOpen ? '; the secret one stays open for a later capture' : ''})`;
+  }
+  return '';
 }
 
 /** Keep a battle's dice for the views (SweetlandsState.lastBattle). */
@@ -1187,7 +1226,9 @@ function scoreSecretObjectives(state: SweetlandsState, p: PlayerState): void {
 function secretMet(p: PlayerState, id: SecretObjectiveId): boolean {
   switch (id) {
     case 'defeat_knight': return p.progress.defeatedKnight;
-    case 'capture_leader': return p.progress.capturedLeader;
+    // Scored once per capture by scoreLeaderCapture (one capture scores only one
+    // of the public/secret pair), never from the flag.
+    case 'capture_leader': return false;
     case 'capture_ambassador': return p.progress.capturedAmbassador;
     case 'raise_taxes_3': return p.progress.raisedTaxToThree;
     case 'spend_5_influence': return p.progress.influenceTrashedTotal >= 5;
