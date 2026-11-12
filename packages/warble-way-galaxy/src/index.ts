@@ -5,6 +5,7 @@ import type {
   Game,
   GameResult,
   LegalMove,
+  MoveGateStatus,
   NextStep,
   PlayerConfig,
   SessionState,
@@ -21,6 +22,9 @@ import { ARCHETYPES } from './data/archetypes.js';
 import { applyMove as engineApply, createInitialState } from './engine.js';
 import { getLegalMoves as legal } from './legalMoves.js';
 import { getView } from './views.js';
+import { moveGates, namesIn, screenDescription, withPreviews } from './facts.js';
+import { plainWords } from './plainWords.js';
+import { ABILITY_TEXT, COUNTER_TEXT, CREATION_TEXT, DEATH_CHECK_TEXT, ENDING_TEXT, HAZARD_TEXT, LOSS_TEXT, RUIN_TEXT, SHIP_TEXT } from './data/sheetText.js';
 import { chooseMove, parseStrategy, parseTier } from './ai.js';
 import { randomInt, rollDice } from './rng.js';
 import { DM_VOICE } from './voice.js';
@@ -151,6 +155,11 @@ LOSSES: character death (a second failed 3d6-under-9 death check while WOUNDED â
 
 reference_data carries every table: travel tables (by playing-card), habitat pages, ruins stats, level table.`;
 
+/** A person reading the table off a screen: a digital seat that is not the bot. */
+function onScreen(state: WarbleWayGalaxyState): boolean {
+  return state.digital_seat === true && state.seat_kind !== 'ai';
+}
+
 function firstSeat(state: SessionState<WarbleWayGalaxyState>): PlayerConfig {
   return state.players[0]!;
 }
@@ -193,7 +202,18 @@ export class WarbleWayGalaxyGame implements Game<WarbleWayGalaxyState, WarbleMov
 
   getLegalMoves(state: SessionState<WarbleWayGalaxyState>, playerId: string): LegalMove<WarbleMove>[] {
     if (playerId !== firstSeat(state).player_id) return [];
-    return legal(state.gameState, playerId);
+    const moves = legal(state.gameState, playerId);
+    // A digital seat reads the table off a screen, not a rulebook: each listed
+    // move carries what it would lead to (the roll it opens with its chance,
+    // what else it sets off), so the screen never works a rule out for itself.
+    if (!onScreen(state.gameState)) return moves;
+    return withPreviews(state.gameState, moves).map((m) => ({ ...m, description: plainWords(screenDescription(state.gameState, m.move, m.description)) }));
+  }
+
+  /** Why a move the player might look for is not on offer, in live words. */
+  describeMoveGates(state: SessionState<WarbleWayGalaxyState>, playerId: string): MoveGateStatus[] {
+    if (playerId !== firstSeat(state).player_id) return [];
+    return moveGates(state.gameState);
   }
 
   getPublicView(state: SessionState<WarbleWayGalaxyState>): unknown {
@@ -220,10 +240,19 @@ export class WarbleWayGalaxyGame implements Game<WarbleWayGalaxyState, WarbleMov
     if (playerId !== firstSeat(state).player_id) {
       throw new GameError('PLAYER_NOT_FOUND', `No player ${playerId} in this solo session.`);
     }
-    const result = engineApply(state.gameState, move);
+    // A player at a screen reads these sentences directly: no rule numbers,
+    // no move ids (plainWords.ts). A game master's seat gets them as written.
+    const screen = onScreen(state.gameState);
+    let result;
+    try {
+      result = engineApply(state.gameState, move);
+    } catch (err) {
+      if (screen && err instanceof GameError) throw new GameError(err.error_code, plainWords(namesIn(state.gameState, err.message)), err.details);
+      throw err;
+    }
     return {
       newState: { ...state, gameState: result.newState, turnNumber: state.turnNumber + 1 },
-      summary: result.summary,
+      summary: screen ? plainWords(namesIn(result.newState, result.summary, state.gameState)) : result.summary,
     };
   }
 
@@ -786,6 +815,19 @@ export class WarbleWayGalaxyGame implements Game<WarbleWayGalaxyState, WarbleMov
         ]),
       ),
       race_idealized_stats: RACE_IDEALIZED,
+      // The sheet's words in one line each, for a table to show beside the
+      // thing they describe: what each ability's skills do, the ship's
+      // numbers, the five endings, the ways to lose, a failed hazard's price,
+      // the death check, and how a ruin visit runs.
+      abilities: Object.fromEntries((Object.keys(ABILITY_NAMES) as Array<keyof typeof ABILITY_NAMES>).map((a) => [a, { name: ABILITY_NAMES[a], stat: ABILITY_STAT[a], ...ABILITY_TEXT[a] }])),
+      ship_text: SHIP_TEXT,
+      counter_text: COUNTER_TEXT,
+      creation_text: CREATION_TEXT,
+      endings: ENDING_TEXT,
+      losses: LOSS_TEXT,
+      hazard_text: HAZARD_TEXT,
+      death_check: DEATH_CHECK_TEXT,
+      ruin_text: RUIN_TEXT,
       // Character creation choices, so a digital table can offer them as
       // printed rather than parse them out of a move description.
       races: Object.keys(RACE_IDEALIZED),

@@ -9,6 +9,7 @@ import {
   partyQualifiesFor,
   ruinAdjacentSpot,
   ruinAttackRange,
+  ruinBeingScore,
   ruinMapForLevel,
   unnamedCap,
 } from './engine.js';
@@ -533,6 +534,20 @@ function ruinTurnMoves(state: WarbleWayGalaxyState): LegalMove<WarbleMove>[] {
           description: `${t.name} attacks ${a.id} (Atk +${a.atk}) at ${a.cell} (in range ${range}, clear line).`,
           move: { type: 'attack', being: t.name, target: a.id },
         });
+      }
+      // DIP may call on an attacker in reach to surrender (WR §4) — the same
+      // reach as an attack.
+      const dip = ruinBeingScore(state, t.name, 'DIP');
+      if (dip >= 1) {
+        for (const a of board.attackers) {
+          if (a.defeated) continue;
+          if (!inAttackRange(map, t.cell, a.cell, range)) continue;
+          moves.push({
+            move_id: `convert-${t.name}-${a.id}`,
+            description: `${t.name} calls on ${a.id} to surrender: 3d6 + DIP ${dip} vs ${10 + a.atk} (10 + its attack). Success: it joins as an unnamed crew hand.`,
+            move: { type: 'convert_attacker', being: t.name, target: a.id },
+          });
+        }
       }
       if (ruinAdjacentSpot(state, t.name, 'I')) {
         moves.push({
