@@ -1,0 +1,334 @@
+{
+ "key": "combat-captured",
+ "viewer": "p1",
+ "view": {
+  "phase": "space_combat",
+  "pending": {
+   "kind": "boarding_decision",
+   "stage": "take_or_abandon"
+  },
+  "roll_facts": null,
+  "last_roll": {
+   "reason": "ground_combat",
+   "ground": "boarding",
+   "dice": [
+    6,
+    1,
+    3,
+    6
+   ],
+   "parts": [
+    {
+     "label": "SWA +2 (Kralkin (GUN+2 SWA+2))",
+     "bonus": 2,
+     "kind": "score",
+     "ability": "SWA",
+     "who": "Kralkin (GUN+2 SWA+2)"
+    }
+   ],
+   "bonus": 2,
+   "total": 11,
+   "target": null,
+   "outcome": "win",
+   "pairs": {
+    "yours": [
+     6,
+     3
+    ],
+    "theirs": [
+     6,
+     1
+    ],
+    "rider": [],
+    "your_total": 11,
+    "their_total": 8,
+    "their_name": "the pirates"
+   }
+  },
+  "character": {
+   "name": "Bot Pilot",
+   "race": "human",
+   "disposition_roleplay_hint": null,
+   "level": 1,
+   "xp": 0,
+   "xp_to_next_level": 6,
+   "credits": 200,
+   "wounded": false,
+   "dread": 1,
+   "abilities": {
+    "RES": {
+     "name": "Research",
+     "stat": "smarts",
+     "natural": 1,
+     "effective": 1
+    },
+    "MEC": {
+     "name": "Mechanics",
+     "stat": "smarts",
+     "natural": 2,
+     "effective": 2
+    },
+    "PIL": {
+     "name": "Piloting",
+     "stat": "finesse",
+     "natural": 3,
+     "effective": 3
+    }
+   },
+   "skills": [
+    "Research (RES basic)",
+    "Mechanics (MEC basic)",
+    "Piloting (PIL basic)",
+    "Piloting advanced"
+   ],
+   "equipped": {
+    "weapon": null,
+    "armor": null
+   }
+  },
+  "crew": [
+   {
+    "name": "Human (ACT+2 SWA+1)",
+    "title": "Katie",
+    "race": "human",
+    "idealizes": "brawn",
+    "abilities": {
+     "ACT": 2,
+     "SWA": 1
+    },
+    "skills": [
+     "Acting (ACT basic)",
+     "Swashbuckling (SWA basic)"
+    ],
+    "anger_tokens": 0,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   },
+   {
+    "name": "Kralkin (GUN+2 SWA+2)",
+    "title": "Kralkin (GUN+2 SWA+2)",
+    "race": "kralkin",
+    "idealizes": "moxie",
+    "abilities": {
+     "GUN": 2,
+     "SWA": 2
+    },
+    "skills": [
+     "Gunslinging (GUN basic)",
+     "Swashbuckling (SWA basic)"
+    ],
+    "anger_tokens": 0,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   }
+  ],
+  "unnamed_crew": 0,
+  "unnamed_crew_cap": 0,
+  "season_endings": {
+   "conquest": "clear the depth-3 ruin beyond Habitat #3",
+   "fortune": "200/6000c banked while at a habitat",
+   "legend": "level 1/5",
+   "plunder": "0/6 ruin caches opened",
+   "bounty": "1/8 foes defeated face to face (boarding captures + ruin kills)"
+  },
+  "ship": {
+   "name": "Harness Runner",
+   "capacity": 3,
+   "speed": 0,
+   "handling": 0,
+   "armor": 0,
+   "damage": "damaged",
+   "parts": [],
+   "hits_to_lost": 2
+  },
+  "items": [],
+  "bulkheads_spent": false,
+  "habitat": {
+   "number": 1,
+   "name": "Xaxalon 4",
+   "shop": [
+    {
+     "name": "Consumable +1 Any",
+     "cost": 200,
+     "purchased": false
+    },
+    {
+     "name": "Weapon +1 GUN",
+     "cost": 300,
+     "purchased": false
+    },
+    {
+     "name": "Armor Combat Advantage",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +1 Speed",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +2 Capacity",
+     "cost": 700,
+     "purchased": false
+    }
+   ],
+   "cantina": [
+    {
+     "recruit": "Human (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Kralkin (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (HAK +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Grull (DIP +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (ACT +1, min roll 11)",
+     "status": "available"
+    }
+   ],
+   "missions": [
+    {
+     "id": "h1-m1",
+     "mission": "distance 3, RES 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m2",
+     "mission": "distance 3, DIP 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m3",
+     "mission": "distance 3, MEC 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m4",
+     "mission": "distance 4, R1 ruin, 600c, 1 XP",
+     "status": "attempted (failed)"
+    },
+    {
+     "id": "h1-m5",
+     "mission": "distance 4, SWA 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m6",
+     "mission": "distance 4, ARM 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m7",
+     "mission": "distance 6, ACT 12, 400c, 1 XP",
+     "status": "available"
+    }
+   ],
+   "progression": "complete 4 missions (any result; 1 done), then travel 6 one-way",
+   "repair_roll_available": false,
+   "unrest_roll_available": false,
+   "docks_unnamed_roll_available": true,
+   "fabrication_available_this_visit": true
+  },
+  "journey": {
+   "note": "Legs resolve top-down (a sandwiched mission finishes before the journey under it resumes).",
+   "legs": [
+    {
+     "position": "current",
+     "purpose": "outbound — distance 4, R1 ruin, 600c, 1 XP",
+     "kind": "mission_outbound",
+     "mission_id": "h1-m4",
+     "cards_remaining": 1
+    },
+    {
+     "position": "queued 1",
+     "purpose": "return — distance 4, R1 ruin, 600c, 1 XP",
+     "kind": "mission_return",
+     "mission_id": "h1-m4",
+     "cards_remaining": 4
+    }
+   ]
+  },
+  "space_combat": {
+   "pirate": "♦6",
+   "stats": {
+    "id": "pirate-6",
+    "space_attack": 3,
+    "ground_attack": 1,
+    "capacity": 4,
+    "speed": 0,
+    "handling": 0,
+    "min_hacking": 12,
+    "special": null
+   },
+   "stage": "captured",
+   "flying_ace_reroll_used": false,
+   "opening_volley_used": true,
+   "pirate_debuff": 2,
+   "player_buff": 0,
+   "redline_used": true,
+   "survivors_roll_used": false
+  },
+  "ruin": null,
+  "travel_deck": {
+   "cards_in_draw_pile": 48,
+   "cards_in_discard": 4,
+   "discard": [
+    "6H",
+    "KH",
+    "10D",
+    "6D"
+   ]
+  },
+  "stat_reference": {
+   "brawn": "SWA/ARM/DEM",
+   "smarts": "HAK/RES/MEC",
+   "finesse": "PIL/GUN/SNE",
+   "moxie": "LEA/DIP/ACT"
+  },
+  "lore_refs": [
+   "galaxy-overview",
+   "xaxalon-4",
+   "humans",
+   "kralkin"
+  ],
+  "result": null
+ },
+ "legalMoves": [
+  {
+   "move_id": "take-ship",
+   "description": "Take the captured ship as your own (it arrives Hobbled; your old ship and its parts are abandoned).",
+   "move": {
+    "type": "take_ship"
+   },
+   "preview": {
+    "then": "Their ship becomes yours as it is, Hobbled and with no parts. Your own ship and every part fitted to it are left behind."
+   }
+  },
+  {
+   "move_id": "abandon-ship",
+   "description": "Keep your own ship and leave the hulk.",
+   "move": {
+    "type": "abandon_ship"
+   }
+  }
+ ],
+ "unavailable": [
+  {
+   "moveType": "recruit_survivors",
+   "reason": "Needs Diplomacy (DIP) aboard."
+  }
+ ]
+}

@@ -77,8 +77,20 @@ import each other**, and `tests/glueBoundary.test.ts` fails if they do.
   `@zekel/<game>/glue` entry is for a bundler, not for plain Node.
 - A screen may name pictures by address (`/art/<game>/...`). The pictures are
   not in the package; the site that shows the screen serves them.
-- Word Debauchee's and Cybernoir 2127's screens have moved here. The other
-  games' screens are still in Universe (`apps/web/src/glue/`). Neither Guts
+- Every game's screen is here now. Zekel Universe installs a game's package
+  and loads its `/glue` entry once that version is released; until then
+  Universe still draws from its own older copy of that screen
+  (`apps/web/src/glue/`), so a change made here does not show there yet.
+- Neither Guts nor Gears keeps two things under `src/glue/`: the table screen
+  (`table/`) and the rulebook page (`rulebook/`, with its own small copies of
+  `ui.tsx`, `ink.ts` and `icons.gen.ts`). Folding the copies together is still
+  to do.
+- Sweetlands Imperium's board test checks positions against
+  `__tests__/fixtures/sweetlands-imperium-reference.md`, a copy of Universe's
+  `docs/games/sweetlands-imperium.md`.
+- Two Warble Way Galaxy tests stayed in Universe (`ww-holo.test.tsx`,
+  `ww-icons.test.tsx`): they check the screen's picture names against the
+  files Universe serves, which are not in this repo. Neither Guts
   nor Gears has its rulebook page here (`src/glue/rulebook/`, notes in its
   `RULEBOOK.md`), but its table screen is still in Universe.
 

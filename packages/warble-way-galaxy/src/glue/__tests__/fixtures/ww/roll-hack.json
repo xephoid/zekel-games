@@ -1,0 +1,376 @@
+{
+ "key": "roll-hack",
+ "viewer": "p1",
+ "view": {
+  "phase": "space_combat",
+  "pending": {
+   "kind": "roll",
+   "reason": "hack",
+   "dice_count": 3,
+   "score_source": {
+    "who": "crew",
+    "crew_name": "Grull (HAK+3)",
+    "ability": "HAK",
+    "bonus": 3
+   },
+   "min_roll": 13,
+   "declared_items": [],
+   "context": {}
+  },
+  "roll_facts": {
+   "reason": "hack",
+   "name": "Hack",
+   "carrier": "Mica",
+   "dice": 3,
+   "parts": [
+    {
+     "label": "HAK +3 (Grull (HAK+3))",
+     "bonus": 3,
+     "kind": "score",
+     "ability": "HAK",
+     "who": "Grull (HAK+3)"
+    }
+   ],
+   "bonus": 3,
+   "on_pass": "Their ship is disabled: board it or fly on. Hackers Delight pays +200c.",
+   "on_fail": "They attack unopposed: The Harness Runner takes one damage, to Used. The fight goes on.",
+   "notes": [],
+   "target": 13,
+   "dice_need": 10,
+   "chance": 0.625,
+   "subject": "the pirates"
+  },
+  "last_roll": null,
+  "character": {
+   "name": "Bot Pilot",
+   "race": "human",
+   "disposition_roleplay_hint": null,
+   "level": 3,
+   "xp": 19,
+   "xp_to_next_level": 5,
+   "credits": 1650,
+   "wounded": false,
+   "dread": 0,
+   "abilities": {
+    "RES": {
+     "name": "Research",
+     "stat": "smarts",
+     "natural": 1,
+     "effective": 1
+    },
+    "MEC": {
+     "name": "Mechanics",
+     "stat": "smarts",
+     "natural": 2,
+     "effective": 2
+    },
+    "PIL": {
+     "name": "Piloting",
+     "stat": "finesse",
+     "natural": 5,
+     "effective": 5
+    }
+   },
+   "skills": [
+    "Research (RES basic)",
+    "Mechanics (MEC basic)",
+    "Piloting (PIL basic)",
+    "Piloting advanced"
+   ],
+   "equipped": {
+    "weapon": null,
+    "armor": null
+   }
+  },
+  "crew": [
+   {
+    "name": "Grull (RES+2 MEC+1)",
+    "title": "Obsidian",
+    "race": "grull",
+    "idealizes": "finesse",
+    "abilities": {
+     "RES": 2,
+     "MEC": 1
+    },
+    "skills": [
+     "Research (RES basic)",
+     "Mechanics (MEC basic)"
+    ],
+    "anger_tokens": 0,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   },
+   {
+    "name": "Grull (HAK+3)",
+    "title": "Mica",
+    "race": "grull",
+    "idealizes": "finesse",
+    "abilities": {
+     "HAK": 3
+    },
+    "skills": [
+     "Hacking (HAK basic)",
+     "Hacking advanced"
+    ],
+    "anger_tokens": 0,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   }
+  ],
+  "unnamed_crew": 1,
+  "unnamed_crew_cap": 0,
+  "season_endings": {
+   "conquest": "clear the depth-3 ruin beyond Habitat #3",
+   "fortune": "1650/6000c banked while at a habitat",
+   "legend": "level 3/5",
+   "plunder": "0/6 ruin caches opened",
+   "bounty": "0/8 foes defeated face to face (boarding captures + ruin kills)"
+  },
+  "ship": {
+   "name": "Harness Runner",
+   "capacity": 3,
+   "speed": 0,
+   "handling": 0,
+   "armor": 0,
+   "damage": "pristine",
+   "parts": [],
+   "hits_to_lost": 4
+  },
+  "items": [
+   {
+    "id": "h1-s1",
+    "name": "Consumable +1 Any",
+    "type": "consumable",
+    "consumed": false,
+    "title": "Sustenance Cube",
+    "effect": "One use: +1 to any one roll that adds a score, declared before the dice.",
+    "worn_by": null,
+    "fitted": false
+   }
+  ],
+  "bulkheads_spent": false,
+  "habitat": {
+   "number": 1,
+   "name": "Xaxalon 4",
+   "shop": [
+    {
+     "name": "Consumable +1 Any",
+     "cost": 200,
+     "purchased": true
+    },
+    {
+     "name": "Weapon +1 GUN",
+     "cost": 300,
+     "purchased": false
+    },
+    {
+     "name": "Armor Combat Advantage",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +1 Speed",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +2 Capacity",
+     "cost": 700,
+     "purchased": false
+    }
+   ],
+   "cantina": [
+    {
+     "recruit": "Human (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Kralkin (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (HAK +1, min roll 11)",
+     "status": "hired"
+    },
+    {
+     "recruit": "Grull (DIP +1, min roll 11)",
+     "status": "hired"
+    },
+    {
+     "recruit": "Human (ACT +1, min roll 11)",
+     "status": "available"
+    }
+   ],
+   "missions": [
+    {
+     "id": "h1-m1",
+     "mission": "distance 3, RES 10, 300c, 1 XP",
+     "status": "succeeded"
+    },
+    {
+     "id": "h1-m2",
+     "mission": "distance 3, DIP 10, 300c, 1 XP",
+     "status": "attempted (failed)"
+    },
+    {
+     "id": "h1-m3",
+     "mission": "distance 3, MEC 10, 300c, 1 XP",
+     "status": "attempted (failed)"
+    },
+    {
+     "id": "h1-m4",
+     "mission": "distance 4, R1 ruin, 600c, 1 XP",
+     "status": "succeeded"
+    },
+    {
+     "id": "h1-m5",
+     "mission": "distance 4, SWA 10, 300c, 1 XP",
+     "status": "succeeded"
+    },
+    {
+     "id": "h1-m6",
+     "mission": "distance 4, ARM 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m7",
+     "mission": "distance 6, ACT 12, 400c, 1 XP",
+     "status": "available"
+    }
+   ],
+   "progression": "complete 4 missions (any result; 5 done), then travel 6 one-way",
+   "repair_roll_available": true,
+   "unrest_roll_available": true,
+   "docks_unnamed_roll_available": false,
+   "fabrication_available_this_visit": true
+  },
+  "journey": {
+   "note": "Legs resolve top-down (a sandwiched mission finishes before the journey under it resumes).",
+   "legs": [
+    {
+     "position": "current",
+     "purpose": "return — distance 4, SWA 10, 300c, 1 XP",
+     "kind": "mission_return",
+     "mission_id": "h1-m5",
+     "cards_remaining": 0
+    }
+   ]
+  },
+  "space_combat": {
+   "pirate": "♦4",
+   "stats": {
+    "id": "pirate-4",
+    "space_attack": 5,
+    "ground_attack": 2,
+    "capacity": 5,
+    "speed": 0,
+    "handling": 0,
+    "min_hacking": 13,
+    "special": "space_combat_advantage"
+   },
+   "stage": "choose_action",
+   "flying_ace_reroll_used": false,
+   "opening_volley_used": false,
+   "pirate_debuff": 0,
+   "player_buff": 0,
+   "redline_used": false,
+   "survivors_roll_used": false
+  },
+  "ruin": null,
+  "travel_deck": {
+   "cards_in_draw_pile": 28,
+   "cards_in_discard": 24,
+   "discard": [
+    "AD",
+    "6S",
+    "6C",
+    "3C",
+    "KC",
+    "3H",
+    "8D",
+    "JS",
+    "KD",
+    "8C",
+    "7S",
+    "QH",
+    "5S",
+    "6H",
+    "JH",
+    "9S",
+    "JD",
+    "10H",
+    "5D",
+    "9H",
+    "10D",
+    "3D",
+    "KH",
+    "4D"
+   ]
+  },
+  "stat_reference": {
+   "brawn": "SWA/ARM/DEM",
+   "smarts": "HAK/RES/MEC",
+   "finesse": "PIL/GUN/SNE",
+   "moxie": "LEA/DIP/ACT"
+  },
+  "lore_refs": [
+   "galaxy-overview",
+   "xaxalon-4",
+   "humans",
+   "grull"
+  ],
+  "result": null
+ },
+ "legalMoves": [
+  {
+   "move_id": "resolve-report",
+   "description": "Roll the 3d6 for the hack (needs 13+) — the server rolls when you press this.",
+   "move": {
+    "type": "resolve_report"
+   }
+  },
+  {
+   "move_id": "use-item-h1-s1",
+   "description": "Declare Sustenance Cube for this roll (+1; consumed when the dice are reported).",
+   "move": {
+    "type": "use_item",
+    "item_name": "Consumable +1 Any"
+   },
+   "preview": {
+    "roll": {
+     "reason": "hack",
+     "name": "Hack",
+     "carrier": "Mica",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "HAK +3 (Grull (HAK+3))",
+       "bonus": 3,
+       "kind": "score",
+       "ability": "HAK",
+       "who": "Grull (HAK+3)"
+      },
+      {
+       "label": "Consumable +1 Any +1",
+       "bonus": 1,
+       "kind": "item"
+      }
+     ],
+     "bonus": 4,
+     "on_pass": "Their ship is disabled: board it or fly on. Hackers Delight pays +200c.",
+     "on_fail": "They attack unopposed: The Harness Runner takes one damage, to Used. The fight goes on.",
+     "notes": [],
+     "target": 13,
+     "dice_need": 9,
+     "chance": 0.7407,
+     "subject": "the pirates"
+    }
+   }
+  }
+ ],
+ "unavailable": []
+}

@@ -4,6 +4,13 @@ Fractured Fist, a Zekel Games board game (2 players), as a game module for the [
 
 A two-player deck-building combat game played with PHYSICAL cards in front of the human — server tracks shared state + AI opponent only; human manages their own hand/deck on a real table. Channel spirit, play techniques, queue damage and defense, reduce your opponent's stamina to zero. Agent reports moves plainly in game terms.
 
+## The screen
+
+`@zekel/fractured-fist/glue` is the game's screen for Zekel Universe: the glue
+module Universe's table loads (`fracturedFistGlue`). It needs `@zekel/glue-kit`, `@zekel/primitives`, `@zekel/tokens`, `@zekel/wire-types`, `react`, `react-dom`, which are
+optional peer dependencies: a server that only plays the game needs none of
+them. It imports its own stylesheets, so load it through a bundler.
+
 ## Use
 
 Register it on [`@zekel/mcp`](https://www.npmjs.com/package/@zekel/mcp):

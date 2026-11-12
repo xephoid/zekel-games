@@ -4,6 +4,13 @@ Adventurer Olympics, a Zekel Games board game (2–4 players), as a game module 
 
 A 2–4 player exploration race: move, explore new hex tiles, recruit companions, fight monsters, and claim quests before the last tile is placed.
 
+## The screen
+
+`@zekel/adventurer-olympics/glue` is the game's screen for Zekel Universe: the glue
+module Universe's table loads (`adventurerOlympicsGlue`). It needs `@zekel/glue-kit`, `@zekel/primitives`, `@zekel/wire-types`, `react`, `react-dom`, which are
+optional peer dependencies: a server that only plays the game needs none of
+them. It imports its own stylesheets, so load it through a bundler.
+
 ## Use
 
 Register it on [`@zekel/mcp`](https://www.npmjs.com/package/@zekel/mcp):

@@ -1,0 +1,297 @@
+{
+ "key": "pending-ruin_continue",
+ "viewer": "p1",
+ "view": {
+  "phase": "ruin",
+  "pending": {
+   "kind": "ruin_continue",
+   "next_level": 2,
+   "is_mission": true
+  },
+  "roll_facts": null,
+  "last_roll": null,
+  "character": {
+   "name": "Bot Pilot",
+   "race": "human",
+   "disposition_roleplay_hint": null,
+   "level": 4,
+   "xp": 24,
+   "xp_to_next_level": 24,
+   "credits": 1800,
+   "wounded": false,
+   "dread": 0,
+   "abilities": {
+    "RES": {
+     "name": "Research",
+     "stat": "smarts",
+     "natural": 1,
+     "effective": 1
+    },
+    "MEC": {
+     "name": "Mechanics",
+     "stat": "smarts",
+     "natural": 2,
+     "effective": 2
+    },
+    "PIL": {
+     "name": "Piloting",
+     "stat": "finesse",
+     "natural": 6,
+     "effective": 6
+    }
+   },
+   "skills": [
+    "Research (RES basic)",
+    "Mechanics (MEC basic)",
+    "Piloting (PIL basic)",
+    "Piloting advanced"
+   ],
+   "equipped": {
+    "weapon": null,
+    "armor": null
+   }
+  },
+  "crew": [
+   {
+    "name": "Hexapod (SNE+2 DIP+1)",
+    "title": "DEC0DE",
+    "race": "hexapod",
+    "idealizes": "smarts",
+    "abilities": {
+     "SNE": 2,
+     "DIP": 1
+    },
+    "skills": [
+     "Sneaking (SNE basic)",
+     "Diplomacy (DIP basic)"
+    ],
+    "anger_tokens": 1,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   }
+  ],
+  "unnamed_crew": 1,
+  "unnamed_crew_cap": 1,
+  "season_endings": {
+   "conquest": "clear the depth-3 ruin beyond Habitat #3",
+   "fortune": "1800/6000c banked while at a habitat",
+   "legend": "level 4/5",
+   "plunder": "0/6 ruin caches opened",
+   "bounty": "0/8 foes defeated face to face (boarding captures + ruin kills)"
+  },
+  "ship": {
+   "name": "Harness Runner",
+   "capacity": 3,
+   "speed": 0,
+   "handling": 0,
+   "armor": 0,
+   "damage": "pristine",
+   "parts": [],
+   "hits_to_lost": 4
+  },
+  "items": [],
+  "bulkheads_spent": false,
+  "habitat": {
+   "number": 3,
+   "name": "FFD700 Base",
+   "shop": [
+    {
+     "name": "Consumable +3 SWA",
+     "cost": 600,
+     "purchased": false
+    },
+    {
+     "name": "Consumable +3 RES",
+     "cost": 600,
+     "purchased": false
+    },
+    {
+     "name": "Armor +3 ARM",
+     "cost": 800,
+     "purchased": false
+    },
+    {
+     "name": "Weapon +3 GUN",
+     "cost": 800,
+     "purchased": false
+    },
+    {
+     "name": "Ship part Armor +2",
+     "cost": 1000,
+     "purchased": false
+    },
+    {
+     "name": "Ship part Capacity +3",
+     "cost": 1500,
+     "purchased": false
+    }
+   ],
+   "cantina": [
+    {
+     "recruit": "Grull (SNE +3 PIL +1, min roll 14)",
+     "status": "permanently marked (failed)"
+    },
+    {
+     "recruit": "Kralkin (DIP +3 ARM +1, min roll 14)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (HAK +3, min roll 13)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (SWA +3 GUN +1, min roll 14)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (MEC +3, min roll 13)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (LEA +3 DEM +1, min roll 14)",
+     "status": "available"
+    }
+   ],
+   "missions": [
+    {
+     "id": "h3-m1",
+     "mission": "distance 7, RES 13, 600c, 3 XP",
+     "status": "attempted (failed)"
+    },
+    {
+     "id": "h3-m2",
+     "mission": "distance 7, DIP 14, 700c, 4 XP",
+     "status": "available"
+    },
+    {
+     "id": "h3-m3",
+     "mission": "distance 8, MEC 14, 700c, 4 XP",
+     "status": "attempted (failed)"
+    },
+    {
+     "id": "h3-m4",
+     "mission": "distance 8, SNE 14, 700c, 4 XP",
+     "status": "attempted (failed)"
+    },
+    {
+     "id": "h3-m5",
+     "mission": "distance 8, ARM 15, 750c, 4 XP",
+     "status": "available"
+    },
+    {
+     "id": "h3-m6",
+     "mission": "distance 9, PIL 18, 1500c, 5 XP",
+     "status": "attempted (failed)"
+    }
+   ],
+   "progression": "the Season 1 finale: complete a depth-3 ruin to WIN (depart_for_next_habitat starts it)",
+   "repair_roll_available": true,
+   "unrest_roll_available": true,
+   "docks_unnamed_roll_available": true,
+   "fabrication_available_this_visit": true
+  },
+  "journey": null,
+  "space_combat": null,
+  "ruin": {
+   "map": "R1",
+   "level": 1,
+   "target_depth": 3,
+   "purpose": "finale",
+   "legend": ". floor · # wall (blocks sight) · ~ pit (shoot across) · S start · G goal · I item spot · B being spot · A attacker spot",
+   "goal_cell": "r1c1",
+   "candidates": [
+    {
+     "name": "Bot Pilot",
+     "title": "Bot Pilot",
+     "kind": "captain",
+     "move_allowance": 3,
+     "attack": {
+      "ability": "SWA",
+      "bonus": 0,
+      "range": 1,
+      "advantage": false
+     }
+    },
+    {
+     "name": "Hexapod (SNE+2 DIP+1)",
+     "title": "DEC0DE",
+     "kind": "crew",
+     "move_allowance": 5,
+     "attack": {
+      "ability": "SWA",
+      "bonus": 0,
+      "range": 1,
+      "advantage": false
+     }
+    },
+    {
+     "name": "Red Shirt",
+     "title": "Red shirt",
+     "kind": "red_shirt",
+     "move_allowance": 3,
+     "attack": {
+      "ability": "SWA",
+      "bonus": 1,
+      "range": 1,
+      "advantage": true
+     }
+    }
+   ],
+   "status": "awaiting setup_encounter"
+  },
+  "travel_deck": {
+   "cards_in_draw_pile": 36,
+   "cards_in_discard": 16,
+   "discard": [
+    "AH",
+    "3S",
+    "KC",
+    "2C",
+    "JS",
+    "4H",
+    "3C",
+    "4D",
+    "KH",
+    "5D",
+    "7D",
+    "5S",
+    "2S",
+    "AC",
+    "4S",
+    "QS"
+   ]
+  },
+  "stat_reference": {
+   "brawn": "SWA/ARM/DEM",
+   "smarts": "HAK/RES/MEC",
+   "finesse": "PIL/GUN/SNE",
+   "moxie": "LEA/DIP/ACT"
+  },
+  "lore_refs": [
+   "galaxy-overview",
+   "humans",
+   "hexapods"
+  ],
+  "result": null
+ },
+ "legalMoves": [
+  {
+   "move_id": "go-deeper",
+   "description": "Descend to level 2 (full re-setup on the R2 map) — the mission needs the deeper goal.",
+   "move": {
+    "type": "enter_ruin",
+    "depth": 2
+   }
+  },
+  {
+   "move_id": "leave-ruin",
+   "description": "Leave — ABANDONING the mission (no reward).",
+   "move": {
+    "type": "skip_ruin"
+   }
+  }
+ ],
+ "unavailable": []
+}

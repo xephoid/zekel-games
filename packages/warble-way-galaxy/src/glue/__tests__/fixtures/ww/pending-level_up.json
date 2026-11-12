@@ -1,0 +1,378 @@
+{
+ "key": "pending-level_up",
+ "viewer": "p1",
+ "view": {
+  "phase": "traveling",
+  "pending": {
+   "kind": "level_up"
+  },
+  "roll_facts": null,
+  "last_roll": null,
+  "character": {
+   "name": "Bot Pilot",
+   "race": "human",
+   "disposition_roleplay_hint": null,
+   "level": 1,
+   "xp": 6,
+   "xp_to_next_level": 0,
+   "credits": 700,
+   "wounded": false,
+   "dread": 0,
+   "abilities": {
+    "RES": {
+     "name": "Research",
+     "stat": "smarts",
+     "natural": 1,
+     "effective": 1
+    },
+    "MEC": {
+     "name": "Mechanics",
+     "stat": "smarts",
+     "natural": 2,
+     "effective": 2
+    },
+    "PIL": {
+     "name": "Piloting",
+     "stat": "finesse",
+     "natural": 3,
+     "effective": 3
+    }
+   },
+   "skills": [
+    "Research (RES basic)",
+    "Mechanics (MEC basic)",
+    "Piloting (PIL basic)",
+    "Piloting advanced"
+   ],
+   "equipped": {
+    "weapon": null,
+    "armor": null
+   }
+  },
+  "crew": [],
+  "unnamed_crew": 0,
+  "unnamed_crew_cap": 0,
+  "season_endings": {
+   "conquest": "clear the depth-3 ruin beyond Habitat #3",
+   "fortune": "700/6000c banked while at a habitat",
+   "legend": "level 1/5",
+   "plunder": "0/6 ruin caches opened",
+   "bounty": "0/8 foes defeated face to face (boarding captures + ruin kills)"
+  },
+  "ship": {
+   "name": "Harness Runner",
+   "capacity": 3,
+   "speed": 0,
+   "handling": 0,
+   "armor": 0,
+   "damage": "pristine",
+   "parts": [],
+   "hits_to_lost": 4
+  },
+  "items": [],
+  "bulkheads_spent": false,
+  "habitat": {
+   "number": 1,
+   "name": "Xaxalon 4",
+   "shop": [
+    {
+     "name": "Consumable +1 Any",
+     "cost": 200,
+     "purchased": false
+    },
+    {
+     "name": "Weapon +1 GUN",
+     "cost": 300,
+     "purchased": false
+    },
+    {
+     "name": "Armor Combat Advantage",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +1 Speed",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +2 Capacity",
+     "cost": 700,
+     "purchased": false
+    }
+   ],
+   "cantina": [
+    {
+     "recruit": "Human (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Kralkin (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (HAK +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Grull (DIP +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (ACT +1, min roll 11)",
+     "status": "available"
+    }
+   ],
+   "missions": [
+    {
+     "id": "h1-m1",
+     "mission": "distance 3, RES 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m2",
+     "mission": "distance 3, DIP 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m3",
+     "mission": "distance 3, MEC 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m4",
+     "mission": "distance 4, R1 ruin, 600c, 1 XP",
+     "status": "succeeded"
+    },
+    {
+     "id": "h1-m5",
+     "mission": "distance 4, SWA 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m6",
+     "mission": "distance 4, ARM 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m7",
+     "mission": "distance 6, ACT 12, 400c, 1 XP",
+     "status": "available"
+    }
+   ],
+   "progression": "complete 4 missions (any result; 1 done), then travel 6 one-way",
+   "repair_roll_available": false,
+   "unrest_roll_available": false,
+   "docks_unnamed_roll_available": true,
+   "fabrication_available_this_visit": true
+  },
+  "journey": {
+   "note": "Legs resolve top-down (a sandwiched mission finishes before the journey under it resumes).",
+   "legs": [
+    {
+     "position": "current",
+     "purpose": "outbound — distance 8, PIL 15, 400c, 2 XP",
+     "kind": "mission_outbound",
+     "mission_id": "club-7-2",
+     "cards_remaining": 6
+    },
+    {
+     "position": "queued 1",
+     "purpose": "return — distance 8, PIL 15, 400c, 2 XP",
+     "kind": "mission_return",
+     "mission_id": "club-7-2",
+     "cards_remaining": 8
+    },
+    {
+     "position": "queued 2",
+     "purpose": "outbound — distance 4, MEC 10, 250c, 1 XP",
+     "kind": "mission_outbound",
+     "mission_id": "club-9-1",
+     "cards_remaining": 3
+    },
+    {
+     "position": "queued 3",
+     "purpose": "return — distance 4, MEC 10, 250c, 1 XP",
+     "kind": "mission_return",
+     "mission_id": "club-9-1",
+     "cards_remaining": 4
+    },
+    {
+     "position": "queued 4",
+     "purpose": "return — distance 4, R1 ruin, 600c, 1 XP",
+     "kind": "mission_return",
+     "mission_id": "h1-m4",
+     "cards_remaining": 1
+    }
+   ]
+  },
+  "space_combat": null,
+  "ruin": null,
+  "travel_deck": {
+   "cards_in_draw_pile": 39,
+   "cards_in_discard": 13,
+   "discard": [
+    "9S",
+    "4S",
+    "2C",
+    "AC",
+    "2S",
+    "6S",
+    "KH",
+    "9C",
+    "8D",
+    "7C",
+    "KS",
+    "QS",
+    "10S"
+   ]
+  },
+  "stat_reference": {
+   "brawn": "SWA/ARM/DEM",
+   "smarts": "HAK/RES/MEC",
+   "finesse": "PIL/GUN/SNE",
+   "moxie": "LEA/DIP/ACT"
+  },
+  "lore_refs": [
+   "galaxy-overview",
+   "xaxalon-4",
+   "humans"
+  ],
+  "result": null
+ },
+ "legalMoves": [
+  {
+   "move_id": "level-up-RES",
+   "description": "Level up: +1 RES (Research) → 2.",
+   "move": {
+    "type": "level_up",
+    "ability": "RES"
+   },
+   "preview": {
+    "then": "Research 1 to 2. At the start of a trip, look at as many cards off the top of the travel deck as this score and discard one. Only the captain's own score counts."
+   }
+  },
+  {
+   "move_id": "level-up-MEC",
+   "description": "Level up: +1 MEC (Mechanics) → 3.",
+   "move": {
+    "type": "level_up",
+    "ability": "MEC"
+   },
+   "preview": {
+    "then": "Mechanics 2 to 3. On arriving at a habitat, one repair roll: 3 dice + MEC, 12 or more raises the ship one damage level. In a pirate fight, Redline once: 3 dice + MEC against 12 for +2 to your exchanges. A natural 3 also gives Ms/Mr Fix-it: The ship repairs to Pristine on every habitat arrival. Opens the workshop: pay to improve a weapon or armor, or to build a ship part."
+   }
+  },
+  {
+   "move_id": "level-up-PIL",
+   "description": "Level up: +1 PIL (Piloting) → 4.",
+   "move": {
+    "type": "level_up",
+    "ability": "PIL"
+   },
+   "preview": {
+    "then": "Piloting 3 to 4. Space combat advantage: in an exchange of fire your side takes the higher pair, and this score is added. Added to an escape roll."
+   }
+  },
+  {
+   "move_id": "level-up-open-SWA",
+   "description": "Open a NEW ability at 1: SWA (Swashbuckling) — even-level unlock.",
+   "move": {
+    "type": "level_up",
+    "ability": "SWA"
+   },
+   "preview": {
+    "then": "Swashbuckling 0 to 1. Ground combat advantage: in a boarding or a ruin fight your side takes the higher pair. Added to your attack."
+   }
+  },
+  {
+   "move_id": "level-up-open-ARM",
+   "description": "Open a NEW ability at 1: ARM (Armor) — even-level unlock.",
+   "move": {
+    "type": "level_up",
+    "ability": "ARM"
+   },
+   "preview": {
+    "then": "Armor 0 to 1. Added to this being's defense when a ruin attacker strikes."
+   }
+  },
+  {
+   "move_id": "level-up-open-DEM",
+   "description": "Open a NEW ability at 1: DEM (Demolitions) — even-level unlock.",
+   "move": {
+    "type": "level_up",
+    "ability": "DEM"
+   },
+   "preview": {
+    "then": "Demolitions 0 to 1. A ruin attack reaches as far as this score. Added to your attack. Lets you threaten pirates into breaking off: 3 dice + DEM against 10 + their space attack."
+   }
+  },
+  {
+   "move_id": "level-up-open-HAK",
+   "description": "Open a NEW ability at 1: HAK (Hacking) — even-level unlock.",
+   "move": {
+    "type": "level_up",
+    "ability": "HAK"
+   },
+   "preview": {
+    "then": "Hacking 0 to 1. Lets you hack a pirate ship: 3 dice + HAK against their hacking number. Success disables them without a fight."
+   }
+  },
+  {
+   "move_id": "level-up-open-GUN",
+   "description": "Open a NEW ability at 1: GUN (Gunslinging) — even-level unlock.",
+   "move": {
+    "type": "level_up",
+    "ability": "GUN"
+   },
+   "preview": {
+    "then": "Gunslinging 0 to 1. A ruin attack reaches 2 + this score. Added to your attack. In a pirate fight, an opening volley once: 3 dice + GUN against 12 for −2 to their exchanges."
+   }
+  },
+  {
+   "move_id": "level-up-open-SNE",
+   "description": "Open a NEW ability at 1: SNE (Sneaking) — even-level unlock.",
+   "move": {
+    "type": "level_up",
+    "ability": "SNE"
+   },
+   "preview": {
+    "then": "Sneaking 0 to 1. Movement in a ruin is 3 + this score. Lets you try to slip past pirates before the fight: 3 dice + SNE against 10 + their speed."
+   }
+  },
+  {
+   "move_id": "level-up-open-LEA",
+   "description": "Open a NEW ability at 1: LEA (Leadership) — even-level unlock.",
+   "move": {
+    "type": "level_up",
+    "ability": "LEA"
+   },
+   "preview": {
+    "then": "Leadership 0 to 1. On arriving at a habitat, one roll to ease unrest: 3 dice + LEA, 12 or more takes one anger token off each crew member. +1 XP for every recruit who joins."
+   }
+  },
+  {
+   "move_id": "level-up-open-DIP",
+   "description": "Open a NEW ability at 1: DIP (Diplomacy) — even-level unlock.",
+   "move": {
+    "type": "level_up",
+    "ability": "DIP"
+   },
+   "preview": {
+    "then": "Diplomacy 0 to 1. Lets you sign red shirts at the docks and from beaten pirates (3 dice + DIP against 12), and call on a ruin attacker to surrender. The most red shirts you can hold is your best natural DIP. The captain's own DIP also gives the look at the travel deck that Research gives."
+   }
+  },
+  {
+   "move_id": "level-up-open-ACT",
+   "description": "Open a NEW ability at 1: ACT (Acting) — even-level unlock.",
+   "move": {
+    "type": "level_up",
+    "ability": "ACT"
+   },
+   "preview": {
+    "then": "Acting 0 to 1. One extra die on any Moxie or Smarts roll except ship repair, and when recruiting a Hexapod or a Kralkin."
+   }
+  }
+ ],
+ "unavailable": []
+}

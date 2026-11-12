@@ -1,0 +1,256 @@
+{
+ "key": "roll-hazard_check",
+ "viewer": "p1",
+ "view": {
+  "phase": "traveling",
+  "pending": {
+   "kind": "roll",
+   "reason": "hazard_check",
+   "dice_count": 3,
+   "score_source": {
+    "who": "self",
+    "ability": "RES",
+    "bonus": 1
+   },
+   "min_roll": 15,
+   "declared_items": [],
+   "context": {
+    "hazard_card_id": "4S",
+    "hazard_option": 2
+   }
+  },
+  "roll_facts": {
+   "reason": "hazard_check",
+   "name": "Hazard",
+   "carrier": "you",
+   "dice": 3,
+   "parts": [
+    {
+     "label": "RES +1 (you)",
+     "bonus": 1,
+     "kind": "score",
+     "ability": "RES",
+     "who": "you"
+    }
+   ],
+   "bonus": 1,
+   "on_pass": "Nothing happens. +1 XP for surviving.",
+   "on_fail": "Lose 100 credits, to 100c. +1 XP for surviving.",
+   "notes": [],
+   "target": 15,
+   "dice_need": 14,
+   "chance": 0.162,
+   "subject": "Hull mites"
+  },
+  "last_roll": null,
+  "character": {
+   "name": "Bot Pilot",
+   "race": "human",
+   "disposition_roleplay_hint": null,
+   "level": 1,
+   "xp": 0,
+   "xp_to_next_level": 6,
+   "credits": 200,
+   "wounded": false,
+   "dread": 0,
+   "abilities": {
+    "RES": {
+     "name": "Research",
+     "stat": "smarts",
+     "natural": 1,
+     "effective": 1
+    },
+    "MEC": {
+     "name": "Mechanics",
+     "stat": "smarts",
+     "natural": 2,
+     "effective": 2
+    },
+    "PIL": {
+     "name": "Piloting",
+     "stat": "finesse",
+     "natural": 3,
+     "effective": 3
+    }
+   },
+   "skills": [
+    "Research (RES basic)",
+    "Mechanics (MEC basic)",
+    "Piloting (PIL basic)",
+    "Piloting advanced"
+   ],
+   "equipped": {
+    "weapon": null,
+    "armor": null
+   }
+  },
+  "crew": [],
+  "unnamed_crew": 0,
+  "unnamed_crew_cap": 0,
+  "season_endings": {
+   "conquest": "clear the depth-3 ruin beyond Habitat #3",
+   "fortune": "200/6000c banked while at a habitat",
+   "legend": "level 1/5",
+   "plunder": "0/6 ruin caches opened",
+   "bounty": "0/8 foes defeated face to face (boarding captures + ruin kills)"
+  },
+  "ship": {
+   "name": "Harness Runner",
+   "capacity": 3,
+   "speed": 0,
+   "handling": 0,
+   "armor": 0,
+   "damage": "used",
+   "parts": [],
+   "hits_to_lost": 3
+  },
+  "items": [],
+  "bulkheads_spent": false,
+  "habitat": {
+   "number": 1,
+   "name": "Xaxalon 4",
+   "shop": [
+    {
+     "name": "Consumable +1 Any",
+     "cost": 200,
+     "purchased": false
+    },
+    {
+     "name": "Weapon +1 GUN",
+     "cost": 300,
+     "purchased": false
+    },
+    {
+     "name": "Armor Combat Advantage",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +1 Speed",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +2 Capacity",
+     "cost": 700,
+     "purchased": false
+    }
+   ],
+   "cantina": [
+    {
+     "recruit": "Human (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Kralkin (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (HAK +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Grull (DIP +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (ACT +1, min roll 11)",
+     "status": "available"
+    }
+   ],
+   "missions": [
+    {
+     "id": "h1-m1",
+     "mission": "distance 3, RES 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m2",
+     "mission": "distance 3, DIP 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m3",
+     "mission": "distance 3, MEC 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m4",
+     "mission": "distance 4, R1 ruin, 600c, 1 XP",
+     "status": "attempted (failed)"
+    },
+    {
+     "id": "h1-m5",
+     "mission": "distance 4, SWA 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m6",
+     "mission": "distance 4, ARM 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m7",
+     "mission": "distance 6, ACT 12, 400c, 1 XP",
+     "status": "available"
+    }
+   ],
+   "progression": "complete 4 missions (any result; 1 done), then travel 6 one-way",
+   "repair_roll_available": false,
+   "unrest_roll_available": false,
+   "docks_unnamed_roll_available": true,
+   "fabrication_available_this_visit": true
+  },
+  "journey": {
+   "note": "Legs resolve top-down (a sandwiched mission finishes before the journey under it resumes).",
+   "legs": [
+    {
+     "position": "current",
+     "purpose": "outbound — distance 4, R1 ruin, 600c, 1 XP",
+     "kind": "mission_outbound",
+     "mission_id": "h1-m4",
+     "cards_remaining": 3
+    },
+    {
+     "position": "queued 1",
+     "purpose": "return — distance 4, R1 ruin, 600c, 1 XP",
+     "kind": "mission_return",
+     "mission_id": "h1-m4",
+     "cards_remaining": 4
+    }
+   ]
+  },
+  "space_combat": null,
+  "ruin": null,
+  "travel_deck": {
+   "cards_in_draw_pile": 50,
+   "cards_in_discard": 2,
+   "discard": [
+    "9S",
+    "4S"
+   ]
+  },
+  "stat_reference": {
+   "brawn": "SWA/ARM/DEM",
+   "smarts": "HAK/RES/MEC",
+   "finesse": "PIL/GUN/SNE",
+   "moxie": "LEA/DIP/ACT"
+  },
+  "lore_refs": [
+   "galaxy-overview",
+   "xaxalon-4",
+   "humans"
+  ],
+  "result": null
+ },
+ "legalMoves": [
+  {
+   "move_id": "resolve-report",
+   "description": "Roll the 3d6 for the hazard check (needs 15+) — the server rolls when you press this.",
+   "move": {
+    "type": "resolve_report"
+   }
+  }
+ ],
+ "unavailable": []
+}

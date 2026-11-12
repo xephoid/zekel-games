@@ -4,6 +4,17 @@ Sweetlands Imperium, a Zekel Games board game (2–5 players), as a game module 
 
 A 2-5 player candy-themed area-control game. Factions race to 5 points across a ring of 4 regions, playing colored Intel cards to move leaders, knights, and ambassadors, collect taxes and influence, capture rivals, and storm the castle foe. Played with a PHYSICAL board — the server is bookkeeper for shared state and brain for the AI factions; the shared Intel deck uses report-draw.
 
+## The screen
+
+`@zekel/sweetlands-imperium/glue` is the game's screen for Zekel Universe: the glue
+module Universe's table loads (`sweetlandsGlue`). It needs `@zekel/glue-kit`, `@zekel/primitives`, `@zekel/wire-types`, `react`, `react-dom`, which are
+optional peer dependencies: a server that only plays the game needs none of
+them. It imports its own stylesheets, so load it through a bundler.
+
+The pictures are not in this package. The screen names them by address
+(`/art/sweetlands/...`), and the site that shows the
+screen serves them; Zekel Universe does, from `apps/web/public`.
+
 ## Use
 
 Register it on [`@zekel/mcp`](https://www.npmjs.com/package/@zekel/mcp):

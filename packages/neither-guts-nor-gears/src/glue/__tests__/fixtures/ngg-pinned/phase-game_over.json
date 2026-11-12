@@ -1,0 +1,1319 @@
+{
+ "key": "phase-game_over",
+ "players": 2,
+ "viewer": "p1",
+ "view": {
+  "game_id": "neither-guts-nor-gears",
+  "phase": "game_over",
+  "round": 27,
+  "active_player_id": "p2",
+  "first_player_id": "p1",
+  "layout": "two",
+  "map": {
+   "tiles": [
+    {
+     "coord": "-2,4",
+     "label": "C3",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [
+      "Archmage Chaimidious (p1)"
+     ],
+     "collectors": []
+    },
+    {
+     "coord": "-2,6",
+     "label": "C4",
+     "printed_resource": "water",
+     "current_resource": "water",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": [
+      "water-collector-p2 (p2)"
+     ]
+    },
+    {
+     "coord": "-2,8",
+     "label": "C5",
+     "printed_resource": "water",
+     "current_resource": "water",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "-2,10",
+     "label": "C6",
+     "printed_resource": "wood",
+     "current_resource": "wood",
+     "start": 1,
+     "base_owner": "p1",
+     "units": [],
+     "heroes": [
+      "Chronicler Ottoline Vey (p1)",
+      "Foreman Hadrik Stoll (p1)",
+      "Quartermaster Bertram Hollis (p1)",
+      "Archmage Elara (p1)",
+      "Kestrel Nine (p1)"
+     ],
+     "collectors": []
+    },
+    {
+     "coord": "-1,3",
+     "label": "D2",
+     "printed_resource": "water",
+     "current_resource": "water",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "-1,5",
+     "label": "D3",
+     "printed_resource": "wood",
+     "current_resource": "wood",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "-1,7",
+     "label": "D4",
+     "printed_resource": "ether",
+     "current_resource": "ether",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "-1,9",
+     "label": "D5",
+     "printed_resource": "wood",
+     "current_resource": "wood",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "-1,11",
+     "label": "D6",
+     "printed_resource": "wood",
+     "current_resource": "wood",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "0,2",
+     "label": "E2",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "0,4",
+     "label": "E3",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "0,6",
+     "label": "E4",
+     "printed_resource": "oil",
+     "current_resource": "oil",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "0,8",
+     "label": "E5",
+     "printed_resource": "oil",
+     "current_resource": "oil",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "0,10",
+     "label": "E6",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "0,12",
+     "label": "E7",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "1,3",
+     "label": "F2",
+     "printed_resource": "water",
+     "current_resource": "water",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "1,5",
+     "label": "F3",
+     "printed_resource": "water",
+     "current_resource": "water",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "1,7",
+     "label": "F4",
+     "printed_resource": "ether",
+     "current_resource": "ether",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "1,9",
+     "label": "F5",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "1,11",
+     "label": "F6",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "2,4",
+     "label": "G3",
+     "printed_resource": "water",
+     "current_resource": "water",
+     "start": 2,
+     "base_owner": "p2",
+     "units": [
+      "Water collector (p2)",
+      "Wood collector (p2)",
+      "Ore collector (p2)",
+      "Oil collector (p2)",
+      "Water collector (p2)",
+      "Wood collector (p2)",
+      "Ore collector (p2)",
+      "Wood collector (p2)",
+      "Immobile Combat Platform (p2)",
+      "Water collector (p2)"
+     ],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "2,6",
+     "label": "G4",
+     "printed_resource": "wood",
+     "current_resource": "wood",
+     "start": null,
+     "base_owner": null,
+     "units": [
+      "Spitter Platform (p2)",
+      "Spinner Platform (p2)",
+      "Wall Platform (p2)"
+     ],
+     "heroes": [
+      "Motherboard (p2)",
+      "Marshal Corvin Ashlock (p2)",
+      "Evo Angel (p2)",
+      "Warden Hesper Quill (p2)",
+      "Captain Rook Malvane (p2)",
+      "Envoy Sable Marrow (p2)"
+     ],
+     "collectors": []
+    },
+    {
+     "coord": "2,8",
+     "label": "G5",
+     "printed_resource": "wood",
+     "current_resource": "wood",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "2,10",
+     "label": "G6",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    }
+   ]
+  },
+  "hero_pool_count": 8,
+  "action_stack": [],
+  "active_action": null,
+  "resolving_action": null,
+  "treaties": [
+   {
+    "treaty": "Open Borders",
+    "partners": [
+     "p2",
+     "p1"
+    ],
+    "culture_income": 5
+   }
+  ],
+  "battle": null,
+  "battle_deck_count": 38,
+  "battle_discard": [],
+  "pending": null,
+  "victory_status": {
+   "p1": {
+    "culture": 107,
+    "tech": 3,
+    "leader_kills": 0,
+    "leader_alive": true
+   },
+   "p2": {
+    "culture": 91,
+    "tech": 15,
+    "leader_kills": 0,
+    "leader_alive": true
+   }
+  },
+  "result": {
+   "winners": [
+    "p1"
+   ],
+   "summary": "p1 wins (Cultural)",
+   "kinds": [
+    "Cultural"
+   ]
+  },
+  "balance_setup": {
+   "p1": {
+    "leader": "chaimidious",
+    "start": 1,
+    "setup_order": 1
+   },
+   "p2": {
+    "leader": "motherboard",
+    "start": 2,
+    "setup_order": 0
+   }
+  },
+  "players": [
+   {
+    "player_id": "p1",
+    "kind": "human",
+    "faction": "The Covenant",
+    "species": "wizard",
+    "culture": 107,
+    "next_milestones": [],
+    "mana_current": 5,
+    "mana_max": 5,
+    "buildings": [],
+    "building_counts": {},
+    "research": [],
+    "tech_progress": {
+     "acquired_types": [
+      "surf",
+      "castle",
+      "subject"
+     ],
+     "bonus_points_live": 0,
+     "total": 3,
+     "target": 22
+    },
+    "leader_kills": 0,
+    "military_kills_needed": 1,
+    "leader_alive": true,
+    "subjects": 1,
+    "cores_reserve": 0,
+    "cores_supply": 15,
+    "action_cards": {
+     "build": 2,
+     "moveBattle": 1,
+     "research": 1
+    },
+    "action_cards_played_this_round": [
+     "build:base",
+     "research:base",
+     "move_battle:base"
+    ],
+    "battle_hand_count": 1,
+    "spy_recruitments": 0,
+    "units": [],
+    "heroes": [
+     {
+      "hero": "Archmage Chaimidious",
+      "coord": "-2,4",
+      "is_leader": true,
+      "dead": false,
+      "stats": "Init 70 DMG 3 DEF 6"
+     },
+     {
+      "hero": "Chronicler Ottoline Vey",
+      "coord": "-2,10",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 30 DMG 1 DEF 3"
+     },
+     {
+      "hero": "Foreman Hadrik Stoll",
+      "coord": "-2,10",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 30 DMG 1 DEF 3"
+     },
+     {
+      "hero": "Quartermaster Bertram Hollis",
+      "coord": "-2,10",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 30 DMG 1 DEF 3"
+     },
+     {
+      "hero": "Archmage Elara",
+      "coord": "-2,10",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 70 DMG 3 DEF 4"
+     },
+     {
+      "hero": "Kestrel Nine",
+      "coord": "-2,10",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 70 DMG 3 DEF 4"
+     }
+    ],
+    "bases": [
+     "-2,10"
+    ],
+    "committed_collectors": []
+   },
+   {
+    "player_id": "p2",
+    "kind": "ai",
+    "faction": "The Foundry",
+    "species": "robot",
+    "culture": 91,
+    "next_milestones": [],
+    "mana_current": 0,
+    "mana_max": 0,
+    "buildings": [
+     "Combat Frame Production",
+     "Diplomatic Research Station",
+     "Defense Research Station",
+     "Third Space"
+    ],
+    "building_counts": {
+     "combat-frame-production": 1,
+     "diplomatic-research-station": 1,
+     "defense-research-station": 1,
+     "third-space": 1
+    },
+    "research": [],
+    "tech_progress": {
+     "acquired_types": [
+      "core",
+      "water-collector",
+      "wood-collector",
+      "home",
+      "ore-collector",
+      "oil-collector",
+      "combat-frame-production",
+      "spitter",
+      "spinner",
+      "diplomatic-research-station",
+      "defense-research-station",
+      "immobile-combat-platform",
+      "wall-platform",
+      "third-space"
+     ],
+     "bonus_points_live": 1,
+     "total": 15,
+     "target": 18
+    },
+    "leader_kills": 0,
+    "military_kills_needed": 1,
+    "leader_alive": true,
+    "subjects": 0,
+    "cores_reserve": 2,
+    "cores_supply": 0,
+    "action_cards": {
+     "build": 1,
+     "moveBattle": 2,
+     "research": 1
+    },
+    "action_cards_played_this_round": [
+     "build:base",
+     "research:base",
+     "move_battle:base"
+    ],
+    "battle_hand_count": 0,
+    "spy_recruitments": 0,
+    "units": [
+     {
+      "id": "u-water-collector-p2",
+      "type": "Water collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-wood-collector-p2",
+      "type": "Wood collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-ore-collector-p2-1",
+      "type": "Ore collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-oil-collector-p2-1",
+      "type": "Oil collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-water-collector-p2-2",
+      "type": "Water collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-wood-collector-p2-2",
+      "type": "Wood collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-ore-collector-p2-2",
+      "type": "Ore collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-wood-collector-p2-3",
+      "type": "Wood collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-spitter-p2-1",
+      "type": "Spitter Platform",
+      "coord": "2,6",
+      "core": "allocated"
+     },
+     {
+      "id": "u-spinner-p2-1",
+      "type": "Spinner Platform",
+      "coord": "2,6",
+      "core": "allocated"
+     },
+     {
+      "id": "u-immobile-combat-platform-p2-1",
+      "type": "Immobile Combat Platform",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-wall-platform-p2-1",
+      "type": "Wall Platform",
+      "coord": "2,6",
+      "core": "allocated"
+     },
+     {
+      "id": "u-water-collector-p2-3",
+      "type": "Water collector",
+      "coord": "2,4",
+      "core": "allocated"
+     }
+    ],
+    "heroes": [
+     {
+      "hero": "Motherboard",
+      "coord": "2,6",
+      "is_leader": true,
+      "dead": false,
+      "stats": "Init 30 DMG 1 DEF 5"
+     },
+     {
+      "hero": "Marshal Corvin Ashlock",
+      "coord": "2,6",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 70 DMG 3 DEF 4"
+     },
+     {
+      "hero": "Evo Angel",
+      "coord": "2,6",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 80 DMG 4 DEF 4"
+     },
+     {
+      "hero": "Warden Hesper Quill",
+      "coord": "2,6",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 70 DMG 3 DEF 4"
+     },
+     {
+      "hero": "Captain Rook Malvane",
+      "coord": "2,6",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 70 DMG 3 DEF 4"
+     },
+     {
+      "hero": "Envoy Sable Marrow",
+      "coord": "2,6",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 30 DMG 1 DEF 3"
+     }
+    ],
+    "bases": [
+     "2,4"
+    ],
+    "committed_collectors": [
+     {
+      "collector": "water-collector-p2",
+      "coord": "-2,6",
+      "resource": "water"
+     }
+    ]
+   }
+  ],
+  "your_battle_hand": [
+   {
+    "card": "Rally",
+    "effect": "Move any number of your own eligible mobile units from adjacent locations into this battle."
+   }
+  ],
+  "your_spy_assignments": [],
+  "your_knowledge": [],
+  "your_reserved_heroes": []
+ },
+ "legalMoves": [],
+ "watcher": "p2",
+ "watcherView": {
+  "game_id": "neither-guts-nor-gears",
+  "phase": "game_over",
+  "round": 27,
+  "active_player_id": "p2",
+  "first_player_id": "p1",
+  "layout": "two",
+  "map": {
+   "tiles": [
+    {
+     "coord": "-2,4",
+     "label": "C3",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [
+      "Archmage Chaimidious (p1)"
+     ],
+     "collectors": []
+    },
+    {
+     "coord": "-2,6",
+     "label": "C4",
+     "printed_resource": "water",
+     "current_resource": "water",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": [
+      "water-collector-p2 (p2)"
+     ]
+    },
+    {
+     "coord": "-2,8",
+     "label": "C5",
+     "printed_resource": "water",
+     "current_resource": "water",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "-2,10",
+     "label": "C6",
+     "printed_resource": "wood",
+     "current_resource": "wood",
+     "start": 1,
+     "base_owner": "p1",
+     "units": [],
+     "heroes": [
+      "Chronicler Ottoline Vey (p1)",
+      "Foreman Hadrik Stoll (p1)",
+      "Quartermaster Bertram Hollis (p1)",
+      "Archmage Elara (p1)",
+      "Kestrel Nine (p1)"
+     ],
+     "collectors": []
+    },
+    {
+     "coord": "-1,3",
+     "label": "D2",
+     "printed_resource": "water",
+     "current_resource": "water",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "-1,5",
+     "label": "D3",
+     "printed_resource": "wood",
+     "current_resource": "wood",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "-1,7",
+     "label": "D4",
+     "printed_resource": "ether",
+     "current_resource": "ether",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "-1,9",
+     "label": "D5",
+     "printed_resource": "wood",
+     "current_resource": "wood",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "-1,11",
+     "label": "D6",
+     "printed_resource": "wood",
+     "current_resource": "wood",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "0,2",
+     "label": "E2",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "0,4",
+     "label": "E3",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "0,6",
+     "label": "E4",
+     "printed_resource": "oil",
+     "current_resource": "oil",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "0,8",
+     "label": "E5",
+     "printed_resource": "oil",
+     "current_resource": "oil",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "0,10",
+     "label": "E6",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "0,12",
+     "label": "E7",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "1,3",
+     "label": "F2",
+     "printed_resource": "water",
+     "current_resource": "water",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "1,5",
+     "label": "F3",
+     "printed_resource": "water",
+     "current_resource": "water",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "1,7",
+     "label": "F4",
+     "printed_resource": "ether",
+     "current_resource": "ether",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "1,9",
+     "label": "F5",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "1,11",
+     "label": "F6",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "2,4",
+     "label": "G3",
+     "printed_resource": "water",
+     "current_resource": "water",
+     "start": 2,
+     "base_owner": "p2",
+     "units": [
+      "Water collector (p2)",
+      "Wood collector (p2)",
+      "Ore collector (p2)",
+      "Oil collector (p2)",
+      "Water collector (p2)",
+      "Wood collector (p2)",
+      "Ore collector (p2)",
+      "Wood collector (p2)",
+      "Immobile Combat Platform (p2)",
+      "Water collector (p2)"
+     ],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "2,6",
+     "label": "G4",
+     "printed_resource": "wood",
+     "current_resource": "wood",
+     "start": null,
+     "base_owner": null,
+     "units": [
+      "Spitter Platform (p2)",
+      "Spinner Platform (p2)",
+      "Wall Platform (p2)"
+     ],
+     "heroes": [
+      "Motherboard (p2)",
+      "Marshal Corvin Ashlock (p2)",
+      "Evo Angel (p2)",
+      "Warden Hesper Quill (p2)",
+      "Captain Rook Malvane (p2)",
+      "Envoy Sable Marrow (p2)"
+     ],
+     "collectors": []
+    },
+    {
+     "coord": "2,8",
+     "label": "G5",
+     "printed_resource": "wood",
+     "current_resource": "wood",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    },
+    {
+     "coord": "2,10",
+     "label": "G6",
+     "printed_resource": "ore",
+     "current_resource": "ore",
+     "start": null,
+     "base_owner": null,
+     "units": [],
+     "heroes": [],
+     "collectors": []
+    }
+   ]
+  },
+  "hero_pool_count": 8,
+  "action_stack": [],
+  "active_action": null,
+  "resolving_action": null,
+  "treaties": [
+   {
+    "treaty": "Open Borders",
+    "partners": [
+     "p2",
+     "p1"
+    ],
+    "culture_income": 5
+   }
+  ],
+  "battle": null,
+  "battle_deck_count": 38,
+  "battle_discard": [],
+  "pending": null,
+  "victory_status": {
+   "p1": {
+    "culture": 107,
+    "tech": 3,
+    "leader_kills": 0,
+    "leader_alive": true
+   },
+   "p2": {
+    "culture": 91,
+    "tech": 15,
+    "leader_kills": 0,
+    "leader_alive": true
+   }
+  },
+  "result": {
+   "winners": [
+    "p1"
+   ],
+   "summary": "p1 wins (Cultural)",
+   "kinds": [
+    "Cultural"
+   ]
+  },
+  "balance_setup": {
+   "p1": {
+    "leader": "chaimidious",
+    "start": 1,
+    "setup_order": 1
+   },
+   "p2": {
+    "leader": "motherboard",
+    "start": 2,
+    "setup_order": 0
+   }
+  },
+  "players": [
+   {
+    "player_id": "p1",
+    "kind": "human",
+    "faction": "The Covenant",
+    "species": "wizard",
+    "culture": 107,
+    "next_milestones": [],
+    "mana_current": 5,
+    "mana_max": 5,
+    "buildings": [],
+    "building_counts": {},
+    "research": [],
+    "tech_progress": {
+     "acquired_types": [
+      "surf",
+      "castle",
+      "subject"
+     ],
+     "bonus_points_live": 0,
+     "total": 3,
+     "target": 22
+    },
+    "leader_kills": 0,
+    "military_kills_needed": 1,
+    "leader_alive": true,
+    "subjects": 1,
+    "cores_reserve": 0,
+    "cores_supply": 15,
+    "action_cards": {
+     "build": 2,
+     "moveBattle": 1,
+     "research": 1
+    },
+    "action_cards_played_this_round": [
+     "build:base",
+     "research:base",
+     "move_battle:base"
+    ],
+    "battle_hand_count": 1,
+    "spy_recruitments": 0,
+    "units": [],
+    "heroes": [
+     {
+      "hero": "Archmage Chaimidious",
+      "coord": "-2,4",
+      "is_leader": true,
+      "dead": false,
+      "stats": "Init 70 DMG 3 DEF 6"
+     },
+     {
+      "hero": "Chronicler Ottoline Vey",
+      "coord": "-2,10",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 30 DMG 1 DEF 3"
+     },
+     {
+      "hero": "Foreman Hadrik Stoll",
+      "coord": "-2,10",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 30 DMG 1 DEF 3"
+     },
+     {
+      "hero": "Quartermaster Bertram Hollis",
+      "coord": "-2,10",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 30 DMG 1 DEF 3"
+     },
+     {
+      "hero": "Archmage Elara",
+      "coord": "-2,10",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 70 DMG 3 DEF 4"
+     },
+     {
+      "hero": "Kestrel Nine",
+      "coord": "-2,10",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 70 DMG 3 DEF 4"
+     }
+    ],
+    "bases": [
+     "-2,10"
+    ],
+    "committed_collectors": []
+   },
+   {
+    "player_id": "p2",
+    "kind": "ai",
+    "faction": "The Foundry",
+    "species": "robot",
+    "culture": 91,
+    "next_milestones": [],
+    "mana_current": 0,
+    "mana_max": 0,
+    "buildings": [
+     "Combat Frame Production",
+     "Diplomatic Research Station",
+     "Defense Research Station",
+     "Third Space"
+    ],
+    "building_counts": {
+     "combat-frame-production": 1,
+     "diplomatic-research-station": 1,
+     "defense-research-station": 1,
+     "third-space": 1
+    },
+    "research": [],
+    "tech_progress": {
+     "acquired_types": [
+      "core",
+      "water-collector",
+      "wood-collector",
+      "home",
+      "ore-collector",
+      "oil-collector",
+      "combat-frame-production",
+      "spitter",
+      "spinner",
+      "diplomatic-research-station",
+      "defense-research-station",
+      "immobile-combat-platform",
+      "wall-platform",
+      "third-space"
+     ],
+     "bonus_points_live": 1,
+     "total": 15,
+     "target": 18
+    },
+    "leader_kills": 0,
+    "military_kills_needed": 1,
+    "leader_alive": true,
+    "subjects": 0,
+    "cores_reserve": 2,
+    "cores_supply": 0,
+    "action_cards": {
+     "build": 1,
+     "moveBattle": 2,
+     "research": 1
+    },
+    "action_cards_played_this_round": [
+     "build:base",
+     "research:base",
+     "move_battle:base"
+    ],
+    "battle_hand_count": 0,
+    "spy_recruitments": 0,
+    "units": [
+     {
+      "id": "u-water-collector-p2",
+      "type": "Water collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-wood-collector-p2",
+      "type": "Wood collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-ore-collector-p2-1",
+      "type": "Ore collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-oil-collector-p2-1",
+      "type": "Oil collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-water-collector-p2-2",
+      "type": "Water collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-wood-collector-p2-2",
+      "type": "Wood collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-ore-collector-p2-2",
+      "type": "Ore collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-wood-collector-p2-3",
+      "type": "Wood collector",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-spitter-p2-1",
+      "type": "Spitter Platform",
+      "coord": "2,6",
+      "core": "allocated"
+     },
+     {
+      "id": "u-spinner-p2-1",
+      "type": "Spinner Platform",
+      "coord": "2,6",
+      "core": "allocated"
+     },
+     {
+      "id": "u-immobile-combat-platform-p2-1",
+      "type": "Immobile Combat Platform",
+      "coord": "2,4",
+      "core": "allocated"
+     },
+     {
+      "id": "u-wall-platform-p2-1",
+      "type": "Wall Platform",
+      "coord": "2,6",
+      "core": "allocated"
+     },
+     {
+      "id": "u-water-collector-p2-3",
+      "type": "Water collector",
+      "coord": "2,4",
+      "core": "allocated"
+     }
+    ],
+    "heroes": [
+     {
+      "hero": "Motherboard",
+      "coord": "2,6",
+      "is_leader": true,
+      "dead": false,
+      "stats": "Init 30 DMG 1 DEF 5"
+     },
+     {
+      "hero": "Marshal Corvin Ashlock",
+      "coord": "2,6",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 70 DMG 3 DEF 4"
+     },
+     {
+      "hero": "Evo Angel",
+      "coord": "2,6",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 80 DMG 4 DEF 4"
+     },
+     {
+      "hero": "Warden Hesper Quill",
+      "coord": "2,6",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 70 DMG 3 DEF 4"
+     },
+     {
+      "hero": "Captain Rook Malvane",
+      "coord": "2,6",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 70 DMG 3 DEF 4"
+     },
+     {
+      "hero": "Envoy Sable Marrow",
+      "coord": "2,6",
+      "is_leader": false,
+      "dead": false,
+      "stats": "Init 30 DMG 1 DEF 3"
+     }
+    ],
+    "bases": [
+     "2,4"
+    ],
+    "committed_collectors": [
+     {
+      "collector": "water-collector-p2",
+      "coord": "-2,6",
+      "resource": "water"
+     }
+    ]
+   }
+  ],
+  "your_battle_hand": [],
+  "your_spy_assignments": [],
+  "your_knowledge": [],
+  "your_reserved_heroes": []
+ },
+ "watcherLegalMoves": []
+}

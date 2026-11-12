@@ -43,6 +43,7 @@
     "@zekel/neither-guts-nor-gears": "workspace:*",
     "@zekel/primitives": "^0.1.0",
     "@zekel/sweetlands-imperium": "workspace:*",
+    "@zekel/tokens": "^0.1.0",
     "@zekel/warble-way-galaxy": "workspace:*",
     "@zekel/wire-types": "^0.1.0",
     "@zekel/word-debauchee": "workspace:*",

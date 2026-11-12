@@ -1,0 +1,795 @@
+/* Fractured Fist's arcade theme (docs/design/fractured-fist-arcade/, the
+   build in docs/games/fractured-fist-arcade-build.md). Every rule is scoped
+   under .ff-theme, the class the glue's themeFor puts on the table shell, so
+   no other game and no other page changes. The stage is dark in both of the
+   site's light and dark settings: it is the game's own look, not a mode.
+
+   Values are the boards' (Table-Technique.dc.html, Table-Channel.dc.html). */
+
+.table-shell.ff-theme {
+  --ff-ground: #131116;
+  --ff-stage: #18151c;
+  --ff-bench-top: #0f0e12;
+  --ff-bench-foot: #0b0a0d;
+  --ff-panel: #221e27;
+  --ff-raised: #2c2732;
+  --ff-text: #f4efe6;
+  --ff-muted: #a9a2b3;
+  --ff-hi: #FFD23F;
+  --ff-hi-2: #FF5A1F;
+  --ff-damage: #ff5646;
+  --ff-defense: #4ea3ff;
+  --ff-edge: #000;
+  --ff-shadow: 4px 4px 0 #000;
+  --ff-radius: 6px;
+  --ff-display: 'Barlow Condensed', 'Arial Narrow', 'IBM Plex Sans', sans-serif;
+
+  /* Universe's own tokens, redefined for everything on the page. */
+  --bg: var(--ff-ground); --bg-raised: var(--ff-panel); --card: var(--ff-panel); --chip: var(--ff-raised);
+  --fg: var(--ff-text); --fg-muted: var(--ff-muted);
+  --accent: var(--ff-hi); --accent-tint: var(--ff-raised); --accent-tint-2: var(--ff-raised); --highlight: var(--ff-raised);
+  --border: rgba(255, 255, 255, .16); --line: rgba(255, 255, 255, .1);
+  --brand-orange: var(--ff-hi-2); --brand-orange-hover: #d9450f; --lit: var(--ff-hi);
+  --you-bg: #3a2f14; --you-fg: var(--ff-hi);
+  --danger: var(--ff-damage);
+  --card-back: #111;
+  --shadow-card: var(--ff-shadow); --shadow-sm: none;
+  --shadow-pop: 6px 6px 0 #000, 0 12px 40px rgba(0, 0, 0, .6);
+  --font-display: var(--ff-display);
+  --radius-md: var(--ff-radius);
+
+  background: var(--ff-ground);
+  color: var(--ff-text);
+}
+
+/* ---------- small labels and display type ---------- */
+.ff-theme :is(.zk-zone-label, .zk-tableau-title, .move-menu summary, .side-section h3, .zk-stat span) {
+  font-family: var(--ff-display); font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+}
+.ff-theme .zk-tableau-title { font-style: italic; font-weight: 800; font-size: 18px; letter-spacing: .02em; }
+
+/* ---------- the top bar: black, with a highlight rule under it ---------- */
+.ff-theme .table-topbar {
+  height: 50px; gap: 18px; background: #0b0a0d; border-bottom: 3px solid var(--ff-hi);
+}
+.ff-theme .table-topbar .divider { background: rgba(255, 255, 255, .2); height: 22px; }
+.ff-theme .table-topbar .wordmark { color: var(--ff-text); }
+.ff-theme .table-topbar .title {
+  font: italic 800 20px/1 var(--ff-display); letter-spacing: .02em; text-transform: uppercase;
+}
+.ff-theme .table-topbar .round-note {
+  font: 600 13px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; color: var(--ff-muted);
+}
+.ff-theme .turn-pill {
+  position: relative; isolation: isolate; border-radius: 0; padding: 6px 20px; background: transparent; color: var(--ff-muted);
+  font: italic 800 16px/1 var(--ff-display); letter-spacing: .02em; text-transform: uppercase;
+}
+.ff-theme .turn-pill::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; transform: skewX(-12deg);
+  background: var(--ff-raised); border: 2px solid #000;
+}
+.ff-theme .turn-pill.mine { color: #111; }
+.ff-theme .turn-pill.mine::before { background: var(--ff-hi-2); }
+.ff-theme .turn-pill .dot { display: none; }
+
+/* ---------- buttons: slanted boxes, upright words ----------
+   The box is a skewed layer behind the button, so the words stay straight
+   without an extra element inside every button on the page. */
+.ff-theme :is(.chip-btn, .btn) {
+  position: relative; isolation: isolate; z-index: 0;
+  border: 0; border-radius: 0; background: transparent; color: var(--ff-text); box-shadow: none;
+  font: 700 13px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase;
+}
+.ff-theme :is(.chip-btn, .btn)::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  transform: skewX(-10deg); background: var(--ff-panel); border: 2px solid rgba(255, 255, 255, .22);
+}
+.ff-theme :is(.chip-btn, .btn):hover:not(:disabled)::before { border-color: var(--ff-hi); }
+.ff-theme :is(.chip-btn, .btn):focus-visible { outline: none; }
+.ff-theme :is(.chip-btn, .btn):focus-visible::before { border-color: var(--ff-hi); box-shadow: 0 0 0 2px var(--ff-hi); }
+.ff-theme .btn:not(.secondary) { color: #111; }
+.ff-theme .btn:not(.secondary)::before { background: var(--ff-hi); border-color: #000; box-shadow: 3px 3px 0 #000; }
+.ff-theme .btn.secondary::before { background: var(--ff-raised); border-color: #000; box-shadow: 3px 3px 0 #000; }
+.ff-theme .chip-btn.leave { color: var(--ff-muted); }
+.ff-theme .chip-btn.leave::before { background: transparent; border-color: transparent; }
+.ff-theme .chip-btn.leave:hover { color: var(--ff-damage); }
+.ff-theme .chip-btn.watching { color: #111; }
+.ff-theme .chip-btn.watching::before { background: var(--ff-hi); border-color: #000; }
+/* Pace: three touching slanted keys; the current one lit. */
+.ff-theme .pace { gap: 0; }
+.ff-theme .pace .btn.small { min-width: 34px; padding: 0 10px; }
+.ff-theme .pace .btn.small.active { color: #111; }
+.ff-theme .pace .btn.small.active::before { background: var(--ff-hi); }
+
+/* ---------- panels: flat, black-edged, a hard shadow ---------- */
+.ff-theme :is(.zone:not(.zone-tableau), .zk-tableau, .caption-card, .action-bar, .move-menu, .lesson-note, .toast, .json-inspector) {
+  background: var(--ff-panel); color: var(--ff-text);
+  border: 2px solid #000; border-radius: var(--ff-radius); box-shadow: var(--ff-shadow);
+}
+.ff-theme .zk-tableau { border-left: 6px solid var(--ff-hi); }
+.ff-theme .zk-tableau.active { box-shadow: var(--ff-shadow), 0 0 0 2px var(--ff-hi); }
+.ff-theme .zk-tableau-turn { background: var(--ff-hi); color: #111; border-radius: 0; font: 800 11px/1.4 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; }
+.ff-theme .zk-meter { background: #0b0a0d; border-radius: 0; }
+.ff-theme .zk-meter > div { background: var(--ff-hi); }
+.ff-theme .toast { border-color: var(--ff-damage); }
+
+/* ---------- the play column, the side column, the bench ---------- */
+.ff-theme .table-play { background: var(--ff-stage); }
+.ff-theme .table-side { background: var(--ff-ground); border-left: 2px solid #000; }
+.ff-theme .table-bench { background: linear-gradient(var(--ff-bench-top), var(--ff-bench-foot)); border-top: 2px solid #000; }
+
+/* ---------- the action bar ---------- */
+.ff-theme .action-bar.live { background: var(--ff-panel); }
+.ff-theme .action-bar.urgent { border-color: var(--ff-damage); box-shadow: var(--ff-shadow), 0 0 0 2px var(--ff-damage); }
+.ff-theme .action-bar .step {
+  border-radius: 0; background: transparent; color: var(--ff-muted); border: 2px solid rgba(255, 255, 255, .22);
+  transform: skewX(-12deg); font: 800 13px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; padding: 5px 12px;
+}
+.ff-theme .action-bar .step.current { background: var(--ff-hi); color: #111; border-color: #000; }
+.ff-theme .action-bar .words .title { font: italic 800 17px/1.1 var(--ff-display); letter-spacing: .02em; text-transform: uppercase; }
+.ff-theme .action-bar .btn.small { height: 38px; padding: 0 18px; font: italic 800 16px/1 var(--ff-display); letter-spacing: .02em; }
+.ff-theme .action-bar .btn .note { font: 600 11px var(--font-body); text-transform: none; letter-spacing: 0; }
+
+/* ---------- the last move and the log ---------- */
+.ff-theme .caption-card .actor-chip { font: 800 14px var(--ff-display); letter-spacing: .06em; text-transform: uppercase; }
+.ff-theme .caption-card .avatar { border-radius: 0; border: 2px solid #000; transform: skewX(-10deg); }
+.ff-theme .side-section h3 {
+  font: italic 800 18px/1 var(--ff-display); letter-spacing: .02em; color: var(--ff-text);
+}
+.ff-theme .log li { border-bottom-color: rgba(255, 255, 255, .08); }
+.ff-theme .log li.current { color: var(--ff-hi); }
+.ff-theme .key-log .log-round { font: 800 11px var(--ff-display); letter-spacing: .1em; color: var(--ff-hi); }
+.ff-theme .key-log li.yours .log-line { color: var(--ff-text); }
+.ff-theme .key-log .log-detail { border-left-color: var(--ff-hi); }
+.ff-theme .move-menu button:hover, .ff-theme .move-menu button:focus-visible { background: var(--ff-raised); }
+
+/* ---------- sheets over the table ---------- */
+.ff-theme .sheet { background: var(--ff-panel); color: var(--ff-text); border: 2px solid #000; border-radius: var(--ff-radius); box-shadow: var(--shadow-pop); }
+.ff-theme .sheet h2 { font: italic 800 28px/1 var(--ff-display); letter-spacing: .02em; text-transform: uppercase; }
+/* The theme's buttons are position: relative (for the slanted box behind
+   them), which would pull a sheet's ✕ out of its corner and into the flow. */
+.ff-theme .sheet .close { position: absolute; }
+.ff-theme .sheet-backdrop { background: rgba(8, 7, 10, .72); }
+.ff-theme .rules-text { background: var(--ff-ground); border: 2px solid #000; border-radius: var(--ff-radius); }
+.ff-theme .end-panel h2 { font: italic 800 44px/1 var(--ff-display); text-transform: uppercase; }
+.ff-theme .end-panel .result.first { background: #3a2f14; }
+
+/* ---------- the lit ring: the highlight, not the site's orange ---------- */
+.ff-theme .zk-lit { --lit: var(--ff-hi); }
+
+/* ================= the game-drawn screen (FfScreen.tsx) ================= */
+.ff-theme .ff-screen { display: flex; flex-direction: column; gap: 12px; min-height: 100%; }
+.ff-theme .ff-kicker { font: 700 11px/1 var(--ff-display); letter-spacing: .1em; text-transform: uppercase; color: var(--ff-muted); }
+/* A slanted tag: a skewed box behind upright words. */
+.ff-theme :is(.ff-tag, .ff-count, .ff-chip, .ff-step, .ff-plate-badge) { position: relative; isolation: isolate; display: inline-flex; align-items: center; }
+.ff-theme :is(.ff-tag, .ff-count, .ff-chip, .ff-step, .ff-plate-badge)::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; transform: skewX(-12deg); border: 2px solid #000;
+}
+.ff-theme .ff-tag { padding: 2px 9px; font: 800 11px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; color: #111; }
+.ff-theme .ff-tag::before { background: var(--ff-hi); }
+.ff-theme .ff-count { padding: 2px 8px; font: 800 12px/1 var(--ff-display); color: var(--ff-text); margin-left: 10px; }
+.ff-theme .ff-count::before { background: var(--ff-raised); }
+
+/* ---------- the two plates, facing each other ---------- */
+.ff-theme .ff-versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px; flex: none;
+  background: var(--ff-panel); border: 2px solid #000; border-radius: var(--ff-radius); box-shadow: var(--ff-shadow); padding: 10px 16px; }
+.ff-theme .ff-plate { display: flex; flex-direction: row; align-items: center; gap: 14px; min-width: 0; }
+.ff-theme .ff-plate.right { flex-direction: row-reverse; }
+.ff-theme .ff-plate-badge { width: 42px; height: 42px; justify-content: center; flex: none; color: #111; font: italic 800 24px/1 var(--ff-display); text-transform: uppercase; }
+.ff-theme .ff-plate-badge::before { background: var(--ff-raised); }
+.ff-theme .ff-plate.active .ff-plate-badge::before { background: var(--ff-hi-2); }
+.ff-theme .ff-plate:not(.active) .ff-plate-badge { color: var(--ff-text); }
+.ff-theme .ff-plate-body { display: flex; flex-direction: column; gap: 5px; min-width: 0; flex: 1; }
+.ff-theme .ff-plate.right .ff-plate-body { align-items: flex-end; }
+.ff-theme .ff-plate-head { display: flex; align-items: baseline; gap: 10px; min-width: 0; flex-wrap: wrap; }
+.ff-theme .ff-plate.right .ff-plate-head { flex-direction: row-reverse; }
+.ff-theme .ff-plate-name { font: italic 800 22px/1 var(--ff-display); letter-spacing: .02em; text-transform: uppercase; white-space: nowrap; }
+.ff-theme .ff-plate-sub { font: 600 12px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; color: var(--ff-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 16ch; }
+.ff-theme .ff-plate-counts { display: inline-flex; gap: 8px; font: 700 11px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; color: var(--ff-muted); }
+.ff-theme .ff-plate-counts span + span::before { content: '·'; margin-right: 8px; }
+.ff-theme .ff-plate-stam { flex: none; font: italic 800 20px/1 var(--ff-display); color: var(--ff-muted); }
+.ff-theme .ff-plate-stam b { font-size: 44px; color: var(--ff-hi); font-weight: 800; }
+.ff-theme .ff-plate-discard { flex: none; --zekel-card-w: 40px; --zekel-card-h: 56px; }
+.ff-theme .ff-plate-discard .zk-zone { min-width: 0; }
+.ff-theme .ff-plate-discard :is(.zk-card-face, .zk-card-back) { padding: 2px; }
+.ff-theme .ff-plate-discard :is(.zk-card-label, .zk-card-sub, .zk-card-badges, .zk-card-cost, .zk-card-value) { display: none; }
+.ff-theme .ff-plate-discard .zk-zone-depth { display: none; }
+.ff-theme .ff-plate-discard .zk-zone-empty { font-size: 0; }
+
+/* stamina: slanted blocks, what is left lit; the right plate fills from the right */
+.ff-theme .ff-blocks .zk-track, .ff-theme .ff-ticks .zk-track { padding: 0; gap: 4px; flex-wrap: nowrap; align-items: center; }
+.ff-theme .ff-plate.right :is(.ff-blocks, .ff-ticks) .zk-track { flex-direction: row-reverse; }
+.ff-theme :is(.ff-blocks, .ff-ticks) .zk-track-space { min-width: 0; }
+.ff-theme :is(.ff-blocks, .ff-ticks) .zk-track-idx { display: none; }
+.ff-theme .ff-blocks .zk-track-cell {
+  min-width: 0; width: 34px; height: 20px; padding: 0; border-radius: 0; font-size: 0;
+  transform: skewX(-20deg); border: 2px solid #000; background: #2a1c1c;
+}
+.ff-theme .ff-blocks .zk-track-space.filled .zk-track-cell { background: linear-gradient(180deg, #FFD23F 0 55%, #FF8A1F 55%); }
+.ff-theme .ff-missteps { display: flex; align-items: center; gap: 8px; }
+.ff-theme .ff-plate.right .ff-missteps { flex-direction: row-reverse; }
+.ff-theme .ff-missteps b { font: 800 12px/1 var(--ff-display); letter-spacing: .06em; }
+.ff-theme .ff-ticks .zk-track { gap: 2px; }
+.ff-theme .ff-ticks .zk-track-cell { min-width: 0; width: 10px; height: 5px; padding: 0; border: 0; border-radius: 0; font-size: 0; background: #3a3440; }
+.ff-theme .ff-ticks .zk-track-space.filled .zk-track-cell { background: #d9d2e3; }
+
+/* the VS burst between the plates */
+.ff-theme .ff-vs { width: 58px; height: 58px; display: grid; place-items: center; background: var(--ff-hi); color: #111;
+  clip-path: polygon(50% 0, 61% 18%, 82% 8%, 80% 30%, 100% 36%, 86% 52%, 100% 68%, 79% 72%, 82% 94%, 61% 84%, 50% 100%, 39% 84%, 18% 94%, 21% 72%, 0 68%, 14% 52%, 0 36%, 20% 30%, 18% 8%, 39% 18%);
+  font: italic 800 20px/1 var(--ff-display); }
+
+/* ---------- the played rows ---------- */
+.ff-theme .ff-row { display: flex; flex-direction: column; gap: 8px; flex: none; --zekel-card-w: 92px; --zekel-card-h: 130px; }
+.ff-theme .ff-row-head { margin: 0; display: flex; align-items: center; font: 700 12px/1 var(--ff-display); letter-spacing: .1em; text-transform: uppercase; color: var(--ff-muted); }
+.ff-theme .ff-row-cards { min-height: var(--zekel-card-h); }
+.ff-theme .ff-row-cards .zk-zone-empty { border-color: rgba(255, 255, 255, .12); font-size: 0; }
+
+/* ---------- the strike gutter ---------- */
+.ff-theme .ff-gutter { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; flex: none;
+  background: var(--ff-panel); border: 2px solid #000; border-radius: var(--ff-radius); box-shadow: var(--ff-shadow); padding: 10px 16px; }
+.ff-theme .ff-hit { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
+.ff-theme .ff-hit:last-child { justify-content: flex-end; }
+.ff-theme .ff-hit-who { font: italic 800 16px/1 var(--ff-display); letter-spacing: .02em; text-transform: uppercase; white-space: nowrap; }
+.ff-theme .ff-hit-arrow { width: 14px; height: 14px; flex: none; background: var(--ff-hi); clip-path: polygon(35% 0, 65% 0, 65% 55%, 100% 55%, 50% 100%, 0 55%, 35% 55%); }
+.ff-theme .ff-hit-arrow.up { transform: rotate(180deg); }
+.ff-theme .ff-chip { padding: 3px 10px; font: 800 11px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+.ff-theme .ff-chip b { font-size: 15px; margin-right: 3px; font-style: italic; }
+.ff-theme .ff-chip.damage::before { background: var(--ff-damage); }
+.ff-theme .ff-chip.defense::before { background: var(--ff-defense); }
+.ff-theme .ff-vs-small { font: 700 11px/1 var(--ff-display); text-transform: uppercase; color: var(--ff-muted); }
+.ff-theme .ff-strike-note { display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto; column-gap: 10px; align-items: center; }
+.ff-theme .ff-strike-note .ff-burst { grid-row: 1 / 3; width: 38px; height: 38px; background: var(--ff-hi-2);
+  clip-path: polygon(50% 0, 61% 18%, 82% 8%, 80% 30%, 100% 36%, 86% 52%, 100% 68%, 79% 72%, 82% 94%, 61% 84%, 50% 100%, 39% 84%, 18% 94%, 21% 72%, 0 68%, 14% 52%, 0 36%, 20% 30%, 18% 8%, 39% 18%); }
+.ff-theme .ff-strike-note b { font: italic 800 20px/1 var(--ff-display); text-transform: uppercase; color: var(--ff-hi); }
+.ff-theme .ff-strike-note span:last-child { font: 700 10px/1.2 var(--ff-display); letter-spacing: .1em; text-transform: uppercase; color: var(--ff-muted); }
+
+/* ---------- the action bar ---------- */
+.ff-theme .ff-actionbar { display: flex; align-items: center; gap: 16px; flex: none; flex-wrap: wrap; position: relative;
+  background: var(--ff-panel); border: 2px solid #000; border-radius: var(--ff-radius); box-shadow: var(--ff-shadow); padding: 10px 16px; }
+.ff-theme .ff-actionbar.urgent { box-shadow: var(--ff-shadow), 0 0 0 2px var(--ff-damage); }
+.ff-theme .ff-steps { display: flex; flex-direction: column; gap: 6px; }
+.ff-theme .ff-steps-tags { display: flex; gap: 6px; }
+.ff-theme .ff-step { padding: 5px 14px; font: 800 13px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; color: var(--ff-muted); }
+.ff-theme .ff-step::before { border-color: rgba(255, 255, 255, .22); background: transparent; }
+.ff-theme .ff-step.current { color: #111; }
+.ff-theme .ff-step.current::before { background: var(--ff-hi); border-color: #000; }
+.ff-theme .ff-counters { display: flex; gap: 6px; padding-left: 16px; border-left: 2px solid rgba(255, 255, 255, .1); }
+.ff-theme .ff-counter { min-width: 52px; padding: 4px 8px; display: flex; flex-direction: column; align-items: center; background: #0b0a0d; border: 2px solid #000; }
+.ff-theme .ff-counter b { font: italic 800 26px/1 var(--ff-display); color: var(--ff-hi); }
+.ff-theme .ff-counter span { font: 700 10px/1.2 var(--ff-display); letter-spacing: .1em; text-transform: uppercase; color: var(--ff-muted); }
+.ff-theme .ff-words { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 2px; font-size: 14px; line-height: 1.35; }
+.ff-theme .ff-words b { font: italic 800 17px/1.1 var(--ff-display); letter-spacing: .02em; text-transform: uppercase; }
+.ff-theme .ff-actionbar.urgent .ff-words b { color: var(--ff-damage); }
+.ff-theme .ff-buttons { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ff-theme .ff-buttons .btn { height: 40px; padding: 0 18px; font: italic 800 16px/1 var(--ff-display); letter-spacing: .02em; display: inline-flex; align-items: center; gap: 8px; }
+.ff-theme .ff-buttons .btn .note { font: 600 11px var(--font-body); text-transform: none; letter-spacing: 0; font-style: normal; }
+/* the numbered menu: a quiet key in the bench's corner; open, it lifts above it */
+.ff-theme .ff-menu { position: relative; flex: none; align-self: flex-end; margin-bottom: 4px; }
+.ff-theme .ff-menu .move-menu { box-shadow: none; border-width: 2px; padding: 6px 10px; max-width: 180px; }
+.ff-theme .ff-menu .move-menu summary { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ff-theme .ff-menu .move-menu[open] { position: absolute; left: 0; bottom: 0; z-index: 30; width: 420px; max-width: none; max-height: 60vh; overflow: auto; box-shadow: var(--ff-shadow); }
+
+/* ---------- the bench, under the play column ---------- */
+.ff-theme .ff-bench { display: flex; align-items: flex-end; gap: 24px; flex: none; padding: 10px 4px 0;
+  --zekel-card-w: 100px; --zekel-card-h: 142px; }
+.ff-theme .ff-hand { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.ff-theme .ff-bench-label { display: flex; gap: 14px; font: 800 12px/1 var(--ff-display); letter-spacing: .1em; text-transform: uppercase; }
+.ff-theme .ff-hint { color: var(--ff-hi); }
+.ff-theme .ff-piles { display: flex; gap: 18px; flex: none; }
+.ff-theme .ff-pile { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  --zekel-card-w: 72px; --zekel-card-h: 100px; }
+.ff-theme .ff-pile figcaption { font: 800 11px/1 var(--ff-display); letter-spacing: .1em; text-transform: uppercase; color: var(--ff-muted); }
+
+/* the supply, drawn inline where there is no side column (the watch page) */
+.ff-theme .ff-screen > .ff-supply { --zekel-card-w: 92px; --zekel-card-h: 130px; }
+/* The screen fills the bench itself, under the play column. */
+.ff-theme .table-bench.slot { display: none; }
+
+/* ================= the side column and the bench (build item 3) =================
+   The side column runs the full height: the supply, the last move with pace
+   and replay, and the log. The bench is the screen's own, under the play
+   column only. At 1440 x 900 nothing scrolls. */
+.ff-theme .table-side { width: 360px; padding: 14px 14px 10px; gap: 14px; }
+.ff-theme .table-board { padding: 14px 16px 12px; gap: 12px; }
+/* A rules lesson floats over the right end of their row instead of pushing
+   the table down: it is there the first time a rule matters, then gone. */
+.ff-theme .table-play { position: relative; }
+.ff-theme .table-play > .lesson-note { position: absolute; top: 132px; right: 20px; width: 360px; margin: 0; z-index: 25; }
+
+/* ================= the supply as a list (build item 4) ================= */
+.ff-theme .ff-supply { display: grid; grid-template-columns: auto 1fr; align-items: baseline; column-gap: 12px; row-gap: 8px;
+  background: var(--ff-panel); border: 2px solid #000; border-radius: var(--ff-radius); box-shadow: var(--ff-shadow); padding: 12px 12px 12px; }
+.ff-theme .ff-supply-title { margin: 0; font: italic 800 24px/1 var(--ff-display); letter-spacing: .02em; text-transform: uppercase; }
+.ff-theme .ff-supply-list { display: contents; }
+.ff-theme .ff-supply-list > .zk-zone-label { display: flex; align-items: baseline; gap: 8px; margin: 0;
+  font: 400 12px/1.3 var(--font-body); letter-spacing: 0; text-transform: none; color: var(--ff-muted); }
+.ff-theme .ff-supply-list .zk-zone-cols { font: 800 11px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; color: var(--ff-text); }
+.ff-theme .ff-supply-list .zk-zone-cols span { width: 30px; }
+.ff-theme .ff-supply-list .zk-zone-list { grid-column: 1 / -1; gap: 3px; }
+.ff-theme .zk-card-row {
+  grid-template-columns: 24px 34px minmax(0, 1fr) auto auto; gap: 8px; min-height: 36px; padding: 3px 8px 3px 4px;
+  background: transparent; border: 2px solid transparent; border-radius: 3px; color: var(--ff-text);
+  transition: opacity var(--motion-fast), border-color var(--motion-fast), box-shadow var(--motion-fast);
+}
+.ff-theme .zk-card-row-cost { width: 22px; height: 24px; border-radius: 0; border: 2px solid #000; color: #111;
+  font: italic 800 15px/1 var(--ff-display); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+.ff-theme .zk-card-row-art { width: 34px; height: 26px; border-radius: 0; border: 2px solid #000; background: #111; }
+.ff-theme .zk-card-row-label { font: italic 800 16px/1 var(--ff-display); letter-spacing: .02em; text-transform: uppercase; }
+.ff-theme .zk-card-row-sub { padding: 2px 7px; border-radius: 999px; background: var(--ff-raised); color: var(--ff-text); font: 600 10px/1.2 var(--font-body); }
+.ff-theme .zk-card-row-counts b { width: 30px; font: italic 800 16px/1 var(--ff-display); opacity: .7; }
+.ff-theme .zk-card-row-counts b.own { opacity: 1; color: var(--ff-text); }
+/* lit: the outline is the cue, and it glows; in the Channel step the rest dim */
+.ff-theme .zk-card-row.zk-lit { animation: none; border-color: var(--ff-hi); background: rgba(255, 210, 63, .06);
+  box-shadow: 0 0 0 1px #000, 0 0 12px rgba(255, 210, 63, .45); }
+.ff-theme .zk-card-row.zk-lit:hover { background: rgba(255, 210, 63, .14); }
+.ff-theme .zk-card-row.zk-lit:focus-visible { box-shadow: 0 0 0 3px var(--ff-hi) !important; }
+.ff-theme .ff-supply.buying .zk-card-row:not(.zk-lit) { opacity: .38; }
+
+/* ================= the card face (build item 5) =================
+   The print-and-play sheet's layout: the cost in a colored corner, the name
+   in italic capitals, a strip of the card's art, the effects as chips; a
+   resource shows what it is worth top right. The corner's color comes from
+   the card's color key, published by the table from the glue's palette. */
+.ff-theme :is(.zk-card, .zk-card-row, .ff-printed) { --ff-corner: var(--zekel-c-technique, #2A74B8); --ff-ink: #111; }
+.ff-theme :is(.zk-card, .zk-card-row, .ff-printed)[data-color-key='resource'] { --ff-corner: var(--zekel-c-resource, #F2E53A); }
+.ff-theme :is(.zk-card, .zk-card-row, .ff-printed)[data-color-key='starter'] { --ff-corner: var(--zekel-c-starter, #19A58B); }
+.ff-theme :is(.zk-card, .zk-card-row, .ff-printed)[data-color-key='misstep'] { --ff-corner: var(--zekel-c-misstep, #111); --ff-ink: var(--ff-text); }
+.ff-theme :is(.zk-card, .zk-card-row, .ff-printed)[data-color-key='masters-circle'] { --ff-corner: var(--zekel-c-masters-circle); --ff-ink: var(--zekel-c-ink-masters-circle); }
+.ff-theme :is(.zk-card, .zk-card-row, .ff-printed)[data-color-key='uncounted'] { --ff-corner: var(--zekel-c-uncounted); --ff-ink: var(--zekel-c-ink-uncounted); }
+.ff-theme :is(.zk-card, .zk-card-row, .ff-printed)[data-color-key='titan-entertainment'] { --ff-corner: var(--zekel-c-titan-entertainment); --ff-ink: var(--zekel-c-ink-titan-entertainment); }
+.ff-theme :is(.zk-card, .zk-card-row, .ff-printed)[data-color-key='the-awakened'] { --ff-corner: var(--zekel-c-the-awakened); --ff-ink: var(--zekel-c-ink-the-awakened); }
+
+.ff-theme .zk-card { border-radius: 5px; font-family: var(--font-body); }
+.ff-theme .zk-card-face {
+  background: #f4efe6 !important; color: #111; text-shadow: none;
+  border: 2px solid #000; border-radius: 5px; box-shadow: 3px 3px 0 #000;
+  padding: 5px 5px 6px; justify-content: flex-start; gap: 4px;
+}
+/* the corner, in the card's color, with the cost on it */
+.ff-theme .zk-card-face::before {
+  content: ''; position: absolute; left: 0; top: 0; width: 30%; aspect-ratio: 1; z-index: 1;
+  background: var(--ff-corner); clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+/* the name, then the art, then the card's own words, then the chips */
+.ff-theme .zk-card-face > div:first-of-type { display: contents; }
+.ff-theme .zk-card-label { order: 1; text-align: center; padding: 0 14%; }
+.ff-theme .zk-card-face > .zk-card-art { order: 2; }
+.ff-theme .zk-card-sub { order: 3; text-align: center; }
+.ff-theme .zk-card-face > div:last-of-type { order: 4; margin-top: auto; }
+.ff-theme .zk-card-cost {
+  position: absolute; left: 3px; top: 1px; z-index: 2; float: none; margin: 0; min-width: 0; height: auto; padding: 0;
+  background: none; border-radius: 0; color: var(--ff-ink); font: italic 800 14px/1 var(--ff-display);
+}
+.ff-theme .zk-card-value {
+  position: absolute; right: 5px; top: 2px; z-index: 2; float: none; margin: 0;
+  color: #111; font: italic 800 14px/1 var(--ff-display);
+}
+.ff-theme .zk-card-label {
+  font: italic 800 12px/1.05 var(--ff-display); letter-spacing: .01em; text-transform: uppercase; color: #111;
+  overflow-wrap: normal; word-break: normal;
+}
+.ff-theme .zk-card-art {
+  display: block; width: 100%; height: auto; aspect-ratio: 300 / 176; object-fit: cover;
+  background: #111; border: 2px solid #111; border-radius: 0; box-sizing: border-box;
+}
+.ff-theme .zk-card-sub { font-size: 9px; line-height: 1.2; color: #3a3530; opacity: 1; }
+.ff-theme .zk-card-badges { gap: 3px; }
+.ff-theme .zk-card-badge {
+  background: #fff; color: #111; border: 1.5px solid #111; border-radius: 999px;
+  padding: 0 5px; font: 600 9px/1.5 var(--font-body); white-space: nowrap;
+}
+.ff-theme .zk-card-counts { border-top-color: rgba(0, 0, 0, .2); color: #111; }
+/* the back: black, teal corners, the count in a yellow burst */
+.ff-theme .zk-card-back {
+  background: #111 !important; border: 2px solid #000; border-radius: 5px; box-shadow: 3px 3px 0 #000; color: #111;
+}
+.ff-theme .zk-card-back::before, .ff-theme .zk-card-back::after {
+  content: ''; position: absolute; width: 38%; aspect-ratio: 1; background: #19A58B;
+}
+.ff-theme .zk-card-back::before { left: 0; top: 0; clip-path: polygon(0 0, 100% 0, 0 100%); }
+.ff-theme .zk-card-back::after { right: 0; bottom: 0; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+.ff-theme .zk-card-back > div:not(:empty) {
+  width: 56%; aspect-ratio: 1; display: grid; place-items: center; z-index: 1; background: var(--ff-hi);
+  clip-path: polygon(50% 0, 61% 18%, 82% 8%, 80% 30%, 100% 36%, 86% 52%, 100% 68%, 79% 72%, 82% 94%, 61% 84%, 50% 100%, 39% 84%, 18% 94%, 21% 72%, 0 68%, 14% 52%, 0 36%, 20% 30%, 18% 8%, 39% 18%);
+  font: italic 800 20px/1 var(--ff-display); color: #111;
+}
+.ff-theme .zk-card-back-x { display: none; }
+.ff-theme .ff-pile .zk-zone-depth { display: none; }
+.ff-theme .zk-zone-pile .zk-card:not(:last-child) .zk-card-face { box-shadow: none; }
+/* the list row's corner: the same color and ink as the card's */
+.ff-theme .zk-card-row-cost { background: var(--ff-corner) !important; color: var(--ff-ink); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+.ff-theme .zk-card-row-art { object-fit: cover; }
+
+/* lit: a thick highlight edge, lifted; in a hand with something lit, the rest step back */
+.ff-theme .zk-card.zk-lit { animation: none; }
+.ff-theme .zk-card.zk-lit .zk-card-face { border-color: var(--ff-hi); box-shadow: 0 0 0 2px #000, 4px 4px 0 #000, 0 0 16px rgba(255, 210, 63, .5); }
+.ff-theme .zk-card.zk-lit:focus-visible .zk-card-face { box-shadow: 0 0 0 4px var(--ff-hi); }
+.ff-theme .ff-hand.has-lit .zk-card:not(.zk-lit) .zk-card-face { filter: brightness(.62) saturate(.7); }
+
+/* ================= the strike moment (build item 6) =================
+   The board dims under speed lines; a slanted yellow banner; the fighters
+   in their plates; blue shields; red bursts that turn yellow when they land.
+   Same beats, same lengths as STRIKE_BEATS. */
+.ff-theme .strike-scrim {
+  background-color: rgba(8, 7, 10, .88);
+  background-image: repeating-conic-gradient(from 0deg at 50% 45%, rgba(255, 210, 63, .07) 0 4deg, transparent 4deg 12deg);
+}
+.ff-theme .strike-scrim.closing { background-color: rgba(8, 7, 10, 0); background-image: none; }
+.ff-theme .strike-banner { position: relative; isolation: isolate; background: transparent; border: 0; padding: 12px 60px; color: #111; }
+.ff-theme .strike-banner::before { content: ''; position: absolute; inset: 0; z-index: -1; transform: skewX(-12deg);
+  background: var(--ff-hi); border: 3px solid #000; box-shadow: 8px 8px 0 #000; }
+.ff-theme .strike-banner span { font: 800 22px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; }
+.ff-theme .strike-banner b { font: italic 800 64px/1 var(--ff-display); text-transform: uppercase; letter-spacing: .01em; }
+.ff-theme .strike-fighter { top: 70px; }
+.ff-theme .strike-badge { position: relative; isolation: isolate; width: 52px; height: 52px; border: 0; color: #111; font: italic 800 28px/1 var(--ff-display); text-transform: uppercase; }
+.ff-theme .strike-badge::before { content: ''; position: absolute; inset: 0; z-index: -1; transform: skewX(-12deg); background: var(--ff-hi-2); border: 2px solid #000; box-shadow: 4px 4px 0 #000; }
+.ff-theme .strike-fighter.right .strike-badge::before { background: #8b8398; }
+.ff-theme .strike-fighter-name { font: italic 800 30px/1 var(--ff-display); letter-spacing: .02em; text-transform: uppercase; color: var(--ff-text); }
+.ff-theme .strike-pip { width: 28px; height: 18px; border: 2px solid #000; background: #2a1c1c; transform: skewX(-20deg); }
+.ff-theme .strike-pip.full { background: linear-gradient(180deg, #FFD23F 0 55%, #FF8A1F 55%); border-color: #000; }
+.ff-theme .strike-pip.out { background: linear-gradient(180deg, #FFD23F 0 55%, #FF8A1F 55%); border-color: #000; transform: translateY(34px) rotate(24deg) skewX(-20deg); }
+.ff-theme .strike-stam { font: italic 800 20px/1 var(--ff-display); color: var(--ff-muted); }
+.ff-theme .strike-stam b { font-size: 64px; color: var(--ff-hi); }
+.ff-theme .strike-shield { width: 70px; height: 190px; top: 30px; border: 3px solid #000; box-shadow: 5px 5px 0 #000; color: #fff;
+  background: linear-gradient(180deg, #8cc4ff, #4ea3ff 55%, #2f7fe0); }
+.ff-theme .strike-shield b { font: italic 800 44px/1 var(--ff-display); color: #fff; text-shadow: 2px 2px 0 #000; }
+.ff-theme .strike-shield > span:not([class]) { writing-mode: vertical-rl; rotate: 180deg; font: 800 11px/1 var(--ff-display); letter-spacing: .12em; color: #0b2a52; }
+.ff-theme .strike-shield.flare { box-shadow: 5px 5px 0 #000, 0 0 30px rgba(78, 163, 255, .9); }
+.ff-theme .strike-block-tag { background: var(--ff-defense); color: #fff; border: 2px solid #000; box-shadow: 3px 3px 0 #000; font: 800 16px/1 var(--ff-display); letter-spacing: .06em; text-transform: uppercase; padding: 5px 12px; }
+.ff-theme .strike-stamp { background: #fff; color: var(--ff-defense); border: 3px solid var(--ff-defense); box-shadow: 4px 4px 0 #000; font: italic 800 30px/1 var(--ff-display); text-transform: uppercase; }
+.ff-theme .strike-hit { width: 84px; height: 84px; border: 0; background: var(--ff-damage); color: #fff;
+  clip-path: polygon(50% 0, 61% 18%, 82% 8%, 80% 30%, 100% 36%, 86% 52%, 100% 68%, 79% 72%, 82% 94%, 61% 84%, 50% 100%, 39% 84%, 18% 94%, 21% 72%, 0 68%, 14% 52%, 0 36%, 20% 30%, 18% 8%, 39% 18%);
+  font: italic 800 34px/1 var(--ff-display); text-shadow: 2px 2px 0 #000; }
+.ff-theme .strike-impact { background: var(--ff-hi); color: #111; padding: 18px 22px; font: italic 800 48px/1 var(--ff-display);
+  clip-path: polygon(50% 0, 61% 18%, 82% 8%, 80% 30%, 100% 36%, 86% 52%, 100% 68%, 79% 72%, 82% 94%, 61% 84%, 50% 100%, 39% 84%, 18% 94%, 21% 72%, 0 68%, 14% 52%, 0 36%, 20% 30%, 18% 8%, 39% 18%); }
+.ff-theme .strike-ko { font: italic 800 150px/1 var(--ff-display); color: var(--ff-hi); text-shadow: 6px 6px 0 #000; }
+.ff-theme .strike-caption { background: #0b0a0d; border: 2px solid #000; box-shadow: var(--ff-shadow); color: var(--ff-text); }
+.ff-theme .strike-controls { justify-content: flex-end; }
+.ff-theme .strike-controls .muted { font: 700 11px var(--ff-display); letter-spacing: .1em; text-transform: uppercase; }
+
+/* ================= the phone (build item 7) =================
+   Phone-Technique, Phone-Channel, Phone-Supply, Phone-Card, Phone-Menu and
+   Phone-Strike, at 390 x 844. The same table, stacked and smaller; nothing
+   scrolls. Every rule below is for `.ff-screen.phone` or `.table-shell.phone`,
+   so the desktop table is untouched. */
+.ff-theme .ff-plate-stam-inline { display: none; }
+
+/* ---------- the top bar: title, round, the turn, the menu ---------- */
+.table-shell.phone.ff-theme .table-topbar .title { font-size: 16px; }
+.ff-theme .round-tag { position: relative; isolation: isolate; padding: 3px 8px; color: #111; font: 800 12px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; }
+.ff-theme .round-tag::before { content: ''; position: absolute; inset: 0; z-index: -1; transform: skewX(-12deg); background: var(--ff-hi); border: 2px solid #000; }
+.table-shell.phone.ff-theme .turn-pill { padding: 6px 12px; font-size: 14px; }
+.table-shell.phone.ff-theme .table-menu-btn { border-color: rgba(255, 255, 255, .22); color: var(--ff-text); }
+.table-shell.phone.ff-theme .table-board { padding: 8px 12px 0; gap: 7px; overflow-x: hidden; }
+.table-shell.phone.ff-theme .table-play > .lesson-note { top: 8px; left: 12px; right: 12px; width: auto; }
+
+/* ---------- the stack ---------- */
+.ff-theme .ff-screen.phone { flex: 1 0 auto; min-height: 0; gap: 7px; }
+
+/* both plates, smaller: the name and stamina, the blocks, the missteps */
+.ff-theme .ff-screen.phone .ff-versus { padding: 8px 10px; gap: 6px; }
+.ff-theme .ff-screen.phone :is(.ff-plate-badge, .ff-plate-discard, .ff-plate-counts, .ff-plate-sub, .ff-plate-stam, .ff-plate-head .ff-tag) { display: none; }
+.ff-theme .ff-screen.phone .ff-plate { gap: 0; }
+.ff-theme .ff-screen.phone .ff-plate-body { gap: 5px; }
+.ff-theme .ff-screen.phone .ff-plate-head { gap: 6px; flex-wrap: nowrap; }
+.ff-theme .ff-screen.phone .ff-plate-name { font-size: 15px; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ff-theme .ff-screen.phone .ff-plate-stam-inline { display: inline-flex; align-items: baseline; gap: 2px; font: 700 10px/1 var(--ff-display); letter-spacing: .08em; color: var(--ff-muted); }
+.ff-theme .ff-screen.phone .ff-plate.right .ff-plate-stam-inline { flex-direction: row-reverse; }
+.ff-theme .ff-screen.phone .ff-plate-stam-inline b { font: italic 800 22px/1 var(--ff-display); color: var(--ff-hi); }
+.ff-theme .ff-screen.phone .ff-blocks .zk-track { gap: 2px; }
+.ff-theme .ff-screen.phone .ff-blocks .zk-track-cell { width: 17px; height: 13px; transform: skewX(-12deg); }
+.ff-theme .ff-screen.phone .ff-missteps { gap: 5px; white-space: nowrap; }
+.ff-theme .ff-screen.phone .ff-missteps .ff-kicker { font-size: 9px; }
+.ff-theme .ff-screen.phone .ff-ticks .zk-track { gap: 1px; }
+.ff-theme .ff-screen.phone .ff-ticks .zk-track-cell { width: 5px; height: 4px; }
+.ff-theme .ff-screen.phone .ff-missteps b { font-size: 11px; }
+.ff-theme .ff-screen.phone .ff-vs { width: 36px; height: 36px; font-size: 13px; }
+.ff-theme .ff-phone-counts { margin: -1px 0 0; text-align: right; font: 700 10px/1.2 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; color: var(--ff-muted); }
+
+/* the played rows: cards about 62 x 88, name and art */
+.ff-theme .ff-screen.phone .ff-row { gap: 4px; --zekel-card-w: 62px; --zekel-card-h: 88px; }
+.ff-theme .ff-screen.phone .ff-row-head { font-size: 11px; }
+.ff-theme .ff-screen.phone .ff-count { margin-left: 8px; }
+.ff-theme .ff-row-hint { margin-left: auto; font: 700 9px/1 var(--ff-display); letter-spacing: .1em; color: var(--ff-muted); }
+.ff-theme .ff-screen.phone .ff-row-cards .zk-zone-row { flex-wrap: nowrap; overflow-x: auto; gap: 6px; padding: 0 4px 4px 0; scrollbar-width: none; }
+.ff-theme .ff-screen.phone :is(.ff-row, .ff-hand) .zk-card-face { padding: 3px 3px 4px; gap: 3px; }
+.ff-theme .ff-screen.phone :is(.ff-row, .ff-hand) :is(.zk-card-badges, .zk-card-sub) { display: none; }
+.ff-theme .ff-screen.phone .ff-row .zk-card-label { font-size: 9px; padding: 0 18%; }
+.ff-theme .ff-screen.phone .ff-row :is(.zk-card-cost, .zk-card-value) { font-size: 11px; }
+.ff-theme .ff-screen.phone .zk-look { cursor: pointer; }
+
+/* the strike line: two short rows beside the burst */
+.ff-theme .ff-screen.phone .ff-gutter { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 12px; row-gap: 8px; padding: 8px 10px; }
+.ff-theme .ff-screen.phone .ff-strike-note { grid-column: 1; grid-row: 1 / 3; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.ff-theme .ff-screen.phone .ff-strike-note .ff-burst { width: 30px; height: 30px; }
+.ff-theme .ff-screen.phone .ff-strike-note b { font-size: 13px; }
+.ff-theme .ff-screen.phone .ff-strike-note span:last-child { display: none; }
+.ff-theme .ff-screen.phone .ff-hit { grid-column: 2; flex-wrap: nowrap; gap: 6px; }
+.ff-theme .ff-screen.phone .ff-hit:first-child { grid-row: 1; }
+.ff-theme .ff-screen.phone .ff-hit:last-child { grid-row: 2; justify-content: flex-start; }
+.ff-theme .ff-screen.phone .ff-hit-who { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 14px; }
+.ff-theme .ff-screen.phone .ff-chip { padding: 3px 8px; font-size: 10px; }
+.ff-theme .ff-screen.phone .ff-chip b { font-size: 14px; }
+
+/* the action bar: the step tags; the counters beside one line; the buttons in one row */
+.ff-theme .ff-screen.phone .ff-actionbar { margin-top: auto; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 10px; padding: 10px 12px 12px; }
+.ff-theme .ff-screen.phone .ff-steps { grid-column: 1 / -1; }
+.ff-theme .ff-screen.phone .ff-steps .ff-kicker { display: none; }
+.ff-theme .ff-screen.phone .ff-step { padding: 5px 12px; font-size: 12px; }
+.ff-theme .ff-screen.phone .ff-counters { padding-left: 0; border-left: 0; gap: 4px; align-self: center; }
+.ff-theme .ff-screen.phone .ff-counter { flex-direction: row; align-items: baseline; gap: 4px; min-width: 0; padding: 4px 8px; }
+.ff-theme .ff-screen.phone .ff-counter b { font-size: 22px; }
+.ff-theme .ff-screen.phone .ff-counter span { font-size: 9px; }
+.ff-theme .ff-screen.phone .ff-words { min-width: 0; font-size: 13px; line-height: 1.3; }
+.ff-theme .ff-screen.phone .ff-actionbar:not(:has(.ff-counters)) .ff-words { grid-column: 1 / -1; }
+.ff-theme .ff-screen.phone .ff-words b { font-size: 15px; }
+.ff-theme .ff-screen.phone .ff-buttons { grid-column: 1 / -1; flex-wrap: nowrap; gap: 8px; }
+.ff-theme .ff-screen.phone .ff-buttons:empty { display: none; }
+.ff-theme .ff-screen.phone .ff-buttons .btn {
+  flex: 1 1 0; min-width: 0; height: auto; min-height: 46px; padding: 4px 8px;
+  flex-direction: column; justify-content: center; gap: 2px; font-size: 15px; line-height: 1.05; text-align: center;
+}
+.ff-theme .ff-screen.phone .ff-buttons .btn:not(.secondary) { flex-grow: 1.3; }
+.ff-theme .ff-screen.phone .ff-buttons .btn .note { font-size: 10px; line-height: 1.1; }
+
+/* the bench: your hand fanned along the bottom, small piles beside its label */
+.ff-theme .ff-screen.phone .ff-bench {
+  container-type: inline-size; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "label piles" "cards cards";
+  align-items: center; gap: 4px 10px; margin: 0 -12px; padding: 8px 12px 0;
+  background: linear-gradient(var(--ff-bench-top), var(--ff-bench-foot)); border-top: 2px solid #000;
+  --zekel-card-w: 92px; --zekel-card-h: 128px;
+}
+.ff-theme .ff-screen.phone .ff-hand { display: contents; }
+.ff-theme .ff-screen.phone .ff-bench-label { grid-area: label; flex-direction: column; gap: 4px; }
+.ff-theme .ff-screen.phone .ff-hint { font-size: 10px; }
+.ff-theme .ff-screen.phone .ff-hand > .zk-zone { grid-area: cards; min-width: 0; }
+.ff-theme .ff-screen.phone .ff-piles { grid-area: piles; gap: 12px; }
+.ff-theme .ff-screen.phone .ff-pile { flex-direction: row; gap: 6px; --zekel-card-w: 36px; --zekel-card-h: 50px; }
+.ff-theme .ff-screen.phone .ff-pile :is(.zk-card-label, .zk-card-badges, .zk-card-sub, .zk-card-cost, .zk-card-value) { display: none; }
+.ff-theme .ff-screen.phone .ff-pile .zk-card-face { padding: 2px; justify-content: center; }
+.ff-theme .ff-screen.phone .ff-pile .zk-card-back > div:not(:empty) { font-size: 12px; }
+.ff-theme .ff-screen.phone .ff-pile figcaption { font-size: 10px; }
+/* The fan shares the bench's width: the overlap is what it takes to fit,
+   never leaving less than a thumb of a card showing; past that it scrolls
+   sideways (the page never does). */
+.ff-theme .ff-screen.phone .ff-hand .zk-zone-fan { overflow-x: auto; overflow-y: hidden; padding: 12px 4px 10px 0; scrollbar-width: none; }
+.ff-theme .ff-screen.phone .ff-hand .zk-zone-fan > .zk-card:not(:first-child) {
+  margin-left: calc(-1 * min(var(--zekel-card-w) - 44px, max(0px, (var(--ff-fan-n) * var(--zekel-card-w) - 100cqw + 6px) / (var(--ff-fan-n) - 1)))) !important;
+}
+.ff-theme .ff-screen.phone .ff-hand .zk-card.zk-lit { translate: 0 -8px; z-index: 2; }
+.ff-theme .ff-screen.phone .ff-hand .zk-card-label { font-size: 11px; }
+
+/* ---------- sheets: rise from the bottom, a highlight rule along the top ---------- */
+.table-shell.phone.ff-theme .sheet {
+  border: 0; border-top: 3px solid var(--ff-hi); border-radius: 16px 16px 0 0; background: #141217;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, .6);
+}
+.table-shell.phone.ff-theme .sheet::before { content: ''; position: absolute; top: 8px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: rgba(255, 255, 255, .25); }
+.table-shell.phone.ff-theme .sheet .close::before { transform: none; border-radius: 6px; background: transparent; border-color: rgba(255, 255, 255, .22); box-shadow: none; }
+.table-shell.phone.ff-theme .sheet .close { color: var(--ff-text); font-size: 18px; }
+.ff-theme .ff-sheet-head { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; padding-right: 52px; margin-bottom: 14px; }
+.ff-theme .ff-sheet-head h2 { margin: 0; padding: 0; font: italic 800 26px/1 var(--ff-display); letter-spacing: .02em; text-transform: uppercase; }
+.ff-theme .ff-sheet-status { font: 800 11px/1.2 var(--ff-display); letter-spacing: .1em; text-transform: uppercase; color: var(--ff-hi); }
+.ff-theme .ff-sheet-head .ff-tag { padding: 3px 9px; }
+.ff-theme .ff-sheet-head .ff-tag b { font-size: 14px; font-style: italic; }
+.ff-theme .ff-sheet-buttons { margin-top: auto; align-self: stretch; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 8px; }
+.ff-theme .ff-sheet-buttons .btn { min-height: 48px; height: auto; font: italic 800 16px/1 var(--ff-display); letter-spacing: .02em; }
+.ff-theme .ff-sheet-buttons .btn:only-child { grid-column: 1 / -1; }
+
+/* a card up close: the printed face, its chips, its words, Close and Play */
+.ff-theme .ff-card-sheet { display: flex; flex-direction: column; align-items: center; gap: 12px; min-height: min(80dvh, 700px); }
+.ff-theme .ff-card-sheet .ff-sheet-head { align-self: stretch; margin-bottom: 4px; }
+.ff-theme .ff-card-chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.ff-theme .ff-card-chips .zk-card-badge { font-size: 12px; padding: 2px 10px; }
+.ff-theme .ff-card-words { margin: 0; max-width: 34ch; text-align: center; color: var(--ff-muted); font-size: 14px; line-height: 1.4; }
+.ff-theme .ff-printed {
+  position: relative; flex: none; width: min(250px, 64vw, 38dvh); aspect-ratio: 5 / 7; overflow: hidden;
+  background: #f4efe6; color: #111; border: 3px solid #000; border-radius: 10px; box-shadow: 6px 6px 0 #000;
+}
+.ff-theme .ff-printed-corner {
+  position: absolute; left: 0; top: 0; width: 40%; aspect-ratio: 1; box-sizing: border-box; padding: 8px 0 0 10px;
+  background: var(--ff-corner); color: var(--ff-ink); clip-path: polygon(0 0, 100% 0, 0 100%);
+  font: italic 800 30px/1 var(--ff-display);
+}
+.ff-theme .ff-printed-corner.br { left: auto; top: auto; right: 0; bottom: 0; rotate: 180deg; }
+.ff-theme .ff-printed-fx { position: absolute; max-width: 50%; font: 600 12px/1.25 var(--font-body); text-align: right; }
+.ff-theme .ff-printed-fx.tl { top: 10px; right: 10px; }
+.ff-theme .ff-printed-fx.br { bottom: 10px; left: 10px; rotate: 180deg; }
+.ff-theme .ff-printed.worth .ff-printed-fx { font: italic 800 28px/1 var(--ff-display); }
+.ff-theme .ff-printed-panel { position: absolute; inset: 17% 17%; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.ff-theme .ff-printed-name { font: italic 800 20px/1 var(--ff-display); letter-spacing: .01em; text-transform: uppercase; text-align: center; }
+.ff-theme .ff-printed-name.turned, .ff-theme .ff-printed-art img.turned { rotate: 180deg; }
+.ff-theme .ff-printed-art { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; background: #111; border: 2px solid #111; border-radius: 4px; overflow: hidden; }
+.ff-theme .ff-printed-art img { flex: 1; min-height: 0; width: 100%; display: block; object-fit: cover; }
+.ff-theme .ff-printed-art img.turned { border-top: 2px solid #f4efe6; }
+
+/* the supply as a sheet: the same list, taller rows */
+.ff-theme .ff-supply-sheet .zk-zone-label { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 0 0 8px;
+  font: 400 13px/1.3 var(--font-body); letter-spacing: 0; text-transform: none; color: var(--ff-muted); }
+.ff-theme .ff-supply-sheet .zk-zone-cols { display: inline-flex; flex: none; font: 800 11px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; color: var(--ff-text); }
+.ff-theme .ff-supply-sheet .zk-zone-cols span { width: 34px; text-align: center; }
+.ff-theme .ff-supply-sheet .zk-zone-list { display: flex; flex-direction: column; gap: 6px; }
+.ff-theme .ff-supply-sheet .zk-card-row {
+  grid-template-columns: 30px 48px minmax(0, 1fr) auto; grid-template-areas: "cost art label counts" "cost art sub counts";
+  row-gap: 4px; min-height: 58px; padding: 6px 8px 6px 6px; background: var(--ff-panel); border: 2px solid #000;
+}
+.ff-theme .ff-supply-sheet .zk-card-row-cost { grid-area: cost; width: 28px; height: 32px; font-size: 18px; }
+.ff-theme .ff-supply-sheet .zk-card-row-art { grid-area: art; width: 48px; height: 40px; }
+.ff-theme .ff-supply-sheet .zk-card-row-label { grid-area: label; font-size: 18px; }
+.ff-theme .ff-supply-sheet .zk-card-row-sub { grid-area: sub; justify-self: start; }
+.ff-theme .ff-supply-sheet .zk-card-row-counts { grid-area: counts; }
+.ff-theme .ff-supply-sheet .zk-card-row-counts b { width: 34px; text-align: center; }
+.ff-theme .ff-supply-sheet .zk-card-row.zk-lit { border-color: var(--ff-hi); }
+.ff-theme .ff-supply-sheet.buying .zk-card-row:not(.zk-lit) { opacity: .38; }
+
+/* the menu sheet, in the theme */
+.table-shell.phone.ff-theme .menu-sheet { min-height: min(84dvh, 760px); }
+.table-shell.phone.ff-theme .menu-sheet h2 { font: italic 800 26px/1 var(--ff-display); text-transform: uppercase; }
+.table-shell.phone.ff-theme .menu-grid .chip-btn { font: italic 800 16px/1 var(--ff-display); letter-spacing: .02em; color: var(--ff-text); display: inline-flex; align-items: center; }
+.table-shell.phone.ff-theme .menu-grid .chip-btn::before { background: var(--ff-raised); border-color: #000; box-shadow: 3px 3px 0 #000; }
+.table-shell.phone.ff-theme .menu-kicker { font-family: var(--ff-display); color: var(--ff-muted); }
+.table-shell.phone.ff-theme .menu-leave { margin-top: auto; font: 800 15px/1 var(--ff-display); letter-spacing: .08em; }
+
+/* ---------- the strike, upright: the arcade look at phone size ---------- */
+.table-shell.phone.ff-theme .strike-banner { padding: 8px 28px; }
+.table-shell.phone.ff-theme .strike-banner span { font-size: 16px; }
+.table-shell.phone.ff-theme .strike-banner b { font-size: 50px; }
+.table-shell.phone.ff-theme .strike-fighter { top: auto; }
+.table-shell.phone.ff-theme .strike-fighter.right { top: 0; }
+.table-shell.phone.ff-theme .strike-badge { width: 40px; height: 40px; font-size: 22px; }
+.table-shell.phone.ff-theme .strike-fighter-name { font-size: 26px; }
+.table-shell.phone.ff-theme .strike-pip { width: 26px; height: 20px; }
+.table-shell.phone.ff-theme .strike-stam b { font-size: 44px; }
+.table-shell.phone.ff-theme .strike-shield { width: 200px; height: 52px; top: auto; background: linear-gradient(90deg, #8cc6ff, #4ea3ff); }
+.table-shell.phone.ff-theme .strike-shield.right { top: 24%; }
+.table-shell.phone.ff-theme .strike-shield b { font-size: 34px; }
+.table-shell.phone.ff-theme .strike-shield > span:not([class]) { writing-mode: horizontal-tb; rotate: none; }
+.table-shell.phone.ff-theme .strike-ko { font-size: 104px; }
+.table-shell.phone.ff-theme .strike-controls .btn { min-height: 44px; }
+
+/* ---- the strike moment: layout and movement, moved here from the web app's
+   app.css because the strike is this game's own (glue/ff/StrikeMoment.tsx).
+   The arcade look of the pieces is above. ---- */
+/* ---- the strike moment (docs/design/fractured-fist-arcade, Strike-Prototype) ----
+   Layout and movement; the arcade look is the game's theme (glue/ff/ff.css).
+   Pieces move in (slide, drop, pop); only the dimming fades. Reduced motion
+   keeps the timing and turns every movement into a fade. */
+.strike-scrim {
+  position: fixed; inset: 0; z-index: 45; background: rgba(28,26,23,0.62); display: grid; place-items: center; padding: 20px;
+  animation: strike-dim var(--motion-normal) ease-out; transition-property: background-color; transition-timing-function: ease-out;
+}
+@keyframes strike-dim { from { background-color: rgba(28,26,23,0); } }
+.strike-scrim.closing { background-color: rgba(28,26,23,0); pointer-events: none; }
+.strike-panel { width: min(1180px, 100%); display: flex; flex-direction: column; align-items: stretch; gap: 16px; }
+.strike-banner {
+  align-self: center; display: flex; align-items: baseline; gap: 18px; padding: 10px 36px;
+  background: var(--card); border: 2px solid var(--fg); animation: strike-banner var(--motion-slow) var(--motion-settle);
+}
+.strike-banner span { font: 600 18px var(--font-display); }
+.strike-banner b { font: 800 44px/1 var(--font-display); }
+@keyframes strike-banner { from { transform: translateY(-160%); } }
+.strike-arena { position: relative; height: 300px; }
+/* a fighter slides in from their side, and out again at the fade */
+.strike-fighter { position: absolute; top: 90px; width: 27%; display: flex; align-items: center; gap: 12px; transition: transform var(--motion-normal) var(--motion-easing); }
+.strike-fighter.left { left: 0; animation: strike-in-left var(--motion-slow) var(--motion-settle); }
+.strike-fighter.right { right: 0; flex-direction: row-reverse; text-align: right; animation: strike-in-right var(--motion-slow) var(--motion-settle); }
+@keyframes strike-in-left { from { transform: translateX(-130%); } }
+@keyframes strike-in-right { from { transform: translateX(130%); } }
+.beat-5 .strike-fighter.left { transform: translateX(-130%); }
+.beat-5 .strike-fighter.right { transform: translateX(130%); }
+.strike-fighter.struck { animation: strike-shake ease-out; }
+@keyframes strike-shake { 0%, 100% { translate: 0 0; } 15% { translate: -9px 0; } 35% { translate: 8px 0; } 55% { translate: -5px 0; } 75% { translate: 3px 0; } }
+.strike-badge { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border: 2px solid var(--fg); font: 700 20px var(--font-display); }
+.strike-fighter-body { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1; }
+.strike-fighter.right .strike-fighter-body { align-items: flex-end; }
+.strike-fighter-name { font: 700 18px var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.strike-pips { display: flex; gap: 4px; }
+.strike-fighter.right .strike-pips { flex-direction: row-reverse; }
+.strike-pip { width: 20px; height: 18px; border: 1px solid var(--line); box-sizing: border-box; transition-property: transform, opacity; transition-timing-function: var(--motion-easing); }
+.strike-pip.full { background: var(--accent); border-color: var(--accent); }
+.strike-pip.out { background: var(--accent); border-color: var(--accent); transform: translateY(26px) rotate(18deg); opacity: 0; }
+.strike-stam { flex: none; font: 600 16px var(--font-mono); }
+.strike-stam b { font-size: 40px; }
+.strike-stam.tick b { display: inline-block; animation: strike-tick 340ms ease-out; }
+@keyframes strike-tick { 0% { transform: scale(1); } 40% { transform: scale(1.4); } 100% { transform: scale(1); } }
+/* the shield in front of each fighter */
+.strike-shield { position: absolute; top: 40px; width: 64px; height: 170px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  background: #e2ebf7; border: 2px solid #24507f; color: #24507f; animation: strike-pop var(--motion-normal) var(--motion-settle); }
+.strike-shield.left { left: 30%; }
+.strike-shield.right { right: 30%; }
+.strike-shield b { font: 700 28px var(--font-mono); }
+.strike-shield > span:not([class]) { font: 600 10px var(--font-body); text-transform: uppercase; letter-spacing: .08em; }
+.strike-shield.flare { animation: strike-flare ease-out; }
+@keyframes strike-flare { 0% { transform: scale(1); } 35% { transform: scale(1.12); } 100% { transform: scale(1); } }
+.strike-block-tag { position: absolute; top: -34px; left: 50%; translate: -50% 0; white-space: nowrap; padding: 3px 10px; background: #24507f; color: #fff;
+  font: 700 13px var(--font-body); animation: strike-drop ease-out both; }
+@keyframes strike-drop { from { transform: translateY(-40px); } }
+.strike-stamp { position: absolute; top: 60px; left: 50%; translate: -50% 0; white-space: nowrap; padding: 4px 12px; background: #fff; color: #24507f; border: 2px solid #24507f;
+  font: 800 20px var(--font-display); rotate: -8deg; animation: strike-stamp var(--motion-normal) var(--motion-settle); }
+@keyframes strike-stamp { from { transform: scale(2.2); } }
+/* a hit: pops up by its owner, flies across, shrinks, is gone once it lands */
+.strike-hit { position: absolute; top: 105px; width: 70px; height: 70px; display: grid; place-items: center; z-index: 3;
+  background: #fae3e0; border: 2px solid #8f2018; color: #8f2018; font: 700 26px var(--font-mono);
+  transition-property: left, right, transform, opacity; transition-timing-function: var(--motion-easing);
+  animation: strike-pop var(--motion-normal) var(--motion-settle); }
+@keyframes strike-pop { from { transform: scale(0); } }
+.strike-hit.left.at-home { left: calc(30% + 84px); }
+.strike-hit.left.at-across { left: calc(70% - 64px - 74px); }
+.strike-hit.left.at-in { left: calc(100% - 27% - 20px); }
+.strike-hit.right.at-home { right: calc(30% + 84px); }
+.strike-hit.right.at-across { right: calc(70% - 64px - 74px); }
+.strike-hit.right.at-in { right: calc(100% - 27% - 20px); }
+.strike-hit.shrunk { transform: scale(0.78); }
+.strike-hit.gone { opacity: 0; transform: scale(1.3); }
+.strike-flash { position: absolute; left: 50%; top: 110px; width: 60px; height: 60px; margin-left: -30px; background: #fff; opacity: 0; pointer-events: none; z-index: 4;
+  clip-path: polygon(50% 0, 61% 30%, 95% 25%, 70% 50%, 95% 75%, 61% 70%, 50% 100%, 39% 70%, 5% 75%, 30% 50%, 5% 25%, 39% 30%); }
+.strike-flash.on { animation: strike-flash ease-out; }
+@keyframes strike-flash { 0%, 45% { opacity: 0; transform: scale(.3); } 60% { opacity: 1; transform: scale(1.6); } 100% { opacity: 0; transform: scale(2); } }
+.strike-impact { position: absolute; top: 20px; z-index: 5; padding: 10px 16px; background: #ffd23f; color: #111; font: 800 34px/1 var(--font-display); animation: strike-burst ease-out both; }
+.strike-impact.left { left: 14%; }
+.strike-impact.right { right: 14%; }
+@keyframes strike-burst { 0% { transform: scale(0); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.strike-ko { position: absolute; left: 50%; top: 170px; translate: -50% 0; font: 800 110px/1 var(--font-display); color: var(--accent); z-index: 6; pointer-events: none;
+  animation: strike-stamp var(--motion-slow) var(--motion-settle); }
+.strike-caption { align-self: center; margin: 0; padding: 8px 16px; background: var(--card); border: 1px solid var(--line); font-size: 14px; min-height: 1.4em; }
+.strike-controls { display: flex; align-items: center; gap: 8px; }
+/* Reduced motion: the same beats, each change a fade. */
+.strike-scrim.reduced *, .strike-scrim.reduced { animation-name: strike-fade !important; }
+.strike-scrim.reduced :is(.strike-fighter, .strike-pip, .strike-hit) { transition-property: opacity !important; }
+.strike-scrim.reduced .strike-pip.out { transform: none; }
+.strike-scrim.reduced .strike-hit { left: auto; right: auto; }
+.strike-scrim.reduced .strike-hit.left { left: calc(30% + 84px) !important; }
+.strike-scrim.reduced .strike-hit.right { right: calc(30% + 84px) !important; }
+.strike-scrim.reduced .strike-hit:is(.shrunk, .gone) { transform: none; }
+.strike-scrim.reduced.beat-5 .strike-fighter { transform: none; opacity: 0; }
+@keyframes strike-fade { from { opacity: 0; } }
+/* At the fade the banner lifts away and the words go with the dimming. */
+.strike-banner, .strike-caption, .strike-controls { transition: transform var(--motion-normal) var(--motion-easing), opacity var(--motion-normal) ease-out; }
+.beat-5 .strike-banner { transform: translateY(-200%); }
+.beat-5 :is(.strike-caption, .strike-controls) { opacity: 0; }
+.strike-scrim.reduced.beat-5 .strike-banner { transform: none; opacity: 0; }
+
+/* ---- the strike, upright on a phone (docs/design/fractured-fist-arcade,
+   Phone-Strike.dc.html): the opponent along the top, you along the bottom,
+   both shields between, the hits crossing up and down. The beats and their
+   lengths are the same; only the places change. ---- */
+/* above any sheet the phone has open: nothing in the moment waits on the player */
+.table-shell.phone .strike-scrim { z-index: 55; padding: 12px 12px 16px; place-items: stretch; }
+.table-shell.phone .strike-panel { height: 100%; gap: 10px; }
+.table-shell.phone .strike-arena { flex: 1; min-height: 0; height: auto; }
+.table-shell.phone .strike-fighter { left: 0; right: 0; width: auto; flex-direction: row; text-align: left; }
+.table-shell.phone .strike-fighter.right { top: 0; bottom: auto; animation-name: strike-in-top; }
+.table-shell.phone .strike-fighter.left { top: auto; bottom: 0; animation-name: strike-in-bottom; }
+.table-shell.phone .strike-fighter.struck { animation-name: strike-shake; }
+@keyframes strike-in-top { from { transform: translateY(-100vh); } }
+@keyframes strike-in-bottom { from { transform: translateY(100vh); } }
+.table-shell.phone .beat-5 .strike-fighter.right { transform: translateY(-100vh); }
+.table-shell.phone .beat-5 .strike-fighter.left { transform: translateY(100vh); }
+.table-shell.phone .strike-fighter.right .strike-fighter-body { align-items: flex-start; }
+.table-shell.phone .strike-fighter.right .strike-pips { flex-direction: row; }
+.table-shell.phone .strike-shield { left: 50%; right: auto; translate: -50% 0; flex-direction: row; gap: 10px; }
+.table-shell.phone .strike-shield.right { top: 24%; }
+.table-shell.phone .strike-shield.left { top: auto; bottom: 23%; }
+.table-shell.phone .strike-stamp { top: 2px; }
+/* the hits: yours rises left of centre, theirs falls right of it; they cross */
+.table-shell.phone .strike-hit { transition-property: top, transform, opacity; }
+.table-shell.phone .strike-hit.left { left: calc(28% - 42px); right: auto; }
+.table-shell.phone .strike-hit.right { left: calc(72% - 42px); right: auto; }
+.table-shell.phone .strike-hit.left.at-home { top: 55%; }
+.table-shell.phone .strike-hit.left.at-across { top: 34%; }
+.table-shell.phone .strike-hit.left.at-in { top: 7%; }
+.table-shell.phone .strike-hit.right.at-home { top: 34%; }
+.table-shell.phone .strike-hit.right.at-across { top: 55%; }
+.table-shell.phone .strike-hit.right.at-in { top: 80%; }
+.table-shell.phone .strike-flash { top: calc(50% - 30px); }
+.table-shell.phone .strike-impact { left: 50%; right: auto; translate: -50% 0; }
+.table-shell.phone .strike-impact.right { top: 5%; }
+.table-shell.phone .strike-impact.left { top: auto; bottom: 8%; }
+.table-shell.phone .strike-ko { top: 42%; }
+.table-shell.phone .strike-caption { align-self: stretch; text-align: center; font-size: 13.5px; }
+.table-shell.phone .strike-controls > .muted { display: none; }
+.table-shell.phone .strike-controls .btn { min-height: 44px; }
+/* reduced motion: the hits stay home and fade, as on a desktop */
+.table-shell.phone .strike-scrim.reduced .strike-hit.left { left: calc(28% - 42px) !important; top: 55% !important; }
+.table-shell.phone .strike-scrim.reduced .strike-hit.right { left: calc(72% - 42px) !important; top: 34% !important; }
+.table-shell.phone .strike-scrim.reduced.beat-5 .strike-fighter { transform: none; }

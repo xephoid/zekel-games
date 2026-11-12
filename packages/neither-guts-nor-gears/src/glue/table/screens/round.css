@@ -1,0 +1,88 @@
+/* NGnG round screens: setup, planning, Cores, draws, treaties, heroes, the end.
+   Built on ngg.css's tokens and the four visual states; only what those
+   screens add is here. */
+
+.ngr-grow { flex: 1; }
+.ngr-scroll { max-height: 420px; overflow: auto; padding-right: 2px; }
+.ngr-state { margin: 0; font: 600 12.5px var(--n-face); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.ngr-effect { display: block; font-size: 11.5px; line-height: 1.4; color: var(--n-muted); }
+.ngr-hero-cat { display: block; font: 600 10px var(--n-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--n-tagfg); }
+.ngr-star { font: 600 10px var(--n-mono); color: var(--n-action); white-space: nowrap; }
+.ngr-where { font: 600 10px var(--n-mono); color: var(--n-muted); }
+.ngr-income { font: 700 11px var(--n-mono); color: var(--n-brand); white-space: nowrap; }
+.ngr-open { font: 600 9px var(--n-mono); letter-spacing: .06em; color: var(--n-brand); }
+
+/* setup: a picker per seat */
+.ngr-setup-seats { display: flex; flex-direction: column; gap: 10px; }
+.ngr-setup-seat { display: flex; flex-direction: column; gap: 7px; padding: 9px 10px; border-radius: 10px; background: var(--n-surface2); }
+.ngr-setup-who { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+.ngr-setup-who .muted { font: 500 10px var(--n-mono); }
+.ngr-setup-state { font: 600 10.5px var(--n-mono); color: var(--n-muted); }
+.ngr-factions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; }
+.ngr-faction { display: flex; align-items: center; gap: 7px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--n-line); background: var(--n-surface); color: var(--n-text); font: inherit; text-align: left; cursor: pointer; }
+.ngr-faction:hover:not(:disabled) { border-color: var(--n-brand); }
+.ngr-faction:disabled { cursor: default; }
+.ngr-faction.on { background: var(--n-hlbg); border: 1.5px solid var(--n-brand); }
+.ngr-faction-name { display: flex; flex-direction: column; font: 600 12px var(--n-face); min-width: 0; }
+.ngr-faction-name i { font: 500 9.5px var(--n-mono); color: var(--n-muted); font-style: normal; }
+
+/* lists */
+.ngr-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.ngr-list li { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+.ngr-list li .muted { margin-left: auto; font: 500 10.5px var(--n-mono); }
+.ngr-site { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--n-ink); display: grid; place-items: center; font: 700 12px var(--n-mono); }
+.ngr-kit { display: flex; flex-direction: column; gap: 5px; }
+.ngr-kit-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+
+/* planning: the seat's action cards */
+.ngr-plan-cards { display: flex; flex-wrap: wrap; gap: 8px; }
+.ngr-plan-card { width: 104px; min-height: 88px; padding: 10px; border-radius: 10px; border: 1.5px solid var(--n-ink); background: var(--n-surface); color: var(--n-text); display: flex; flex-direction: column; gap: 4px; align-items: flex-start; text-align: left; font: inherit; box-shadow: var(--n-shadow); }
+button.ngr-plan-card { cursor: pointer; }
+button.ngr-plan-card:hover:not(:disabled) { border-color: var(--n-action); transform: translateY(-2px); }
+.ngr-plan-card b { font: 700 13px var(--n-display); }
+.ngr-plan-card i { font: 600 9px var(--n-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--n-muted); font-style: normal; }
+.ngr-plan-card.played { border: 1.5px dashed var(--n-line); box-shadow: none; background: transparent; color: var(--n-muted); }
+.ngr-plan-card.grey { filter: grayscale(1) brightness(1.14) contrast(.82); box-shadow: none; }
+
+/* Cores */
+.ngr-counts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.ngr-counts span { display: flex; flex-direction: column; padding: 7px 10px; border-radius: 8px; background: var(--n-surface2); }
+.ngr-counts b { font: 700 18px var(--n-mono); }
+.ngr-counts i { font: 600 9px var(--n-mono); letter-spacing: .06em; color: var(--n-muted); font-style: normal; }
+.ngr-core-tag { display: inline-flex; align-items: center; gap: 4px; font: 600 9.5px var(--n-mono); letter-spacing: .05em; }
+.ngr-core-tag.moved { color: var(--n-action); }
+
+/* treaties */
+.ngr-treaties { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.ngr-treaty { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; background: var(--n-surface2); }
+.ngr-treaty-mark { display: grid; place-items: center; }
+.ngr-treaty-pair { display: inline-flex; gap: 2px; }
+.ngr-treaty-name { flex: 1; display: flex; flex-direction: column; font: 600 12px var(--n-face); min-width: 0; }
+.ngr-treaty-name i { font: 500 10px var(--n-mono); color: var(--n-muted); font-style: normal; }
+.ngr-tokens { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; }
+.ngr-token { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 8px; border: 1.5px dashed var(--n-line); font-size: 11.5px; }
+.ngr-token.out { border: 1px solid var(--n-line); background: var(--n-surface); box-shadow: var(--n-shadow); }
+.ngr-token b { font-weight: 600; flex: 1; }
+.ngr-token i { font: 500 9.5px var(--n-mono); color: var(--n-muted); font-style: normal; }
+.ngr-offer { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--n-line); padding-top: 9px; }
+.ngr-partners { display: flex; flex-wrap: wrap; gap: 6px; }
+.ngr-partner { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--n-line); background: var(--n-surface); color: var(--n-text); font: 600 12px var(--n-face); cursor: pointer; }
+.ngr-partner.on { background: var(--n-hlbg); border: 1.5px solid var(--n-brand); }
+.ngr-partner:disabled { cursor: default; }
+
+/* the end */
+.ngr-winner { margin: 0; font: 700 22px var(--n-display); letter-spacing: -.01em; }
+.ngr-standings { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.ngr-standings li { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 10px; background: var(--n-surface); border: 1px solid var(--n-line); }
+.ngr-standings li.won { border: 1.5px solid var(--n-brand); }
+.ngr-standing-name { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.ngr-standing-name b { font: 600 13px var(--n-face); }
+.ngr-standing-name i { font: 500 10.5px var(--n-mono); color: var(--n-muted); font-style: normal; }
+.ngr-won { font: 700 9.5px var(--n-mono); letter-spacing: .06em; color: var(--n-brand); }
+.ngr-dead { font: 700 9.5px var(--n-mono); letter-spacing: .06em; color: var(--n-danger); }
+.ngr-ic { display: inline-flex; vertical-align: -2px; margin-right: 6px; }
+
+/* A treaty offer names who is offering by their faction's mark and colour. */
+.ngr-proposer { display: flex; align-items: center; gap: 12px; padding: 8px 12px; margin: 2px 0 8px; border-left: 6px solid; border-radius: 8px; background: var(--n-surface2); }
+.ngr-proposer-name { font: 700 17px var(--n-face); flex: 1; min-width: 0; }
+.ngr-proposer-treaty { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px var(--n-face); }

@@ -1,0 +1,266 @@
+{
+ "key": "habitat-1",
+ "viewer": "p1",
+ "view": {
+  "phase": "at_habitat",
+  "pending": null,
+  "character": {
+   "name": "Bot Pilot",
+   "race": "human",
+   "disposition_roleplay_hint": null,
+   "level": 1,
+   "xp": 0,
+   "xp_to_next_level": 6,
+   "credits": 200,
+   "wounded": false,
+   "dread": 0,
+   "abilities": {
+    "RES": {
+     "name": "Research",
+     "stat": "smarts",
+     "natural": 1,
+     "effective": 1
+    },
+    "MEC": {
+     "name": "Mechanics",
+     "stat": "smarts",
+     "natural": 2,
+     "effective": 2
+    },
+    "PIL": {
+     "name": "Piloting",
+     "stat": "finesse",
+     "natural": 3,
+     "effective": 3
+    }
+   },
+   "skills": [
+    "Research (RES basic)",
+    "Mechanics (MEC basic)",
+    "Piloting (PIL basic)",
+    "Piloting advanced"
+   ],
+   "equipped": {
+    "weapon": null,
+    "armor": null
+   }
+  },
+  "crew": [],
+  "unnamed_crew": 0,
+  "season_endings": {
+   "conquest": "clear the depth-3 ruin beyond Habitat #3",
+   "fortune": "200/6000c banked while at a habitat",
+   "legend": "level 1/5",
+   "plunder": "0/6 ruin caches opened",
+   "bounty": "0/8 foes defeated face to face (boarding captures + ruin kills)"
+  },
+  "ship": {
+   "name": "Harness Runner",
+   "capacity": 3,
+   "speed": 0,
+   "handling": 0,
+   "armor": 0,
+   "damage": "used",
+   "parts": []
+  },
+  "items": [],
+  "bulkheads_spent": false,
+  "habitat": {
+   "number": 1,
+   "name": "Xaxalon 4",
+   "shop": [
+    {
+     "name": "Consumable +1 Any",
+     "cost": 200,
+     "purchased": false
+    },
+    {
+     "name": "Weapon +1 GUN",
+     "cost": 300,
+     "purchased": false
+    },
+    {
+     "name": "Armor Combat Advantage",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +1 Speed",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +2 Capacity",
+     "cost": 700,
+     "purchased": false
+    }
+   ],
+   "cantina": [
+    {
+     "recruit": "Human (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Kralkin (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (HAK +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Grull (DIP +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (ACT +1, min roll 11)",
+     "status": "available"
+    }
+   ],
+   "missions": [
+    {
+     "id": "h1-m1",
+     "mission": "distance 3, RES 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m2",
+     "mission": "distance 3, DIP 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m3",
+     "mission": "distance 3, MEC 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m4",
+     "mission": "distance 4, R1 ruin, 600c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m5",
+     "mission": "distance 4, SWA 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m6",
+     "mission": "distance 4, ARM 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m7",
+     "mission": "distance 6, ACT 12, 400c, 1 XP",
+     "status": "available"
+    }
+   ],
+   "progression": "complete 4 missions (any result; 0 done), then travel 6 one-way",
+   "repair_roll_available": false,
+   "unrest_roll_available": false,
+   "docks_unnamed_roll_available": true,
+   "fabrication_available_this_visit": true
+  },
+  "journey": null,
+  "space_combat": null,
+  "ruin": null,
+  "travel_deck": {
+   "cards_in_draw_pile": 52,
+   "cards_in_discard": 0,
+   "discard": []
+  },
+  "stat_reference": {
+   "brawn": "SWA/ARM/DEM",
+   "smarts": "HAK/RES/MEC",
+   "finesse": "PIL/GUN/SNE",
+   "moxie": "LEA/DIP/ACT"
+  },
+  "lore_refs": [
+   "galaxy-overview",
+   "xaxalon-4",
+   "humans"
+  ],
+  "result": null
+ },
+ "legalMoves": [
+  {
+   "move_id": "buy-h1-s1",
+   "description": "Buy Consumable +1 Any for 200c (you have 200c).",
+   "move": {
+    "type": "buy_item",
+    "item_name": "Consumable +1 Any"
+   }
+  },
+  {
+   "move_id": "recruit-h1-c1",
+   "description": "Attempt to recruit the Human (PIL +1, min roll 11) at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h1-c1"
+   }
+  },
+  {
+   "move_id": "recruit-h1-c2",
+   "description": "Attempt to recruit the Kralkin (PIL +1, min roll 11) at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h1-c2"
+   }
+  },
+  {
+   "move_id": "recruit-h1-c3",
+   "description": "Attempt to recruit the Hexapod (HAK +1, min roll 11) at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h1-c3"
+   }
+  },
+  {
+   "move_id": "recruit-h1-c4",
+   "description": "Attempt to recruit the Grull (DIP +1, min roll 11) at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h1-c4"
+   }
+  },
+  {
+   "move_id": "recruit-h1-c5",
+   "description": "Attempt to recruit the Human (ACT +1, min roll 11) at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h1-c5"
+   }
+  },
+  {
+   "move_id": "pay-repair",
+   "description": "Pay 150c: the yard raises the Harness Runner one damage level (currently used; repeatable). Credits: 200.",
+   "move": {
+    "type": "pay_repair"
+   }
+  },
+  {
+   "move_id": "take-mission-h1-m1",
+   "description": "Take the RES 10 mission (distance 3, RES 10, 300c, 1 XP).",
+   "move": {
+    "type": "take_mission",
+    "mission_name": "h1-m1"
+   }
+  },
+  {
+   "move_id": "take-mission-h1-m3",
+   "description": "Take the MEC 10 mission (distance 3, MEC 10, 300c, 1 XP).",
+   "move": {
+    "type": "take_mission",
+    "mission_name": "h1-m3"
+   }
+  },
+  {
+   "move_id": "take-mission-h1-m4",
+   "description": "Take the R1 RUINS mission (distance 4, R1 ruin, 600c, 1 XP) — travel there, then delve to depth 1.",
+   "move": {
+    "type": "take_mission",
+    "mission_name": "h1-m4"
+   }
+  }
+ ],
+ "unavailable": []
+}

@@ -4,6 +4,17 @@ Neither Guts nor Gears, a Zekel Games board game (2–6 players), as a game modu
 
 A 2-6 player hex-map game of wizards and robots. Collect the five resources, fight one-hit-kill battles in LIFO initiative passes, claim heroes off culture milestones, hold treaties, and win by Military, Cultural, Economic, or Technological victory. Physical-first: the server is the bookkeeper; the battle strategy deck is table-owned at a physical seat (report what you drew).
 
+## The screen
+
+`@zekel/neither-guts-nor-gears/glue` is the game's screen for Zekel Universe: the glue
+module Universe's table loads (`nggGlue`). It needs `@zekel/glue-kit`, `@zekel/wire-types`, `react`, `react-dom`, which are
+optional peer dependencies: a server that only plays the game needs none of
+them. It imports its own stylesheets, so load it through a bundler.
+
+The same entry carries the rulebook page (`NggRulebook`, `readRulebook`). To
+load the rulebook alone, use `@zekel/neither-guts-nor-gears/glue/rulebook`:
+it needs `react` and not `react-dom`, which only the table's layout uses.
+
 ## Use
 
 Register it on [`@zekel/mcp`](https://www.npmjs.com/package/@zekel/mcp):
