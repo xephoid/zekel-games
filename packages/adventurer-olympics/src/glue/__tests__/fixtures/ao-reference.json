@@ -1,0 +1,113 @@
+{
+ "gameId": "adventurer-olympics",
+ "rules": "## Setup\n\nShuffle the five decks and the 10 map tiles. Put the 5 artifact cards face up as the supply. Each player chooses an Adventurer standee and a colour and takes that colour's 10 tokens. Draw (number of players + 1) Quest cards face up — these are the only quests in the game. Turn the top map tile face up as the starting tile; every standee begins on its centre hex. Starting stats: Charisma 1, Strength 1, Movement 2. Companions raise stats; stats never go down.\n\n## Real cards and dice: what the players report\n\nThe decks and dice are on the table. Each player rolls their own dice and says the total. At a table where anyone uses the real cards, the players draw the real cards and say what they drew — the quest cards and the starting tile at setup, then every map tile, Companion, Monster and Dungeon card during play. The server does not know the real order, so when an AI player draws, a human draws that card for the AI and says what it is. The server does know which cards went under each deck and in what order, so it only accepts a card that could really be on top. A player on the digital version presses Roll or Reveal instead, and the server rolls or deals for them. The setup draw can be reported all at once or one card at a time.\n\n## Naming hexes, slots and turns\n\nEvery hex is on exactly one tile, so a hex is named by its tile and the hex name printed on that tile: \"the NE hex of Tile 3\", \"the centre of Tile 1\". An empty slot is named by the side it sits against: \"side NE–SE of Tile 4\". The starting tile is placed unturned; a new tile's turn is named by where its printed N hex points, in terms of the starting tile — \"its N hex points where the starting tile's SE hex points\".\n\n## Round & turn order\n\nEach round: every player rolls 2 dice; the highest total goes first, descending. Ties re-roll to settle their places; initiative tokens 1–4 show the order. In turn order each player takes one turn; when everyone has had a turn the round ends and a new turn-order roll begins.\n\n## Your turn & moving\n\nOn your turn you may move and, while you move, you may explore. You may take up to Movement steps and may choose not to move. Each step goes to an adjacent hex. You may not enter or pass through a hex with another player's standee. Stepping onto an uncompleted icon triggers it immediately (even mid-move) and ends your turn after it resolves; you cannot walk through an uncompleted icon. An icon with a player token on it is plain ground — walk over it or stop, nothing happens.\n\n## Staying to try again\n\nIf you start your turn standing on an uncompleted icon (because you failed it earlier), you may stay and try again instead of moving — the icon triggers again with a fresh card from the top of the deck, and your turn ends after it resolves. While you stand there no one else can use that icon (they cannot enter your hex).\n\n## Exploring\n\nYou may explore when you have at least one step left and are standing on a hex that touches an empty tile slot. Take the top tile from the stack, place it in an empty slot touching your hex, turn it any way (6 options), and put one of your tokens on its centre hex. Your remaining steps are used up and your turn ends — you do not get to step onto the new tile this turn. If the stack is empty you cannot explore.\n\n## How tiles fit together\n\nEach tile has six sides (N–NE, NE–SE, SE–S, S–SW, SW–NW, NW–N); each side is a tile slot. A tile placed in a slot nestles against the two outer hexes that form the side — the two tiles never share a hex. Every new tile covers 7 fresh hexes and always touches the map with at least those two hexes; there are no gaps or holes. Each outer hex belongs to two sides, so a player on an outer hex can explore into up to two slots. The centre hex touches no slot — you can never explore from a centre hex.\n\n## Forced explore\n\nWhen every icon on the map has been completed, the next player to take a turn must explore at the start of their turn, before moving: take the top tile, place it in any empty slot touching the map (any rotation), put a token on its centre, then take the rest of the turn normally. \"The next player\" can be the first player of the next round. If the stack is empty there is no forced explore (the game is ending).\n\n## Rolling (all tests)\n\nEvery test works the same way: roll a number of dice equal to one of your stats and add up all the pips. If the total is equal to or higher than the number on the card, you succeed. Charisma (start 1) is used to recruit companions; Strength (start 1) to fight monsters; Movement (start 2) sets your steps per turn. Your stat is your starting value plus the bonuses on every companion you hold.\n\n## Icons (City / Dungeon / Monster / Artifact)\n\nWhen you step onto an uncompleted icon (or stay on one to try again) it triggers; resolve it, then your turn ends. Success: put one of your tokens on the hex — the icon is completed and can never trigger again. Failure: nothing is placed; the icon stays open and anyone may try later. City = recruit a companion (Charisma roll). Dungeon = draw a Dungeon card (see below). Little or Big Monster = fight (Strength roll). Artifact = take it (no roll).\n\n## City — recruit a companion\n\nDraw the top Companion card and note its number. Roll dice equal to your Charisma. Success: you recruit the companion — keep it in front of you and its stat bonuses add to your stats for the rest of the game. Fail: put the companion card at the bottom of the Companion deck.\n\n## Little & Big Monster — fight\n\nDraw the top card from the matching deck and note its number. Roll dice equal to your Strength. Success: you defeat the monster — keep the card in front of you (it counts toward quests). Fail: put the monster card at the bottom of its deck. If the deck is empty there is nothing to fight: on a map icon nothing happens, the icon stays open, and your turn ends.\n\n## Dungeon\n\nDraw the top Dungeon card and do what it says; whatever happened, put it at the bottom of the Dungeon deck. Little Monster / Big Monster: fight it — the Dungeon is completed when you defeat it. 2x Little Monsters: fight two one at a time; lose the first and you do not fight the second; keep any you defeat; completed when you defeat both. Companion: recruit it (Charisma roll); a failed recruit fails the Dungeon. Any artifact: take any one of the four suit artifacts from the supply or another player, or decline. Map: explore, but place the tile in any empty slot touching the map (not only one touching your hex); completed when you place it.\n\n## Dungeon — drawing again\n\nIf a Dungeon card gives you nothing, put it at the bottom of the Dungeon deck and draw another; keep going until you draw a card you must resolve. A card gives nothing when: Any artifact (you decline, or you already hold all four suits); Map (the tile stack is empty); Little/Big Monster (that deck is empty); 2x Little Monsters (the Little Monster deck is empty before the first fight). If you beat the first of the 2x Little Monsters and the deck is then empty, keep the monster you beat; the card gives you nothing more, so draw again. This always ends: the Dungeon deck always contains Companion and Big Monster cards, and those decks never run out.\n\n## Artifacts\n\nThere are 5: Hearts, Spades, Diamonds, Clubs, and the Star. An artifact can change hands — stepping on its map hex takes it from whoever holds it (only once per hex, since the hex is then completed), and an \"Any artifact\" Dungeon card can take any of the four suit artifacts from the supply or from any player. The Star can only be taken from its own map hex (Tile 6); an \"Any artifact\" card can never take it, and whoever takes the Star keeps it for the rest of the game. All 5 count toward the \"Most artifacts\" quest; the Star has no other effect.\n\n## Quests\n\nOnly the quests turned face up at setup (players + 1) are in play. Claimed the moment someone achieves it — the FIRST player to achieve one takes the card and scores 1 point: Explore 3 tiles (tiles with your token on the centre hex; exploring, a Dungeon Map card, and a forced explore all count; the starting tile never counts); Complete 2 dungeons (Dungeon hexes with your token); Recruit 2 companions (companions you hold). Scored at the end of the game — the player with STRICTLY the most takes the card and scores 1 point; if players tie for the most, no one gets the point: Most Little Monsters; Most Big Monsters; Most artifacts (the Star included).\n\n## Ending the game\n\nThe game ends when the last map tile is placed, whether by exploring, by a Dungeon Map card, or by a forced explore: finish the current round as normal, play one more full round (with a new turn-order roll), then the game is over — award the end-of-game quests, then count quest points. The player with the most quest points wins; a tie shares the victory. If the last tile is never placed, the game does not end (this only happens if nobody chooses to explore).",
+ "moveSchema": {
+  "type": "object",
+  "required": [
+   "type"
+  ],
+  "properties": {
+   "type": {
+    "type": "string",
+    "enum": [
+     "setup_standee",
+     "setup_report",
+     "report_turn_order_roll",
+     "step",
+     "stop",
+     "try_again",
+     "move_away",
+     "explore",
+     "report_test_roll",
+     "report_card",
+     "resolve_report",
+     "take_artifact",
+     "decline_artifact"
+    ],
+    "description": "The move type."
+   },
+   "standee": {
+    "type": "string",
+    "description": "setup_standee: your standee name."
+   },
+   "colour": {
+    "type": "string",
+    "description": "setup_standee: your colour name."
+   },
+   "quests": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    },
+    "description": "setup_report: the quest cards drawn at setup, by printed name."
+   },
+   "tile": {
+    "type": "string",
+    "description": "setup_report: the starting tile you flipped, by printed number (e.g. \"Tile 4\")."
+   },
+   "total": {
+    "type": "integer",
+    "description": "The reported dice total. Turn order: 2..12. Test: any total your dice count can produce (1 die can total 1)."
+   },
+   "dice": {
+    "type": "array",
+    "items": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 6
+    },
+    "description": "Optional with a reported roll: each die as rolled. Must be the right number of dice and add up to total."
+   },
+   "to": {
+    "type": "string",
+    "description": "step: the hex to step to — \"the NE hex of Tile 3\", \"the centre of Tile 1\", or the hex key from get_legal_moves."
+   },
+   "path": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    },
+    "description": "move_away: your chosen route off the failed icon, one hex per step (\"the S hex of Tile 2\", or hex keys)."
+   },
+   "slot": {
+    "type": "string",
+    "description": "explore (placement): the empty slot for the revealed tile — \"side NE–SE of Tile 4\", or the slot key from get_legal_moves."
+   },
+   "rotation": {
+    "type": [
+     "integer",
+     "string"
+    ],
+    "description": "explore (placement): how the tile is turned — the starting-tile hex its printed N hex points toward (\"N\", \"NE\", \"SE\", \"S\", \"SW\", \"NW\"), or 0-5 as listed in get_legal_moves."
+   },
+   "card": {
+    "type": "string",
+    "description": "report_card: the printed name/number of the card you drew."
+   },
+   "artifact": {
+    "type": "string",
+    "description": "take_artifact: the printed name of a suit artifact (Hearts, Spades, Diamonds, Clubs). The Star is never takeable here."
+   },
+   "from": {
+    "type": "string",
+    "description": "take_artifact: \"supply\" or the printed name of the player holding it."
+   }
+  }
+ },
+ "optionsSchema": {
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+   "seed": {
+    "type": "integer",
+    "minimum": 0,
+    "description": "RNG seed for reproducible setup. Random if omitted."
+   }
+  }
+ },
+ "referenceData": {
+  "note": "Adventurer Olympics reference data — card catalogs + tile icon map.",
+  "tiles": "See the 10 tiles in the map (each 7 hexes; icons on outer hexes).",
+  "stats": "Charisma (recruit), Strength (fight), Movement (steps). Start: 1/1/2."
+ }
+}

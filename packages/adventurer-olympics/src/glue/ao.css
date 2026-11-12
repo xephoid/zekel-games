@@ -1,0 +1,92 @@
+/* Adventurer Olympics' look (docs/design/adventurer-olympics/README.md, "The
+   look"): hand-drawn and cartoony, thick ink lines, bright flat colours, a
+   hard little offset shadow like a sticker, uneven rounded corners. Every
+   rule is scoped under .ao-theme, the class the glue's themeFor puts on the
+   table shell, so no other game and no other page changes. Values are the
+   table board's (Main.dc.html, THEMES). Cards stay parchment in the dark
+   setting: they are objects on the table. */
+
+.table-shell.ao-theme {
+  --ao-bg: #fbf3e0;
+  --ao-surface: #fff7e6;
+  --ao-surface2: #f3e6c8;
+  --ao-text: #2b2233;
+  --ao-muted: #5c4f66;
+  --ao-line: #2b2233;
+  --ao-soft: rgba(43, 34, 51, .2);
+  --ao-action: #ff8a3d;
+  --ao-action-h: #f47a2a;
+  --ao-you-bg: #ffe0cc;
+  --ao-you-fg: #7a2e12;
+  --ao-hl: #fff3b0;
+  --ao-table: #e9dcbc;
+  --ao-shadow: 3px 4px 0 rgba(43, 34, 51, .16);
+  --ao-shadow-lg: 5px 7px 0 rgba(43, 34, 51, .2);
+  --ao-font: 'Fredoka', 'IBM Plex Sans', system-ui, sans-serif;
+  --ao-radius: 18px 12px 20px 14px / 14px 20px 12px 18px;
+
+  /* Universe's own tokens, redefined for everything on this page. */
+  --bg: var(--ao-bg); --bg-raised: var(--ao-surface); --card: var(--ao-surface); --chip: var(--ao-surface2);
+  --fg: var(--ao-text); --fg-muted: var(--ao-muted);
+  --accent: var(--ao-action); --accent-tint: var(--ao-hl); --accent-tint-2: var(--ao-surface2); --highlight: var(--ao-hl);
+  --border: var(--ao-line); --line: var(--ao-soft);
+  --brand-orange: var(--ao-action); --brand-orange-hover: var(--ao-action-h); --lit: var(--ao-action);
+  --you-bg: var(--ao-you-bg); --you-fg: var(--ao-you-fg);
+  --shadow-card: var(--ao-shadow); --shadow-sm: var(--ao-shadow); --shadow-md: var(--ao-shadow);
+  --shadow-pop: var(--ao-shadow-lg);
+  --font-display: var(--ao-font); --font-body: var(--ao-font);
+  --radius-md: 14px; --radius-lg: 18px;
+  --hex-table: var(--ao-table); --hex-edge: var(--ao-line);
+
+  background: var(--ao-bg);
+  color: var(--ao-text);
+  font-family: var(--ao-font);
+}
+
+:root[data-theme='dark'] .table-shell.ao-theme {
+  --ao-bg: #221c2a;
+  --ao-surface: #2e2638;
+  --ao-surface2: #3a3046;
+  --ao-text: #fbf3e0;
+  --ao-muted: #c9bcd6;
+  --ao-line: #0f0b14;
+  --ao-soft: rgba(251, 243, 224, .22);
+  --ao-you-bg: #5a2c10;
+  --ao-you-fg: #ffe0cc;
+  --ao-table: #1a1520;
+  --ao-shadow: 3px 4px 0 rgba(0, 0, 0, .4);
+  --ao-shadow-lg: 5px 7px 0 rgba(0, 0, 0, .45);
+  --border: #0f0b14;
+}
+
+/* ---------- every panel: an ink outline, uneven corners, a sticker shadow ---------- */
+.ao-theme :is(.zk-tableau, .zk-zone, .zk-map, .zk-track, .action-bar, .caption-card, .sheet) {
+  border: 3px solid var(--ao-line);
+  border-radius: var(--ao-radius);
+  box-shadow: var(--ao-shadow);
+}
+.ao-theme .zk-hexmap { background: var(--ao-table); }
+.ao-theme :is(.zk-zone-label, .zk-tableau-title) { font-family: var(--ao-font); font-weight: 700; letter-spacing: 0; text-transform: none; }
+
+/* Cards stay parchment in both settings, with ink text. */
+.ao-theme .zk-card { --card-ink: #2b2233; border: 3px solid #2b2233; border-radius: 12px; box-shadow: var(--ao-shadow); color: #2b2233; }
+.ao-theme .zk-card .zk-card-face { background: #fbf3e0; }
+
+/* The action button: orange with ink text, like the canvas's. */
+.ao-theme .btn:not(.secondary) { background: var(--ao-action); color: #2b2233; border: 3px solid #2b2233; box-shadow: var(--ao-shadow); font-weight: 700; }
+.ao-theme .btn:not(.secondary):hover { background: var(--ao-action-h); }
+.ao-theme .btn.secondary { border: 2.5px solid var(--ao-line); background: var(--ao-surface); color: var(--ao-text); font-weight: 600; }
+
+/* The top bar: parchment, an ink rule under it. */
+.ao-theme .table-topbar { background: var(--ao-surface); border-bottom: 3px solid var(--ao-line); }
+.ao-theme .table-topbar .title { font-family: var(--ao-font); font-weight: 700; }
+
+/* The decks and the drawn card sit in one short band under the map, so the
+   map keeps most of the board: small backs, and the drawn card a size up. */
+.ao-theme .table-board .zone-row { --zekel-card-w: 46px; --zekel-card-h: 64px; gap: 10px; }
+.ao-theme .table-board .zone-row [data-flip-id='ao:drawn'] { --zekel-card-w: 64px; --zekel-card-h: 88px; }
+.ao-theme .table-board .zone-row .zk-zone { padding: 6px 8px; }
+
+/* Draw and Roll stay in view at the foot of the board, over the map if the
+   board scrolls: the one thing to press must never be below the fold. */
+.ao-theme .table-board .roll-button { position: sticky; bottom: 0; align-self: center; z-index: 6; box-shadow: var(--ao-shadow-lg); }

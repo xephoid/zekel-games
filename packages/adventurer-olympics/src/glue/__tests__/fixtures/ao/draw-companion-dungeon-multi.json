@@ -1,0 +1,1483 @@
+{
+ "key": "draw-companion-dungeon-multi",
+ "players": 3,
+ "viewer": "p1",
+ "view": {
+  "phase": "draw",
+  "round": 3,
+  "activeSeat": "p1",
+  "endingPhase": 0,
+  "gameOver": false,
+  "map": {
+   "tiles": [
+    {
+     "tileId": 8,
+     "center": "0,0",
+     "rotation": 0,
+     "isStarting": true,
+     "exploredBy": null,
+     "turned": "turned the same way as the starting tile (its N hex points where the starting tile's N hex points)",
+     "hexes": [
+      "0,0",
+      "1,0",
+      "1,-1",
+      "0,-1",
+      "-1,0",
+      "-1,1",
+      "0,1"
+     ]
+    },
+    {
+     "tileId": 4,
+     "center": "-3,1",
+     "rotation": 0,
+     "isStarting": false,
+     "exploredBy": "p2",
+     "turned": "turned the same way as the starting tile (its N hex points where the starting tile's N hex points)",
+     "hexes": [
+      "-3,1",
+      "-2,1",
+      "-2,0",
+      "-3,0",
+      "-4,1",
+      "-4,2",
+      "-3,2"
+     ]
+    },
+    {
+     "tileId": 10,
+     "center": "2,-3",
+     "rotation": 0,
+     "isStarting": false,
+     "exploredBy": "p3",
+     "turned": "turned the same way as the starting tile (its N hex points where the starting tile's N hex points)",
+     "hexes": [
+      "2,-3",
+      "3,-3",
+      "3,-4",
+      "2,-4",
+      "1,-3",
+      "1,-2",
+      "2,-2"
+     ]
+    },
+    {
+     "tileId": 7,
+     "center": "1,2",
+     "rotation": 0,
+     "isStarting": false,
+     "exploredBy": "p1",
+     "turned": "turned the same way as the starting tile (its N hex points where the starting tile's N hex points)",
+     "hexes": [
+      "1,2",
+      "2,2",
+      "2,1",
+      "1,1",
+      "0,2",
+      "0,3",
+      "1,3"
+     ]
+    }
+   ],
+   "icons": [
+    {
+     "key": "0,-1",
+     "tileId": 8,
+     "localHex": "NW",
+     "kind": "little_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the NW hex of Tile 8"
+    },
+    {
+     "key": "1,-1",
+     "tileId": 8,
+     "localHex": "N",
+     "kind": "spades",
+     "completed": true,
+     "completedBy": "p3",
+     "hexLabel": "the N hex of Tile 8"
+    },
+    {
+     "key": "1,0",
+     "tileId": 8,
+     "localHex": "NE",
+     "kind": "dungeon",
+     "completed": true,
+     "completedBy": "p1",
+     "hexLabel": "the NE hex of Tile 8"
+    },
+    {
+     "key": "-4,1",
+     "tileId": 4,
+     "localHex": "SW",
+     "kind": "little_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the SW hex of Tile 4"
+    },
+    {
+     "key": "-2,1",
+     "tileId": 4,
+     "localHex": "NE",
+     "kind": "big_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the NE hex of Tile 4"
+    },
+    {
+     "key": "1,-3",
+     "tileId": 10,
+     "localHex": "SW",
+     "kind": "little_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the SW hex of Tile 10"
+    },
+    {
+     "key": "3,-3",
+     "tileId": 10,
+     "localHex": "NE",
+     "kind": "little_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the NE hex of Tile 10"
+    },
+    {
+     "key": "2,-2",
+     "tileId": 10,
+     "localHex": "SE",
+     "kind": "dungeon",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the SE hex of Tile 10"
+    },
+    {
+     "key": "1,1",
+     "tileId": 7,
+     "localHex": "NW",
+     "kind": "dungeon",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the NW hex of Tile 7"
+    },
+    {
+     "key": "0,3",
+     "tileId": 7,
+     "localHex": "S",
+     "kind": "diamonds",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the S hex of Tile 7"
+    },
+    {
+     "key": "2,2",
+     "tileId": 7,
+     "localHex": "NE",
+     "kind": "little_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the NE hex of Tile 7"
+    },
+    {
+     "key": "1,3",
+     "tileId": 7,
+     "localHex": "SE",
+     "kind": "little_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the SE hex of Tile 7"
+    }
+   ],
+   "hexes": [
+    "0,0",
+    "1,0",
+    "1,-1",
+    "0,-1",
+    "-1,0",
+    "-1,1",
+    "0,1",
+    "-3,1",
+    "-2,1",
+    "-2,0",
+    "-3,0",
+    "-4,1",
+    "-4,2",
+    "-3,2",
+    "2,-3",
+    "3,-3",
+    "3,-4",
+    "2,-4",
+    "1,-3",
+    "1,-2",
+    "2,-2",
+    "1,2",
+    "2,2",
+    "2,1",
+    "1,1",
+    "0,2",
+    "0,3",
+    "1,3"
+   ]
+  },
+  "players": [
+   {
+    "player_id": "p1",
+    "name": "You",
+    "standee": "Fighter",
+    "colour": "Red",
+    "hex": "1,1",
+    "hexLabel": "the NW hex of Tile 7",
+    "stepsLeft": 1,
+    "stats": {
+     "charisma": 1,
+     "strength": 1,
+     "movement": 2
+    },
+    "initiative": 2,
+    "companions": [],
+    "littleMonsters": [],
+    "bigMonsters": [
+     "big-10"
+    ],
+    "artifacts": [],
+    "questPoints": 0,
+    "claimedQuests": [],
+    "exploredTiles": [
+     7
+    ],
+    "dungeonsCompleted": 1,
+    "tokensSpent": 2,
+    "tokensLeft": 8
+   },
+   {
+    "player_id": "p2",
+    "name": "p2",
+    "standee": "Standee 1",
+    "colour": "Blue",
+    "hex": "-2,1",
+    "hexLabel": "the NE hex of Tile 4",
+    "stepsLeft": 0,
+    "stats": {
+     "charisma": 1,
+     "strength": 1,
+     "movement": 2
+    },
+    "initiative": 3,
+    "companions": [],
+    "littleMonsters": [],
+    "bigMonsters": [],
+    "artifacts": [],
+    "questPoints": 0,
+    "claimedQuests": [],
+    "exploredTiles": [
+     4
+    ],
+    "dungeonsCompleted": 0,
+    "tokensSpent": 1,
+    "tokensLeft": 9
+   },
+   {
+    "player_id": "p3",
+    "name": "p3",
+    "standee": "Standee 2",
+    "colour": "Yellow",
+    "hex": "2,-2",
+    "hexLabel": "the SE hex of Tile 10",
+    "stepsLeft": 0,
+    "stats": {
+     "charisma": 1,
+     "strength": 1,
+     "movement": 2
+    },
+    "initiative": 1,
+    "companions": [],
+    "littleMonsters": [],
+    "bigMonsters": [],
+    "artifacts": [
+     "spades"
+    ],
+    "questPoints": 0,
+    "claimedQuests": [],
+    "exploredTiles": [
+     10
+    ],
+    "dungeonsCompleted": 0,
+    "tokensSpent": 2,
+    "tokensLeft": 8
+   }
+  ],
+  "decks": {
+   "companion": 16,
+   "little": 12,
+   "big": 11,
+   "dungeon": 24,
+   "tileStack": 6
+  },
+  "artifactSupply": [
+   "hearts",
+   "diamonds",
+   "clubs",
+   "star"
+  ],
+  "inPlayQuests": {
+   "most_artifacts": "unclaimed",
+   "recruit_2_companions": "unclaimed",
+   "most_big_monsters": "unclaimed",
+   "complete_2_dungeons": "unclaimed"
+  },
+  "questBoxRemaining": 2,
+  "turnOrder": {
+   "p3": 1,
+   "p1": 2,
+   "p2": 3
+  },
+  "lastRoll": {
+   "seat": "p3",
+   "kind": "test",
+   "dice": [
+    1
+   ],
+   "total": 1,
+   "logSeq": 47
+  },
+  "turnOrderRolls": {
+   "totals": {
+    "p1": 7,
+    "p2": 3,
+    "p3": 11
+   },
+   "tiedGroup": null,
+   "reRolls": {},
+   "stillToRoll": []
+  },
+  "tableUsesRealCards": false,
+  "cardsUnderDecks": {
+   "companion": [],
+   "little": [],
+   "big": [],
+   "dungeon": []
+  },
+  "pending": {
+   "kind": "draw",
+   "seat": "p1",
+   "payload": {
+    "deck": "companion",
+    "iconKey": "1,1",
+    "test": "recruit",
+    "dungeon": true,
+    "fightsLeft": 1
+   }
+  },
+  "placementOptions": null,
+  "dungeonResolving": {
+   "iconKey": "1,1",
+   "kind": "companion",
+   "fromBottom": false
+  },
+  "referenceData": {
+   "tiles": [
+    {
+     "id": 1,
+     "icons": {
+      "SW": "city",
+      "NE": "dungeon"
+     }
+    },
+    {
+     "id": 2,
+     "icons": {
+      "NW": "clubs",
+      "N": "dungeon",
+      "S": "little_monster"
+     }
+    },
+    {
+     "id": 3,
+     "icons": {
+      "NW": "big_monster",
+      "NE": "hearts",
+      "SW": "city"
+     }
+    },
+    {
+     "id": 4,
+     "icons": {
+      "SW": "little_monster",
+      "NE": "big_monster"
+     }
+    },
+    {
+     "id": 5,
+     "icons": {
+      "SW": "little_monster"
+     }
+    },
+    {
+     "id": 6,
+     "icons": {
+      "N": "little_monster",
+      "S": "big_monster",
+      "SW": "star"
+     }
+    },
+    {
+     "id": 7,
+     "icons": {
+      "NW": "dungeon",
+      "S": "diamonds",
+      "NE": "little_monster",
+      "SE": "little_monster"
+     }
+    },
+    {
+     "id": 8,
+     "icons": {
+      "NW": "little_monster",
+      "N": "spades",
+      "NE": "dungeon"
+     }
+    },
+    {
+     "id": 9,
+     "icons": {
+      "N": "little_monster",
+      "S": "city"
+     }
+    },
+    {
+     "id": 10,
+     "icons": {
+      "SW": "little_monster",
+      "NE": "little_monster",
+      "SE": "dungeon"
+     }
+    }
+   ],
+   "companions": [
+    {
+     "id": "companion-1",
+     "number": 2,
+     "bonus": {
+      "strength": 1
+     }
+    },
+    {
+     "id": "companion-2",
+     "number": 2,
+     "bonus": {
+      "strength": 1
+     }
+    },
+    {
+     "id": "companion-3",
+     "number": 2,
+     "bonus": {
+      "charisma": 1
+     }
+    },
+    {
+     "id": "companion-4",
+     "number": 2,
+     "bonus": {
+      "strength": 1,
+      "charisma": 1
+     }
+    },
+    {
+     "id": "companion-5",
+     "number": 6,
+     "bonus": {
+      "charisma": 3,
+      "movement": 3
+     }
+    },
+    {
+     "id": "companion-6",
+     "number": 4,
+     "bonus": {
+      "movement": 3
+     }
+    },
+    {
+     "id": "companion-7",
+     "number": 2,
+     "bonus": {
+      "strength": 1,
+      "movement": 1
+     }
+    },
+    {
+     "id": "companion-8",
+     "number": 6,
+     "bonus": {
+      "movement": 4
+     }
+    },
+    {
+     "id": "companion-9",
+     "number": 4,
+     "bonus": {
+      "charisma": 3
+     }
+    },
+    {
+     "id": "companion-10",
+     "number": 2,
+     "bonus": {
+      "movement": 1
+     }
+    },
+    {
+     "id": "companion-11",
+     "number": 2,
+     "bonus": {
+      "movement": 1
+     }
+    },
+    {
+     "id": "companion-12",
+     "number": 2,
+     "bonus": {
+      "charisma": 1
+     }
+    },
+    {
+     "id": "companion-13",
+     "number": 4,
+     "bonus": {
+      "strength": 3
+     }
+    },
+    {
+     "id": "companion-14",
+     "number": 4,
+     "bonus": {
+      "strength": 2,
+      "movement": 2
+     }
+    },
+    {
+     "id": "companion-15",
+     "number": 6,
+     "bonus": {
+      "strength": 4
+     }
+    },
+    {
+     "id": "companion-16",
+     "number": 6,
+     "bonus": {
+      "charisma": 4
+     }
+    }
+   ],
+   "littleMonsters": [
+    {
+     "id": "little-1",
+     "number": 4
+    },
+    {
+     "id": "little-2",
+     "number": 3
+    },
+    {
+     "id": "little-3",
+     "number": 4
+    },
+    {
+     "id": "little-4",
+     "number": 3
+    },
+    {
+     "id": "little-5",
+     "number": 3
+    },
+    {
+     "id": "little-6",
+     "number": 2
+    },
+    {
+     "id": "little-7",
+     "number": 2
+    },
+    {
+     "id": "little-8",
+     "number": 2
+    },
+    {
+     "id": "little-9",
+     "number": 2
+    },
+    {
+     "id": "little-10",
+     "number": 4
+    },
+    {
+     "id": "little-11",
+     "number": 3
+    },
+    {
+     "id": "little-12",
+     "number": 4
+    }
+   ],
+   "bigMonsters": [
+    {
+     "id": "big-1",
+     "number": 5
+    },
+    {
+     "id": "big-2",
+     "number": 5
+    },
+    {
+     "id": "big-3",
+     "number": 7
+    },
+    {
+     "id": "big-4",
+     "number": 7
+    },
+    {
+     "id": "big-5",
+     "number": 7
+    },
+    {
+     "id": "big-6",
+     "number": 6
+    },
+    {
+     "id": "big-7",
+     "number": 5
+    },
+    {
+     "id": "big-8",
+     "number": 7
+    },
+    {
+     "id": "big-9",
+     "number": 6
+    },
+    {
+     "id": "big-10",
+     "number": 6
+    },
+    {
+     "id": "big-11",
+     "number": 6
+    },
+    {
+     "id": "big-12",
+     "number": 5
+    }
+   ],
+   "quests": [
+    {
+     "kind": "explore_3_tiles",
+     "name": "Explore 3 tiles",
+     "endGame": false
+    },
+    {
+     "kind": "complete_2_dungeons",
+     "name": "Complete 2 dungeons",
+     "endGame": false
+    },
+    {
+     "kind": "recruit_2_companions",
+     "name": "Recruit 2 companions",
+     "endGame": false
+    },
+    {
+     "kind": "most_little_monsters",
+     "name": "Most Little Monsters",
+     "endGame": true
+    },
+    {
+     "kind": "most_big_monsters",
+     "name": "Most Big Monsters",
+     "endGame": true
+    },
+    {
+     "kind": "most_artifacts",
+     "name": "Most artifacts",
+     "endGame": true
+    }
+   ],
+   "artifacts": [
+    [
+     "hearts",
+     "Hearts"
+    ],
+    [
+     "spades",
+     "Spades"
+    ],
+    [
+     "diamonds",
+     "Diamonds"
+    ],
+    [
+     "clubs",
+     "Clubs"
+    ],
+    [
+     "star",
+     "Star"
+    ]
+   ],
+   "tokensPerColour": 10
+  },
+  "myPending": {
+   "kind": "draw",
+   "seat": "p1",
+   "payload": {
+    "deck": "companion",
+    "iconKey": "1,1",
+    "test": "recruit",
+    "dungeon": true,
+    "fightsLeft": 1
+   }
+  }
+ },
+ "legalMoves": [
+  {
+   "move_id": "resolve_draw",
+   "description": "Draw the top Companion card (the server deals it when you press this).",
+   "move": {
+    "type": "resolve_report"
+   }
+  }
+ ],
+ "unavailable": [],
+ "watcher": "p2",
+ "watcherView": {
+  "phase": "draw",
+  "round": 3,
+  "activeSeat": "p1",
+  "endingPhase": 0,
+  "gameOver": false,
+  "map": {
+   "tiles": [
+    {
+     "tileId": 8,
+     "center": "0,0",
+     "rotation": 0,
+     "isStarting": true,
+     "exploredBy": null,
+     "turned": "turned the same way as the starting tile (its N hex points where the starting tile's N hex points)",
+     "hexes": [
+      "0,0",
+      "1,0",
+      "1,-1",
+      "0,-1",
+      "-1,0",
+      "-1,1",
+      "0,1"
+     ]
+    },
+    {
+     "tileId": 4,
+     "center": "-3,1",
+     "rotation": 0,
+     "isStarting": false,
+     "exploredBy": "p2",
+     "turned": "turned the same way as the starting tile (its N hex points where the starting tile's N hex points)",
+     "hexes": [
+      "-3,1",
+      "-2,1",
+      "-2,0",
+      "-3,0",
+      "-4,1",
+      "-4,2",
+      "-3,2"
+     ]
+    },
+    {
+     "tileId": 10,
+     "center": "2,-3",
+     "rotation": 0,
+     "isStarting": false,
+     "exploredBy": "p3",
+     "turned": "turned the same way as the starting tile (its N hex points where the starting tile's N hex points)",
+     "hexes": [
+      "2,-3",
+      "3,-3",
+      "3,-4",
+      "2,-4",
+      "1,-3",
+      "1,-2",
+      "2,-2"
+     ]
+    },
+    {
+     "tileId": 7,
+     "center": "1,2",
+     "rotation": 0,
+     "isStarting": false,
+     "exploredBy": "p1",
+     "turned": "turned the same way as the starting tile (its N hex points where the starting tile's N hex points)",
+     "hexes": [
+      "1,2",
+      "2,2",
+      "2,1",
+      "1,1",
+      "0,2",
+      "0,3",
+      "1,3"
+     ]
+    }
+   ],
+   "icons": [
+    {
+     "key": "0,-1",
+     "tileId": 8,
+     "localHex": "NW",
+     "kind": "little_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the NW hex of Tile 8"
+    },
+    {
+     "key": "1,-1",
+     "tileId": 8,
+     "localHex": "N",
+     "kind": "spades",
+     "completed": true,
+     "completedBy": "p3",
+     "hexLabel": "the N hex of Tile 8"
+    },
+    {
+     "key": "1,0",
+     "tileId": 8,
+     "localHex": "NE",
+     "kind": "dungeon",
+     "completed": true,
+     "completedBy": "p1",
+     "hexLabel": "the NE hex of Tile 8"
+    },
+    {
+     "key": "-4,1",
+     "tileId": 4,
+     "localHex": "SW",
+     "kind": "little_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the SW hex of Tile 4"
+    },
+    {
+     "key": "-2,1",
+     "tileId": 4,
+     "localHex": "NE",
+     "kind": "big_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the NE hex of Tile 4"
+    },
+    {
+     "key": "1,-3",
+     "tileId": 10,
+     "localHex": "SW",
+     "kind": "little_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the SW hex of Tile 10"
+    },
+    {
+     "key": "3,-3",
+     "tileId": 10,
+     "localHex": "NE",
+     "kind": "little_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the NE hex of Tile 10"
+    },
+    {
+     "key": "2,-2",
+     "tileId": 10,
+     "localHex": "SE",
+     "kind": "dungeon",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the SE hex of Tile 10"
+    },
+    {
+     "key": "1,1",
+     "tileId": 7,
+     "localHex": "NW",
+     "kind": "dungeon",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the NW hex of Tile 7"
+    },
+    {
+     "key": "0,3",
+     "tileId": 7,
+     "localHex": "S",
+     "kind": "diamonds",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the S hex of Tile 7"
+    },
+    {
+     "key": "2,2",
+     "tileId": 7,
+     "localHex": "NE",
+     "kind": "little_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the NE hex of Tile 7"
+    },
+    {
+     "key": "1,3",
+     "tileId": 7,
+     "localHex": "SE",
+     "kind": "little_monster",
+     "completed": false,
+     "completedBy": null,
+     "hexLabel": "the SE hex of Tile 7"
+    }
+   ],
+   "hexes": [
+    "0,0",
+    "1,0",
+    "1,-1",
+    "0,-1",
+    "-1,0",
+    "-1,1",
+    "0,1",
+    "-3,1",
+    "-2,1",
+    "-2,0",
+    "-3,0",
+    "-4,1",
+    "-4,2",
+    "-3,2",
+    "2,-3",
+    "3,-3",
+    "3,-4",
+    "2,-4",
+    "1,-3",
+    "1,-2",
+    "2,-2",
+    "1,2",
+    "2,2",
+    "2,1",
+    "1,1",
+    "0,2",
+    "0,3",
+    "1,3"
+   ]
+  },
+  "players": [
+   {
+    "player_id": "p1",
+    "name": "You",
+    "standee": "Fighter",
+    "colour": "Red",
+    "hex": "1,1",
+    "hexLabel": "the NW hex of Tile 7",
+    "stepsLeft": 1,
+    "stats": {
+     "charisma": 1,
+     "strength": 1,
+     "movement": 2
+    },
+    "initiative": 2,
+    "companions": [],
+    "littleMonsters": [],
+    "bigMonsters": [
+     "big-10"
+    ],
+    "artifacts": [],
+    "questPoints": 0,
+    "claimedQuests": [],
+    "exploredTiles": [
+     7
+    ],
+    "dungeonsCompleted": 1,
+    "tokensSpent": 2,
+    "tokensLeft": 8
+   },
+   {
+    "player_id": "p2",
+    "name": "p2",
+    "standee": "Standee 1",
+    "colour": "Blue",
+    "hex": "-2,1",
+    "hexLabel": "the NE hex of Tile 4",
+    "stepsLeft": 0,
+    "stats": {
+     "charisma": 1,
+     "strength": 1,
+     "movement": 2
+    },
+    "initiative": 3,
+    "companions": [],
+    "littleMonsters": [],
+    "bigMonsters": [],
+    "artifacts": [],
+    "questPoints": 0,
+    "claimedQuests": [],
+    "exploredTiles": [
+     4
+    ],
+    "dungeonsCompleted": 0,
+    "tokensSpent": 1,
+    "tokensLeft": 9
+   },
+   {
+    "player_id": "p3",
+    "name": "p3",
+    "standee": "Standee 2",
+    "colour": "Yellow",
+    "hex": "2,-2",
+    "hexLabel": "the SE hex of Tile 10",
+    "stepsLeft": 0,
+    "stats": {
+     "charisma": 1,
+     "strength": 1,
+     "movement": 2
+    },
+    "initiative": 1,
+    "companions": [],
+    "littleMonsters": [],
+    "bigMonsters": [],
+    "artifacts": [
+     "spades"
+    ],
+    "questPoints": 0,
+    "claimedQuests": [],
+    "exploredTiles": [
+     10
+    ],
+    "dungeonsCompleted": 0,
+    "tokensSpent": 2,
+    "tokensLeft": 8
+   }
+  ],
+  "decks": {
+   "companion": 16,
+   "little": 12,
+   "big": 11,
+   "dungeon": 24,
+   "tileStack": 6
+  },
+  "artifactSupply": [
+   "hearts",
+   "diamonds",
+   "clubs",
+   "star"
+  ],
+  "inPlayQuests": {
+   "most_artifacts": "unclaimed",
+   "recruit_2_companions": "unclaimed",
+   "most_big_monsters": "unclaimed",
+   "complete_2_dungeons": "unclaimed"
+  },
+  "questBoxRemaining": 2,
+  "turnOrder": {
+   "p3": 1,
+   "p1": 2,
+   "p2": 3
+  },
+  "lastRoll": {
+   "seat": "p3",
+   "kind": "test",
+   "dice": [
+    1
+   ],
+   "total": 1,
+   "logSeq": 47
+  },
+  "turnOrderRolls": {
+   "totals": {
+    "p1": 7,
+    "p2": 3,
+    "p3": 11
+   },
+   "tiedGroup": null,
+   "reRolls": {},
+   "stillToRoll": []
+  },
+  "tableUsesRealCards": false,
+  "cardsUnderDecks": {
+   "companion": [],
+   "little": [],
+   "big": [],
+   "dungeon": []
+  },
+  "pending": {
+   "kind": "draw",
+   "seat": "p1",
+   "payload": {
+    "deck": "companion",
+    "iconKey": "1,1",
+    "test": "recruit",
+    "dungeon": true,
+    "fightsLeft": 1
+   }
+  },
+  "placementOptions": null,
+  "dungeonResolving": {
+   "iconKey": "1,1",
+   "kind": "companion",
+   "fromBottom": false
+  },
+  "referenceData": {
+   "tiles": [
+    {
+     "id": 1,
+     "icons": {
+      "SW": "city",
+      "NE": "dungeon"
+     }
+    },
+    {
+     "id": 2,
+     "icons": {
+      "NW": "clubs",
+      "N": "dungeon",
+      "S": "little_monster"
+     }
+    },
+    {
+     "id": 3,
+     "icons": {
+      "NW": "big_monster",
+      "NE": "hearts",
+      "SW": "city"
+     }
+    },
+    {
+     "id": 4,
+     "icons": {
+      "SW": "little_monster",
+      "NE": "big_monster"
+     }
+    },
+    {
+     "id": 5,
+     "icons": {
+      "SW": "little_monster"
+     }
+    },
+    {
+     "id": 6,
+     "icons": {
+      "N": "little_monster",
+      "S": "big_monster",
+      "SW": "star"
+     }
+    },
+    {
+     "id": 7,
+     "icons": {
+      "NW": "dungeon",
+      "S": "diamonds",
+      "NE": "little_monster",
+      "SE": "little_monster"
+     }
+    },
+    {
+     "id": 8,
+     "icons": {
+      "NW": "little_monster",
+      "N": "spades",
+      "NE": "dungeon"
+     }
+    },
+    {
+     "id": 9,
+     "icons": {
+      "N": "little_monster",
+      "S": "city"
+     }
+    },
+    {
+     "id": 10,
+     "icons": {
+      "SW": "little_monster",
+      "NE": "little_monster",
+      "SE": "dungeon"
+     }
+    }
+   ],
+   "companions": [
+    {
+     "id": "companion-1",
+     "number": 2,
+     "bonus": {
+      "strength": 1
+     }
+    },
+    {
+     "id": "companion-2",
+     "number": 2,
+     "bonus": {
+      "strength": 1
+     }
+    },
+    {
+     "id": "companion-3",
+     "number": 2,
+     "bonus": {
+      "charisma": 1
+     }
+    },
+    {
+     "id": "companion-4",
+     "number": 2,
+     "bonus": {
+      "strength": 1,
+      "charisma": 1
+     }
+    },
+    {
+     "id": "companion-5",
+     "number": 6,
+     "bonus": {
+      "charisma": 3,
+      "movement": 3
+     }
+    },
+    {
+     "id": "companion-6",
+     "number": 4,
+     "bonus": {
+      "movement": 3
+     }
+    },
+    {
+     "id": "companion-7",
+     "number": 2,
+     "bonus": {
+      "strength": 1,
+      "movement": 1
+     }
+    },
+    {
+     "id": "companion-8",
+     "number": 6,
+     "bonus": {
+      "movement": 4
+     }
+    },
+    {
+     "id": "companion-9",
+     "number": 4,
+     "bonus": {
+      "charisma": 3
+     }
+    },
+    {
+     "id": "companion-10",
+     "number": 2,
+     "bonus": {
+      "movement": 1
+     }
+    },
+    {
+     "id": "companion-11",
+     "number": 2,
+     "bonus": {
+      "movement": 1
+     }
+    },
+    {
+     "id": "companion-12",
+     "number": 2,
+     "bonus": {
+      "charisma": 1
+     }
+    },
+    {
+     "id": "companion-13",
+     "number": 4,
+     "bonus": {
+      "strength": 3
+     }
+    },
+    {
+     "id": "companion-14",
+     "number": 4,
+     "bonus": {
+      "strength": 2,
+      "movement": 2
+     }
+    },
+    {
+     "id": "companion-15",
+     "number": 6,
+     "bonus": {
+      "strength": 4
+     }
+    },
+    {
+     "id": "companion-16",
+     "number": 6,
+     "bonus": {
+      "charisma": 4
+     }
+    }
+   ],
+   "littleMonsters": [
+    {
+     "id": "little-1",
+     "number": 4
+    },
+    {
+     "id": "little-2",
+     "number": 3
+    },
+    {
+     "id": "little-3",
+     "number": 4
+    },
+    {
+     "id": "little-4",
+     "number": 3
+    },
+    {
+     "id": "little-5",
+     "number": 3
+    },
+    {
+     "id": "little-6",
+     "number": 2
+    },
+    {
+     "id": "little-7",
+     "number": 2
+    },
+    {
+     "id": "little-8",
+     "number": 2
+    },
+    {
+     "id": "little-9",
+     "number": 2
+    },
+    {
+     "id": "little-10",
+     "number": 4
+    },
+    {
+     "id": "little-11",
+     "number": 3
+    },
+    {
+     "id": "little-12",
+     "number": 4
+    }
+   ],
+   "bigMonsters": [
+    {
+     "id": "big-1",
+     "number": 5
+    },
+    {
+     "id": "big-2",
+     "number": 5
+    },
+    {
+     "id": "big-3",
+     "number": 7
+    },
+    {
+     "id": "big-4",
+     "number": 7
+    },
+    {
+     "id": "big-5",
+     "number": 7
+    },
+    {
+     "id": "big-6",
+     "number": 6
+    },
+    {
+     "id": "big-7",
+     "number": 5
+    },
+    {
+     "id": "big-8",
+     "number": 7
+    },
+    {
+     "id": "big-9",
+     "number": 6
+    },
+    {
+     "id": "big-10",
+     "number": 6
+    },
+    {
+     "id": "big-11",
+     "number": 6
+    },
+    {
+     "id": "big-12",
+     "number": 5
+    }
+   ],
+   "quests": [
+    {
+     "kind": "explore_3_tiles",
+     "name": "Explore 3 tiles",
+     "endGame": false
+    },
+    {
+     "kind": "complete_2_dungeons",
+     "name": "Complete 2 dungeons",
+     "endGame": false
+    },
+    {
+     "kind": "recruit_2_companions",
+     "name": "Recruit 2 companions",
+     "endGame": false
+    },
+    {
+     "kind": "most_little_monsters",
+     "name": "Most Little Monsters",
+     "endGame": true
+    },
+    {
+     "kind": "most_big_monsters",
+     "name": "Most Big Monsters",
+     "endGame": true
+    },
+    {
+     "kind": "most_artifacts",
+     "name": "Most artifacts",
+     "endGame": true
+    }
+   ],
+   "artifacts": [
+    [
+     "hearts",
+     "Hearts"
+    ],
+    [
+     "spades",
+     "Spades"
+    ],
+    [
+     "diamonds",
+     "Diamonds"
+    ],
+    [
+     "clubs",
+     "Clubs"
+    ],
+    [
+     "star",
+     "Star"
+    ]
+   ],
+   "tokensPerColour": 10
+  },
+  "myPending": null
+ },
+ "watcherLegalMoves": []
+}

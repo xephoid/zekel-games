@@ -1,7 +1,7 @@
 {
   "name": "@zekel/adventurer-olympics",
   "version": "0.1.2",
-  "description": "Adventurer Olympics, a Zekel Games board game, as a game module for the zekel MCP server.",
+  "description": "Adventurer Olympics, a Zekel Games board game: its rules as a game module for the zekel MCP server, and its screen for Zekel Universe.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -21,6 +21,10 @@
       "types": "./dist/dev/index.d.ts",
       "default": "./dist/dev/index.js"
     },
+    "./glue": {
+      "types": "./dist/glue/index.d.ts",
+      "default": "./dist/glue/index.js"
+    },
     "./*": {
       "types": "./dist/*.d.ts",
       "default": "./dist/*.js"
@@ -37,16 +41,43 @@
   },
   "peerDependencies": {
     "@zekel/game-kit": "^0.1.0",
-    "@zekel/dev": "^0.1.1"
+    "@zekel/dev": "^0.1.1",
+    "@zekel/glue-kit": "^0.1.0",
+    "@zekel/primitives": "^0.1.0",
+    "@zekel/wire-types": "^0.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "peerDependenciesMeta": {
     "@zekel/dev": {
+      "optional": true
+    },
+    "@zekel/glue-kit": {
+      "optional": true
+    },
+    "@zekel/primitives": {
+      "optional": true
+    },
+    "@zekel/wire-types": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
       "optional": true
     }
   },
   "devDependencies": {
     "@zekel/game-kit": "^0.1.0",
-    "@zekel/dev": "^0.1.2"
+    "@zekel/dev": "^0.1.2",
+    "@zekel/glue-kit": "^0.1.0",
+    "@zekel/primitives": "^0.1.0",
+    "@zekel/wire-types": "^0.1.0",
+    "react": "^18.3.1",
+    "@types/react": "^18.3.12",
+    "react-dom": "^18.3.1",
+    "@types/react-dom": "^18.3.1"
   },
   "engines": {
     "node": ">=22.13.0"
