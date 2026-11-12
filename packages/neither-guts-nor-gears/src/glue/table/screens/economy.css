@@ -1,0 +1,26 @@
+/* NGnG economy screens: Build, Payment, Place It, Research, Access Request. */
+.ngg-eco-cost { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.ngg-eco-kind { font: 600 9px var(--n-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--n-muted); }
+.ngg-eco-core { display: inline-flex; align-items: center; gap: 4px; font: 600 9.5px var(--n-mono); color: var(--n-muted); }
+.ngg-eco-costline { display: flex; align-items: center; gap: 8px; font: 600 11px var(--n-mono); color: var(--n-muted); }
+.ngg-eco-pay { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.ngg-eco-pay li { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 8px; border: 1.5px dashed var(--n-line); font-size: 12.5px; }
+.ngg-eco-pay li.asked { border: 1.5px solid var(--n-action); }
+.ngg-eco-pay-mark { color: var(--n-muted); }
+.ngg-eco-owner { margin-left: auto; font: 600 10px var(--n-mono); color: var(--n-action); }
+.ngg-eco-free { font: 600 9.5px var(--n-mono); letter-spacing: .06em; color: var(--n-brand); }
+.ngg-eco-deck { display: flex; align-items: center; gap: 6px; font: 600 11px var(--n-mono); color: var(--n-muted); }
+.ngg-eco-down { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; }
+.ngg-eco-terms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.ngg-eco-terms span { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; border-radius: 9px; background: var(--n-surface2); }
+.ngg-eco-terms i { font: 600 9px var(--n-mono); letter-spacing: .06em; color: var(--n-muted); font-style: normal; }
+.ngg-eco-terms b { display: flex; align-items: center; gap: 5px; font-size: 13px; }
+.ngg-eco-hand { display: flex; flex-wrap: wrap; gap: 6px; }
+.ngg-eco-take { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1.5px dashed var(--n-ink); background: var(--n-surface); color: var(--n-text); font: 600 12px var(--n-face); cursor: pointer; }
+.ngg-eco-take.held { border-style: solid; background: var(--n-hlbg); border-color: var(--n-brand); }
+.ngg-eco-take:disabled { opacity: .5; cursor: not-allowed; }
+.ngg-eco-remove { margin-left: auto; border: none; background: none; color: var(--n-muted); cursor: pointer; font-size: 12px; }
+
+/* The Core question, under the platform it is for. */
+.ngg-eco-coreway { margin: 2px 0 6px 18px; padding-left: 12px; border-left: 2px solid var(--n-line); }
+.ngg-eco-coreway .ngg-options { margin-top: 4px; }

@@ -1,0 +1,50 @@
+/* NGnG battle screens. Builds on ngg.css (cards, options, armies); only what
+   the battle panels add lives here. Values from the visual system §5 and §8. */
+
+.ngb-block { display: flex; flex-direction: column; gap: 6px; }
+.ngb-mana { display: inline-flex; align-items: baseline; gap: 3px; margin-left: 8px; font: 600 10px var(--n-mono); color: var(--n-text); letter-spacing: .04em; }
+.ngb-mana i { font-style: normal; color: var(--n-muted); }
+.ngb-mana b { font-size: 12px; }
+
+/* numbered bullets: a 20px ink circle, mono numeral */
+.ngb-num { width: 20px; height: 20px; border-radius: 50%; background: var(--n-ink); color: var(--n-surface); display: inline-grid; place-items: center; font: 700 10px var(--n-mono); flex-shrink: 0; }
+.ngb-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.ngb-steps li { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.ngb-step { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.ngb-step > span:nth-child(2) { flex: 1; }
+.ngb-step .ngg-btn { min-height: 28px; padding: 3px 10px; font-size: 12px; }
+
+.ngb-seatstates { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.ngb-seatstates li { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 8px; border: 1px dashed var(--n-line); font-size: 12px; }
+.ngb-seatstates li.done { border: 1px solid var(--n-line); background: var(--n-surface2); }
+.ngb-seatstates li > span:nth-child(2) { flex: 1; }
+.ngb-seatstates li i { font: 500 10px var(--n-mono); color: var(--n-muted); font-style: normal; }
+
+.ngb-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 5px; }
+.ngb-facts li { padding: 2px 8px; border-radius: 999px; background: var(--n-tagbg); color: var(--n-tagfg); font: 600 10px var(--n-mono); letter-spacing: .04em; }
+
+/* the "no card" choice: not a card on the board, so dashed */
+.ngg-card.ngb-nocard { background: transparent; border: 1.5px dashed var(--n-line); justify-content: center; }
+.ngg-card.ngb-nocard.selected { border: 2px solid var(--n-brand); background: var(--n-hlbg); }
+.ngb-flip { display: inline-flex; }
+.ngb-flip.now .ngg-card { border: 2px solid var(--n-action); box-shadow: 0 8px 18px rgba(28,26,23,.16); transform: translateY(-4px); }
+button.ngg-card:disabled { cursor: default; }
+
+.ngb-deck { display: flex; gap: 12px; font: 600 10px var(--n-mono); letter-spacing: .06em; color: var(--n-muted); }
+
+/* the initiative ladder */
+.ngb-ladder { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.ngb-rung { display: flex; align-items: center; gap: 7px; width: 100%; padding: 5px 8px; border-radius: 8px; background: var(--n-surface2); border: 1px solid transparent; font: inherit; font-size: 12px; color: var(--n-text); text-align: left; }
+.ngb-rung.acted { opacity: .55; }
+.ngb-rung.acting { background: var(--n-hlbg); border: 1.5px solid var(--n-brand); }
+button.ngb-rung.pick { cursor: pointer; background: var(--n-surface); border: 1px solid var(--n-line); }
+button.ngb-rung.pick:hover:not(:disabled) { border-color: var(--n-brand); }
+button.ngb-rung.pick.selected { background: var(--n-hlbg); border: 1.5px solid var(--n-brand); }
+.ngb-init { width: 34px; font: 700 12px var(--n-mono); text-align: right; }
+.ngb-state { font: 600 9px var(--n-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--n-brand); }
+
+.ngb-hit { font: 600 13px var(--n-face); }
+.ngb-hit b { font: 700 18px var(--n-mono); }
+
+/* two cards to a row in the decision column */
+.ngb-flip > .ngg-card, .ngg-card.ngb-nocard { width: 160px; }
