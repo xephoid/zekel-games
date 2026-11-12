@@ -2,7 +2,8 @@ import { ABILITY_NAMES, ABILITY_STAT, STAT_ABILITIES } from './data/abilities.js
 import { HABITATS } from './data/habitats.js';
 import { minXpForLevel } from './data/levels.js';
 import { DIAMOND_PIRATES } from './data/travelTables.js';
-import { describeMission, describeRecruit, effectiveScore, missionById, parseCellId, ruinMapForLevel } from './engine.js';
+import { describeMission, describeRecruit, effectiveScore, missionById, parseCellId, ruinMapForLevel, unnamedCap } from './engine.js';
+import { crewTitle, hitsToLost, itemEffectText, itemTitle, rollFacts, ruinCandidateFacts, ruinGoal, ruinPartyFacts } from './facts.js';
 import type { AbilityId, WarbleWayGalaxyState } from './types.js';
 
 // Solo game: nothing on the server is hidden from the player, so the public
@@ -23,7 +24,8 @@ function ruinView(state: WarbleWayGalaxyState): unknown {
     purpose: enc.origin.type,
     legend: '. floor · # wall (blocks sight) · ~ pit (shoot across) · S start · G goal · I item spot · B being spot · A attacker spot',
   };
-  if (!enc.board) return { ...base, status: 'awaiting setup_encounter' };
+  if (!enc.board) return { ...base, goal_cell: ruinGoal(state), candidates: ruinCandidateFacts(state), status: 'awaiting setup_encounter' };
+  const partyFacts = ruinPartyFacts(state);
   const board = enc.board;
   const overlay = map.grid!.rows.map((row) => row.split(''));
   for (const s of board.closed_spots) {
@@ -63,8 +65,12 @@ function ruinView(state: WarbleWayGalaxyState): unknown {
       is_character: t.is_character,
       unnamed: t.unnamed ?? false,
       has_attacked: t.has_attacked ?? false,
+      // What this being can do this round, so a table can mark the squares
+      // it may end on and say how it fights without working either out.
+      ...partyFacts[t.name],
     })),
-    attackers: board.attackers.map((a) => ({ id: a.id, atk: a.atk, move: a.move, range: a.range, cell: a.cell, defeated: a.defeated })),
+    attackers: board.attackers.map((a) => ({ id: a.id, atk: a.atk, move: a.move, range: a.range, xp: a.xp, cell: a.cell, defeated: a.defeated })),
+    goal_cell: ruinGoal(state),
     // Whose attacker turn is resolving (the only marker of enemy-phase progress).
     attacker_turn_index: board.attacker_turn_index,
     spots_spent: board.closed_spots,
@@ -102,6 +108,11 @@ export function getView(state: WarbleWayGalaxyState): unknown {
   return {
     phase: state.phase,
     pending: state.pending,
+    // The open roll worked out for the table: what is added, the number to
+    // reach, the exact chance, and what passing and failing each do.
+    roll_facts: rollFacts(state),
+    // The roll the last move resolved, dice and arithmetic; null otherwise.
+    last_roll: state.last_roll ?? null,
     character: char
       ? {
           name: char.name,
@@ -135,6 +146,9 @@ export function getView(state: WarbleWayGalaxyState): unknown {
       : null,
     crew: state.crew.map((c) => ({
       name: c.name,
+      // The name on the row or card they were recruited from; `name` stays
+      // the label moves address them by.
+      title: crewTitle(state, c.name),
       race: c.race,
       idealizes: c.idealized,
       abilities: c.abilities,
@@ -144,6 +158,7 @@ export function getView(state: WarbleWayGalaxyState): unknown {
     })),
     // A10: pure bodies — no scores, no gear, no capacity slot; ruins only.
     unnamed_crew: state.unnamed_crew ?? 0,
+    unnamed_crew_cap: unnamedCap(state),
     // A11: the five endings, tracked live (the DM keeps every finish line visible).
     season_endings: {
       conquest: 'clear the depth-3 ruin beyond Habitat #3',
@@ -152,7 +167,9 @@ export function getView(state: WarbleWayGalaxyState): unknown {
       plunder: `${state.caches_looted ?? 0}/6 ruin caches opened`,
       bounty: `${state.foes_defeated ?? 0}/8 foes defeated face to face (boarding captures + ruin kills)`,
     },
-    ship: state.ship,
+    // hits_to_lost: how many more hits the ship takes before it is destroyed,
+    // the destroying one included (the bulkheads' one save counted in).
+    ship: state.ship ? { ...state.ship, hits_to_lost: hitsToLost(state) } : null,
     // `id` joins this ledger to character/crew `equipped` and `ship.parts`
     // (both are id lists) — without it duplicate-named items are indistinguishable.
     items: state.items.map((i) => ({
@@ -160,6 +177,11 @@ export function getView(state: WarbleWayGalaxyState): unknown {
       name: i.name,
       type: i.type,
       consumed: state.consumed_item_ids.includes(i.id),
+      // What the shop calls it, what it does, and where it is right now.
+      title: itemTitle(i),
+      effect: itemEffectText(i),
+      worn_by: char && (char.gear.weapon === i.id || char.gear.armor === i.id) ? char.name : (state.crew.find((c) => c.gear.weapon === i.id || c.gear.armor === i.id)?.name ?? null),
+      fitted: state.ship?.parts.includes(i.id) ?? false,
     })),
     // A19 Emergency Bulkheads: the once-per-run save, tracked on the sheet.
     bulkheads_spent: state.bulkheads_spent ?? false,
