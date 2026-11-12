@@ -202,12 +202,19 @@ export type Phase =
   | 'game_over';
 
 /** Mid-action pendings — every path that sets one MUST also clear it (CLAUDE.md
- *  pending hygiene). The only pending is a HUMAN owing a report of Intel they
- *  physically drew from the shared deck (turn-start gain or a Blue collect); the
- *  server reconciles the report against its tracked deck remainder. AI draws are
- *  dealt directly and never set a pending. */
+ *  pending hygiene). AI seats never set one.
+ *  - report_intel: a HUMAN owes a report of Intel they physically drew from the
+ *    shared deck (turn-start gain or a Blue collect); the server reconciles the
+ *    report against its tracked deck remainder.
+ *  - capture_choice: a HUMAN's double red card has moved the knight a second
+ *    time and its second capture has more than one answer (more than one target,
+ *    or a leader with both "capture a leader" objectives open). Nothing else
+ *    happens until they answer with choose_capture; the knight stands still, so
+ *    the answers are worked out again from where it is. Added 2026-11-12;
+ *    older saved sessions never hold one. */
 export type Pending =
   | { kind: 'report_intel'; forPlayerId: string; count: number; reason: 'gain' | 'collect' }
+  | { kind: 'capture_choice'; forPlayerId: string }
   | null;
 
 // ---------------------------------------------------------------------------
@@ -284,6 +291,11 @@ export interface ColorPlayParams {
   entryRegion?: RegionId;
   targetPlayerId?: string;
   targetUnit?: UnitType;
+  /** Red capture of a LEADER when BOTH the public "Capture a leader" (1) and the
+   *  secret one (2) are still open: which of the two this capture scores. One
+   *  capture scores only one (rules §7 item 2); the other stays open for a later
+   *  capture. Left out = the 2-point secret. */
+  captureLeaderScores?: 'public' | 'secret';
   raiseTaxes?: boolean;
   battleTotal?: number;
 }
@@ -313,6 +325,7 @@ export type SweetlandsMove =
       // action params (used when takeAction resolves the relevant color)
       targetPlayerId?: string; // Red capture/battle target
       targetUnit?: UnitType; // Red capture target unit
+      captureLeaderScores?: 'public' | 'secret'; // which "capture a leader" objective this capture scores
       raiseTaxes?: boolean; // Yellow: raise your region's tax after collecting
       // treat-card destination (slot identified by region + kind)
       treatRegion?: RegionId;
@@ -324,6 +337,9 @@ export type SweetlandsMove =
   // Play an owned Intel TOKEN as a one-time card of its color (move + optional
   // action), then the token returns to the supply.
   | ({ type: 'play_token'; color: SpaceColor; battleTotal?: number } & ColorPlayParams)
+  // The answer to a capture_choice pending: who a double red card's SECOND
+  // capture takes, and (when both are open) which "capture a leader" it scores.
+  | { type: 'choose_capture'; targetPlayerId: string; targetUnit: UnitType; captureLeaderScores?: 'public' | 'secret' }
   | { type: 'discard_for_color'; cardIds: string[]; color: SpaceColor }
   | { type: 'discard_sugar'; count: number }
   | { type: 'trash_influence'; count: number }

@@ -79,6 +79,13 @@ export function chooseMove(
     return { move: legal[0]!, narration: 'Reports drawn Intel.' };
   }
 
+  // A double red card's second capture (only asked of a human seat, e.g. when the
+  // AI suggests a move for one): the options are listed leaders first, secret
+  // before public, which is the AI's policy.
+  if (legal.every((m) => m.type === 'choose_capture')) {
+    return { move: legal[0]!, narration: 'Chooses the second capture: a leader if it can.' };
+  }
+
   if (difficulty === 'easy') return randomMove(state, legal);
 
   const strategy = parseStrategy(strategyName);

@@ -7,7 +7,8 @@
 import type { LegalMove, MoveLanding } from '@zekel/game-kit';
 import { availableFactionIds } from './data/factions.js';
 import { REGION_TREAT, type RegionId, type TreatId } from './data/board.js';
-import { hasJunctionChoice, JUNCTION_INDEX, advanceToColor, pathToColor } from './geometry.js';
+import { hasJunctionChoice, JUNCTION_INDEX, advanceToColor, pathToColor, regionOf } from './geometry.js';
+import { captureTargetsIn, captureChoices, type CaptureChoice } from './capture.js';
 import type {
   SweetlandsState, SweetlandsMove, PlayerState, SpaceColor, UnitType, FoeType,
   UnitLocation,
@@ -72,6 +73,70 @@ function purpleWillBattleFoe(state: SweetlandsState, p: PlayerState, u: UnitType
   return effective.zone === 'castle' || atCastleEntrance(effective);
 }
 
+/** Extra Red-action fields that turn one "take the action" option into a
+ *  concrete choice of who to capture, and the words added to its description. */
+interface RedActionVariant {
+  extra: { targetPlayerId?: string; targetUnit?: UnitType; captureLeaderScores?: 'public' | 'secret' };
+  note: string;
+}
+const NO_RED_VARIANT: RedActionVariant[] = [{ extra: {}, note: '' }];
+
+/** Where the knight stands when this Red play's capture resolves: the engine
+ *  captures in the KNIGHT's region after the move (engine.ts
+ *  actionBattleCapture). null when there is no capture: a knight already inside
+ *  the castle attacks the foe with Red instead. */
+function redCaptureRegion(
+  state: SweetlandsState, p: PlayerState, movedUnit: UnitType, from: UnitLocation, viaRoad: boolean,
+): RegionId | null {
+  if (state.foe && !state.foe.defeated && p.units.knight.zone === 'castle') return null;
+  const knightAt = movedUnit === 'knight' ? (advanceToColor(from, 'red', viaRoad) ?? from) : p.units.knight;
+  return regionOf(knightAt);
+}
+
+/** The words for each capture answer in `region` (capture.ts captureChoices):
+ *  who is taken, the enemy knight to beat first, and which "capture a leader"
+ *  objective it scores when that is also a choice. */
+function describeCaptureChoices(state: SweetlandsState, p: PlayerState, region: RegionId): Array<{ choice: CaptureChoice; note: string }> {
+  const choices = captureChoices(p, captureTargetsIn(state, p, region));
+  // An enemy knight in that region must be beaten first; losing cancels the capture.
+  const guards = state.players.filter((o) => o.playerId !== p.playerId && regionOf(o.units.knight) === region).map((o) => `${o.playerId}'s`);
+  const fight = guards.length > 0 ? ` (you must first beat ${guards.join(' / ')} knight in that region; losing that battle cancels the capture)` : '';
+  return choices.map((c) => {
+    const who = `capturing ${c.targetPlayerId}'s ${c.targetUnit}${fight}`;
+    const scores = c.captureLeaderScores === 'secret'
+      ? ', scoring your secret "capture a leader" (+2; the public one stays open for a later capture)'
+      : c.captureLeaderScores === 'public'
+        ? ', scoring the public "capture a leader" (+1; your secret one stays open for a later capture)'
+        : '';
+    return { choice: c, note: `${who}${scores}` };
+  });
+}
+
+/** One option per capture answer, so WHO you capture is the player's pick, not
+ *  the server's ("capture a leader" and "capture an ambassador" are different
+ *  secret objectives). For a double card these are the FIRST capture's; the
+ *  second is asked once the knight has moved again (choose_capture). */
+function redActionVariants(
+  state: SweetlandsState, p: PlayerState, movedUnit: UnitType, from: UnitLocation, viaRoad: boolean, actsTwice: boolean,
+): RedActionVariant[] {
+  const region = redCaptureRegion(state, p, movedUnit, from, viaRoad);
+  const twice = actsTwice
+    ? ' (a double resolves Red twice: this is the first capture. After your knight moves again you choose the second capture, if there is more than one way it can go)'
+    : '';
+  const described = region == null ? [] : describeCaptureChoices(state, p, region);
+  if (described.length === 0) return actsTwice ? [{ extra: {}, note: twice }] : NO_RED_VARIANT;
+  return described.map(({ choice, note }) => ({ extra: choice, note: `, ${note}${twice}` }));
+}
+
+/** The answers while a double red card's second capture waits (capture_choice).
+ *  The knight is already where the capture happens. */
+function captureChoiceMoves(state: SweetlandsState, p: PlayerState): LegalMove<SweetlandsMove>[] {
+  const region = regionOf(p.units.knight);
+  if (region == null) return [];
+  return describeCaptureChoices(state, p, region).map(({ choice, note }) =>
+    mk({ type: 'choose_capture', ...choice }, `Second Red of your double card: ${note}.`));
+}
+
 // A report move can't be enumerated to a single move_id (the cards are whatever
 // the human physically drew), so the template must SHOW the per-card object shape
 // — otherwise the model knows the colors but not that each card needs a `kind`
@@ -104,6 +169,13 @@ function listLegalMoves(state: SweetlandsState, playerId: string): LegalMove<Swe
       return [mk({ type: 'resolve_report' }, `${label} ${state.pending.count} Intel card(s) (the server deals them when you press this).`)];
     }
     return [mk({ type: 'report_intel_draw', cards: reportCardSkeleton(state.pending.count) }, reportCardInstruction(state.pending.count))];
+  }
+
+  // ---- a double red card's second capture waits for its answer ----
+  if (state.pending?.kind === 'capture_choice') {
+    if (state.pending.forPlayerId !== playerId) return [];
+    const p = byId(state, playerId);
+    return p ? captureChoiceMoves(state, p) : [];
   }
 
   // ---- setup phases ----
@@ -182,7 +254,10 @@ function listLegalMoves(state: SweetlandsState, playerId: string): LegalMove<Swe
               const needsFoeTotal = card.color === 'red' ? redWillBattleFoe(state, p, u) : card.color === 'purple' ? purpleWillBattleFoe(state, p, u, from, viaRoad) : false;
               const base = { type: 'play_intel' as const, cardId: card.cardId, unit: u, viaRoad, ...(entryRegion ? { entryRegion } : {}) };
               const landing = colorLanding(from, u, card.color, viaRoad, card.kind === 'double' ? 2 : 1);
-              moves.push(mk({ ...base, takeAction: true, ...(needsFoeTotal && !digital ? { battleTotal: 0 } : {}) }, `Play ${label}: move ${u}${where}${branch} and take the ${card.color} action.${needsFoeTotal ? foeNote : ''}`, landing));
+              const redVariants = card.color === 'red' ? redActionVariants(state, p, u, from, viaRoad, card.kind === 'double') : NO_RED_VARIANT;
+              for (const v of redVariants) {
+                moves.push(mk({ ...base, takeAction: true, ...v.extra, ...(needsFoeTotal && !digital ? { battleTotal: 0 } : {}) }, `Play ${label}: move ${u}${where}${branch} and take the ${card.color} action${v.note}.${needsFoeTotal ? foeNote : ''}`, landing));
+              }
               moves.push(mk({ ...base, takeAction: false }, `Play ${label}: move ${u}${where}${branch} only (no action).`, landing));
               // Yellow's optional "raise taxes" is a player choice — surface it.
               if (card.color === 'yellow') {
@@ -219,7 +294,10 @@ function listLegalMoves(state: SweetlandsState, playerId: string): LegalMove<Swe
             const needsFoeTotal = color === 'red' ? redWillBattleFoe(state, p, u) : color === 'purple' ? purpleWillBattleFoe(state, p, u, from, viaRoad) : false;
             const base = { type: 'play_token' as const, color, unit: u, viaRoad, ...(entryRegion ? { entryRegion } : {}) };
             const landing = colorLanding(from, u, color, viaRoad, 1);
-            moves.push(mk({ ...base, takeAction: true, ...(needsFoeTotal && !digital ? { battleTotal: 0 } : {}) }, `Spend your ${color} Intel token: move ${u}${where} and take the ${color} action.${needsFoeTotal ? foeNote : ''}`, landing));
+            const redVariants = color === 'red' ? redActionVariants(state, p, u, from, viaRoad, false) : NO_RED_VARIANT;
+            for (const v of redVariants) {
+              moves.push(mk({ ...base, takeAction: true, ...v.extra, ...(needsFoeTotal && !digital ? { battleTotal: 0 } : {}) }, `Spend your ${color} Intel token: move ${u}${where} and take the ${color} action${v.note}.${needsFoeTotal ? foeNote : ''}`, landing));
+            }
             moves.push(mk({ ...base, takeAction: false }, `Spend your ${color} Intel token: move ${u}${where} only.`, landing));
           }
         }

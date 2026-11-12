@@ -83,6 +83,7 @@ const MOVE_TYPES = [
   'pass',
   'play_intel',
   'play_token',
+  'choose_capture',
   'discard_for_color',
   'discard_sugar',
   'trash_influence',

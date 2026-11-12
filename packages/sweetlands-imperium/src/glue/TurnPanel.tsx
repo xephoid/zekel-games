@@ -12,7 +12,7 @@ import type { GlueInput, LegalMove, MoveForm } from '@zekel/glue-kit';
 import { SugarCube } from './art.js';
 import { COLOR_ACTION, cap, isColor } from './colors.js';
 import { cardLabel } from './Hand.js';
-import type { SlTable } from './read.js';
+import { UNIT_NAME, type SlTable } from './read.js';
 import type { PlayOption, TurnStep } from './turn.js';
 
 const STEPS = ['Recall', 'Draw', 'Play a card', 'Influence'];
@@ -134,6 +134,22 @@ function Choice({ m, label, onMove, disabled, main }: { m: LegalMove; label?: Re
   );
 }
 
+/** "Capture Bo’s Leader (scores your secret goal, +2)", from the move's own fields. */
+function captureTitle(m: LegalMove, nameFor: (pid: string) => string): string {
+  const unit = asStr(m.move['targetUnit']);
+  const who = `Capture ${nameFor(asStr(m.move['targetPlayerId']))}’s ${UNIT_NAME[unit as keyof typeof UNIT_NAME] ?? unit}`;
+  const scores = m.move['captureLeaderScores'];
+  const goal = scores === 'secret' ? ' (scores your secret goal, +2)' : scores === 'public' ? ' (scores the public goal, +1)' : '';
+  return `${who}${goal}`;
+}
+
+/** A capture button: a short title from the move's fields, then the engine's
+ *  own full description, so nothing it says (an enemy Knight to beat first,
+ *  what a double card's second half does) is lost or reworded. */
+function captureLabel(m: LegalMove, nameFor: (pid: string) => string): ReactNode {
+  return <span className="sl-option-words"><b>{captureTitle(m, nameFor)}</b><span>{m.description}</span></span>;
+}
+
 function pickedColor(table: SlTable, picked: string | null): string {
   if (!picked) return '';
   if (picked.startsWith('token:')) return picked.slice(6);
@@ -208,6 +224,16 @@ export function TurnPanel(p: PanelProps) {
         ))}
       </>
     );
+  } else if (step === 'capture') {
+    body = (
+      <>
+        <h2 className="sl-panel-title">Second capture</h2>
+        <p className="sl-panel-text">Your double Battle card moved your Knight again. Who does it capture this time?</p>
+        {legal.filter((m) => m.move['type'] === 'choose_capture').map((m) => (
+          <Choice key={m.move_id} m={m} onMove={send} disabled={disabled} label={captureLabel(m, p.nameFor)} />
+        ))}
+      </>
+    );
   } else if (step === 'recall') {
     body = (
       <>
@@ -260,11 +286,13 @@ export function TurnPanel(p: PanelProps) {
         <h2 className="sl-panel-title">{o.title}</h2>
         <p className="sl-panel-text">{o.sentence}</p>
         <div className="sl-choice-row">
-          {o.act && (
-            <button type="button" className="sl-main-btn" disabled={disabled} onClick={() => (rolls(o.act) ? p.setArming(o.act) : send(o.act!))}>
-              {isColor(color) ? actionLabel(color) : 'Move and take the action'}
-            </button>
-          )}
+          {o.captures.length > 1
+            ? o.captures.map((m) => <Choice key={m.move_id} m={m} onMove={send} disabled={disabled} label={captureLabel(m, p.nameFor)} />)
+            : o.act && (
+              <button type="button" className="sl-main-btn" disabled={disabled} onClick={() => (rolls(o.act) ? p.setArming(o.act) : send(o.act!))}>
+                {isColor(color) ? actionLabel(color) : 'Move and take the action'}
+              </button>
+            )}
           {o.raise && <Choice m={o.raise} onMove={send} disabled={disabled} label="Collect taxes and raise the tax" />}
           {o.move && <Choice m={o.move} onMove={send} disabled={disabled} main={!o.act} label={o.act ? 'Just move' : 'Move there'} />}
           {o.template && (

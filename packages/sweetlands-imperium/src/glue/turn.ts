@@ -11,7 +11,7 @@ import { TILE_BY_ID } from './geometry.js';
 import { movesForCard } from './Hand.js';
 import { REGION_TREAT, UNIT_NAME, tileOf, treatName, type SlTable, type UnitLocation } from './read.js';
 
-export type TurnStep = 'waiting' | 'secret' | 'draw' | 'recall' | 'play' | 'influence' | 'over' | 'other';
+export type TurnStep = 'waiting' | 'secret' | 'draw' | 'capture' | 'recall' | 'play' | 'influence' | 'over' | 'other';
 
 /** Which of the four steps the turn is at (or a setup step), from the view and the listed moves. */
 export function turnStep(table: SlTable, legal: LegalMove[], yourTurn: boolean): TurnStep {
@@ -19,6 +19,8 @@ export function turnStep(table: SlTable, legal: LegalMove[], yourTurn: boolean):
   if (!yourTurn || legal.length === 0) return 'waiting';
   if (legal.some((m) => m.move['type'] === 'resolve_report')) return 'draw';
   if (legal.some((m) => m.move['type'] === 'choose_secret_objective')) return 'secret';
+  // a double red card's second capture, waiting for your pick
+  if (legal.some((m) => m.move['type'] === 'choose_capture')) return 'capture';
   if (table.phase !== 'play') return 'other';
   if (table.step === 'recall') return 'recall';
   if (table.step === 'play') return 'play';
@@ -53,6 +55,9 @@ export interface PlayOption {
   sentence: string;
   /** take the color's action */
   act: LegalMove | null;
+  /** Red: one move per capture the engine listed (who is taken, and which
+   *  "capture a leader" goal it scores). More than one means the player picks. */
+  captures: LegalMove[];
   /** move only */
   move: LegalMove | null;
   /** Yellow: collect taxes and raise the tax */
@@ -98,14 +103,17 @@ export function playOptions(table: SlTable, moves: LegalMove[]): PlayOption[] {
     const landing = landingOf(first);
     const template = ms.find((m) => 'treatRegion' in m.move) ?? null;
     const act = ms.find((m) => m.move['takeAction'] === true && !m.move['raiseTaxes']) ?? null;
+    const captures = ms.filter((m) => m.move['takeAction'] === true && typeof m.move['targetUnit'] === 'string');
     const move = ms.find((m) => m.move['takeAction'] === false && !('treatRegion' in m.move)) ?? null;
     const raise = ms.find((m) => m.move['raiseTaxes'] === true) ?? null;
     const where = template ? 'any treat you choose' : destinationWords(table, landing);
     out.push({
       n: out.length + 1, unit, tile: tileOf(landing?.to), landing,
       title: `${UNIT_NAME[unit] ?? unit} → ${where}`,
-      sentence: (act ?? template ?? move ?? first).description ?? '',
-      act, move, raise, template,
+      // With several captures listed, no one option's words speak for all of
+      // them: each button carries its own.
+      sentence: captures.length > 1 ? 'Taking the action captures one enemy piece there. Pick which:' : (act ?? template ?? move ?? first).description ?? '',
+      act, captures, move, raise, template,
     });
   }
   return out;

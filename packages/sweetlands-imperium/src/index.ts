@@ -34,9 +34,10 @@ const moveSchema = {
     { type: 'object', required: ['type', 'cards'], properties: { type: { const: 'report_intel_draw' }, cards: { type: 'array' } } },
     { type: 'object', required: ['type'], properties: { type: { const: 'resolve_report' } } },
     { type: 'object', required: ['type', 'units'], properties: { type: { const: 'recall' }, units: { type: 'array', items: { enum: ['leader', 'knight', 'ambassador'] } } } },
-    { type: 'object', required: ['type', 'cardId', 'unit', 'takeAction'], properties: { type: { const: 'play_intel' }, cardId: { type: 'string' }, unit: { enum: ['leader', 'knight', 'ambassador'] }, takeAction: { type: 'boolean' }, viaRoad: { type: 'boolean' }, entryRegion: { type: 'integer', minimum: 1, maximum: 4 }, targetPlayerId: { type: 'string' }, targetUnit: { enum: ['leader', 'knight', 'ambassador'] }, raiseTaxes: { type: 'boolean' }, treatRegion: { type: 'integer' }, treatSlot: { enum: ['regional', 'random'] }, battleTotal: { type: 'integer', minimum: 0 } } },
-    { type: 'object', required: ['type', 'color', 'unit', 'takeAction'], properties: { type: { const: 'play_token' }, color: { enum: ['red', 'orange', 'yellow', 'green', 'blue', 'purple'] }, unit: { enum: ['leader', 'knight', 'ambassador'] }, takeAction: { type: 'boolean' }, viaRoad: { type: 'boolean' }, entryRegion: { type: 'integer', minimum: 1, maximum: 4 }, targetPlayerId: { type: 'string' }, targetUnit: { enum: ['leader', 'knight', 'ambassador'] }, raiseTaxes: { type: 'boolean' }, battleTotal: { type: 'integer', minimum: 0 } } },
+    { type: 'object', required: ['type', 'cardId', 'unit', 'takeAction'], properties: { type: { const: 'play_intel' }, cardId: { type: 'string' }, unit: { enum: ['leader', 'knight', 'ambassador'] }, takeAction: { type: 'boolean' }, viaRoad: { type: 'boolean' }, entryRegion: { type: 'integer', minimum: 1, maximum: 4 }, targetPlayerId: { type: 'string' }, targetUnit: { enum: ['leader', 'knight', 'ambassador'] }, captureLeaderScores: { enum: ['public', 'secret'] }, raiseTaxes: { type: 'boolean' }, treatRegion: { type: 'integer' }, treatSlot: { enum: ['regional', 'random'] }, battleTotal: { type: 'integer', minimum: 0 } } },
+    { type: 'object', required: ['type', 'color', 'unit', 'takeAction'], properties: { type: { const: 'play_token' }, color: { enum: ['red', 'orange', 'yellow', 'green', 'blue', 'purple'] }, unit: { enum: ['leader', 'knight', 'ambassador'] }, takeAction: { type: 'boolean' }, viaRoad: { type: 'boolean' }, entryRegion: { type: 'integer', minimum: 1, maximum: 4 }, targetPlayerId: { type: 'string' }, targetUnit: { enum: ['leader', 'knight', 'ambassador'] }, captureLeaderScores: { enum: ['public', 'secret'] }, raiseTaxes: { type: 'boolean' }, battleTotal: { type: 'integer', minimum: 0 } } },
     { type: 'object', required: ['type'], properties: { type: { const: 'pass' } } },
+    { type: 'object', required: ['type', 'targetPlayerId', 'targetUnit'], properties: { type: { const: 'choose_capture' }, targetPlayerId: { type: 'string' }, targetUnit: { enum: ['leader', 'ambassador'] }, captureLeaderScores: { enum: ['public', 'secret'] } } },
     { type: 'object', required: ['type', 'cardIds', 'color'], properties: { type: { const: 'discard_for_color' }, cardIds: { type: 'array', items: { type: 'string' } }, color: { enum: ['red', 'orange', 'yellow', 'green', 'blue', 'purple'] } } },
     { type: 'object', required: ['type', 'count'], properties: { type: { const: 'discard_sugar' }, count: { type: 'integer', minimum: 1 } } },
     { type: 'object', required: ['type', 'count'], properties: { type: { const: 'trash_influence' }, count: { type: 'integer', minimum: 1 } } },
@@ -56,9 +57,11 @@ HOW TO RUN THIS GAME (read before continuing — overrides default behavior):
 
 3. TURN STRUCTURE — ONE INTEL CARD PER TURN. On your turn: (a) optionally RECALL units to your start, (b) GAIN Intel by your Ambassador's region distance, (c) play exactly ONE Intel card — MOVE one of your units to the next space of that color (counter-clockwise; at a junction purple you may branch onto the road to the castle), then optionally take the card's color action (Red=battle/capture, Orange=influence, Yellow=taxes, Green=move or discard-for-unlimited, Blue=collect Intel, Purple=castle), (d) an INFLUENCE phase to buy Intel tokens (1 each) or a sugar cube (3). Do NOT chain steps from memory — obey next_step and get_legal_moves.
 
-4. REPORT AI MOVES IN FULL. The AI's units are virtual but the human moves the physical pieces: relay exactly which card the AI played, which unit moved and where, and every capture / influence / tax / Intel / castle / score change. Never reveal the AI's hidden HAND. Plain game terms, no flavor.
+4. RED CAPTURES ARE A CHOICE. WHO you capture is the player's pick, never yours: get_legal_moves offers one option per enemy Leader or Ambassador the knight can reach (targetPlayerId and targetUnit filled in). Offer them and let the human pick; "capture a leader" and "capture an ambassador" are different secret objectives. If one leader capture would meet both the public and the secret "capture a leader", only ONE scores and the capturer picks which (captureLeaderScores); the other stays open for a later capture. A DOUBLE red card captures twice: its listed options choose the first capture; if the second has more than one way to go, next_step stops and asks (choose_capture). Ask the human; never pick for them.
 
-5. WIN at 5 points (public objectives + secret objectives worth 2 each). Use get_rules for the objective list and faction abilities. Never invent card values or counts — read them from this session's tools.`;
+5. REPORT AI MOVES IN FULL. The AI's units are virtual but the human moves the physical pieces: relay exactly which card the AI played, which unit moved and where, and every capture / influence / tax / Intel / castle / score change. Never reveal the AI's hidden HAND. Plain game terms, no flavor.
+
+6. WIN at 5 points (public objectives + secret objectives worth 2 each). Use get_rules for the objective list and faction abilities. Never invent card values or counts — read them from this session's tools.`;
 
 // Digital variant (docs/digital-mode.md): a digital human has no physical
 // cards — the server holds the shared Intel deck and the player's private hand,
@@ -75,9 +78,11 @@ HOW TO RUN THIS GAME (read before continuing — overrides default behavior):
 
 4. TURN STRUCTURE: recall (optional) → gain Intel (button) → play ONE Intel card (move + optional color action) → influence phase.
 
-5. REPORT AI MOVES IN FULL. The AI's plays are virtual but relay every board-changing fact plainly; never reveal the AI's hand.
+5. RED CAPTURES ARE A CHOICE. WHO you capture is the player's pick, never yours: get_legal_moves offers one option per enemy Leader or Ambassador the knight can reach (targetPlayerId and targetUnit filled in). Offer them and let the human pick; "capture a leader" and "capture an ambassador" are different secret objectives. If one leader capture would meet both the public and the secret "capture a leader", only ONE scores and the capturer picks which (captureLeaderScores); the other stays open for a later capture. A DOUBLE red card captures twice: its listed options choose the first capture; if the second has more than one way to go, next_step stops and asks (choose_capture). Ask the human; never pick for them.
 
-6. WIN at 5 points. Never invent card values or counts — read them from this session's tools.`;
+6. REPORT AI MOVES IN FULL. The AI's plays are virtual but relay every board-changing fact plainly; never reveal the AI's hand.
+
+7. WIN at 5 points. Never invent card values or counts — read them from this session's tools.`;
 
 // Player-facing rules only — the public rules page renders this verbatim. The
 // agent's briefing (physical and digital variants) lives in
@@ -89,7 +94,7 @@ Win by reaching ${POINTS_TO_WIN} points. The board is a ring of 4 regions (1 bot
 
 Factions: ${FACTION_IDS.map((id) => `${FACTIONS[id].name} — ${FACTIONS[id].ability}`).join(' · ')}
 
-Public objectives (one-time each): ${PUBLIC_OBJECTIVES.map((o) => `${o.description} (${o.points})`).join(' · ')}. Secret objectives are worth 2 each, scored when completed.
+Public objectives (one-time each): ${PUBLIC_OBJECTIVES.map((o) => `${o.description} (${o.points})`).join(' · ')}. Secret objectives are worth 2 each, scored when completed. One capture scores only ONE "Capture a leader" objective: if you hold the secret one and have not yet scored the public one, you choose which this capture scores, and the other stays open for a later capture. A double red card captures twice; you choose each capture.
 
 One foe guards the castle (chosen at setup): Dragon rolls 5 dice, Orc 3, Fiend 2. Battle by rolling your sugar cubes vs the foe/knight; ties go to the defender. Only knights battle/capture. SUGAR CUBES ARE CUSTOM DICE — each has 3 blank faces (0), plus a 1, a 2, and a 3 (so each cube averages 1 pip). You roll one die per sugar cube you own.
 
@@ -200,6 +205,25 @@ export class SweetlandsImperiumGame implements Game<SweetlandsState, SweetlandsM
           private: true,
         },
         facts: { phase: 'Play', ...turnOwner, reason: factReason, notes: [`${n} Intel ${cardsWord} drawn from the shared deck.`, 'Name each card by colour, or by treat name.'] } };
+    }
+    // A human's double red card: the knight has moved again and the second
+    // capture has more than one answer. Ask them; the options are listed moves.
+    if (s.pending?.kind === 'capture_choice') {
+      const who = s.pending.forPlayerId;
+      const options = legal(s, who).map((m) => m.description.replace(/^Second Red of your double card: /, '').replace(/\.$/, ''));
+      return { status: 'human_to_move', active_player_id: who, instruction:
+        `${who}'s double red card captures a second time. ASK ${who} which of the listed choose_capture options they want, and send it exactly as listed. Do NOT pick for them.`,
+        human_response: {
+          ask: 'Your knight moved again. Who does the second Red capture?',
+          example: options[0] ?? 'the leader',
+          records_as: 'choose_capture { targetPlayerId, targetUnit, captureLeaderScores? }',
+        },
+        facts: {
+          phase: 'Play',
+          reason: `${seatDisplayName(state.players, who)} played a double red card; this is its second capture.`,
+          options,
+          notes: ['"Capture a leader" and "capture an ambassador" are different secret objectives.', 'One capture scores only one "capture a leader" objective.'],
+        } };
     }
     switch (s.phase) {
       case 'setup_factions': {
