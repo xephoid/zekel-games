@@ -1,0 +1,90 @@
+// The rulebook page (glue/rulebook/NggRulebook.tsx) against the reference data
+// captured from this package's rules (fixtures/reference.json, kept current
+// by src/__tests__/rulebook.test.ts). It must show the engine's numbers for the
+// chosen player count, the engine's own treaty and unit text, and a picture
+// for every name it draws.
+
+import { afterEach, describe, expect, it } from 'vitest';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import type { GameReferenceResponse } from '@zekel/wire-types';
+import { NggRulebook } from '../rulebook/NggRulebook.js';
+import { readRulebook } from '../rulebook/read.js';
+import { hasIcon } from '../ui.js';
+
+afterEach(cleanup);
+
+const referenceData = JSON.parse(readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'reference.json'), 'utf8'));
+const reference: GameReferenceResponse = { gameId: 'neither-guts-nor-gears', rules: '', referenceData, moveSchema: null, optionsSchema: null };
+const data = readRulebook(referenceData)!;
+
+const section = (name: RegExp) => screen.getByRole('heading', { level: 2, name }).closest('section')!;
+const pick = (n: number) => fireEvent.click(within(screen.getByRole('group', { name: 'Number of players' })).getByRole('button', { name: String(n) }));
+
+describe('the Neither Guts nor Gears rulebook page', () => {
+  it('draws nothing without a rulebook in the reference', () => {
+    const { container } = render(<NggRulebook reference={null} />);
+    expect(container.innerHTML).toBe('');
+    expect(readRulebook({})).toBeNull();
+  });
+
+  it('shows the engine\'s win numbers for the chosen player count', () => {
+    render(<NggRulebook reference={reference} />);
+    const win = () => section(/Four ways to win/);
+    expect(within(win()).getByText('140')).toBeTruthy();
+    expect(within(win()).getByText('16')).toBeTruthy();
+    expect(within(win()).getByText('Leaders')).toBeTruthy();
+    pick(2);
+    expect(within(win()).getByText('70')).toBeTruthy();
+    expect(within(win()).getByText('12')).toBeTruthy();
+    expect(within(win()).getByText('Leader')).toBeTruthy();
+    pick(6);
+    expect(within(win()).getByText('210')).toBeTruthy();
+    // 26 collectors for Economic, and 26 points for Technological at every count.
+    expect(within(win()).getAllByText('26')).toHaveLength(2);
+  });
+
+  it('draws the map for the chosen player count, with the engine\'s tile names', () => {
+    render(<NggRulebook reference={reference} />);
+    const board = () => section(/The board/);
+    const tiles = () => board().querySelectorAll('svg polygon').length;
+    expect(tiles()).toBe(data.maps['3-4p'].length);
+    expect(within(board()).getByText('29 tiles')).toBeTruthy();
+    pick(2);
+    expect(tiles()).toBe(data.maps['2p'].length);
+    pick(5);
+    expect(tiles()).toBe(data.maps['5-6p'].length);
+    for (const t of data.maps['5-6p']) expect(board().textContent).toContain(t.label);
+  });
+
+  it('follows the map in the component counts', () => {
+    render(<NggRulebook reference={reference} />);
+    const surfs = () => within(section(/Components/)).getByText('Surfs per wizard').closest('div')!;
+    expect(within(surfs()).getByText('16')).toBeTruthy();
+    pick(6);
+    expect(within(surfs()).getByText('26')).toBeTruthy();
+  });
+
+  it('prints each treaty\'s break condition and units\' notes as the engine words them', () => {
+    render(<NggRulebook reference={reference} />);
+    const treaties = section(/Treaties/);
+    for (const t of data.treaties) expect(treaties.textContent).toContain(t.breaking);
+    const units = section(/Units/);
+    for (const u of [...data.wizardUnits, ...data.robotUnits]) expect(units.textContent).toContain(u.notes);
+  });
+
+  it('has a picture for every name it draws', () => {
+    const t = data.text;
+    const names = [
+      ...t.components.map((c) => c.icon), ...t.round.steps.map((s) => s.icon), ...t.round.stack.cards.map((c) => c.action),
+      ...t.setup.wizard.pieces.map((p) => p.icon), ...t.setup.robot.pieces.map((p) => p.icon),
+      ...t.paying.example.figure.pieces.map((p) => p.icon), ...t.treaties.chart.map((r) => r.treaty),
+      ...data.wizardUnits.map((u) => u.name), ...data.robotUnits.map((u) => u.name),
+      ...data.ladder.filter((u) => !u.name.endsWith('(hero)')).map((u) => u.name),
+      ...[t.setup.wizard.faction, t.setup.robot.faction],
+    ];
+    expect(names.filter((n) => !hasIcon(n))).toEqual([]);
+  });
+});

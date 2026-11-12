@@ -1,7 +1,7 @@
 {
   "name": "@zekel/neither-guts-nor-gears",
-  "version": "0.1.3",
-  "description": "Neither Guts nor Gears, a Zekel Games board game, as a game module for the zekel MCP server.",
+  "version": "0.1.4",
+  "description": "Neither Guts nor Gears, a Zekel Games board game: its rules as a game module for the zekel MCP server, and its rulebook page for Zekel Universe.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -21,6 +21,10 @@
       "types": "./dist/dev/index.d.ts",
       "default": "./dist/dev/index.js"
     },
+    "./glue": {
+      "types": "./dist/glue/index.d.ts",
+      "default": "./dist/glue/index.js"
+    },
     "./*": {
       "types": "./dist/*.d.ts",
       "default": "./dist/*.js"
@@ -37,16 +41,32 @@
   },
   "peerDependencies": {
     "@zekel/game-kit": "^0.1.0",
-    "@zekel/dev": "^0.1.1"
+    "@zekel/dev": "^0.1.1",
+    "@zekel/glue-kit": "^0.1.0",
+    "@zekel/wire-types": "^0.1.0",
+    "react": "^18.3.1"
   },
   "peerDependenciesMeta": {
     "@zekel/dev": {
+      "optional": true
+    },
+    "@zekel/glue-kit": {
+      "optional": true
+    },
+    "@zekel/wire-types": {
+      "optional": true
+    },
+    "react": {
       "optional": true
     }
   },
   "devDependencies": {
     "@zekel/game-kit": "^0.1.0",
-    "@zekel/dev": "^0.1.2"
+    "@zekel/dev": "^0.1.2",
+    "@zekel/glue-kit": "^0.1.0",
+    "@zekel/wire-types": "^0.1.0",
+    "react": "^18.3.1",
+    "@types/react": "^18.3.12"
   },
   "engines": {
     "node": ">=22.13.0"

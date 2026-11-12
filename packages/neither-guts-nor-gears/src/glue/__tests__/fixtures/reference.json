@@ -1,0 +1,2474 @@
+{
+ "factions": [
+  {
+   "id": "covenant",
+   "name": "The Covenant",
+   "species": "wizard",
+   "color": "White"
+  },
+  {
+   "id": "schism",
+   "name": "The Schism",
+   "species": "wizard",
+   "color": "Red"
+  },
+  {
+   "id": "brass-circle",
+   "name": "The Brass Circle",
+   "species": "wizard",
+   "color": "Blue"
+  },
+  {
+   "id": "ledger",
+   "name": "The Ledger",
+   "species": "robot",
+   "color": "Purple"
+  },
+  {
+   "id": "foundry",
+   "name": "The Foundry",
+   "species": "robot",
+   "color": "Yellow"
+  },
+  {
+   "id": "unbolted",
+   "name": "The Unbolted",
+   "species": "robot",
+   "color": "Green"
+  }
+ ],
+ "wizard_units": [
+  {
+   "id": "surf",
+   "name": "Surf",
+   "species": "wizard",
+   "cost": {
+    "water": 2
+   },
+   "init": null,
+   "dmg": null,
+   "def": null,
+   "aoe": false,
+   "maxPerPlayer": 11,
+   "collector": true,
+   "collectorResource": null,
+   "needsCore": false,
+   "requiresBuilding": null,
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Collector; may collect any resource. Maximum = the Economic spend on this map: 12 / 16 / 26."
+  },
+  {
+   "id": "subject",
+   "name": "Subject",
+   "species": "wizard",
+   "cost": {
+    "water": 1,
+    "wood": 1
+   },
+   "init": null,
+   "dmg": null,
+   "def": null,
+   "aoe": false,
+   "maxPerPlayer": 10,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": false,
+   "requiresBuilding": null,
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Off-map faction-board token. +1 culture per round, or +2 with Amphitheatre. Maximum 10."
+  },
+  {
+   "id": "evoker",
+   "name": "Evoker",
+   "species": "wizard",
+   "cost": {
+    "wood": 2,
+    "ore": 1
+   },
+   "init": 50,
+   "dmg": 2,
+   "def": 1,
+   "aoe": false,
+   "maxPerPlayer": 5,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": false,
+   "requiresBuilding": null,
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Wizard Missile costs 1 mana per attack. Researched Ice Blast costs 3 mana and gives one unit −100 Init. Researched Fiery Explosion costs 3 mana and deals 2 DMG AoE."
+  },
+  {
+   "id": "illusionist",
+   "name": "Illusionist",
+   "species": "wizard",
+   "cost": {
+    "wood": 2,
+    "ore": 1
+   },
+   "init": null,
+   "dmg": null,
+   "def": null,
+   "aoe": false,
+   "maxPerPlayer": 5,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": false,
+   "requiresBuilding": "Library of Illusion",
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": true,
+   "notes": "Requires Library of Illusion. Assigns a hero as a spy; no separate map piece. Maximum one active assignment."
+  },
+  {
+   "id": "dragon",
+   "name": "Dragon",
+   "species": "wizard",
+   "cost": {
+    "wood": 2,
+    "ore": 2,
+    "ether": 1
+   },
+   "init": 10,
+   "dmg": 3,
+   "def": 2,
+   "aoe": true,
+   "maxPerPlayer": 5,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": false,
+   "requiresBuilding": "Dragon Hoard",
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "No mana cost. Requires Dragon Hoard."
+  },
+  {
+   "id": "enchantress",
+   "name": "Enchantress",
+   "species": "wizard",
+   "cost": {
+    "water": 1,
+    "wood": 1,
+    "ether": 1
+   },
+   "init": 75,
+   "dmg": 0,
+   "def": 1,
+   "aoe": false,
+   "maxPerPlayer": 5,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": false,
+   "requiresBuilding": "Library of Enchantment",
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Requires Library of Enchantment. Enhance: +2 DMG to one unit for 2 mana. Researched Dehance: −1 DEF to one unit for 2 mana."
+  },
+  {
+   "id": "cleric",
+   "name": "Cleric",
+   "species": "wizard",
+   "cost": {
+    "water": 2,
+    "ether": 1
+   },
+   "init": 2,
+   "dmg": 0,
+   "def": 1,
+   "aoe": false,
+   "maxPerPlayer": 5,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": false,
+   "requiresBuilding": "Temple",
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Requires Temple. Each Cleric may prevent one death per initiative pass for 5 mana, including its own or an allied unit's death in the same battle."
+  }
+ ],
+ "wizard_buildings": [
+  {
+   "id": "castle",
+   "name": "Castle",
+   "species": "wizard",
+   "cost": {
+    "wood": 3,
+    "ore": 1
+   },
+   "isBase": true,
+   "repeatableMax": null,
+   "effect": "Additional or replacement base on the map. Spawns map units. Three-base total limit; starting Castle is free."
+  },
+  {
+   "id": "library-of-evocation",
+   "name": "Library of Evocation",
+   "species": "wizard",
+   "cost": {
+    "wood": 2,
+    "water": 1
+   },
+   "isBase": false,
+   "repeatableMax": null,
+   "effect": "Permits Ice Blast, Fiery Explosion, Mana Shield and Extra Move/Battle Card research."
+  },
+  {
+   "id": "library-of-illusion",
+   "name": "Library of Illusion",
+   "species": "wizard",
+   "cost": {
+    "wood": 2,
+    "ore": 1
+   },
+   "isBase": false,
+   "repeatableMax": null,
+   "effect": "Unlocks Illusionist recruitment and Invisible and Extra Research Card research."
+  },
+  {
+   "id": "library-of-enchantment",
+   "name": "Library of Enchantment",
+   "species": "wizard",
+   "cost": {
+    "water": 1,
+    "wood": 2,
+    "ore": 1
+   },
+   "isBase": false,
+   "repeatableMax": null,
+   "effect": "Unlocks Enchantress recruitment and Dehance and Extra Build Card research."
+  },
+  {
+   "id": "dragon-hoard",
+   "name": "Dragon Hoard",
+   "species": "wizard",
+   "cost": {
+    "ore": 2,
+    "water": 1,
+    "ether": 1
+   },
+   "isBase": false,
+   "repeatableMax": null,
+   "effect": "Unlocks Dragon recruitment."
+  },
+  {
+   "id": "temple",
+   "name": "Temple",
+   "species": "wizard",
+   "cost": {
+    "wood": 2,
+    "water": 2
+   },
+   "isBase": false,
+   "repeatableMax": null,
+   "effect": "Unlocks Cleric recruitment."
+  },
+  {
+   "id": "embassy",
+   "name": "Embassy",
+   "species": "wizard",
+   "cost": {
+    "wood": 2
+   },
+   "isBase": false,
+   "repeatableMax": null,
+   "effect": "Unlocks treaty formation and battle-card purchases."
+  },
+  {
+   "id": "amphitheatre",
+   "name": "Amphitheatre",
+   "species": "wizard",
+   "cost": {
+    "wood": 3,
+    "water": 1
+   },
+   "isBase": false,
+   "repeatableMax": null,
+   "effect": "Adds +1 culture per Subject per round, making each Subject worth +2 total."
+  },
+  {
+   "id": "mana-reserve",
+   "name": "Mana Reserve",
+   "species": "wizard",
+   "cost": {
+    "wood": 2,
+    "water": 1
+   },
+   "isBase": false,
+   "repeatableMax": 4,
+   "effect": "+5 maximum mana. Maximum four."
+  }
+ ],
+ "wizard_research": [
+  {
+   "id": "ice-blast",
+   "name": "Ice Blast",
+   "species": "wizard",
+   "prerequisite": "Library of Evocation",
+   "cost": {
+    "water": 2,
+    "wood": 1
+   },
+   "effect": "Evoker may spend 3 mana to give one unit −100 Init for the battle."
+  },
+  {
+   "id": "fiery-explosion",
+   "name": "Fiery Explosion",
+   "species": "wizard",
+   "prerequisite": "Library of Evocation",
+   "cost": {
+    "wood": 1,
+    "ore": 1
+   },
+   "effect": "Evoker may spend 3 mana to use its 2 DMG AoE spell."
+  },
+  {
+   "id": "mana-shield",
+   "name": "Mana Shield",
+   "species": "wizard",
+   "prerequisite": "Library of Evocation",
+   "cost": {
+    "ether": 2
+   },
+   "effect": "Evokers, Enchantresses, and Clerics may reduce an incoming hit's DMG at 1 mana per point."
+  },
+  {
+   "id": "invisible",
+   "name": "Invisible",
+   "species": "wizard",
+   "prerequisite": "Library of Illusion",
+   "cost": {
+    "water": 1,
+    "wood": 1
+   },
+   "effect": "An assigned Illusionist hero may reveal on activation to instantly kill an opposing hero."
+  },
+  {
+   "id": "dehance",
+   "name": "Dehance",
+   "species": "wizard",
+   "prerequisite": "Library of Enchantment",
+   "cost": {
+    "water": 1,
+    "wood": 1
+   },
+   "effect": "Enchantress may spend 2 mana to give one unit −1 DEF for the battle."
+  },
+  {
+   "id": "extra-move-battle-card",
+   "name": "Extra Move/Battle Card",
+   "species": "wizard",
+   "prerequisite": "Library of Evocation",
+   "cost": {
+    "water": 1,
+    "wood": 1,
+    "ore": 1,
+    "ether": 1
+   },
+   "effect": "Gain a second Move/Battle action card for the rest of the game (with Marshal's, three). Counts as a research type for technology without raising the target."
+  },
+  {
+   "id": "extra-research-card",
+   "name": "Extra Research Card",
+   "species": "wizard",
+   "prerequisite": "Library of Illusion",
+   "cost": {
+    "water": 1,
+    "wood": 1,
+    "ore": 1,
+    "ether": 1
+   },
+   "effect": "Gain a second Research action card for the rest of the game (with Archivist's, three). Counts as a research type for technology without raising the target."
+  },
+  {
+   "id": "extra-build-card",
+   "name": "Extra Build Card",
+   "species": "wizard",
+   "prerequisite": "Library of Enchantment",
+   "cost": {
+    "water": 1,
+    "wood": 1,
+    "ore": 1,
+    "ether": 1
+   },
+   "effect": "Gain a second Build action card for the rest of the game (with Quartermaster's, three). Counts as a research type for technology without raising the target."
+  },
+  {
+   "id": "haste",
+   "name": "Haste",
+   "species": "wizard",
+   "prerequisite": "Library of Enchantment",
+   "cost": {
+    "ore": 2,
+    "ether": 1
+   },
+   "effect": "Each committed Surf produces two of its tile's resource. Surplus production from any purchase is banked and may pay later purchases this round, in full or in part; the bank empties at upkeep. The Economic spend still needs its full count of collectors on distinct tiles."
+  }
+ ],
+ "robot_units": [
+  {
+   "id": "core",
+   "name": "Core",
+   "species": "robot",
+   "cost": {
+    "water": 1
+   },
+   "init": null,
+   "dmg": null,
+   "def": null,
+   "aoe": false,
+   "maxPerPlayer": 15,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": false,
+   "requiresBuilding": null,
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Maximum 15 owned tokens; can be purchased with its platform in one Build purchase."
+  },
+  {
+   "id": "water-collector",
+   "name": "Water collector",
+   "species": "robot",
+   "cost": {
+    "water": 1
+   },
+   "init": null,
+   "dmg": null,
+   "def": null,
+   "aoe": false,
+   "maxPerPlayer": 3,
+   "collector": true,
+   "collectorResource": "water",
+   "needsCore": true,
+   "requiresBuilding": null,
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Water only; one per water tile on the map in play (2p 7 / 3–4p 10 / 5–6p 21). Needs a Core."
+  },
+  {
+   "id": "wood-collector",
+   "name": "Wood collector",
+   "species": "robot",
+   "cost": {
+    "water": 1
+   },
+   "init": null,
+   "dmg": null,
+   "def": null,
+   "aoe": false,
+   "maxPerPlayer": 3,
+   "collector": true,
+   "collectorResource": "wood",
+   "needsCore": true,
+   "requiresBuilding": null,
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Wood only; one per wood tile on the map in play (2p 6 / 3–4p 8 / 5–6p 19). Needs a Core."
+  },
+  {
+   "id": "ore-collector",
+   "name": "Ore collector",
+   "species": "robot",
+   "cost": {
+    "wood": 1
+   },
+   "init": null,
+   "dmg": null,
+   "def": null,
+   "aoe": false,
+   "maxPerPlayer": 3,
+   "collector": true,
+   "collectorResource": "ore",
+   "needsCore": true,
+   "requiresBuilding": null,
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Ore only; one per ore tile on the map in play (2p 7 / 3–4p 7 / 5–6p 8). Needs a Core."
+  },
+  {
+   "id": "oil-collector",
+   "name": "Oil collector",
+   "species": "robot",
+   "cost": {
+    "ore": 1
+   },
+   "init": null,
+   "dmg": null,
+   "def": null,
+   "aoe": false,
+   "maxPerPlayer": 1,
+   "collector": true,
+   "collectorResource": "oil",
+   "needsCore": true,
+   "requiresBuilding": null,
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Oil only; four per player on every map. Needs a Core."
+  },
+  {
+   "id": "ether-collector",
+   "name": "Ether collector",
+   "species": "robot",
+   "cost": {
+    "oil": 1
+   },
+   "init": null,
+   "dmg": null,
+   "def": null,
+   "aoe": false,
+   "maxPerPlayer": 1,
+   "collector": true,
+   "collectorResource": "ether",
+   "needsCore": true,
+   "requiresBuilding": null,
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Ether only; two per player on every map. Needs a Core."
+  },
+  {
+   "id": "spinner",
+   "name": "Spinner Platform",
+   "species": "robot",
+   "cost": {
+    "wood": 1
+   },
+   "init": 5,
+   "dmg": 2,
+   "def": 1,
+   "aoe": false,
+   "maxPerPlayer": 5,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": true,
+   "requiresBuilding": "Combat Frame Production",
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Requires Combat Frame Production. Base DEF is 1, not 2."
+  },
+  {
+   "id": "spitter",
+   "name": "Spitter Platform",
+   "species": "robot",
+   "cost": {
+    "wood": 1,
+    "ore": 1
+   },
+   "init": 95,
+   "dmg": 1,
+   "def": 1,
+   "aoe": false,
+   "maxPerPlayer": 5,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": true,
+   "requiresBuilding": "Combat Frame Production",
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Requires Combat Frame Production."
+  },
+  {
+   "id": "infiltrator",
+   "name": "Infiltrator Platform",
+   "species": "robot",
+   "cost": {
+    "water": 1,
+    "wood": 1,
+    "oil": 1
+   },
+   "init": null,
+   "dmg": null,
+   "def": null,
+   "aoe": false,
+   "maxPerPlayer": 5,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": false,
+   "requiresBuilding": "Diplomatic Research Station",
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": true,
+   "notes": "Requires Diplomatic Research Station. No Core required. Assigns a hero as a spy; no separate map piece."
+  },
+  {
+   "id": "immobile-combat-platform",
+   "name": "Immobile Combat Platform",
+   "species": "robot",
+   "cost": {
+    "wood": 2,
+    "ore": 2
+   },
+   "init": 98,
+   "dmg": 6,
+   "def": 1,
+   "aoe": false,
+   "maxPerPlayer": 5,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": true,
+   "requiresBuilding": null,
+   "immobile": true,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Exists only at a base. Cannot move, Rally, or retreat."
+  },
+  {
+   "id": "large-combat-platform",
+   "name": "Large Combat Platform",
+   "species": "robot",
+   "cost": {
+    "wood": 2,
+    "ore": 1,
+    "oil": 1
+   },
+   "init": 60,
+   "dmg": 3,
+   "def": 3,
+   "aoe": true,
+   "maxPerPlayer": 5,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": true,
+   "requiresBuilding": "Combat Frame Production",
+   "immobile": false,
+   "wallFirst": false,
+   "grantsSpy": false,
+   "notes": "Requires Combat Frame Production."
+  },
+  {
+   "id": "wall-platform",
+   "name": "Wall Platform",
+   "species": "robot",
+   "cost": {
+    "wood": 2
+   },
+   "init": 1,
+   "dmg": 0,
+   "def": 3,
+   "aoe": false,
+   "maxPerPlayer": 5,
+   "collector": false,
+   "collectorResource": null,
+   "needsCore": true,
+   "requiresBuilding": "Defense Research Station",
+   "immobile": false,
+   "wallFirst": true,
+   "grantsSpy": false,
+   "notes": "Requires Defense Research Station. Moves normally. Must be targeted first by single-target attacks while it stands."
+  }
+ ],
+ "robot_buildings": [
+  {
+   "id": "home",
+   "name": "Home",
+   "species": "robot",
+   "cost": {
+    "wood": 3,
+    "ore": 1
+   },
+   "isBase": true,
+   "repeatableMax": null,
+   "effect": "Additional or replacement base; spawns map units. Starting Home is free."
+  },
+  {
+   "id": "combat-frame-production",
+   "name": "Combat Frame Production",
+   "species": "robot",
+   "cost": {
+    "wood": 2,
+    "ore": 1
+   },
+   "isBase": false,
+   "repeatableMax": null,
+   "effect": "Unlocks Spinner, Spitter, and Large Combat Platforms."
+  },
+  {
+   "id": "diplomatic-research-station",
+   "name": "Diplomatic Research Station",
+   "species": "robot",
+   "cost": {
+    "wood": 2,
+    "water": 1
+   },
+   "isBase": false,
+   "repeatableMax": null,
+   "effect": "Unlocks Infiltrator recruitment and treaty formation."
+  },
+  {
+   "id": "defense-research-station",
+   "name": "Defense Research Station",
+   "species": "robot",
+   "cost": {
+    "wood": 2,
+    "ore": 1
+   },
+   "isBase": false,
+   "repeatableMax": null,
+   "effect": "Unlocks Wall Platform recruitment and battle-card purchases."
+  },
+  {
+   "id": "third-space",
+   "name": "Third Space",
+   "species": "robot",
+   "cost": {
+    "wood": 3,
+    "water": 1,
+    "ore": 1
+   },
+   "isBase": false,
+   "repeatableMax": null,
+   "effect": "+5 culture per round."
+  },
+  {
+   "id": "advanced-research-station",
+   "name": "Advanced Research Station",
+   "species": "robot",
+   "cost": {
+    "ore": 2,
+    "wood": 1
+   },
+   "isBase": false,
+   "repeatableMax": null,
+   "effect": "Unlocks research of the Extra Build, Extra Move/Battle and Extra Research cards. It is a building type, so it counts toward technology like any other."
+  }
+ ],
+ "robot_research": [
+  {
+   "id": "metal-platforms",
+   "name": "Metal Platforms",
+   "species": "robot",
+   "prerequisite": "Home",
+   "cost": {
+    "wood": 2,
+    "ore": 1,
+    "oil": 1
+   },
+   "effect": "All robot platforms gain +1 DEF. Heroes are not affected. This does not give statless pieces a combat stat line."
+  },
+  {
+   "id": "extra-build-card",
+   "name": "Extra Build Card",
+   "species": "robot",
+   "prerequisite": "Advanced Research Station",
+   "cost": {
+    "water": 1,
+    "wood": 1,
+    "ore": 1,
+    "oil": 1
+   },
+   "effect": "Gain a second Build action card for the rest of the game (with Quartermaster's, three). Counts as a research type for technology without raising the target."
+  },
+  {
+   "id": "extra-move-battle-card",
+   "name": "Extra Move/Battle Card",
+   "species": "robot",
+   "prerequisite": "Advanced Research Station",
+   "cost": {
+    "water": 1,
+    "wood": 1,
+    "ore": 1,
+    "oil": 1
+   },
+   "effect": "Gain a second Move/Battle action card for the rest of the game (with Marshal's, three). Counts as a research type for technology without raising the target."
+  },
+  {
+   "id": "extra-research-card",
+   "name": "Extra Research Card",
+   "species": "robot",
+   "prerequisite": "Advanced Research Station",
+   "cost": {
+    "water": 1,
+    "wood": 1,
+    "ore": 1,
+    "oil": 1
+   },
+   "effect": "Gain a second Research action card for the rest of the game (with Archivist's, three). Counts as a research type for technology without raising the target."
+  },
+  {
+   "id": "collector-optimizations",
+   "name": "Collector Optimizations",
+   "species": "robot",
+   "prerequisite": "Home",
+   "cost": {
+    "oil": 1,
+    "ore": 2
+   },
+   "effect": "Two of your collectors may share one location. An access partner's collector (Shared Resources or Open Borders) may share a location with yours only if that partner has this research too. Never more than two collectors on a location. The Economic spend still needs its full count of distinct tiles."
+  },
+  {
+   "id": "core-integration",
+   "name": "Core Integration",
+   "species": "robot",
+   "prerequisite": "Home",
+   "cost": {
+    "oil": 1,
+    "water": 2
+   },
+   "effect": "The Core bought together with a platform costs nothing (it still comes from the Core supply). A Core bought on its own still costs 1 water."
+  },
+  {
+   "id": "self-destruct",
+   "name": "Self Destruct",
+   "species": "robot",
+   "prerequisite": "Home",
+   "cost": {
+    "ore": 2,
+    "wood": 1,
+    "oil": 1
+   },
+   "effect": "In battle, any of your robot units (not heroes) with printed DMG 1 or more may self-destruct on its activation instead of attacking: its current DMG + 3 is dealt to every other unit and hero in the battle, every side, with the reactions of an area attack. The unit is lost."
+  }
+ ],
+ "robot_collector_supply": {
+  "water": 3,
+  "wood": 3,
+  "ore": 3,
+  "oil": 1,
+  "ether": 1
+ },
+ "heroes": [
+  {
+   "num": 1,
+   "id": "marshal",
+   "name": "Marshal Corvin Ashlock",
+   "category": "military",
+   "species": null,
+   "recommendedLeader": false,
+   "effect": "Gain one extra Move/Battle action card. Remove it at the upkeep after Marshal dies.",
+   "lore": "Former head of the Ledger's private security. Sold his campaign maps to both sides the week the war started.",
+   "stats": {
+    "init": 70,
+    "dmg": 3,
+    "def": 4
+   }
+  },
+  {
+   "num": 2,
+   "id": "chaimidious",
+   "name": "Archmage Chaimidious",
+   "category": "military",
+   "species": null,
+   "recommendedLeader": true,
+   "effect": "Gain a battle strategy card. It counts for technology like a bought one: the battle strategy card type, one point, once.",
+   "lore": null,
+   "stats": {
+    "init": 70,
+    "dmg": 3,
+    "def": 4
+   }
+  },
+  {
+   "num": 3,
+   "id": "evo-angel",
+   "name": "Evo Angel",
+   "category": "evo-angel",
+   "species": "robot",
+   "recommendedLeader": true,
+   "effect": "Uses Init 80, DMG 4, DEF 4 instead of ordinary military stats.",
+   "lore": null,
+   "stats": {
+    "init": 80,
+    "dmg": 4,
+    "def": 4
+   }
+  },
+  {
+   "num": 4,
+   "id": "elara",
+   "name": "Archmage Elara",
+   "category": "military",
+   "species": "wizard",
+   "recommendedLeader": true,
+   "effect": "At the start of a Move/Battle action, before movement, may spend 5 mana to deal 4 damage to all units in an adjacent space except your own units and those of Open Borders or Peace allies. Movement afterward is optional. This is not a battle.",
+   "lore": null,
+   "stats": {
+    "init": 70,
+    "dmg": 3,
+    "def": 4
+   }
+  },
+  {
+   "num": 5,
+   "id": "warden",
+   "name": "Warden Hesper Quill",
+   "category": "military",
+   "species": null,
+   "recommendedLeader": false,
+   "effect": "All other allied units in the battle gain +1 DEF. If Warden dies in an area attack, its bonus applies throughout that attack before casualties are removed.",
+   "lore": "Siege-witch cast out of the Covenant for shielding a robot column. Now shields whoever pays.",
+   "stats": {
+    "init": 70,
+    "dmg": 3,
+    "def": 4
+   }
+  },
+  {
+   "num": 6,
+   "id": "rook",
+   "name": "Captain Rook Malvane",
+   "category": "military",
+   "species": null,
+   "recommendedLeader": false,
+   "effect": "All other allied units in the battle gain +2 DMG, subject to the DMG-0 restriction. Does not stack with an identical hero effect.",
+   "lore": "Schism battle-mage who thinks the Covenant fights too politely. Drills any army into one that does not.",
+   "stats": {
+    "init": 70,
+    "dmg": 3,
+    "def": 4
+   }
+  },
+  {
+   "num": 7,
+   "id": "kestrel",
+   "name": "Kestrel Nine",
+   "category": "military",
+   "species": null,
+   "recommendedLeader": false,
+   "effect": "All other allied units in the battle gain +2 DMG, subject to the DMG-0 restriction. Does not stack with an identical hero effect.",
+   "lore": "Decommissioned targeting core from the first uprising. Rents its firing solutions to wizards without irony.",
+   "stats": {
+    "init": 70,
+    "dmg": 3,
+    "def": 4
+   }
+  },
+  {
+   "num": 8,
+   "id": "chronicler",
+   "name": "Chronicler Ottoline Vey",
+   "category": "culture",
+   "species": null,
+   "recommendedLeader": true,
+   "effect": "+5 culture per round during the income step. No income while reserved.",
+   "lore": "Writes the official history of whichever faction feeds her. Her version tends to become the true one.",
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  },
+  {
+   "num": 9,
+   "id": "foreman",
+   "name": "Foreman Hadrik Stoll",
+   "category": "culture",
+   "species": null,
+   "recommendedLeader": false,
+   "effect": "May make two unit or building purchases per Build action, each paid with separate collectors. A collector bought in the first purchase may help pay the second.",
+   "lore": "Ran the Foundry's assembly floors before the robots walked out. Can stand up two of anything before lunch.",
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  },
+  {
+   "num": 10,
+   "id": "envoy",
+   "name": "Envoy Sable Marrow",
+   "category": "culture",
+   "species": null,
+   "recommendedLeader": true,
+   "effect": "Unlocks treaties. Existing treaties survive Envoy's death; forming new ones still requires an unlock held by either partner. In a battle Envoy is in, no spy (Invisible or Spy Attack) can kill a hero on Envoy's side.",
+   "lore": "The only person both an Archmage and an Unbolted have agreed to sit across from. Nobody knows what she is.",
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  },
+  {
+   "num": 11,
+   "id": "quartermaster",
+   "name": "Quartermaster Bertram Hollis",
+   "category": "culture",
+   "species": null,
+   "recommendedLeader": false,
+   "effect": "Gain one extra Build action card. Remove it at the upkeep after Quartermaster dies.",
+   "lore": "Kept the Ledger's supply lines running through three embargoes. Finds a way to build when there is no way.",
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  },
+  {
+   "num": 12,
+   "id": "wren",
+   "name": "Dowser Wren Calloway",
+   "category": "economy",
+   "species": null,
+   "recommendedLeader": false,
+   "effect": "When placed, grants free collectors at once: two Surfs for a wizard; for a robot, four collectors, the owner choosing the type of each, each with a Core already in it. The grant stops at the supply limits. No resource overlay.",
+   "lore": "Non-magical, and the wizards hate that she still finds water where they cannot.",
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  },
+  {
+   "num": 13,
+   "id": "ida",
+   "name": "Prospector Ida Marrs",
+   "category": "economy",
+   "species": null,
+   "recommendedLeader": false,
+   "effect": "Occupied space becomes Ore while its overlay is active.",
+   "lore": "Mapped the ore ring before any faction claimed it. Still has the maps, still sells them.",
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  },
+  {
+   "num": 14,
+   "id": "derrick",
+   "name": "Derrick Prime",
+   "category": "economy",
+   "species": "robot",
+   "recommendedLeader": true,
+   "effect": "Occupied space becomes Oil while its overlay is active.",
+   "lore": null,
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  },
+  {
+   "num": 15,
+   "id": "mayhew",
+   "name": "Conjurer Mayhew",
+   "category": "economy",
+   "species": "wizard",
+   "recommendedLeader": true,
+   "effect": "Occupied space becomes Ether while its overlay is active.",
+   "lore": null,
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  },
+  {
+   "num": 16,
+   "id": "archivist",
+   "name": "Archivist Solenne Dray",
+   "category": "technology",
+   "species": null,
+   "recommendedLeader": false,
+   "effect": "Gain one extra Research action card. Remove it at the upkeep after Archivist dies.",
+   "lore": "Curates the last library that holds both spellbooks and schematics. Lends to anyone who returns them.",
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  },
+  {
+   "num": 17,
+   "id": "kettering",
+   "name": "Professor Anselm Kettering",
+   "category": "technology",
+   "species": null,
+   "recommendedLeader": false,
+   "effect": "May make two Research purchases: technologies, battle cards, or one of each. Normal prerequisites and separate collector payments apply.",
+   "lore": "Dr. Smyth's former teacher. Insists he did the important half of the work.",
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  },
+  {
+   "num": 18,
+   "id": "smyth",
+   "name": "Dr. Elayn Smyth",
+   "category": "technology",
+   "species": null,
+   "recommendedLeader": true,
+   "effect": "Gain one unresearched technology from your species' list for free, waiving both cost and prerequisite building. Choose immediately, except that a reserved Smyth's reward waits until placement.",
+   "lore": null,
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  },
+  {
+   "num": 19,
+   "id": "motherboard",
+   "name": "Motherboard",
+   "category": "technology",
+   "species": "robot",
+   "recommendedLeader": true,
+   "effect": "+5 bonus tech points while alive, owned, and in play. Robots only.",
+   "lore": null,
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  },
+  {
+   "num": 20,
+   "id": "greymore",
+   "name": "Technomancer Greymore",
+   "category": "technology",
+   "species": "wizard",
+   "recommendedLeader": true,
+   "effect": "+5 bonus tech points while alive, owned, and in play.",
+   "lore": null,
+   "stats": {
+    "init": 30,
+    "dmg": 1,
+    "def": 3
+   }
+  }
+ ],
+ "leader_stat_bonus": {
+  "def": 2
+ },
+ "battle_deck": [
+  {
+   "id": "bonus-def-plus",
+   "label": "Bonus (+1 DEF to all your units)",
+   "copies": 2,
+   "effect": "+1 DEF to all your units in the battle."
+  },
+  {
+   "id": "bonus-dmg-plus",
+   "label": "Bonus (+1 DMG to all your units)",
+   "copies": 2,
+   "effect": "+1 DMG to all your units in the battle, subject to inherent DMG-0 immunity to increases."
+  },
+  {
+   "id": "bonus-def-minus",
+   "label": "Bonus (−1 DEF to all opposing units)",
+   "copies": 2,
+   "effect": "−1 DEF to all opposing units in the battle."
+  },
+  {
+   "id": "bonus-dmg-minus",
+   "label": "Bonus (−1 DMG to all opposing units)",
+   "copies": 2,
+   "effect": "−1 DMG to all opposing units in the battle."
+  },
+  {
+   "id": "extra",
+   "label": "Extra",
+   "copies": 2,
+   "effect": "Play up to two additional battle strategy cards."
+  },
+  {
+   "id": "counter",
+   "label": "Counter",
+   "copies": 2,
+   "effect": "Counter a battle strategy card that has not yet resolved."
+  },
+  {
+   "id": "rally",
+   "label": "Rally",
+   "copies": 2,
+   "effect": "Move any number of your own eligible mobile units from adjacent locations into this battle."
+  },
+  {
+   "id": "retreat",
+   "label": "Retreat",
+   "copies": 4,
+   "effect": "Immediately retreat all your mobile units from this battle using normal retreat rules."
+  },
+  {
+   "id": "initiative",
+   "label": "Initiative",
+   "copies": 2,
+   "effect": "−100 Initiative to all opposing units in the battle."
+  }
+ ],
+ "battle_card_purchase": {
+  "cost": {
+   "water": 1,
+   "wood": 1,
+   "ore": 1
+  },
+  "either": [
+   "ether",
+   "oil"
+  ],
+  "unlocked_by": {
+   "wizard": "Embassy",
+   "robot": "Defense Research Station"
+  }
+ },
+ "treaty_unlocked_by": {
+  "wizard": "Embassy",
+  "robot": "Diplomatic Research Station",
+  "hero": "Envoy Sable Marrow"
+ },
+ "treaties": [
+  {
+   "id": "open-borders",
+   "name": "Open Borders",
+   "cultureIncome": 5,
+   "effect": "Units may share locations without battle and must fight on the same side when attacked there. Allied combat units protect the partner's bases and pieces. Grants collection access to the partner's locations and collector placement adjacent to the partner's units. Does not share battle cards or victory.",
+   "breakingCondition": "End of round, provided allied units do not share a space."
+  },
+  {
+   "id": "shared-resources",
+   "name": "Shared Resources",
+   "cultureIncome": 4,
+   "effect": "Grants collection on the partner's locations and collector placement adjacent to the partner's units. Does not create military allies or general movement access.",
+   "breakingCondition": "End of round, if no unit is collecting from a partner's space."
+  },
+  {
+   "id": "peace",
+   "name": "Peace",
+   "cultureIncome": 3,
+   "effect": "No combat between partners. Partners' units may not enter each other's locations. No automatic collection access; a one-off collection agreement may be made.",
+   "breakingCondition": "End of round only."
+  },
+  {
+   "id": "culture-treaty",
+   "name": "Culture Treaty",
+   "cultureIncome": 1,
+   "effect": "Direct partners share an eligible partner's victory. Does not create military allies; partners may fight. Shared victory does not chain. Available only at four or more players. No automatic collection access.",
+   "breakingCondition": "Outside the culture phase, only when no action or battle is resolving."
+  },
+  {
+   "id": "shared-tactics",
+   "name": "Shared Tactics",
+   "cultureIncome": 2,
+   "effect": "Partners privately share existing hands immediately and show new draws while active. Either may play a card the other owns. If both are in a battle, the card's owner decides first whether to play it; the partner may play it only if the owner does not. No automatic collection access or military alliance.",
+   "breakingCondition": "End of round."
+  }
+ ],
+ "victory": {
+  "milestones_by_player_count": {
+   "2": [
+    4,
+    11,
+    21,
+    35,
+    53
+   ],
+   "3": [
+    6,
+    16,
+    32,
+    53,
+    79
+   ],
+   "4": [
+    7,
+    21,
+    42,
+    70,
+    105
+   ],
+   "5": [
+    9,
+    27,
+    53,
+    88,
+    132
+   ],
+   "6": [
+    11,
+    32,
+    63,
+    105,
+    158
+   ]
+  },
+  "culture_target_by_player_count": {
+   "2": 70,
+   "3": 105,
+   "4": 140,
+   "5": 175,
+   "6": 210
+  },
+  "military_kills_needed": {
+   "2": 1,
+   "3": 1,
+   "4": 2,
+   "5": 2,
+   "6": 2
+  },
+  "economic_spend": {
+   "water": 3,
+   "wood": 3,
+   "ore": 3,
+   "ether": 1,
+   "oil": 1
+  },
+  "economic_collectors_by_layout": {
+   "two": 12,
+   "threeFour": 16,
+   "fiveSix": 26
+  },
+  "tech_target": {
+   "wizard": 26,
+   "robot": 26
+  }
+ },
+ "maps": {
+  "2p": [
+   {
+    "c": -2,
+    "r": 4,
+    "resource": "water",
+    "label": "C3"
+   },
+   {
+    "c": -2,
+    "r": 6,
+    "resource": "water",
+    "label": "C4"
+   },
+   {
+    "c": -2,
+    "r": 8,
+    "resource": "water",
+    "label": "C5"
+   },
+   {
+    "c": -2,
+    "r": 10,
+    "resource": "wood",
+    "start": 1,
+    "label": "C6"
+   },
+   {
+    "c": -1,
+    "r": 3,
+    "resource": "water",
+    "label": "D2"
+   },
+   {
+    "c": -1,
+    "r": 5,
+    "resource": "wood",
+    "label": "D3"
+   },
+   {
+    "c": -1,
+    "r": 7,
+    "resource": "ether",
+    "label": "D4"
+   },
+   {
+    "c": -1,
+    "r": 9,
+    "resource": "wood",
+    "label": "D5"
+   },
+   {
+    "c": -1,
+    "r": 11,
+    "resource": "wood",
+    "label": "D6"
+   },
+   {
+    "c": 0,
+    "r": 2,
+    "resource": "ore",
+    "label": "E2"
+   },
+   {
+    "c": 0,
+    "r": 4,
+    "resource": "ore",
+    "label": "E3"
+   },
+   {
+    "c": 0,
+    "r": 6,
+    "resource": "oil",
+    "label": "E4"
+   },
+   {
+    "c": 0,
+    "r": 8,
+    "resource": "oil",
+    "label": "E5"
+   },
+   {
+    "c": 0,
+    "r": 10,
+    "resource": "ore",
+    "label": "E6"
+   },
+   {
+    "c": 0,
+    "r": 12,
+    "resource": "ore",
+    "label": "E7"
+   },
+   {
+    "c": 1,
+    "r": 3,
+    "resource": "water",
+    "label": "F2"
+   },
+   {
+    "c": 1,
+    "r": 5,
+    "resource": "water",
+    "label": "F3"
+   },
+   {
+    "c": 1,
+    "r": 7,
+    "resource": "ether",
+    "label": "F4"
+   },
+   {
+    "c": 1,
+    "r": 9,
+    "resource": "ore",
+    "label": "F5"
+   },
+   {
+    "c": 1,
+    "r": 11,
+    "resource": "ore",
+    "label": "F6"
+   },
+   {
+    "c": 2,
+    "r": 4,
+    "resource": "water",
+    "start": 2,
+    "label": "G3"
+   },
+   {
+    "c": 2,
+    "r": 6,
+    "resource": "wood",
+    "label": "G4"
+   },
+   {
+    "c": 2,
+    "r": 8,
+    "resource": "wood",
+    "label": "G5"
+   },
+   {
+    "c": 2,
+    "r": 10,
+    "resource": "ore",
+    "label": "G6"
+   }
+  ],
+  "3-4p": [
+   {
+    "c": -2,
+    "r": 4,
+    "resource": "water",
+    "start": 4,
+    "label": "C3"
+   },
+   {
+    "c": -2,
+    "r": 6,
+    "resource": "water",
+    "label": "C4"
+   },
+   {
+    "c": -2,
+    "r": 8,
+    "resource": "water",
+    "label": "C5"
+   },
+   {
+    "c": -2,
+    "r": 10,
+    "resource": "wood",
+    "label": "C6"
+   },
+   {
+    "c": -2,
+    "r": 12,
+    "resource": "water",
+    "start": 1,
+    "label": "C7"
+   },
+   {
+    "c": -1,
+    "r": 3,
+    "resource": "water",
+    "label": "D2"
+   },
+   {
+    "c": -1,
+    "r": 5,
+    "resource": "wood",
+    "label": "D3"
+   },
+   {
+    "c": -1,
+    "r": 7,
+    "resource": "ether",
+    "label": "D4"
+   },
+   {
+    "c": -1,
+    "r": 9,
+    "resource": "wood",
+    "label": "D5"
+   },
+   {
+    "c": -1,
+    "r": 11,
+    "resource": "wood",
+    "label": "D6"
+   },
+   {
+    "c": -1,
+    "r": 13,
+    "resource": "wood",
+    "label": "D7"
+   },
+   {
+    "c": 0,
+    "r": 2,
+    "resource": "ore",
+    "label": "E2"
+   },
+   {
+    "c": 0,
+    "r": 4,
+    "resource": "ore",
+    "label": "E3"
+   },
+   {
+    "c": 0,
+    "r": 6,
+    "resource": "oil",
+    "label": "E4"
+   },
+   {
+    "c": 0,
+    "r": 8,
+    "resource": "oil",
+    "label": "E5"
+   },
+   {
+    "c": 0,
+    "r": 10,
+    "resource": "ore",
+    "label": "E6"
+   },
+   {
+    "c": 0,
+    "r": 12,
+    "resource": "ore",
+    "label": "E7"
+   },
+   {
+    "c": 0,
+    "r": 14,
+    "resource": "water",
+    "label": "E8"
+   },
+   {
+    "c": 1,
+    "r": 3,
+    "resource": "water",
+    "label": "F2"
+   },
+   {
+    "c": 1,
+    "r": 5,
+    "resource": "water",
+    "label": "F3"
+   },
+   {
+    "c": 1,
+    "r": 7,
+    "resource": "ether",
+    "label": "F4"
+   },
+   {
+    "c": 1,
+    "r": 9,
+    "resource": "ore",
+    "label": "F5"
+   },
+   {
+    "c": 1,
+    "r": 11,
+    "resource": "ore",
+    "label": "F6"
+   },
+   {
+    "c": 1,
+    "r": 13,
+    "resource": "wood",
+    "label": "F7"
+   },
+   {
+    "c": 2,
+    "r": 4,
+    "resource": "water",
+    "start": 3,
+    "label": "G3"
+   },
+   {
+    "c": 2,
+    "r": 6,
+    "resource": "wood",
+    "label": "G4"
+   },
+   {
+    "c": 2,
+    "r": 8,
+    "resource": "wood",
+    "label": "G5"
+   },
+   {
+    "c": 2,
+    "r": 10,
+    "resource": "ore",
+    "label": "G6"
+   },
+   {
+    "c": 2,
+    "r": 12,
+    "resource": "water",
+    "start": 2,
+    "label": "G7"
+   }
+  ],
+  "5-6p": [
+   {
+    "c": -4,
+    "r": 4,
+    "resource": "water",
+    "start": 5,
+    "label": "A3"
+   },
+   {
+    "c": -4,
+    "r": 6,
+    "resource": "wood",
+    "label": "A4"
+   },
+   {
+    "c": -4,
+    "r": 8,
+    "resource": "wood",
+    "label": "A5"
+   },
+   {
+    "c": -4,
+    "r": 10,
+    "resource": "water",
+    "start": 6,
+    "label": "A6"
+   },
+   {
+    "c": -3,
+    "r": 3,
+    "resource": "wood",
+    "label": "B2"
+   },
+   {
+    "c": -3,
+    "r": 5,
+    "resource": "water",
+    "label": "B3"
+   },
+   {
+    "c": -3,
+    "r": 7,
+    "resource": "water",
+    "label": "B4"
+   },
+   {
+    "c": -3,
+    "r": 9,
+    "resource": "water",
+    "label": "B5"
+   },
+   {
+    "c": -3,
+    "r": 11,
+    "resource": "wood",
+    "label": "B6"
+   },
+   {
+    "c": -2,
+    "r": 2,
+    "resource": "ore",
+    "label": "C2"
+   },
+   {
+    "c": -2,
+    "r": 4,
+    "resource": "water",
+    "label": "C3"
+   },
+   {
+    "c": -2,
+    "r": 6,
+    "resource": "water",
+    "label": "C4"
+   },
+   {
+    "c": -2,
+    "r": 8,
+    "resource": "water",
+    "label": "C5"
+   },
+   {
+    "c": -2,
+    "r": 10,
+    "resource": "wood",
+    "label": "C6"
+   },
+   {
+    "c": -2,
+    "r": 12,
+    "resource": "water",
+    "label": "C7"
+   },
+   {
+    "c": -1,
+    "r": 1,
+    "resource": "wood",
+    "label": "D1"
+   },
+   {
+    "c": -1,
+    "r": 3,
+    "resource": "water",
+    "label": "D2"
+   },
+   {
+    "c": -1,
+    "r": 5,
+    "resource": "wood",
+    "label": "D3"
+   },
+   {
+    "c": -1,
+    "r": 7,
+    "resource": "ether",
+    "label": "D4"
+   },
+   {
+    "c": -1,
+    "r": 9,
+    "resource": "wood",
+    "label": "D5"
+   },
+   {
+    "c": -1,
+    "r": 11,
+    "resource": "wood",
+    "label": "D6"
+   },
+   {
+    "c": -1,
+    "r": 13,
+    "resource": "wood",
+    "label": "D7"
+   },
+   {
+    "c": 0,
+    "r": 0,
+    "resource": "water",
+    "start": 4,
+    "label": "E1"
+   },
+   {
+    "c": 0,
+    "r": 2,
+    "resource": "ore",
+    "label": "E2"
+   },
+   {
+    "c": 0,
+    "r": 4,
+    "resource": "ore",
+    "label": "E3"
+   },
+   {
+    "c": 0,
+    "r": 6,
+    "resource": "oil",
+    "label": "E4"
+   },
+   {
+    "c": 0,
+    "r": 8,
+    "resource": "oil",
+    "label": "E5"
+   },
+   {
+    "c": 0,
+    "r": 10,
+    "resource": "ore",
+    "label": "E6"
+   },
+   {
+    "c": 0,
+    "r": 12,
+    "resource": "ore",
+    "label": "E7"
+   },
+   {
+    "c": 0,
+    "r": 14,
+    "resource": "water",
+    "start": 1,
+    "label": "E8"
+   },
+   {
+    "c": 1,
+    "r": 1,
+    "resource": "wood",
+    "label": "F1"
+   },
+   {
+    "c": 1,
+    "r": 3,
+    "resource": "water",
+    "label": "F2"
+   },
+   {
+    "c": 1,
+    "r": 5,
+    "resource": "water",
+    "label": "F3"
+   },
+   {
+    "c": 1,
+    "r": 7,
+    "resource": "ether",
+    "label": "F4"
+   },
+   {
+    "c": 1,
+    "r": 9,
+    "resource": "ore",
+    "label": "F5"
+   },
+   {
+    "c": 1,
+    "r": 11,
+    "resource": "ore",
+    "label": "F6"
+   },
+   {
+    "c": 1,
+    "r": 13,
+    "resource": "wood",
+    "label": "F7"
+   },
+   {
+    "c": 2,
+    "r": 2,
+    "resource": "water",
+    "label": "G2"
+   },
+   {
+    "c": 2,
+    "r": 4,
+    "resource": "water",
+    "label": "G3"
+   },
+   {
+    "c": 2,
+    "r": 6,
+    "resource": "wood",
+    "label": "G4"
+   },
+   {
+    "c": 2,
+    "r": 8,
+    "resource": "wood",
+    "label": "G5"
+   },
+   {
+    "c": 2,
+    "r": 10,
+    "resource": "ore",
+    "label": "G6"
+   },
+   {
+    "c": 2,
+    "r": 12,
+    "resource": "water",
+    "label": "G7"
+   },
+   {
+    "c": 3,
+    "r": 3,
+    "resource": "wood",
+    "label": "H2"
+   },
+   {
+    "c": 3,
+    "r": 5,
+    "resource": "wood",
+    "label": "H3"
+   },
+   {
+    "c": 3,
+    "r": 7,
+    "resource": "wood",
+    "label": "H4"
+   },
+   {
+    "c": 3,
+    "r": 9,
+    "resource": "wood",
+    "label": "H5"
+   },
+   {
+    "c": 3,
+    "r": 11,
+    "resource": "wood",
+    "label": "H6"
+   },
+   {
+    "c": 4,
+    "r": 4,
+    "resource": "water",
+    "start": 3,
+    "label": "I3"
+   },
+   {
+    "c": 4,
+    "r": 6,
+    "resource": "water",
+    "label": "I4"
+   },
+   {
+    "c": 4,
+    "r": 8,
+    "resource": "water",
+    "label": "I5"
+   },
+   {
+    "c": 4,
+    "r": 10,
+    "resource": "water",
+    "start": 2,
+    "label": "I6"
+   }
+  ],
+  "coordinate_convention": "Doubled rows: (c,r) neighbors (c,r±2), (c±1,r±1); only listed coordinates are playable. Player-facing name = the derived label (e.g. E4, G7)."
+ },
+ "rulebook": {
+  "title": "Neither Guts nor Gears",
+  "intro": "Three wizard factions and three robot factions fight over a small hex map for five resources. Build collectors, units and buildings; move and fight in battles where one hit kills; claim heroes as your culture grows; and sign binding treaties. Diplomacy is meant to be the winning path.",
+  "facts": [
+   "2–6 players",
+   "about 20 rounds",
+   "4 ways to win"
+  ],
+  "players_by_layout": {
+   "2p": [
+    2
+   ],
+   "3-4p": [
+    3,
+    4
+   ],
+   "5-6p": [
+    5,
+    6
+   ]
+  },
+  "victory": {
+   "intro": "The first player to reach any one of these wins. You can only win while your Leader is alive. If every Leader dies and nobody has won, the game is a draw.",
+   "military": "Kill other players' Leaders.",
+   "cultural": "Reach this much culture: 35 for each player.",
+   "economic": "In one Build action, commit this many collectors on different tiles, making at least:",
+   "technological": "One point for each different unit, building and research you own. The battle strategy card counts as one.",
+   "economic_mix": {
+    "water": 3,
+    "wood": 3,
+    "ore": 3,
+    "ether": 1,
+    "oil": 1
+   }
+  },
+  "components": [
+   {
+    "icon": "Ore",
+    "name": "Map board",
+    "count": 1,
+    "text": "Three layouts on one board, with the Technology and Culture tracks."
+   },
+   {
+    "icon": "The Brass Circle",
+    "name": "Faction boards",
+    "count": 6,
+    "text": "Three wizard, three robot. They hold buildings and off-map pieces."
+   },
+   {
+    "icon": "Hero",
+    "name": "Heroes",
+    "count": 20,
+    "text": "A hero piece and card for each, in one shared pool."
+   },
+   {
+    "icon": "Battle card",
+    "name": "Battle strategy cards",
+    "count": 20,
+    "text": "One shared deck, shown below."
+   },
+   {
+    "icon": "Build",
+    "name": "Action cards",
+    "count": 54,
+    "text": "Three Build, three Move / Battle and three Research per faction."
+   },
+   {
+    "icon": "Open Borders",
+    "name": "Treaty tokens",
+    "count": 30,
+    "text": "Five per faction, one of each treaty."
+   },
+   {
+    "icon": "Base",
+    "name": "Bases per faction",
+    "count": 3,
+    "text": "Castles or Homes, including the free one you start with."
+   },
+   {
+    "icon": "Surf",
+    "name": "Surfs per wizard",
+    "count": {
+     "2p": 12,
+     "3-4p": 16,
+     "5-6p": 26
+    },
+    "text": "The wizards' collectors: as many as the Economic win needs on this map."
+   },
+   {
+    "icon": "Subject",
+    "name": "Subjects per wizard",
+    "count": 10,
+    "text": "Kept off the map. Each gives 1 culture a round."
+   },
+   {
+    "icon": "Mana Shield",
+    "name": "Mana Reserves per wizard",
+    "count": 4,
+    "text": "Each adds 5 maximum mana."
+   },
+   {
+    "icon": "Collector",
+    "name": "Collectors per robot",
+    "count": {
+     "2p": 26,
+     "3-4p": 31,
+     "5-6p": 54
+    },
+    "text": {
+     "2p": "One per water, wood and ore tile on this map (7 / 6 / 7), plus 4 oil and 2 ether.",
+     "3-4p": "One per water, wood and ore tile on this map (10 / 8 / 7), plus 4 oil and 2 ether.",
+     "5-6p": "One per water, wood and ore tile on this map (21 / 19 / 8), plus 4 oil and 2 ether."
+    }
+   },
+   {
+    "icon": "Core",
+    "name": "Cores per robot",
+    "count": {
+     "2p": 16,
+     "3-4p": 20,
+     "5-6p": 30
+    },
+    "text": "A platform only works with a Core in it."
+   },
+   {
+    "icon": "Evoker",
+    "name": "Of each other unit",
+    "count": 5,
+    "text": "Per player of that side."
+   },
+   {
+    "icon": "Pass",
+    "name": "First-player token",
+    "count": 1,
+    "text": "Passes on at every upkeep."
+   },
+   {
+    "icon": "Ether",
+    "name": "Resource overlay tiles",
+    "count": 3,
+    "text": "They follow Prospector Ida Marrs, Derrick Prime and Conjurer Mayhew."
+   }
+  ],
+  "map": {
+   "intro": "One printed board has three layouts; smaller games use fewer tiles. Ore, oil and ether sit in the middle, with water and wood around them. The circled numbers are the starting locations. Each tile is named by its column letter and number, as at the table."
+  },
+  "setup": {
+   "steps": [
+    "Lay out the map for your player count.",
+    "Each player chooses a faction and takes its color, board, buildings, action cards and research cards. Keep one Build, one Move / Battle and one Research card; set the rest aside.",
+    "Pick a random first player.",
+    "In player order, each player chooses a hero from the shared pool as their Leader. Starred heroes are recommended. The Leader gains +2 DEF.",
+    "In reverse player order, each player picks an empty numbered starting tile and places their free starting base and Leader there.",
+    "Take your starting pieces. Shuffle the battle deck and put the remaining heroes in the shared pool."
+   ],
+   "wizard": {
+    "faction": "The Covenant",
+    "factions": "The Covenant · The Schism · The Brass Circle",
+    "pieces": [
+     {
+      "icon": "Base",
+      "count": 1,
+      "name": "Castle"
+     },
+     {
+      "icon": "Leader",
+      "count": 1,
+      "name": "Leader"
+     },
+     {
+      "icon": "Surf",
+      "count": 3,
+      "name": "Surfs"
+     }
+    ],
+    "note": "Maximum mana starts at 5."
+   },
+   "robot": {
+    "faction": "The Foundry",
+    "factions": "The Ledger · The Foundry · The Unbolted",
+    "pieces": [
+     {
+      "icon": "Base",
+      "count": 1,
+      "name": "Home"
+     },
+     {
+      "icon": "Leader",
+      "count": 1,
+      "name": "Leader"
+     },
+     {
+      "icon": "Water collector",
+      "count": 2,
+      "name": "water collectors"
+     },
+     {
+      "icon": "Wood collector",
+      "count": 2,
+      "name": "wood collectors"
+     },
+     {
+      "icon": "Core",
+      "count": 4,
+      "name": "Cores"
+     }
+    ],
+    "note": "Each of the four collectors holds one Core."
+   }
+  },
+  "round": {
+   "steps": [
+    {
+     "icon": "Pass",
+     "name": "Upkeep",
+     "text": "Pass the first-player token. Take collectors back. Robots move Cores; wizards refill mana. Get your action cards back."
+    },
+    {
+     "icon": "Build",
+     "name": "Planning",
+     "text": "In turn, put one action card on the Action Stack, or pass for the round."
+    },
+    {
+     "icon": "Move / Battle",
+     "name": "Actions",
+     "text": "Take cards off the top of the stack. The last one placed goes first."
+    },
+    {
+     "icon": "Subject",
+     "name": "Culture",
+     "text": "Everyone gains culture in first-player order."
+    },
+    {
+     "icon": "Hero",
+     "name": "Heroes",
+     "text": "Each player who passed a milestone claims one hero, in turn."
+    },
+    {
+     "icon": "Break a treaty",
+     "name": "End of round",
+     "text": "Treaties that can be broken at the end of the round may be broken now."
+    }
+   ],
+   "note": "There is no round limit.",
+   "stack": {
+    "title": "The Action Stack: last in, first out",
+    "intro": "In planning, players take turns putting one action card on the stack. In the action step, cards come off the top, so the last card placed goes first. You may skip your card when it comes up.",
+    "steps": [
+     "The Covenant is first player. It puts down Build, The Foundry puts down Move / Battle, The Covenant Research, The Foundry Build. Then both pass.",
+     "The Foundry's Build was placed last, so it happens first.",
+     "The Covenant's Build, placed first, happens last. By then The Foundry may already hold the tile it wanted."
+    ],
+    "cards": [
+     {
+      "faction": "The Foundry",
+      "action": "Build",
+      "placed": "4th"
+     },
+     {
+      "faction": "The Covenant",
+      "action": "Research",
+      "placed": "3rd"
+     },
+     {
+      "faction": "The Foundry",
+      "action": "Move / Battle",
+      "placed": "2nd"
+     },
+     {
+      "faction": "The Covenant",
+      "action": "Build",
+      "placed": "1st"
+     }
+    ]
+   },
+   "milestones": {
+    "intro": "You earn a hero each time your culture passes one of these totals, up to six heroes counting your Leader."
+   }
+  },
+  "paying": {
+   "title": "Resources are never stored",
+   "intro": "To buy something, place collectors on the map. Each makes one of its tile's resource at once, then stays there until upkeep, so it can't pay for anything else this round. Anything you don't spend is lost.",
+   "example": {
+    "title": "Example: The Covenant buys an Evoker",
+    "buys": "Evoker",
+    "steps": [
+     "Place three Surfs (dashed): two on wood and one on ore. Each must be on or next to one of your pieces, or next to a collector you placed this round.",
+     "They make 2 wood and 1 ore, which pays exactly.",
+     "The Evoker appears at any base you own.",
+     "The Surfs stay until upkeep. Later this round they still help you reach farther tiles, but they can't pay again."
+    ],
+    "figure": {
+     "tiles": [
+      {
+       "c": -2,
+       "r": 8,
+       "resource": "water",
+       "label": "C5"
+      },
+      {
+       "c": -2,
+       "r": 10,
+       "resource": "wood",
+       "label": "C6"
+      },
+      {
+       "c": -2,
+       "r": 12,
+       "resource": "water",
+       "label": "C7"
+      },
+      {
+       "c": -1,
+       "r": 9,
+       "resource": "wood",
+       "label": "D5"
+      },
+      {
+       "c": -1,
+       "r": 11,
+       "resource": "wood",
+       "label": "D6"
+      },
+      {
+       "c": -1,
+       "r": 13,
+       "resource": "wood",
+       "label": "D7"
+      },
+      {
+       "c": 0,
+       "r": 8,
+       "resource": "oil",
+       "label": "E5"
+      },
+      {
+       "c": 0,
+       "r": 10,
+       "resource": "ore",
+       "label": "E6"
+      },
+      {
+       "c": 0,
+       "r": 12,
+       "resource": "ore",
+       "label": "E7"
+      },
+      {
+       "c": 0,
+       "r": 14,
+       "resource": "water",
+       "label": "E8"
+      }
+     ],
+     "pieces": [
+      {
+       "c": -2,
+       "r": 12,
+       "faction": "The Covenant",
+       "icon": "Base",
+       "name": "Castle",
+       "placed": true
+      },
+      {
+       "c": -2,
+       "r": 10,
+       "faction": "The Covenant",
+       "icon": "Surf",
+       "name": "Surf",
+       "placed": false
+      },
+      {
+       "c": -1,
+       "r": 11,
+       "faction": "The Covenant",
+       "icon": "Surf",
+       "name": "Surf",
+       "placed": false
+      },
+      {
+       "c": 0,
+       "r": 10,
+       "faction": "The Covenant",
+       "icon": "Surf",
+       "name": "Surf",
+       "placed": false
+      }
+     ],
+     "caption": "Starting location 1 on the three-to-four-player map. The Surfs on C6 and D6 are next to the Castle on C7; the one on E6 is next to D6."
+    }
+   }
+  },
+  "battle": {
+   "title": "Fighting",
+   "intro": "Moving onto a tile with enemy combat units starts a battle. Units act from highest initiative to lowest; each gets one attack or ability per pass. A hit that meets a unit's DEF kills it. Ties go to the defender.",
+   "ladder_title": "Printed initiative, highest acts first",
+   "example": {
+    "title": "Example: a Spitter Platform attacks an Evoker",
+    "units": [
+     "Spitter Platform",
+     "Evoker"
+    ],
+    "steps": [
+     "The Spitter (95) acts first and hits the Evoker for 1. That would kill it (DEF 1).",
+     "The wizard has researched Mana Shield and spends 1 mana to cut the hit to 0. The Evoker lives, and this does not use up its turn.",
+     "The Evoker (50) casts Wizard Missile for 1 mana: 2 damage, enough to kill the Spitter."
+    ]
+   }
+  },
+  "treaties": {
+   "intro": "A treaty is a binding deal between two players, made at the start or end of the active player's action. One of you needs an Embassy, a Diplomatic Research Station or Envoy Sable Marrow to make one. Each pair may have one treaty at a time, and each can only be broken at the time printed on it.",
+   "chart": [
+    {
+     "treaty": "Open Borders",
+     "allies": true,
+     "collection": true,
+     "hands": false,
+     "victory": false
+    },
+    {
+     "treaty": "Shared Resources",
+     "allies": false,
+     "collection": true,
+     "hands": false,
+     "victory": false
+    },
+    {
+     "treaty": "Peace",
+     "allies": true,
+     "collection": false,
+     "hands": false,
+     "victory": false
+    },
+    {
+     "treaty": "Shared Tactics",
+     "allies": false,
+     "collection": false,
+     "hands": true,
+     "victory": false
+    },
+    {
+     "treaty": "Culture Treaty",
+     "allies": false,
+     "collection": false,
+     "hands": false,
+     "victory": true
+    }
+   ]
+  },
+  "units": {
+   "note": "Robot platforms need a Core to work, except the Infiltrator. A dash means the piece does not fight."
+  }
+ },
+ "eligible_leaders_by_species": {
+  "wizard": [
+   "Marshal Corvin Ashlock",
+   "Archmage Chaimidious",
+   "Archmage Elara",
+   "Warden Hesper Quill",
+   "Captain Rook Malvane",
+   "Kestrel Nine",
+   "Chronicler Ottoline Vey",
+   "Foreman Hadrik Stoll",
+   "Envoy Sable Marrow",
+   "Quartermaster Bertram Hollis",
+   "Dowser Wren Calloway",
+   "Prospector Ida Marrs",
+   "Conjurer Mayhew",
+   "Archivist Solenne Dray",
+   "Professor Anselm Kettering",
+   "Dr. Elayn Smyth",
+   "Technomancer Greymore"
+  ],
+  "robot": [
+   "Marshal Corvin Ashlock",
+   "Archmage Chaimidious",
+   "Evo Angel",
+   "Warden Hesper Quill",
+   "Captain Rook Malvane",
+   "Kestrel Nine",
+   "Chronicler Ottoline Vey",
+   "Foreman Hadrik Stoll",
+   "Envoy Sable Marrow",
+   "Quartermaster Bertram Hollis",
+   "Dowser Wren Calloway",
+   "Prospector Ida Marrs",
+   "Derrick Prime",
+   "Archivist Solenne Dray",
+   "Professor Anselm Kettering",
+   "Dr. Elayn Smyth",
+   "Motherboard"
+  ]
+ }
+}

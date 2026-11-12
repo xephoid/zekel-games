@@ -76,7 +76,9 @@ import each other**, and `tests/glueBoundary.test.ts` fails if they do.
 - A screen imports its stylesheet (`import './wd.css'`), so the built
   `@zekel/<game>/glue` entry is for a bundler, not for plain Node.
 - So far only Word Debauchee's screen has moved here. The other games' screens
-  are still in Universe (`apps/web/src/glue/`).
+  are still in Universe (`apps/web/src/glue/`). Neither Guts nor Gears has its
+  rulebook page here (`src/glue/rulebook/`, notes in its `RULEBOOK.md`), but
+  its table screen is still in Universe.
 
 ## Building a game: read the runbooks first
 
