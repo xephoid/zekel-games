@@ -121,7 +121,7 @@ function redActionVariants(
   const fight = guards.length > 0 ? ` (you must first beat ${guards.join(' / ')} knight in that region; losing that battle cancels the capture)` : '';
   // A double resolves Red twice; the second capture's region can't be known now.
   const twice = actsTwice
-    ? ' (a double resolves Red twice: this is the first capture; the second takes the same kind of unit wherever your knight then stands, if there is one)'
+    ? ' (a double resolves Red twice: this is the first capture. The server picks the second, wherever your knight then stands: the same kind of unit if there is one, else a unit of the same owner, else the only target, else a leader. If the second takes a leader while both "capture a leader" objectives are open, it scores the one you pick here, or the secret)'
     : '';
   const secretOpen = p.secretObjectives.includes('capture_leader') && !(p.secretObjectivesScored ?? []).includes('capture_leader');
   const publicOpen = !p.publicObjectivesScored.includes('capture_leader');
