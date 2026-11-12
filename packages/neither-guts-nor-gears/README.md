@@ -11,6 +11,10 @@ module Universe's table loads (`nggGlue`). It needs `@zekel/glue-kit`, `@zekel/w
 optional peer dependencies: a server that only plays the game needs none of
 them. It imports its own stylesheets, so load it through a bundler.
 
+The same entry carries the rulebook page (`NggRulebook`, `readRulebook`). To
+load the rulebook alone, use `@zekel/neither-guts-nor-gears/glue/rulebook`:
+it needs `react` and not `react-dom`, which only the table's layout uses.
+
 ## Use
 
 Register it on [`@zekel/mcp`](https://www.npmjs.com/package/@zekel/mcp):

@@ -154,6 +154,7 @@ packages/neither-guts-nor-gears/src/glue/icons.gen.ts
 packages/neither-guts-nor-gears/src/glue/index.ts
 packages/neither-guts-nor-gears/src/glue/ink.ts
 packages/neither-guts-nor-gears/src/glue/rulebook/NggRulebook.tsx
+packages/neither-guts-nor-gears/src/glue/rulebook/index.ts
 packages/neither-guts-nor-gears/src/glue/rulebook/read.ts
 packages/neither-guts-nor-gears/src/glue/rulebook/rulebook.css
 packages/neither-guts-nor-gears/src/glue/table/FactionBoard.tsx

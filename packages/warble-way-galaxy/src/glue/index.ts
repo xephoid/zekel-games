@@ -467,3 +467,8 @@ export const warbleWayGlue: GlueModule = {
 };
 
 export default warbleWayGlue;
+
+// The theme's icons, holograms, faces and travel cards on their own, for a
+// page that shows them (Zekel Universe's /dev/ww). Universe may load only
+// this entry of a game, so they go out through it.
+export * as warbleWayGallery from './gallery.js';

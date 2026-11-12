@@ -25,6 +25,10 @@
       "types": "./dist/glue/index.d.ts",
       "default": "./dist/glue/index.js"
     },
+    "./glue/rulebook": {
+      "types": "./dist/glue/rulebook/index.d.ts",
+      "default": "./dist/glue/rulebook/index.js"
+    },
     "./*": {
       "types": "./dist/*.d.ts",
       "default": "./dist/*.js"
