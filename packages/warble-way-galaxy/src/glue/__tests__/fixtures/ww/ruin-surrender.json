@@ -1,0 +1,551 @@
+{
+ "key": "ruin-surrender",
+ "viewer": "p1",
+ "view": {
+  "phase": "ruin",
+  "pending": {
+   "kind": "ruin_turn"
+  },
+  "roll_facts": null,
+  "last_roll": null,
+  "character": {
+   "name": "Bot Pilot",
+   "race": "human",
+   "disposition_roleplay_hint": null,
+   "level": 4,
+   "xp": 8,
+   "xp_to_next_level": 40,
+   "credits": 2200,
+   "wounded": false,
+   "dread": 0,
+   "abilities": {
+    "RES": {
+     "name": "Research",
+     "stat": "smarts",
+     "natural": 1,
+     "effective": 1
+    },
+    "MEC": {
+     "name": "Mechanics",
+     "stat": "smarts",
+     "natural": 2,
+     "effective": 2
+    },
+    "PIL": {
+     "name": "Piloting",
+     "stat": "finesse",
+     "natural": 6,
+     "effective": 6
+    }
+   },
+   "skills": [
+    "Research (RES basic)",
+    "Mechanics (MEC basic)",
+    "Piloting (PIL basic)",
+    "Piloting advanced"
+   ],
+   "equipped": {
+    "weapon": "h3-s4",
+    "armor": "h3-s3"
+   }
+  },
+  "crew": [
+   {
+    "name": "Grull (DIP+1)",
+    "title": "Slate",
+    "race": "grull",
+    "idealizes": "finesse",
+    "abilities": {
+     "DIP": 1
+    },
+    "skills": [
+     "Diplomacy (DIP basic)"
+    ],
+    "anger_tokens": 2,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   },
+   {
+    "name": "Hexapod (SNE+2 DIP+1)",
+    "title": "DEC0DE",
+    "race": "hexapod",
+    "idealizes": "smarts",
+    "abilities": {
+     "SNE": 2,
+     "DIP": 1
+    },
+    "skills": [
+     "Sneaking (SNE basic)",
+     "Diplomacy (DIP basic)"
+    ],
+    "anger_tokens": 0,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   }
+  ],
+  "unnamed_crew": 0,
+  "unnamed_crew_cap": 1,
+  "season_endings": {
+   "conquest": "clear the depth-3 ruin beyond Habitat #3",
+   "fortune": "2200/6000c banked while at a habitat",
+   "legend": "level 4/5",
+   "plunder": "1/6 ruin caches opened",
+   "bounty": "0/8 foes defeated face to face (boarding captures + ruin kills)"
+  },
+  "ship": {
+   "name": "Harness Runner",
+   "capacity": 3,
+   "speed": 0,
+   "handling": 0,
+   "armor": 0,
+   "damage": "pristine",
+   "parts": [],
+   "hits_to_lost": 4
+  },
+  "items": [
+   {
+    "id": "h3-s4",
+    "name": "Weapon +3 GUN",
+    "type": "weapon",
+    "consumed": false,
+    "title": "Ruin Lance",
+    "effect": "+3 Gunslinging for whoever wears it.",
+    "worn_by": "Bot Pilot",
+    "fitted": false
+   },
+   {
+    "id": "h3-s3",
+    "name": "Armor +3 ARM",
+    "type": "armor",
+    "consumed": false,
+    "title": "Ruin-forged Plate",
+    "effect": "+3 Armor for whoever wears it.",
+    "worn_by": "Bot Pilot",
+    "fitted": false
+   },
+   {
+    "id": "r2-i2#3",
+    "name": "Consumable DEM +4",
+    "type": "consumable",
+    "consumed": false,
+    "title": "Consumable DEM +4",
+    "effect": "One use: +4 to one Demolitions roll, declared before the dice.",
+    "worn_by": null,
+    "fitted": false
+   }
+  ],
+  "bulkheads_spent": false,
+  "habitat": {
+   "number": 3,
+   "name": "FFD700 Base",
+   "shop": [
+    {
+     "name": "Consumable +3 SWA",
+     "cost": 600,
+     "purchased": false
+    },
+    {
+     "name": "Consumable +3 RES",
+     "cost": 600,
+     "purchased": false
+    },
+    {
+     "name": "Armor +3 ARM",
+     "cost": 800,
+     "purchased": true
+    },
+    {
+     "name": "Weapon +3 GUN",
+     "cost": 800,
+     "purchased": true
+    },
+    {
+     "name": "Ship part Armor +2",
+     "cost": 1000,
+     "purchased": false
+    },
+    {
+     "name": "Ship part Capacity +3",
+     "cost": 1500,
+     "purchased": false
+    }
+   ],
+   "cantina": [
+    {
+     "recruit": "Grull (SNE +3 PIL +1, min roll 14)",
+     "status": "available"
+    },
+    {
+     "recruit": "Kralkin (DIP +3 ARM +1, min roll 14)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (HAK +3, min roll 13)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (SWA +3 GUN +1, min roll 14)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (MEC +3, min roll 13)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (LEA +3 DEM +1, min roll 14)",
+     "status": "available"
+    }
+   ],
+   "missions": [
+    {
+     "id": "h3-m1",
+     "mission": "distance 7, RES 13, 600c, 3 XP",
+     "status": "available"
+    },
+    {
+     "id": "h3-m2",
+     "mission": "distance 7, DIP 14, 700c, 4 XP",
+     "status": "available"
+    },
+    {
+     "id": "h3-m3",
+     "mission": "distance 8, MEC 14, 700c, 4 XP",
+     "status": "available"
+    },
+    {
+     "id": "h3-m4",
+     "mission": "distance 8, SNE 14, 700c, 4 XP",
+     "status": "available"
+    },
+    {
+     "id": "h3-m5",
+     "mission": "distance 8, ARM 15, 750c, 4 XP",
+     "status": "available"
+    },
+    {
+     "id": "h3-m6",
+     "mission": "distance 9, PIL 18, 1500c, 5 XP",
+     "status": "available"
+    }
+   ],
+   "progression": "the Season 1 finale: complete a depth-3 ruin to WIN (depart_for_next_habitat starts it)",
+   "repair_roll_available": true,
+   "unrest_roll_available": true,
+   "docks_unnamed_roll_available": true,
+   "fabrication_available_this_visit": true
+  },
+  "journey": null,
+  "space_combat": null,
+  "ruin": {
+   "map": "R2",
+   "level": 2,
+   "target_depth": 3,
+   "purpose": "finale",
+   "legend": ". floor · # wall (blocks sight) · ~ pit (shoot across) · S start · G goal · I item spot · B being spot · A attacker spot",
+   "round": 3,
+   "threat_level": 1,
+   "start_cell": "r9c9",
+   "board_rows": [
+    "row 1: G A . . ~ I . . A",
+    "row 2: . # A . ~ ~ . # .",
+    "row 3: B ~ . . . . A a .",
+    "row 4: ~ ~ . . B . . ~ ~",
+    "row 5: ~ ~ # . . b # ~ ~",
+    "row 6: ~ ~ A . 2 . . . ~",
+    "row 7: B . c . ~ . 3 1 .",
+    "row 8: . # I . ~ ~ . # .",
+    "row 9: A . . . ~ ~ . . S"
+   ],
+   "board_key": {
+    "1": "Bot Pilot at r7c8",
+    "2": "Grull (DIP+1) at r6c5",
+    "3": "Hexapod (SNE+2 DIP+1) at r7c7",
+    "a": "A1 (Atk +5, Mv 3, Rng 1) at r3c8",
+    "b": "A2 (Atk +5, Mv 3, Rng 1) at r5c6",
+    "c": "A3 (Atk +5, Mv 3, Rng 1) at r7c3"
+   },
+   "party": [
+    {
+     "name": "Bot Pilot",
+     "cell": "r7c8",
+     "moved": 3,
+     "acted": true,
+     "ended": true,
+     "is_character": true,
+     "unnamed": false,
+     "has_attacked": true,
+     "title": "Bot Pilot",
+     "move_allowance": 3,
+     "moves_left": 0,
+     "reach": [],
+     "attack": {
+      "ability": "GUN",
+      "bonus": 3,
+      "range": 5,
+      "advantage": false
+     }
+    },
+    {
+     "name": "Grull (DIP+1)",
+     "cell": "r6c5",
+     "moved": 3,
+     "acted": false,
+     "ended": false,
+     "is_character": false,
+     "unnamed": false,
+     "has_attacked": false,
+     "title": "Slate",
+     "move_allowance": 3,
+     "moves_left": 0,
+     "reach": [],
+     "attack": {
+      "ability": "SWA",
+      "bonus": 0,
+      "range": 1,
+      "advantage": false
+     }
+    },
+    {
+     "name": "Hexapod (SNE+2 DIP+1)",
+     "cell": "r7c7",
+     "moved": 0,
+     "acted": false,
+     "ended": false,
+     "is_character": false,
+     "unnamed": false,
+     "has_attacked": false,
+     "title": "DEC0DE",
+     "move_allowance": 5,
+     "moves_left": 5,
+     "reach": [
+      "r8c7",
+      "r6c7",
+      "r7c6",
+      "r9c7",
+      "r6c8",
+      "r6c6",
+      "r9c8",
+      "r9c9",
+      "r8c9"
+     ],
+     "attack": {
+      "ability": "SWA",
+      "bonus": 0,
+      "range": 1,
+      "advantage": false
+     }
+    }
+   ],
+   "attackers": [
+    {
+     "id": "A1",
+     "atk": 5,
+     "move": 3,
+     "range": 1,
+     "xp": 5,
+     "cell": "r3c8",
+     "defeated": false
+    },
+    {
+     "id": "A2",
+     "atk": 5,
+     "move": 3,
+     "range": 1,
+     "xp": 5,
+     "cell": "r5c6",
+     "defeated": false
+    },
+    {
+     "id": "A3",
+     "atk": 5,
+     "move": 3,
+     "range": 1,
+     "xp": 5,
+     "cell": "r7c3",
+     "defeated": false
+    }
+   ],
+   "goal_cell": "r1c1",
+   "attacker_turn_index": null,
+   "spots_spent": [
+    "r5c5"
+   ]
+  },
+  "travel_deck": {
+   "cards_in_draw_pile": 15,
+   "cards_in_discard": 37,
+   "discard": [
+    "3H",
+    "5S",
+    "8H",
+    "KH",
+    "QH",
+    "7H",
+    "KC",
+    "10H",
+    "7S",
+    "10C",
+    "9D",
+    "AC",
+    "10S",
+    "4S",
+    "6D",
+    "5H",
+    "6S",
+    "AH",
+    "6C",
+    "2S",
+    "KS",
+    "AD",
+    "4C",
+    "9C",
+    "2H",
+    "4H",
+    "8S",
+    "QD",
+    "3D",
+    "KD",
+    "3S",
+    "JS",
+    "JC",
+    "JH",
+    "6H",
+    "7D",
+    "AS"
+   ]
+  },
+  "stat_reference": {
+   "brawn": "SWA/ARM/DEM",
+   "smarts": "HAK/RES/MEC",
+   "finesse": "PIL/GUN/SNE",
+   "moxie": "LEA/DIP/ACT"
+  },
+  "lore_refs": [
+   "galaxy-overview",
+   "humans",
+   "grull",
+   "hexapods"
+  ],
+  "result": null
+ },
+ "legalMoves": [
+  {
+   "move_id": "move-Grull (DIP+1)",
+   "description": "Move Slate (at r6c5): choose a square; no diagonals; walls, pits and tokens block.",
+   "move": {
+    "type": "move_being",
+    "being": "Grull (DIP+1)",
+    "to": ""
+   }
+  },
+  {
+   "move_id": "attack-Grull (DIP+1)-A2",
+   "description": "Slate attacks A2 (Atk +5) at r5c6 (in range 1, clear line).",
+   "move": {
+    "type": "attack",
+    "being": "Grull (DIP+1)",
+    "target": "A2"
+   },
+   "preview": {
+    "roll": {
+     "reason": "ground_combat",
+     "name": "Attack",
+     "carrier": "Slate",
+     "dice": 4,
+     "parts": [
+      {
+       "label": "SWA +0 (Grull (DIP+1))",
+       "bonus": 0,
+       "kind": "score",
+       "ability": "SWA",
+       "who": "Grull (DIP+1)"
+      }
+     ],
+     "bonus": 0,
+     "on_pass": "A2 falls: +5 XP, and it counts toward Bounty.",
+     "on_fail": "A2 holds. Nothing else happens to Slate.",
+     "notes": [
+      "A tie is rolled again."
+     ],
+     "pairing": {
+      "you_take": "lower",
+      "why": "Grull (DIP+1) has no Swashbuckling, is no Sniper and wears no armor with ground combat advantage: the lower pair.",
+      "your_add": 0,
+      "their_add": 5,
+      "their_name": "A2",
+      "rider_dice": 0,
+      "win": 0,
+      "tie": 0,
+      "lose": 1
+     },
+     "chance": 0,
+     "subject": "A2"
+    }
+   }
+  },
+  {
+   "move_id": "convert-Grull (DIP+1)-A2",
+   "description": "Slate calls on A2 to surrender: 3d6 + DIP 1 vs 15 (10 + its attack). Success: it joins as an unnamed crew hand.",
+   "move": {
+    "type": "convert_attacker",
+    "being": "Grull (DIP+1)",
+    "target": "A2"
+   },
+   "preview": {
+    "roll": {
+     "reason": "recruit",
+     "name": "Recruit",
+     "carrier": "Slate",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "DIP +1 (Grull (DIP+1))",
+       "bonus": 1,
+       "kind": "score",
+       "ability": "DIP",
+       "who": "Grull (DIP+1)"
+      }
+     ],
+     "bonus": 1,
+     "on_pass": "A2 lays down arms and joins as a red shirt, acting from your next round. No XP, and it does not count toward Bounty.",
+     "on_fail": "A2 keeps fighting.",
+     "notes": [],
+     "target": 15,
+     "dice_need": 14,
+     "chance": 0.162,
+     "subject": "A2"
+    }
+   }
+  },
+  {
+   "move_id": "end-Grull (DIP+1)",
+   "description": "Slate ends their turn.",
+   "move": {
+    "type": "end_being_turn",
+    "being": "Grull (DIP+1)"
+   }
+  },
+  {
+   "move_id": "move-Hexapod (SNE+2 DIP+1)",
+   "description": "Move DEC0DE (at r7c7): choose a square; no diagonals; walls, pits and tokens block.",
+   "move": {
+    "type": "move_being",
+    "being": "Hexapod (SNE+2 DIP+1)",
+    "to": ""
+   }
+  },
+  {
+   "move_id": "end-Hexapod (SNE+2 DIP+1)",
+   "description": "DEC0DE ends their turn.",
+   "move": {
+    "type": "end_being_turn",
+    "being": "Hexapod (SNE+2 DIP+1)"
+   }
+  }
+ ],
+ "unavailable": []
+}

@@ -1,0 +1,437 @@
+{
+ "key": "ruin-attack",
+ "viewer": "p1",
+ "view": {
+  "phase": "ruin",
+  "pending": {
+   "kind": "ruin_turn"
+  },
+  "roll_facts": null,
+  "last_roll": null,
+  "character": {
+   "name": "Bot Pilot",
+   "race": "human",
+   "disposition_roleplay_hint": null,
+   "level": 1,
+   "xp": 1,
+   "xp_to_next_level": 5,
+   "credits": 200,
+   "wounded": false,
+   "dread": 1,
+   "abilities": {
+    "RES": {
+     "name": "Research",
+     "stat": "smarts",
+     "natural": 1,
+     "effective": 1
+    },
+    "MEC": {
+     "name": "Mechanics",
+     "stat": "smarts",
+     "natural": 2,
+     "effective": 2
+    },
+    "PIL": {
+     "name": "Piloting",
+     "stat": "finesse",
+     "natural": 3,
+     "effective": 3
+    }
+   },
+   "skills": [
+    "Research (RES basic)",
+    "Mechanics (MEC basic)",
+    "Piloting (PIL basic)",
+    "Piloting advanced"
+   ],
+   "equipped": {
+    "weapon": null,
+    "armor": null
+   }
+  },
+  "crew": [
+   {
+    "name": "Human (ACT+2 SWA+1)",
+    "title": "Katie",
+    "race": "human",
+    "idealizes": "brawn",
+    "abilities": {
+     "ACT": 2,
+     "SWA": 1
+    },
+    "skills": [
+     "Acting (ACT basic)",
+     "Swashbuckling (SWA basic)"
+    ],
+    "anger_tokens": 0,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   },
+   {
+    "name": "Kralkin (GUN+2 SWA+2)",
+    "title": "Kralkin (GUN+2 SWA+2)",
+    "race": "kralkin",
+    "idealizes": "moxie",
+    "abilities": {
+     "GUN": 2,
+     "SWA": 2
+    },
+    "skills": [
+     "Gunslinging (GUN basic)",
+     "Swashbuckling (SWA basic)"
+    ],
+    "anger_tokens": 0,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   }
+  ],
+  "unnamed_crew": 0,
+  "unnamed_crew_cap": 0,
+  "season_endings": {
+   "conquest": "clear the depth-3 ruin beyond Habitat #3",
+   "fortune": "200/6000c banked while at a habitat",
+   "legend": "level 1/5",
+   "plunder": "0/6 ruin caches opened",
+   "bounty": "1/8 foes defeated face to face (boarding captures + ruin kills)"
+  },
+  "ship": {
+   "name": "Captured pirate ship (♦6)",
+   "capacity": 4,
+   "speed": 0,
+   "handling": 0,
+   "armor": 0,
+   "damage": "hobbled",
+   "parts": [],
+   "hits_to_lost": 1
+  },
+  "items": [],
+  "bulkheads_spent": false,
+  "habitat": {
+   "number": 1,
+   "name": "Xaxalon 4",
+   "shop": [
+    {
+     "name": "Consumable +1 Any",
+     "cost": 200,
+     "purchased": false
+    },
+    {
+     "name": "Weapon +1 GUN",
+     "cost": 300,
+     "purchased": false
+    },
+    {
+     "name": "Armor Combat Advantage",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +1 Speed",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +2 Capacity",
+     "cost": 700,
+     "purchased": false
+    }
+   ],
+   "cantina": [
+    {
+     "recruit": "Human (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Kralkin (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (HAK +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Grull (DIP +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (ACT +1, min roll 11)",
+     "status": "available"
+    }
+   ],
+   "missions": [
+    {
+     "id": "h1-m1",
+     "mission": "distance 3, RES 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m2",
+     "mission": "distance 3, DIP 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m3",
+     "mission": "distance 3, MEC 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m4",
+     "mission": "distance 4, R1 ruin, 600c, 1 XP",
+     "status": "attempted (failed)"
+    },
+    {
+     "id": "h1-m5",
+     "mission": "distance 4, SWA 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m6",
+     "mission": "distance 4, ARM 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m7",
+     "mission": "distance 6, ACT 12, 400c, 1 XP",
+     "status": "available"
+    }
+   ],
+   "progression": "complete 4 missions (any result; 1 done), then travel 6 one-way",
+   "repair_roll_available": false,
+   "unrest_roll_available": false,
+   "docks_unnamed_roll_available": true,
+   "fabrication_available_this_visit": true
+  },
+  "journey": {
+   "note": "Legs resolve top-down (a sandwiched mission finishes before the journey under it resumes).",
+   "legs": [
+    {
+     "position": "current",
+     "purpose": "return — distance 4, R1 ruin, 600c, 1 XP",
+     "kind": "mission_return",
+     "mission_id": "h1-m4",
+     "cards_remaining": 4
+    }
+   ]
+  },
+  "space_combat": null,
+  "ruin": {
+   "map": "R1",
+   "level": 1,
+   "target_depth": 1,
+   "purpose": "mission",
+   "legend": ". floor · # wall (blocks sight) · ~ pit (shoot across) · S start · G goal · I item spot · B being spot · A attacker spot",
+   "round": 1,
+   "threat_level": 1,
+   "start_cell": "r9c1",
+   "board_rows": [
+    "row 1: G A . B . . . . a",
+    "row 2: A # . . # . . # .",
+    "row 3: . # b . I . . . .",
+    "row 4: B # . . . . c . .",
+    "row 5: 2 # . . # # # # .",
+    "row 6: . . . . . I . B .",
+    "row 7: . . 3 . . . . . .",
+    "row 8: . # . . # . . # .",
+    "row 9: 1 . . . I . . . S"
+   ],
+   "board_key": {
+    "1": "Bot Pilot at r9c1",
+    "2": "Human (ACT+2 SWA+1) at r5c1",
+    "3": "Kralkin (GUN+2 SWA+2) at r7c3",
+    "a": "A1 (Atk +5, Mv 3, Rng 1) at r1c9",
+    "b": "A2 (Atk +3, Mv 3, Rng 1) at r3c3",
+    "c": "A3 (Atk +3, Mv 3, Rng 1) at r4c7"
+   },
+   "party": [
+    {
+     "name": "Bot Pilot",
+     "cell": "r9c1",
+     "moved": 0,
+     "acted": false,
+     "ended": true,
+     "is_character": true,
+     "unnamed": false,
+     "has_attacked": false,
+     "title": "Bot Pilot",
+     "move_allowance": 3,
+     "moves_left": 3,
+     "reach": [],
+     "attack": {
+      "ability": "SWA",
+      "bonus": 0,
+      "range": 1,
+      "advantage": false
+     }
+    },
+    {
+     "name": "Human (ACT+2 SWA+1)",
+     "cell": "r5c1",
+     "moved": 3,
+     "acted": false,
+     "ended": true,
+     "is_character": false,
+     "unnamed": false,
+     "has_attacked": false,
+     "title": "Katie",
+     "move_allowance": 3,
+     "moves_left": 0,
+     "reach": [],
+     "attack": {
+      "ability": "SWA",
+      "bonus": 1,
+      "range": 1,
+      "advantage": true
+     }
+    },
+    {
+     "name": "Kralkin (GUN+2 SWA+2)",
+     "cell": "r7c3",
+     "moved": 3,
+     "acted": false,
+     "ended": false,
+     "is_character": false,
+     "unnamed": false,
+     "has_attacked": false,
+     "title": "Kralkin (GUN+2 SWA+2)",
+     "move_allowance": 3,
+     "moves_left": 0,
+     "reach": [],
+     "attack": {
+      "ability": "SWA",
+      "bonus": 2,
+      "range": 4,
+      "advantage": true
+     }
+    }
+   ],
+   "attackers": [
+    {
+     "id": "A1",
+     "atk": 5,
+     "move": 3,
+     "range": 1,
+     "xp": 5,
+     "cell": "r1c9",
+     "defeated": false
+    },
+    {
+     "id": "A2",
+     "atk": 3,
+     "move": 3,
+     "range": 1,
+     "xp": 3,
+     "cell": "r3c3",
+     "defeated": false
+    },
+    {
+     "id": "A3",
+     "atk": 3,
+     "move": 3,
+     "range": 1,
+     "xp": 3,
+     "cell": "r4c7",
+     "defeated": false
+    }
+   ],
+   "goal_cell": "r1c1",
+   "attacker_turn_index": null,
+   "spots_spent": []
+  },
+  "travel_deck": {
+   "cards_in_draw_pile": 47,
+   "cards_in_discard": 5,
+   "discard": [
+    "6H",
+    "KH",
+    "10D",
+    "6D",
+    "KS"
+   ]
+  },
+  "stat_reference": {
+   "brawn": "SWA/ARM/DEM",
+   "smarts": "HAK/RES/MEC",
+   "finesse": "PIL/GUN/SNE",
+   "moxie": "LEA/DIP/ACT"
+  },
+  "lore_refs": [
+   "galaxy-overview",
+   "xaxalon-4",
+   "humans",
+   "kralkin"
+  ],
+  "result": null
+ },
+ "legalMoves": [
+  {
+   "move_id": "move-Kralkin (GUN+2 SWA+2)",
+   "description": "Move Kralkin (GUN+2 SWA+2) (at r7c3): choose a square; no diagonals; walls, pits and tokens block.",
+   "move": {
+    "type": "move_being",
+    "being": "Kralkin (GUN+2 SWA+2)",
+    "to": ""
+   }
+  },
+  {
+   "move_id": "attack-Kralkin (GUN+2 SWA+2)-A2",
+   "description": "Kralkin (GUN+2 SWA+2) attacks A2 (Atk +3) at r3c3 (in range 4, clear line).",
+   "move": {
+    "type": "attack",
+    "being": "Kralkin (GUN+2 SWA+2)",
+    "target": "A2"
+   },
+   "preview": {
+    "roll": {
+     "reason": "ground_combat",
+     "name": "Attack",
+     "carrier": "Kralkin (GUN+2 SWA+2)",
+     "dice": 4,
+     "parts": [
+      {
+       "label": "SWA +2 (Kralkin (GUN+2 SWA+2))",
+       "bonus": 2,
+       "kind": "score",
+       "ability": "SWA",
+       "who": "Kralkin (GUN+2 SWA+2)"
+      }
+     ],
+     "bonus": 2,
+     "on_pass": "A2 falls: +3 XP, and it counts toward Bounty.",
+     "on_fail": "A2 holds. Nothing else happens to Kralkin (GUN+2 SWA+2).",
+     "notes": [
+      "A tie is rolled again."
+     ],
+     "pairing": {
+      "you_take": "higher",
+      "why": "Kralkin (GUN+2 SWA+2) has Swashbuckling, which gives ground combat advantage: the higher pair.",
+      "your_add": 2,
+      "their_add": 3,
+      "their_name": "A2",
+      "rider_dice": 0,
+      "win": 0.3395,
+      "tie": 0.4012,
+      "lose": 0.2593
+     },
+     "chance": 0.567,
+     "subject": "A2"
+    }
+   }
+  },
+  {
+   "move_id": "end-Kralkin (GUN+2 SWA+2)",
+   "description": "Kralkin (GUN+2 SWA+2) ends their turn.",
+   "move": {
+    "type": "end_being_turn",
+    "being": "Kralkin (GUN+2 SWA+2)"
+   },
+   "preview": {
+    "then": "The last to act: the attackers move next."
+   }
+  }
+ ],
+ "unavailable": []
+}

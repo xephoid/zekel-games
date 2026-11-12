@@ -4,6 +4,17 @@ Warble Way Galaxy, a Zekel Games board game (1 player), as a game module for the
 
 A solo sci-fi tabletop RPG (Season 1): build a character and crew, fly missions between habitats, survive hazards, pirates and ancient ruins. The player rolls their own dice and draws their own cards; the server is the strict rules engine and the LLM client is the game master, grounding its story in the get_lore repository.
 
+## The screen
+
+`@zekel/warble-way-galaxy/glue` is the game's screen for Zekel Universe: the glue
+module Universe's table loads (`warbleWayGlue`). It needs `@zekel/glue-kit`, `@zekel/primitives`, `@zekel/wire-types`, `react`, `react-dom`, which are
+optional peer dependencies: a server that only plays the game needs none of
+them. It imports its own stylesheets, so load it through a bundler.
+
+The pictures are not in this package. The screen names them by address
+(`/art/warble-way/...`), and the site that shows the
+screen serves them; Zekel Universe does, from `apps/web/public`.
+
 ## Use
 
 Register it on [`@zekel/mcp`](https://www.npmjs.com/package/@zekel/mcp):

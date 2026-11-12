@@ -1,0 +1,867 @@
+{
+ "key": "habitat-3",
+ "viewer": "p1",
+ "view": {
+  "phase": "at_habitat",
+  "pending": null,
+  "roll_facts": null,
+  "last_roll": null,
+  "character": {
+   "name": "Bot Pilot",
+   "race": "human",
+   "disposition_roleplay_hint": null,
+   "level": 4,
+   "xp": 37,
+   "xp_to_next_level": 11,
+   "credits": 1350,
+   "wounded": false,
+   "dread": 0,
+   "abilities": {
+    "RES": {
+     "name": "Research",
+     "stat": "smarts",
+     "natural": 1,
+     "effective": 1
+    },
+    "MEC": {
+     "name": "Mechanics",
+     "stat": "smarts",
+     "natural": 2,
+     "effective": 2
+    },
+    "PIL": {
+     "name": "Piloting",
+     "stat": "finesse",
+     "natural": 6,
+     "effective": 6
+    }
+   },
+   "skills": [
+    "Research (RES basic)",
+    "Mechanics (MEC basic)",
+    "Piloting (PIL basic)",
+    "Piloting advanced"
+   ],
+   "equipped": {
+    "weapon": null,
+    "armor": null
+   }
+  },
+  "crew": [
+   {
+    "name": "Hexapod (SNE+2 DIP+1)",
+    "title": "DEC0DE",
+    "race": "hexapod",
+    "idealizes": "smarts",
+    "abilities": {
+     "SNE": 2,
+     "DIP": 1
+    },
+    "skills": [
+     "Sneaking (SNE basic)",
+     "Diplomacy (DIP basic)"
+    ],
+    "anger_tokens": 2,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   },
+   {
+    "name": "Kralkin (MEC+3)",
+    "title": "Tweet",
+    "race": "kralkin",
+    "idealizes": "moxie",
+    "abilities": {
+     "MEC": 3
+    },
+    "skills": [
+     "Mechanics (MEC basic)",
+     "Mechanics advanced"
+    ],
+    "anger_tokens": 2,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   }
+  ],
+  "unnamed_crew": 0,
+  "unnamed_crew_cap": 1,
+  "season_endings": {
+   "conquest": "clear the depth-3 ruin beyond Habitat #3",
+   "fortune": "1350/6000c banked while at a habitat",
+   "legend": "level 4/5",
+   "plunder": "0/6 ruin caches opened",
+   "bounty": "0/8 foes defeated face to face (boarding captures + ruin kills)"
+  },
+  "ship": {
+   "name": "Harness Runner",
+   "capacity": 3,
+   "speed": 0,
+   "handling": 0,
+   "armor": 5,
+   "damage": "pristine",
+   "parts": [
+    "fabricated-armor-1",
+    "fabricated-armor-2",
+    "fabricated-armor-3",
+    "fabricated-armor-4",
+    "fabricated-armor-5"
+   ],
+   "hits_to_lost": 4
+  },
+  "items": [
+   {
+    "id": "fabricated-armor-1",
+    "name": "Fabricated part: +1 armor",
+    "type": "ship_part",
+    "consumed": false,
+    "title": "Fabricated part: +1 armor",
+    "effect": "Ship armor +1. Taken off the pirates' total in every exchange of fire.",
+    "worn_by": null,
+    "fitted": true
+   },
+   {
+    "id": "fabricated-armor-2",
+    "name": "Fabricated part: +1 armor",
+    "type": "ship_part",
+    "consumed": false,
+    "title": "Fabricated part: +1 armor",
+    "effect": "Ship armor +1. Taken off the pirates' total in every exchange of fire.",
+    "worn_by": null,
+    "fitted": true
+   },
+   {
+    "id": "fabricated-armor-3",
+    "name": "Fabricated part: +1 armor",
+    "type": "ship_part",
+    "consumed": false,
+    "title": "Fabricated part: +1 armor",
+    "effect": "Ship armor +1. Taken off the pirates' total in every exchange of fire.",
+    "worn_by": null,
+    "fitted": true
+   },
+   {
+    "id": "fabricated-armor-4",
+    "name": "Fabricated part: +1 armor",
+    "type": "ship_part",
+    "consumed": false,
+    "title": "Fabricated part: +1 armor",
+    "effect": "Ship armor +1. Taken off the pirates' total in every exchange of fire.",
+    "worn_by": null,
+    "fitted": true
+   },
+   {
+    "id": "fabricated-armor-5",
+    "name": "Fabricated part: +1 armor",
+    "type": "ship_part",
+    "consumed": false,
+    "title": "Fabricated part: +1 armor",
+    "effect": "Ship armor +1. Taken off the pirates' total in every exchange of fire.",
+    "worn_by": null,
+    "fitted": true
+   }
+  ],
+  "bulkheads_spent": false,
+  "habitat": {
+   "number": 3,
+   "name": "FFD700 Base",
+   "shop": [
+    {
+     "name": "Consumable +3 SWA",
+     "cost": 600,
+     "purchased": false
+    },
+    {
+     "name": "Consumable +3 RES",
+     "cost": 600,
+     "purchased": false
+    },
+    {
+     "name": "Armor +3 ARM",
+     "cost": 800,
+     "purchased": false
+    },
+    {
+     "name": "Weapon +3 GUN",
+     "cost": 800,
+     "purchased": false
+    },
+    {
+     "name": "Ship part Armor +2",
+     "cost": 1000,
+     "purchased": false
+    },
+    {
+     "name": "Ship part Capacity +3",
+     "cost": 1500,
+     "purchased": false
+    }
+   ],
+   "cantina": [
+    {
+     "recruit": "Grull (SNE +3 PIL +1, min roll 14)",
+     "status": "available"
+    },
+    {
+     "recruit": "Kralkin (DIP +3 ARM +1, min roll 14)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (HAK +3, min roll 13)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (SWA +3 GUN +1, min roll 14)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (MEC +3, min roll 13)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (LEA +3 DEM +1, min roll 14)",
+     "status": "available"
+    }
+   ],
+   "missions": [
+    {
+     "id": "h3-m1",
+     "mission": "distance 7, RES 13, 600c, 3 XP",
+     "status": "available"
+    },
+    {
+     "id": "h3-m2",
+     "mission": "distance 7, DIP 14, 700c, 4 XP",
+     "status": "available"
+    },
+    {
+     "id": "h3-m3",
+     "mission": "distance 8, MEC 14, 700c, 4 XP",
+     "status": "available"
+    },
+    {
+     "id": "h3-m4",
+     "mission": "distance 8, SNE 14, 700c, 4 XP",
+     "status": "available"
+    },
+    {
+     "id": "h3-m5",
+     "mission": "distance 8, ARM 15, 750c, 4 XP",
+     "status": "available"
+    },
+    {
+     "id": "h3-m6",
+     "mission": "distance 9, PIL 18, 1500c, 5 XP",
+     "status": "available"
+    }
+   ],
+   "progression": "the Season 1 finale: complete a depth-3 ruin to WIN (depart_for_next_habitat starts it)",
+   "repair_roll_available": true,
+   "unrest_roll_available": true,
+   "docks_unnamed_roll_available": true,
+   "fabrication_available_this_visit": true
+  },
+  "journey": null,
+  "space_combat": null,
+  "ruin": null,
+  "travel_deck": {
+   "cards_in_draw_pile": 0,
+   "cards_in_discard": 52,
+   "discard": [
+    "10C",
+    "4H",
+    "QS",
+    "KC",
+    "7C",
+    "AD",
+    "KS",
+    "QH",
+    "KH",
+    "10D",
+    "JH",
+    "7S",
+    "9H",
+    "3D",
+    "5C",
+    "10H",
+    "6H",
+    "5H",
+    "2D",
+    "4D",
+    "7D",
+    "QC",
+    "2H",
+    "5D",
+    "3H",
+    "10S",
+    "KD",
+    "AC",
+    "8D",
+    "9C",
+    "2S",
+    "6D",
+    "6S",
+    "9D",
+    "5S",
+    "4S",
+    "8C",
+    "4C",
+    "AS",
+    "2C",
+    "QD",
+    "3C",
+    "8S",
+    "9S",
+    "JC",
+    "AH",
+    "8H",
+    "6C",
+    "JS",
+    "3S",
+    "JD",
+    "7H"
+   ]
+  },
+  "stat_reference": {
+   "brawn": "SWA/ARM/DEM",
+   "smarts": "HAK/RES/MEC",
+   "finesse": "PIL/GUN/SNE",
+   "moxie": "LEA/DIP/ACT"
+  },
+  "lore_refs": [
+   "galaxy-overview",
+   "humans",
+   "hexapods",
+   "kralkin"
+  ],
+  "result": null
+ },
+ "legalMoves": [
+  {
+   "move_id": "buy-h3-s1",
+   "description": "Buy Aarak Adrenal Spray (Consumable +3 SWA) for 600c (you have 1350c).",
+   "move": {
+    "type": "buy_item",
+    "item_name": "Consumable +3 SWA"
+   },
+   "preview": {
+    "then": "One use: +3 to one Swashbuckling roll, declared before the dice."
+   }
+  },
+  {
+   "move_id": "buy-h3-s2",
+   "description": "Buy Aarak Focus Tabs (Consumable +3 RES) for 600c (you have 1350c).",
+   "move": {
+    "type": "buy_item",
+    "item_name": "Consumable +3 RES"
+   },
+   "preview": {
+    "then": "One use: +3 to one Research roll, declared before the dice."
+   }
+  },
+  {
+   "move_id": "buy-h3-s3",
+   "description": "Buy Ruin-forged Plate (Armor +3 ARM) for 800c (you have 1350c).",
+   "move": {
+    "type": "buy_item",
+    "item_name": "Armor +3 ARM"
+   },
+   "preview": {
+    "then": "+3 Armor for whoever wears it. One weapon and one armor per being."
+   }
+  },
+  {
+   "move_id": "buy-h3-s4",
+   "description": "Buy Ruin Lance (Weapon +3 GUN) for 800c (you have 1350c).",
+   "move": {
+    "type": "buy_item",
+    "item_name": "Weapon +3 GUN"
+   },
+   "preview": {
+    "then": "+3 Gunslinging for whoever wears it. One weapon and one armor per being."
+   }
+  },
+  {
+   "move_id": "buy-h3-s5",
+   "description": "Buy Hex-weave Hull Plating (Ship part Armor +2) for 1000c (you have 1350c).",
+   "move": {
+    "type": "buy_item",
+    "item_name": "Ship part Armor +2"
+   },
+   "preview": {
+    "then": "Ship armor +2. Taken off the pirates' total in every exchange of fire. Fitted at once."
+   }
+  },
+  {
+   "move_id": "recruit-h3-c1",
+   "description": "Attempt to recruit Galena, the Grull (SNE +3 PIL +1, min roll 14), at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h3-c1"
+   },
+   "preview": {
+    "roll": {
+     "reason": "recruit",
+     "name": "Recruit",
+     "carrier": "you",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "PIL +6 (you)",
+       "bonus": 6,
+       "kind": "score",
+       "ability": "PIL",
+       "who": "you"
+      }
+     ],
+     "bonus": 6,
+     "on_pass": "Galena joins the crew. The ship would then be over capacity: someone must be released.",
+     "on_fail": "Galena is marked: no second try at this cantina, ever.",
+     "notes": [],
+     "target": 14,
+     "dice_need": 8,
+     "chance": 0.838,
+     "subject": "Galena"
+    }
+   }
+  },
+  {
+   "move_id": "recruit-h3-c2",
+   "description": "Attempt to recruit Coo, the Kralkin (DIP +3 ARM +1, min roll 14), at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h3-c2"
+   },
+   "preview": {
+    "roll": {
+     "reason": "recruit",
+     "name": "Recruit",
+     "carrier": "DEC0DE",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "DIP +1 (Hexapod (SNE+2 DIP+1))",
+       "bonus": 1,
+       "kind": "score",
+       "ability": "DIP",
+       "who": "Hexapod (SNE+2 DIP+1)"
+      }
+     ],
+     "bonus": 1,
+     "on_pass": "Coo joins the crew. The ship would then be over capacity: someone must be released.",
+     "on_fail": "Coo is marked: no second try at this cantina, ever.",
+     "notes": [],
+     "target": 14,
+     "dice_need": 13,
+     "chance": 0.2593,
+     "subject": "Coo"
+    }
+   }
+  },
+  {
+   "move_id": "recruit-h3-c3",
+   "description": "Attempt to recruit ACCE55, the Hexapod (HAK +3, min roll 13), at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h3-c3"
+   },
+   "preview": {
+    "roll": {
+     "reason": "recruit",
+     "name": "Recruit",
+     "carrier": "Tweet",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "MEC +3 (Kralkin (MEC+3))",
+       "bonus": 3,
+       "kind": "score",
+       "ability": "MEC",
+       "who": "Kralkin (MEC+3)"
+      }
+     ],
+     "bonus": 3,
+     "on_pass": "ACCE55 joins the crew. The ship would then be over capacity: someone must be released.",
+     "on_fail": "ACCE55 is marked: no second try at this cantina, ever.",
+     "notes": [],
+     "target": 13,
+     "dice_need": 10,
+     "chance": 0.625,
+     "subject": "ACCE55"
+    }
+   }
+  },
+  {
+   "move_id": "recruit-h3-c4",
+   "description": "Attempt to recruit Diego, the Human (SWA +3 GUN +1, min roll 14), at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h3-c4"
+   },
+   "preview": {
+    "roll": {
+     "reason": "recruit",
+     "name": "Recruit",
+     "dice": 3,
+     "parts": [],
+     "bonus": 0,
+     "on_pass": "Diego joins the crew. The ship would then be over capacity: someone must be released.",
+     "on_fail": "Diego is marked: no second try at this cantina, ever.",
+     "notes": [],
+     "target": 14,
+     "dice_need": 14,
+     "chance": 0.162,
+     "subject": "Diego"
+    }
+   }
+  },
+  {
+   "move_id": "recruit-h3-c5",
+   "description": "Attempt to recruit 5EA1ED, the Hexapod (MEC +3, min roll 13), at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h3-c5"
+   },
+   "preview": {
+    "roll": {
+     "reason": "recruit",
+     "name": "Recruit",
+     "carrier": "Tweet",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "MEC +3 (Kralkin (MEC+3))",
+       "bonus": 3,
+       "kind": "score",
+       "ability": "MEC",
+       "who": "Kralkin (MEC+3)"
+      }
+     ],
+     "bonus": 3,
+     "on_pass": "5EA1ED joins the crew. The ship would then be over capacity: someone must be released.",
+     "on_fail": "5EA1ED is marked: no second try at this cantina, ever.",
+     "notes": [],
+     "target": 13,
+     "dice_need": 10,
+     "chance": 0.625,
+     "subject": "5EA1ED"
+    }
+   }
+  },
+  {
+   "move_id": "recruit-h3-c6",
+   "description": "Attempt to recruit Priya, the Human (LEA +3 DEM +1, min roll 14), at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h3-c6"
+   },
+   "preview": {
+    "roll": {
+     "reason": "recruit",
+     "name": "Recruit",
+     "dice": 3,
+     "parts": [],
+     "bonus": 0,
+     "on_pass": "Priya joins the crew. The ship would then be over capacity: someone must be released.",
+     "on_fail": "Priya is marked: no second try at this cantina, ever.",
+     "notes": [],
+     "target": 14,
+     "dice_need": 14,
+     "chance": 0.162,
+     "subject": "Priya"
+    }
+   }
+  },
+  {
+   "move_id": "fabricate-speed",
+   "description": "Shipwright: pay 400c — fabricate a +1 speed part (ship speed 0 → 1). Once per habitat visit.",
+   "move": {
+    "type": "fabricate_part",
+    "stat": "speed"
+   }
+  },
+  {
+   "move_id": "fabricate-handling",
+   "description": "Shipwright: pay 400c — fabricate a +1 handling part (ship handling 0 → 1). Once per habitat visit.",
+   "move": {
+    "type": "fabricate_part",
+    "stat": "handling"
+   }
+  },
+  {
+   "move_id": "fabricate-armor",
+   "description": "Shipwright: pay 400c — fabricate a +1 armor part (ship armor 5 → 6). Once per habitat visit.",
+   "move": {
+    "type": "fabricate_part",
+    "stat": "armor"
+   }
+  },
+  {
+   "move_id": "recruit-unnamed",
+   "description": "Work the docks: 3d6 + DIP vs 12 — success signs one UNNAMED crew hand (bodies for the ground game; 0/1). Once per habitat.",
+   "move": {
+    "type": "recruit_unnamed"
+   },
+   "preview": {
+    "roll": {
+     "reason": "unnamed_recruit",
+     "name": "Work the docks",
+     "carrier": "DEC0DE",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "DIP +1 (Hexapod (SNE+2 DIP+1))",
+       "bonus": 1,
+       "kind": "score",
+       "ability": "DIP",
+       "who": "Hexapod (SNE+2 DIP+1)"
+      }
+     ],
+     "bonus": 1,
+     "on_pass": "One red shirt signs on, 1 of 1.",
+     "on_fail": "Nobody signs on. The docks can be worked once per habitat.",
+     "notes": [],
+     "target": 12,
+     "dice_need": 11,
+     "chance": 0.5
+    }
+   }
+  },
+  {
+   "move_id": "release-Hexapod (SNE+2 DIP+1)",
+   "description": "Release DEC0DE from the crew (they take their equipped gear).",
+   "move": {
+    "type": "release_crew",
+    "crew_name": "Hexapod (SNE+2 DIP+1)"
+   },
+   "preview": {
+    "then": "DEC0DE leaves for good and takes the weapon and armor they wear."
+   }
+  },
+  {
+   "move_id": "release-Kralkin (MEC+3)",
+   "description": "Release Tweet from the crew (they take their equipped gear).",
+   "move": {
+    "type": "release_crew",
+    "crew_name": "Kralkin (MEC+3)"
+   },
+   "preview": {
+    "then": "Tweet leaves for good and takes the weapon and armor they wear."
+   }
+  },
+  {
+   "move_id": "take-mission-h3-m1",
+   "description": "Spore Census: Take the RES 13 mission (distance 7, RES 13, 600c, 3 XP).",
+   "move": {
+    "type": "take_mission",
+    "mission_name": "h3-m1"
+   },
+   "preview": {
+    "check": {
+     "reason": "mission_check",
+     "name": "Mission",
+     "carrier": "you",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "RES +1 (you)",
+       "bonus": 1,
+       "kind": "score",
+       "ability": "RES",
+       "who": "you"
+      }
+     ],
+     "bonus": 1,
+     "on_pass": "600c and 3 XP. The trip back is still to fly.",
+     "on_fail": "No credits and no XP. The trip back is still to fly.",
+     "notes": [],
+     "target": 13,
+     "dice_need": 12,
+     "chance": 0.375,
+     "subject": "Spore Census"
+    },
+    "then": "You leave FFD700 Base at once: 7 cards out, the check, then 7 cards back. A mission can be tried once."
+   }
+  },
+  {
+   "move_id": "take-mission-h3-m2",
+   "description": "Six Minds, One Deal: Take the DIP 14 mission (distance 7, DIP 14, 700c, 4 XP).",
+   "move": {
+    "type": "take_mission",
+    "mission_name": "h3-m2"
+   },
+   "preview": {
+    "check": {
+     "reason": "mission_check",
+     "name": "Mission",
+     "carrier": "DEC0DE",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "DIP +1 (Hexapod (SNE+2 DIP+1))",
+       "bonus": 1,
+       "kind": "score",
+       "ability": "DIP",
+       "who": "Hexapod (SNE+2 DIP+1)"
+      }
+     ],
+     "bonus": 1,
+     "on_pass": "700c and 4 XP. The trip back is still to fly.",
+     "on_fail": "No credits and no XP. The trip back is still to fly.",
+     "notes": [],
+     "target": 14,
+     "dice_need": 13,
+     "chance": 0.2593,
+     "subject": "Six Minds, One Deal"
+    },
+    "then": "You leave FFD700 Base at once: 7 cards out, the check, then 7 cards back. A mission can be tried once."
+   }
+  },
+  {
+   "move_id": "take-mission-h3-m3",
+   "description": "Walker Overhaul: Take the MEC 14 mission (distance 8, MEC 14, 700c, 4 XP).",
+   "move": {
+    "type": "take_mission",
+    "mission_name": "h3-m3"
+   },
+   "preview": {
+    "check": {
+     "reason": "mission_check",
+     "name": "Mission",
+     "carrier": "Tweet",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "MEC +3 (Kralkin (MEC+3))",
+       "bonus": 3,
+       "kind": "score",
+       "ability": "MEC",
+       "who": "Kralkin (MEC+3)"
+      }
+     ],
+     "bonus": 3,
+     "on_pass": "700c and 4 XP. The trip back is still to fly.",
+     "on_fail": "No credits and no XP. The trip back is still to fly.",
+     "notes": [],
+     "target": 14,
+     "dice_need": 11,
+     "chance": 0.5,
+     "subject": "Walker Overhaul"
+    },
+    "then": "You leave FFD700 Base at once: 8 cards out, the check, then 8 cards back. A mission can be tried once."
+   }
+  },
+  {
+   "move_id": "take-mission-h3-m4",
+   "description": "The FFFFFF Leak: Take the SNE 14 mission (distance 8, SNE 14, 700c, 4 XP).",
+   "move": {
+    "type": "take_mission",
+    "mission_name": "h3-m4"
+   },
+   "preview": {
+    "check": {
+     "reason": "mission_check",
+     "name": "Mission",
+     "carrier": "DEC0DE",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "SNE +2 (Hexapod (SNE+2 DIP+1))",
+       "bonus": 2,
+       "kind": "score",
+       "ability": "SNE",
+       "who": "Hexapod (SNE+2 DIP+1)"
+      }
+     ],
+     "bonus": 2,
+     "on_pass": "700c and 4 XP. The trip back is still to fly.",
+     "on_fail": "No credits and no XP. The trip back is still to fly.",
+     "notes": [],
+     "target": 14,
+     "dice_need": 12,
+     "chance": 0.375,
+     "subject": "The FFFFFF Leak"
+    },
+    "then": "You leave FFD700 Base at once: 8 cards out, the check, then 8 cards back. A mission can be tried once."
+   }
+  },
+  {
+   "move_id": "take-mission-h3-m6",
+   "description": "The Gold Run: Take the PIL 18 mission (distance 9, PIL 18, 1500c, 5 XP).",
+   "move": {
+    "type": "take_mission",
+    "mission_name": "h3-m6"
+   },
+   "preview": {
+    "check": {
+     "reason": "mission_check",
+     "name": "Mission",
+     "carrier": "you",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "PIL +6 (you)",
+       "bonus": 6,
+       "kind": "score",
+       "ability": "PIL",
+       "who": "you"
+      }
+     ],
+     "bonus": 6,
+     "on_pass": "1500c and 5 XP. The trip back is still to fly.",
+     "on_fail": "No credits and no XP. The trip back is still to fly.",
+     "notes": [],
+     "target": 18,
+     "dice_need": 12,
+     "chance": 0.375,
+     "subject": "The Gold Run"
+    },
+    "then": "You leave FFD700 Base at once: 9 cards out, the check, then 9 cards back. A mission can be tried once."
+   }
+  },
+  {
+   "move_id": "depart",
+   "description": "THE SEASON 1 FINALE: enter the depth-3 ruin beyond FFD700 Base (complete it to win the season).",
+   "move": {
+    "type": "depart_for_next_habitat"
+   },
+   "preview": {
+    "then": "The finale: a ruin to depth 3. Clearing it wins the season."
+   }
+  }
+ ],
+ "unavailable": [
+  {
+   "moveType": "buy_item",
+   "item": "h3-s6",
+   "reason": "Costs 1500c; you have 1350c."
+  },
+  {
+   "moveType": "take_mission",
+   "item": "h3-m5",
+   "reason": "Nobody aboard has Armor (ARM), and no item you hold gives it."
+  },
+  {
+   "moveType": "attempt_repair",
+   "reason": "The Harness Runner is Pristine: nothing to repair."
+  },
+  {
+   "moveType": "pay_repair",
+   "reason": "The Harness Runner is Pristine: nothing to repair."
+  },
+  {
+   "moveType": "attempt_reduce_unrest",
+   "reason": "Needs Leadership (LEA) aboard."
+  },
+  {
+   "moveType": "upgrade_item",
+   "reason": "You hold no weapon or armor that adds to a score and is not already an MK-II."
+  },
+  {
+   "moveType": "equip_item",
+   "reason": "You hold no weapon or armor."
+  }
+ ]
+}

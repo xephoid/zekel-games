@@ -1,0 +1,165 @@
+{
+ "key": "phase-creation",
+ "viewer": "p1",
+ "view": {
+  "phase": "creation",
+  "pending": null,
+  "roll_facts": null,
+  "last_roll": null,
+  "character": null,
+  "crew": [],
+  "unnamed_crew": 0,
+  "unnamed_crew_cap": 0,
+  "season_endings": {
+   "conquest": "clear the depth-3 ruin beyond Habitat #3",
+   "fortune": "0/6000c banked while at a habitat",
+   "legend": "level 1/5",
+   "plunder": "0/6 ruin caches opened",
+   "bounty": "0/8 foes defeated face to face (boarding captures + ruin kills)"
+  },
+  "ship": null,
+  "items": [],
+  "bulkheads_spent": false,
+  "habitat": {
+   "number": 1,
+   "name": "Xaxalon 4",
+   "shop": [
+    {
+     "name": "Consumable +1 Any",
+     "cost": 200,
+     "purchased": false
+    },
+    {
+     "name": "Weapon +1 GUN",
+     "cost": 300,
+     "purchased": false
+    },
+    {
+     "name": "Armor Combat Advantage",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +1 Speed",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +2 Capacity",
+     "cost": 700,
+     "purchased": false
+    }
+   ],
+   "cantina": [
+    {
+     "recruit": "Human (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Kralkin (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (HAK +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Grull (DIP +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (ACT +1, min roll 11)",
+     "status": "available"
+    }
+   ],
+   "missions": [
+    {
+     "id": "h1-m1",
+     "mission": "distance 3, RES 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m2",
+     "mission": "distance 3, DIP 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m3",
+     "mission": "distance 3, MEC 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m4",
+     "mission": "distance 4, R1 ruin, 600c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m5",
+     "mission": "distance 4, SWA 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m6",
+     "mission": "distance 4, ARM 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m7",
+     "mission": "distance 6, ACT 12, 400c, 1 XP",
+     "status": "available"
+    }
+   ],
+   "progression": "complete 4 missions (any result; 0 done), then travel 6 one-way",
+   "repair_roll_available": false,
+   "unrest_roll_available": false,
+   "docks_unnamed_roll_available": true,
+   "fabrication_available_this_visit": true
+  },
+  "journey": null,
+  "space_combat": null,
+  "ruin": null,
+  "travel_deck": {
+   "cards_in_draw_pile": 52,
+   "cards_in_discard": 0,
+   "discard": []
+  },
+  "stat_reference": {
+   "brawn": "SWA/ARM/DEM",
+   "smarts": "HAK/RES/MEC",
+   "finesse": "PIL/GUN/SNE",
+   "moxie": "LEA/DIP/ACT"
+  },
+  "lore_refs": [
+   "galaxy-overview",
+   "xaxalon-4"
+  ],
+  "result": null
+ },
+ "legalMoves": [
+  {
+   "move_id": "create-character",
+   "description": "Create your character: name, race (human/kralkin/hexapod/grull), ship name, and ability scores — recommended method: one score 3, one 2, one 1 (e.g. { SWA: 3, HAK: 2, SNE: 1 }); or distribute 6 points (max 3 per ability). Optional disposition: brash or risk averse (a roleplay hint only). FILL IN the values the player chose — do not submit this skeleton.",
+   "move": {
+    "type": "create_character",
+    "character_name": "",
+    "race": "human",
+    "ship_name": "",
+    "method": "recommended",
+    "scores": {}
+   }
+  },
+  {
+   "move_id": "create-character-archetype",
+   "description": "OR pick an archetype card — a pre-built spread with a printed difficulty: Void Runner (Easy ★) — SNE +3 / MEC +2 / RES +1: slip past everything and keep the ship whole — tends to win Conquest · Ghost Smuggler (Easy ★) — SNE +3 / HAK +2 / SWA +1: stealth backed by system intrusion — tends to win Conquest · Privateer (Moderate ★★) — PIL +3 / SWA +2 / MEC +1: a fighting captain who boards what she cannot outrun — tends to win Bounty · Fleet Captain (Moderate ★★) — LEA +3 / MEC +2 / RES +1: inspirational command and a growing crew — tends to win Legend · Ace Pilot (Hard ★★★) — PIL +3 / MEC +2 / RES +1: pure flying skill in long campaigns — tends to win Legend or Conquest · Netdiver (Hard ★★★) — HAK +3 / MEC +2 / RES +1: hacks credits straight out of pirate hulls — tends to win Fortune · Field Scholar (Brutal ★★★★) — RES +3 / GUN +2 / PIL +1: a scholar-XP engine that shoots back — tends to win Legend · Grease Monkey (Brutal ★★★★) — MEC +3 / PIL +2 / RES +1: an engineer who redlines the engines mid-fight — tends to win Legend · Dread Corsair (Brutal ★★★★) — DEM +3 / PIL +2 / DIP +1: terror, tribute, and a name pirates whisper — tends to win Bounty. FILL IN name/race/ship and the chosen card's printed name as archetype name.",
+   "move": {
+    "type": "create_character",
+    "character_name": "",
+    "race": "human",
+    "ship_name": "",
+    "method": "archetype",
+    "archetype_name": ""
+   }
+  }
+ ],
+ "unavailable": []
+}

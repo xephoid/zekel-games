@@ -1,0 +1,2749 @@
+{
+ "gameId": "warble-way-galaxy",
+ "rules": "",
+ "moveSchema": {
+  "oneOf": [
+   {
+    "type": "object",
+    "required": [
+     "type",
+     "character_name",
+     "race",
+     "ship_name",
+     "method"
+    ],
+    "properties": {
+     "type": {
+      "const": "create_character"
+     },
+     "character_name": {
+      "type": "string"
+     },
+     "race": {
+      "enum": [
+       "human",
+       "kralkin",
+       "hexapod",
+       "grull"
+      ]
+     },
+     "ship_name": {
+      "type": "string"
+     },
+     "method": {
+      "enum": [
+       "recommended",
+       "distribute",
+       "archetype"
+      ],
+      "description": "recommended = one 3, one 2, one 1; distribute = 6 points, max 3 per ability; archetype = a named pre-built card with a printed difficulty (A21)"
+     },
+     "scores": {
+      "type": "object",
+      "description": "ability id -> points, e.g. { \"SWA\": 3, \"HAK\": 2, \"SNE\": 1 } — required for recommended/distribute, ignored for archetype"
+     },
+     "archetype_name": {
+      "type": "string",
+      "description": "for method=archetype: the printed card name, e.g. \"Ghost Smuggler\" — get_legal_moves lists every card with its difficulty"
+     },
+     "disposition": {
+      "enum": [
+       "brash",
+       "risk_averse"
+      ],
+      "description": "optional roleplay hint — never a rule"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type",
+     "item_name"
+    ],
+    "properties": {
+     "type": {
+      "const": "buy_item"
+     },
+     "item_name": {
+      "type": "string",
+      "description": "the printed shop label, e.g. \"Weapon +1 GUN\""
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type",
+     "item_name",
+     "being"
+    ],
+    "properties": {
+     "type": {
+      "const": "equip_item"
+     },
+     "item_name": {
+      "type": "string"
+     },
+     "being": {
+      "type": "string",
+      "description": "character name or crew member name"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type",
+     "recruit_name"
+    ],
+    "properties": {
+     "type": {
+      "const": "attempt_recruit"
+     },
+     "recruit_name": {
+      "type": "string",
+      "description": "the cantina row as described in get_legal_moves"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "attempt_evade"
+     },
+     "description": {
+      "const": "A5 Running Silent: 3d6 + SNE vs 10 + pirate speed, before the encounter; failure just starts the normal fight"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "decline_evade"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "open_fire"
+     },
+     "description": {
+      "const": "A6 Opening Volley (needs GUN, once per encounter): 3d6 + GUN vs 12; success = −2 pirate exchange totals; failure = unopposed hit"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "attempt_intimidate"
+     },
+     "description": {
+      "const": "A7 Stand Down or Burn (needs DEM): 3d6 + DEM vs 10 + pirate space attack; success = they break off; failure = unopposed hit"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "redline"
+     },
+     "description": {
+      "const": "A20 Redline (needs MEC, once per encounter): 3d6 + MEC vs 12; success = +2 to YOUR exchange totals this combat; failure = unopposed hit"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "attempt_repair"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "pay_repair"
+     },
+     "description": {
+      "const": "pay 150c: raise the ship one damage level; repeatable; may go into debt but never to −300"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "recruit_unnamed"
+     },
+     "description": {
+      "const": "A10, once per habitat (needs DIP): 3d6 + DIP vs 12 — success signs one UNNAMED crew hand (a body: no scores/gear/slot; cap = best natural DIP)"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "recruit_survivors"
+     },
+     "description": {
+      "const": "A10, after a space victory (needs DIP, once per victory): 3d6 + DIP vs 12 — success signs one UNNAMED crew hand"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type",
+     "item_name"
+    ],
+    "properties": {
+     "type": {
+      "const": "upgrade_item"
+     },
+     "item_name": {
+      "type": "string",
+      "description": "A16 Tinker (needs natural MEC 3, at a habitat): 200c — the owned weapon/armor becomes MK-II (+1 bonus, once per item)"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type",
+     "stat"
+    ],
+    "properties": {
+     "type": {
+      "const": "fabricate_part"
+     },
+     "stat": {
+      "enum": [
+       "speed",
+       "handling",
+       "armor"
+      ],
+      "description": "A18 Shipwright (needs natural MEC 3, at a habitat): 400c — fabricate a +1 ship part; once per habitat visit"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "sacrifice_unnamed"
+     },
+     "description": {
+      "const": "A14a: spend one unnamed crew hand — the failed hazard counts as survived"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "decline_sacrifice"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "attempt_reduce_unrest"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type",
+     "crew_name"
+    ],
+    "properties": {
+     "type": {
+      "const": "release_crew"
+     },
+     "crew_name": {
+      "type": "string"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type",
+     "dice"
+    ],
+    "properties": {
+     "type": {
+      "const": "report_roll"
+     },
+     "dice": {
+      "type": "array",
+      "items": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 6
+      },
+      "description": "the player's actual dice, exactly as rolled — count given by next_step (a digital seat presses resolve_report instead)"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type"
+    ],
+    "properties": {
+     "type": {
+      "const": "resolve_report"
+     },
+     "description": {
+      "const": "DIGITAL seats only: the Roll / Draw button — the server rolls the dice or deals the card when you press this. No payload."
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type",
+     "item_name"
+    ],
+    "properties": {
+     "type": {
+      "const": "use_item"
+     },
+     "item_name": {
+      "type": "string"
+     },
+     "ability": {
+      "type": "string",
+      "description": "for \"+Any\" consumables: which ability it boosts (must match the open roll)"
+     }
+    }
+   },
+   {
+    "type": "object",
+    "required": [
+     "type",
+     "ability"
+    ],
+    "properties": {
+     "type": {
+      "const": "level_up"
+     },
+     "ability": {
+      "type": "string",
+      "description": "odd levels: an ability you already have ≥1 in; EVEN levels may instead open a new ability at 1 (amendment A3)"
+     }
+    }
+   }
+  ],
+  "description": "The creation + habitat surface, shown in full. Travel/combat/ruins moves (report_card_draw, choose_hazard_option, accept_mission, attempt_escape/hack/fight_round, setup_encounter, move_being, attack, ...) follow the same shape conventions — get_legal_moves is always the authoritative list, and next_step names the exact move a pending needs."
+ },
+ "optionsSchema": {
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+   "seed": {
+    "type": "integer",
+    "minimum": 0,
+    "description": "RNG seed for the solvability bot (harness runs). Unused in real play — the player rolls their own dice."
+   }
+  }
+ },
+ "referenceData": {
+  "stats": {
+   "brawn": [
+    "SWA (Swashbuckling)",
+    "ARM (Armor)",
+    "DEM (Demolitions)"
+   ],
+   "smarts": [
+    "HAK (Hacking)",
+    "RES (Research)",
+    "MEC (Mechanics)"
+   ],
+   "finesse": [
+    "PIL (Piloting)",
+    "GUN (Gunslinging)",
+    "SNE (Sneaking)"
+   ],
+   "moxie": [
+    "LEA (Leadership)",
+    "DIP (Diplomacy)",
+    "ACT (Acting)"
+   ]
+  },
+  "race_idealized_stats": {
+   "human": "brawn",
+   "kralkin": "moxie",
+   "hexapod": "smarts",
+   "grull": "finesse"
+  },
+  "abilities": {
+   "SWA": {
+    "name": "Swashbuckling",
+    "stat": "brawn",
+    "basic": "Ground combat advantage: in a boarding or a ruin fight your side takes the higher pair. Added to your attack.",
+    "advanced": {
+     "name": "Expert Combat Tactics",
+     "what": "One extra die on this being's ruin attacks, added to the total."
+    }
+   },
+   "ARM": {
+    "name": "Armor",
+    "stat": "brawn",
+    "basic": "Added to this being's defense when a ruin attacker strikes.",
+    "advanced": {
+     "name": "Reinforced Armor",
+     "what": "One extra die on this being's defense. Aboard: ship armor +1, and once per game a killing blow leaves the ship Hobbled instead of destroyed."
+    }
+   },
+   "DEM": {
+    "name": "Demolitions",
+    "stat": "brawn",
+    "basic": "A ruin attack reaches as far as this score. Added to your attack. Lets you threaten pirates into breaking off: 3 dice + DEM against 10 + their space attack.",
+    "advanced": {
+     "name": "Splash Damage",
+     "what": "A ruin attack hits every attacker in range. Pirates you threaten off also pay 50 credits per point of their space attack."
+    }
+   },
+   "HAK": {
+    "name": "Hacking",
+    "stat": "smarts",
+    "basic": "Lets you hack a pirate ship: 3 dice + HAK against their hacking number. Success disables them without a fight.",
+    "advanced": {
+     "name": "Hackers Delight",
+     "what": "+200 credits for every successful hack."
+    }
+   },
+   "RES": {
+    "name": "Research",
+    "stat": "smarts",
+    "basic": "At the start of a trip, look at as many cards off the top of the travel deck as this score and discard one. Only the captain's own score counts.",
+    "advanced": {
+     "name": "Personal Teleporter",
+     "what": "This being moves through walls, pits and others in a ruin; the distance still counts."
+    }
+   },
+   "MEC": {
+    "name": "Mechanics",
+    "stat": "smarts",
+    "basic": "On arriving at a habitat, one repair roll: 3 dice + MEC, 12 or more raises the ship one damage level. In a pirate fight, Redline once: 3 dice + MEC against 12 for +2 to your exchanges.",
+    "advanced": {
+     "name": "Ms/Mr Fix-it",
+     "what": "The ship repairs to Pristine on every habitat arrival. Opens the workshop: pay to improve a weapon or armor, or to build a ship part."
+    }
+   },
+   "PIL": {
+    "name": "Piloting",
+    "stat": "finesse",
+    "basic": "Space combat advantage: in an exchange of fire your side takes the higher pair, and this score is added. Added to an escape roll.",
+    "advanced": {
+     "name": "Flying Ace",
+     "what": "Once per pirate fight, reroll an exchange you lost."
+    }
+   },
+   "GUN": {
+    "name": "Gunslinging",
+    "stat": "finesse",
+    "basic": "A ruin attack reaches 2 + this score. Added to your attack. In a pirate fight, an opening volley once: 3 dice + GUN against 12 for −2 to their exchanges.",
+    "advanced": {
+     "name": "Sniper",
+     "what": "Ground combat advantage: your side takes the higher pair."
+    }
+   },
+   "SNE": {
+    "name": "Sneaking",
+    "stat": "finesse",
+    "basic": "Movement in a ruin is 3 + this score. Lets you try to slip past pirates before the fight: 3 dice + SNE against 10 + their speed.",
+    "advanced": {
+     "name": "Personal Cloaking",
+     "what": "Ruin attackers cannot target this being until it attacks."
+    }
+   },
+   "LEA": {
+    "name": "Leadership",
+    "stat": "moxie",
+    "basic": "On arriving at a habitat, one roll to ease unrest: 3 dice + LEA, 12 or more takes one anger token off each crew member. +1 XP for every recruit who joins.",
+    "advanced": {
+     "name": "Inspirational",
+     "what": "+3 to any roll that adds a crew member's score."
+    }
+   },
+   "DIP": {
+    "name": "Diplomacy",
+    "stat": "moxie",
+    "basic": "Lets you sign red shirts at the docks and from beaten pirates (3 dice + DIP against 12), and call on a ruin attacker to surrender. The most red shirts you can hold is your best natural DIP. The captain's own DIP also gives the look at the travel deck that Research gives.",
+    "advanced": {
+     "name": "Silver Tongue",
+     "what": "Mission credits are doubled."
+    }
+   },
+   "ACT": {
+    "name": "Acting",
+    "stat": "moxie",
+    "basic": "One extra die on any Moxie or Smarts roll except ship repair, and when recruiting a Hexapod or a Kralkin.",
+    "advanced": {
+     "name": "Je ne sais quoi",
+     "what": "+100 credits per point of this score on every mission paid."
+    }
+   }
+  },
+  "ship_text": {
+   "capacity": "How many can be aboard, the captain included. Red shirts do not take a berth.",
+   "speed": "Each point takes one card off every leg of a trip.",
+   "handling": "Added to an escape roll.",
+   "armor": "Taken off the pirates' total in every exchange of fire.",
+   "damage": "Pristine, Used, Damaged, Hobbled. A hit moves it one step; a hit at Hobbled destroys the ship and ends the game."
+  },
+  "counter_text": {
+   "red_shirts": "Unnamed crew: bodies with no scores, no gear and no berth. One can take a failed hazard roll for you and is lost; in a ruin each fights at Swashbuckling 1 and falls to one hit. You can hold as many as your best natural Diplomacy.",
+   "dread": "Your name among pirates, up to 3. Each point adds 1 when you threaten pirates off. It grows with every boarding won and every crew threatened off.",
+   "anger": "A crew member who reaches three anger tokens leaves with the gear they wear. A failed Moxie hazard adds one to everyone."
+  },
+  "creation_text": {
+   "race": "Your own race changes no rule. A recruit's race does matter: each race idealizes one stat, and your best score under that stat is added when you try to recruit them.",
+   "scores": "Put 3 in one ability, 2 in another and 1 in a third; or spread 6 points with no ability above 3. A score of 1 or more gives the ability's basic skill, and a natural 3 gives its advanced skill.",
+   "archetype": "A card with the scores already chosen and a printed difficulty.",
+   "disposition": "A roleplay hint only. It changes no rule."
+  },
+  "endings": {
+   "conquest": {
+    "name": "Conquest",
+    "how": "Past the third habitat, clear the depth 3 ruin."
+   },
+   "fortune": {
+    "name": "Fortune",
+    "how": "Hold 6,000 credits while docked at a habitat."
+   },
+   "legend": {
+    "name": "Legend",
+    "how": "Reach level 5."
+   },
+   "plunder": {
+    "name": "Plunder",
+    "how": "Open 6 ruin caches, full or empty."
+   },
+   "bounty": {
+    "name": "Bounty",
+    "how": "Beat 8 foes face to face: ships captured by boarding and ruin attackers felled. Disabling, threatening off and talking round do not count."
+   }
+  },
+  "losses": [
+   "The captain dies: a failed death check while already wounded.",
+   "The ship is destroyed: a hit while Hobbled.",
+   "Debt passes 300 credits.",
+   "You are stranded with nothing left you can do."
+  ],
+  "hazard_text": {
+   "death": "Whoever carried the roll faces death: a crew member dies outright; the captain rolls a death check.",
+   "lose_credits": "Lose 100 credits.",
+   "ship_damage": "The ship takes one damage.",
+   "crew_unrest": "Every crew member gains an anger token; at three they leave with their gear."
+  },
+  "death_check": "A death check is 3 dice with nothing added: 9 or more and you live. The first failure leaves you wounded, −1 to every score until you next reach a habitat. A failure while wounded kills you and ends the game.",
+  "ruin_text": {
+   "goal": "The level ends the moment anyone steps on the goal. At your target depth that ends the whole visit: caches not yet opened and beings not yet met are left behind.",
+   "start": "Everyone enters on the start square. A being standing on it may step out; when no one is left inside, the visit ends.",
+   "round": "Each round your beings act first, in any order: each may move and take one action. Then every attacker moves toward the nearest being and strikes if it can reach.",
+   "movement": "A being moves up to 3 squares plus its Sneaking, no diagonals. Walls, pits and other pieces block.",
+   "attack": "An attack needs a straight clear line: 1 square, or 2 + Gunslinging, or Demolitions if higher. Walls block; pits do not.",
+   "cache": "Standing next to a cache, a being may open it: one die on the map's item list. Every cache opened counts toward Plunder.",
+   "being": "Standing next to a figure, a being may approach: one die on the map's list of beings, then a recruit roll at once if someone is there.",
+   "struck": "When an attacker strikes, the defender rolls. A crew member who loses dies, a red shirt falls, and the captain rolls a death check.",
+   "threat": "The threat level picks which three attackers stand guard. Each is worth XP equal to its attack bonus when felled."
+  },
+  "races": [
+   "human",
+   "kralkin",
+   "hexapod",
+   "grull"
+  ],
+  "archetypes": [
+   {
+    "id": "void-runner",
+    "name": "Void Runner",
+    "scores": {
+     "SNE": 3,
+     "MEC": 2,
+     "RES": 1
+    },
+    "difficulty": "easy",
+    "stars": "★"
+   },
+   {
+    "id": "ghost-smuggler",
+    "name": "Ghost Smuggler",
+    "scores": {
+     "SNE": 3,
+     "HAK": 2,
+     "SWA": 1
+    },
+    "difficulty": "easy",
+    "stars": "★"
+   },
+   {
+    "id": "privateer",
+    "name": "Privateer",
+    "scores": {
+     "PIL": 3,
+     "SWA": 2,
+     "MEC": 1
+    },
+    "difficulty": "moderate",
+    "stars": "★★"
+   },
+   {
+    "id": "fleet-captain",
+    "name": "Fleet Captain",
+    "scores": {
+     "LEA": 3,
+     "MEC": 2,
+     "RES": 1
+    },
+    "difficulty": "moderate",
+    "stars": "★★"
+   },
+   {
+    "id": "ace-pilot",
+    "name": "Ace Pilot",
+    "scores": {
+     "PIL": 3,
+     "MEC": 2,
+     "RES": 1
+    },
+    "difficulty": "hard",
+    "stars": "★★★"
+   },
+   {
+    "id": "netdiver",
+    "name": "Netdiver",
+    "scores": {
+     "HAK": 3,
+     "MEC": 2,
+     "RES": 1
+    },
+    "difficulty": "hard",
+    "stars": "★★★"
+   },
+   {
+    "id": "field-scholar",
+    "name": "Field Scholar",
+    "scores": {
+     "RES": 3,
+     "GUN": 2,
+     "PIL": 1
+    },
+    "difficulty": "brutal",
+    "stars": "★★★★"
+   },
+   {
+    "id": "grease-monkey",
+    "name": "Grease Monkey",
+    "scores": {
+     "MEC": 3,
+     "PIL": 2,
+     "RES": 1
+    },
+    "difficulty": "brutal",
+    "stars": "★★★★"
+   },
+   {
+    "id": "dread-corsair",
+    "name": "Dread Corsair",
+    "scores": {
+     "DEM": 3,
+     "PIL": 2,
+     "DIP": 1
+    },
+    "difficulty": "brutal",
+    "stars": "★★★★"
+   }
+  ],
+  "hazard_consequence_by_stat": {
+   "brawn": "death",
+   "smarts": "lose_credits",
+   "finesse": "ship_damage",
+   "moxie": "crew_unrest"
+  },
+  "ability_stats": {
+   "SWA": "brawn",
+   "ARM": "brawn",
+   "DEM": "brawn",
+   "HAK": "smarts",
+   "RES": "smarts",
+   "MEC": "smarts",
+   "PIL": "finesse",
+   "GUN": "finesse",
+   "SNE": "finesse",
+   "LEA": "moxie",
+   "DIP": "moxie",
+   "ACT": "moxie"
+  },
+  "level_table": {
+   "printed": {
+    "1": 6,
+    "2": 12,
+    "3": 24,
+    "4": 48
+   },
+   "beyond": "doubling continues (96, 192, ...)"
+  },
+  "travel_tables": {
+   "note": "Resolved per drawn card during space travel (M2).",
+   "hearts_recruits": {
+    "2": {
+     "id": "heart-2",
+     "race": "grull",
+     "idealized": "finesse",
+     "min_roll": 12,
+     "abilities": {
+      "MEC": 2,
+      "DIP": 1
+     }
+    },
+    "3": {
+     "id": "heart-3",
+     "race": "grull",
+     "idealized": "finesse",
+     "min_roll": 13,
+     "abilities": {
+      "HAK": 3
+     }
+    },
+    "4": {
+     "id": "heart-4",
+     "race": "kralkin",
+     "idealized": "moxie",
+     "min_roll": 13,
+     "abilities": {
+      "SWA": 3
+     }
+    },
+    "5": {
+     "id": "heart-5",
+     "race": "kralkin",
+     "idealized": "moxie",
+     "min_roll": 12,
+     "abilities": {
+      "DIP": 2,
+      "ARM": 1
+     }
+    },
+    "6": {
+     "id": "heart-6",
+     "race": "kralkin",
+     "idealized": "moxie",
+     "min_roll": 12,
+     "abilities": {
+      "ARM": 2,
+      "GUN": 1
+     }
+    },
+    "7": {
+     "id": "heart-7",
+     "race": "human",
+     "idealized": "brawn",
+     "min_roll": 13,
+     "abilities": {
+      "DEM": 3
+     }
+    },
+    "8": {
+     "id": "heart-8",
+     "race": "hexapod",
+     "idealized": "smarts",
+     "min_roll": 13,
+     "abilities": {
+      "SNE": 3
+     }
+    },
+    "9": {
+     "id": "heart-9",
+     "race": "human",
+     "idealized": "brawn",
+     "min_roll": 13,
+     "abilities": {
+      "ARM": 3
+     }
+    },
+    "10": {
+     "id": "heart-10",
+     "race": "hexapod",
+     "idealized": "smarts",
+     "min_roll": 12,
+     "abilities": {
+      "SNE": 2,
+      "DIP": 1
+     }
+    },
+    "A": {
+     "id": "heart-A",
+     "race": "hexapod",
+     "idealized": "smarts",
+     "min_roll": 13,
+     "abilities": {
+      "PIL": 3
+     }
+    },
+    "J": {
+     "id": "heart-J",
+     "race": "kralkin",
+     "idealized": "moxie",
+     "min_roll": 13,
+     "abilities": {
+      "MEC": 3
+     }
+    },
+    "Q": {
+     "id": "heart-Q",
+     "race": "grull",
+     "idealized": "finesse",
+     "min_roll": 12,
+     "abilities": {
+      "RES": 2,
+      "MEC": 1
+     }
+    },
+    "K": {
+     "id": "heart-K",
+     "race": "human",
+     "idealized": "brawn",
+     "min_roll": 12,
+     "abilities": {
+      "ACT": 2,
+      "SWA": 1
+     }
+    }
+   },
+   "diamonds_2_to_9_pirates": {
+    "2": {
+     "id": "pirate-2",
+     "space_attack": 7,
+     "ground_attack": 5,
+     "capacity": 7,
+     "speed": 2,
+     "handling": 4,
+     "min_hacking": 15,
+     "special": null
+    },
+    "3": {
+     "id": "pirate-3",
+     "space_attack": 3,
+     "ground_attack": 1,
+     "capacity": 3,
+     "speed": 0,
+     "handling": 2,
+     "min_hacking": 12,
+     "special": null
+    },
+    "4": {
+     "id": "pirate-4",
+     "space_attack": 5,
+     "ground_attack": 2,
+     "capacity": 5,
+     "speed": 0,
+     "handling": 0,
+     "min_hacking": 13,
+     "special": "space_combat_advantage"
+    },
+    "5": {
+     "id": "pirate-5",
+     "space_attack": 3,
+     "ground_attack": 1,
+     "capacity": 3,
+     "speed": 2,
+     "handling": 0,
+     "min_hacking": 12,
+     "special": null
+    },
+    "6": {
+     "id": "pirate-6",
+     "space_attack": 3,
+     "ground_attack": 1,
+     "capacity": 4,
+     "speed": 0,
+     "handling": 0,
+     "min_hacking": 12,
+     "special": null
+    },
+    "7": {
+     "id": "pirate-7",
+     "space_attack": 5,
+     "ground_attack": 2,
+     "capacity": 5,
+     "speed": 2,
+     "handling": 0,
+     "min_hacking": 13,
+     "special": null
+    },
+    "8": {
+     "id": "pirate-8",
+     "space_attack": 3,
+     "ground_attack": 1,
+     "capacity": 3,
+     "speed": 0,
+     "handling": 0,
+     "min_hacking": 12,
+     "special": "minus_2_enemy_space_bonus"
+    },
+    "9": {
+     "id": "pirate-9",
+     "space_attack": 3,
+     "ground_attack": 1,
+     "capacity": 4,
+     "speed": 1,
+     "handling": 0,
+     "min_hacking": 12,
+     "special": null
+    }
+   },
+   "diamonds_10_J_Q_K_A_ruin_depths": {
+    "10": 1,
+    "A": 3,
+    "J": 2,
+    "Q": 3,
+    "K": 2
+   },
+   "spades_hazards": {
+    "2": {
+     "option1": {
+      "ability": "SNE",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "RES",
+      "min_roll": 15
+     }
+    },
+    "3": {
+     "option1": {
+      "ability": "RES",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "SWA",
+      "min_roll": 15
+     }
+    },
+    "4": {
+     "option1": {
+      "ability": "ACT",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "RES",
+      "min_roll": 15
+     }
+    },
+    "5": {
+     "option1": {
+      "ability": "GUN",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "MEC",
+      "min_roll": 15
+     }
+    },
+    "6": {
+     "option1": {
+      "ability": "PIL",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "DIP",
+      "min_roll": 15
+     }
+    },
+    "7": {
+     "option1": {
+      "ability": "RES",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "GUN",
+      "min_roll": 15
+     }
+    },
+    "8": {
+     "option1": {
+      "ability": "SNE",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "LEA",
+      "min_roll": 15
+     }
+    },
+    "9": {
+     "option1": {
+      "ability": "ARM",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "HAK",
+      "min_roll": 15
+     }
+    },
+    "10": {
+     "option1": {
+      "ability": "SNE",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "LEA",
+      "min_roll": 15
+     }
+    },
+    "A": {
+     "option1": {
+      "ability": "PIL",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "HAK",
+      "min_roll": 15
+     }
+    },
+    "J": {
+     "option1": {
+      "ability": "ACT",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "PIL",
+      "min_roll": 15
+     }
+    },
+    "Q": {
+     "option1": {
+      "ability": "DIP",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "DEM",
+      "min_roll": 15
+     }
+    },
+    "K": {
+     "option1": {
+      "ability": "MEC",
+      "min_roll": 10
+     },
+     "option2": {
+      "ability": "ACT",
+      "min_roll": 15
+     }
+    }
+   },
+   "clubs_missions": {
+    "2": {
+     "kind": "choice",
+     "option1": {
+      "id": "club-2-1",
+      "distance": 4,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "DIP",
+       "min_roll": 10
+      },
+      "credits": 200,
+      "xp": 1
+     },
+     "option2": {
+      "id": "club-2-2",
+      "distance": 8,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "HAK",
+       "min_roll": 15
+      },
+      "credits": 400,
+      "xp": 2
+     }
+    },
+    "3": {
+     "kind": "choice",
+     "option1": {
+      "id": "club-3-1",
+      "distance": 4,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "LEA",
+       "min_roll": 10
+      },
+      "credits": 200,
+      "xp": 1
+     },
+     "option2": {
+      "id": "club-3-2",
+      "distance": 8,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "SWA",
+       "min_roll": 14
+      },
+      "credits": 400,
+      "xp": 2
+     }
+    },
+    "4": {
+     "kind": "choice",
+     "option1": {
+      "id": "club-4-1",
+      "distance": 4,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "ACT",
+       "min_roll": 10
+      },
+      "credits": 200,
+      "xp": 1
+     },
+     "option2": {
+      "id": "club-4-2",
+      "distance": 8,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "MEC",
+       "min_roll": 15
+      },
+      "credits": 400,
+      "xp": 2
+     }
+    },
+    "5": {
+     "kind": "choice",
+     "option1": {
+      "id": "club-5-1",
+      "distance": 6,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "LEA",
+       "min_roll": 15
+      },
+      "credits": 300,
+      "xp": 1
+     },
+     "option2": {
+      "id": "club-5-2",
+      "distance": 12,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "RES",
+       "min_roll": 15
+      },
+      "credits": 600,
+      "xp": 3
+     }
+    },
+    "6": {
+     "kind": "choice",
+     "option1": {
+      "id": "club-6-1",
+      "distance": 6,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "HAK",
+       "min_roll": 15
+      },
+      "credits": 300,
+      "xp": 1
+     },
+     "option2": {
+      "id": "club-6-2",
+      "distance": 12,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "GUN",
+       "min_roll": 14
+      },
+      "credits": 600,
+      "xp": 3
+     }
+    },
+    "7": {
+     "kind": "choice",
+     "option1": {
+      "id": "club-7-1",
+      "distance": 4,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "RES",
+       "min_roll": 10
+      },
+      "credits": 250,
+      "xp": 1
+     },
+     "option2": {
+      "id": "club-7-2",
+      "distance": 8,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "PIL",
+       "min_roll": 15
+      },
+      "credits": 400,
+      "xp": 2
+     }
+    },
+    "8": {
+     "kind": "choice",
+     "option1": {
+      "id": "club-8-1",
+      "distance": 4,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "PIL",
+       "min_roll": 10
+      },
+      "credits": 250,
+      "xp": 1
+     },
+     "option2": {
+      "id": "club-8-2",
+      "distance": 8,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "RES",
+       "min_roll": 15
+      },
+      "credits": 400,
+      "xp": 2
+     }
+    },
+    "9": {
+     "kind": "choice",
+     "option1": {
+      "id": "club-9-1",
+      "distance": 4,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "MEC",
+       "min_roll": 10
+      },
+      "credits": 250,
+      "xp": 1
+     },
+     "option2": {
+      "id": "club-9-2",
+      "distance": 8,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "ACT",
+       "min_roll": 15
+      },
+      "credits": 400,
+      "xp": 2
+     }
+    },
+    "10": {
+     "kind": "choice",
+     "option1": {
+      "id": "club-10-1",
+      "distance": 6,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "DIP",
+       "min_roll": 15
+      },
+      "credits": 300,
+      "xp": 1
+     },
+     "option2": {
+      "id": "club-10-2",
+      "distance": 12,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "LEA",
+       "min_roll": 15
+      },
+      "credits": 700,
+      "xp": 3
+     }
+    },
+    "J": {
+     "kind": "ruins",
+     "mission": {
+      "id": "club-J",
+      "distance": 8,
+      "goal": {
+       "kind": "ruin",
+       "depth": 1
+      },
+      "credits": 1400,
+      "xp": 2
+     }
+    },
+    "Q": {
+     "kind": "ruins",
+     "mission": {
+      "id": "club-Q",
+      "distance": 12,
+      "goal": {
+       "kind": "ruin",
+       "depth": 2
+      },
+      "credits": 1600,
+      "xp": 3
+     }
+    },
+    "K": {
+     "kind": "ruins",
+     "mission": {
+      "id": "club-K",
+      "distance": 16,
+      "goal": {
+       "kind": "ruin",
+       "depth": 3
+      },
+      "credits": 1800,
+      "xp": 4
+     }
+    },
+    "A": {
+     "kind": "ruins",
+     "mission": {
+      "id": "club-A",
+      "distance": 10,
+      "goal": {
+       "kind": "ruin",
+       "depth": 3
+      },
+      "credits": 1500,
+      "xp": 3
+     }
+    }
+   }
+  },
+  "cards": {
+   "2H": {
+    "title": "Flint",
+    "line": "Grull of Shale's brood"
+   },
+   "3H": {
+    "title": "Mica",
+    "line": "Grull of Pyrite's brood"
+   },
+   "4H": {
+    "title": "Kakaaw",
+    "line": "Kralkin duelist"
+   },
+   "5H": {
+    "title": "Pii",
+    "line": "Kralkin court envoy"
+   },
+   "6H": {
+    "title": "Gronk",
+    "line": "Kralkin fleet gunner"
+   },
+   "7H": {
+    "title": "Aaliyah",
+    "line": "Human, ex-TanakaRodriguez"
+   },
+   "8H": {
+    "title": "FACADE",
+    "line": "Hexapod pod, hard to spot"
+   },
+   "9H": {
+    "title": "Muhammad",
+    "line": "Human, ex-UHM trooper"
+   },
+   "10H": {
+    "title": "DEC0DE",
+    "line": "Hexapod pod translator"
+   },
+   "AH": {
+    "title": "C0FFEE",
+    "line": "Hexapod pod pilot"
+   },
+   "JH": {
+    "title": "Tweet",
+    "line": "Kralkin station mechanic"
+   },
+   "QH": {
+    "title": "Obsidian",
+    "line": "Grull of Pumice's brood"
+   },
+   "KH": {
+    "title": "Katie",
+    "line": "Megaship stage star"
+   },
+   "2D": {
+    "title": "Pirates",
+    "line": "The monster of the lanes"
+   },
+   "3D": {
+    "title": "Pirates"
+   },
+   "4D": {
+    "title": "Pirates"
+   },
+   "5D": {
+    "title": "Pirates"
+   },
+   "6D": {
+    "title": "Pirates"
+   },
+   "7D": {
+    "title": "Pirates"
+   },
+   "8D": {
+    "title": "Pirates"
+   },
+   "9D": {
+    "title": "Pirates"
+   },
+   "10D": {
+    "title": "The Picked Shell",
+    "line": "Diggers stripped it bare years ago. Mostly."
+   },
+   "JD": {
+    "title": "Hollow Aerie",
+    "line": "Kralkin perches, built for wings older than Arraak."
+   },
+   "QD": {
+    "title": "Providence Zero",
+    "line": "A Megaship hull, millions of years old. Humans left Earth 120 years ago."
+   },
+   "KD": {
+    "title": "The Hive Engine",
+    "line": "Grull-carved halls full of machines no Grull could build."
+   },
+   "AD": {
+    "title": "The Quiet Spire",
+    "line": "Its guns still work. Its makers do not."
+   },
+   "2S": {
+    "title": "Asteroid field"
+   },
+   "3S": {
+    "title": "Gravity snare"
+   },
+   "4S": {
+    "title": "Hull mites"
+   },
+   "5S": {
+    "title": "Mine field"
+   },
+   "6S": {
+    "title": "Wormhole"
+   },
+   "7S": {
+    "title": "Plasma bubbles"
+   },
+   "8S": {
+    "title": "Dark eclipse"
+   },
+   "9S": {
+    "title": "Planet breakup"
+   },
+   "10S": {
+    "title": "Ion bolt"
+   },
+   "AS": {
+    "title": "Meteor shower"
+   },
+   "JS": {
+    "title": "Rogue moon"
+   },
+   "QS": {
+    "title": "Solar flare"
+   },
+   "KS": {
+    "title": "Spore pods"
+   },
+   "2C": {
+    "title": "Channel clash",
+    "line": "Two Kralkin relays claim one channel. Broker a deal, or slip into their code."
+   },
+   "3C": {
+    "title": "Gone quiet",
+    "line": "A Grull survey crew went silent. Rally a search, or cut through what found them."
+   },
+   "4C": {
+    "title": "Inspection day",
+    "line": "The tractor beam is broken and the inspector is early. Stall, or fix it fast."
+   },
+   "5C": {
+    "title": "Night shift",
+    "line": "An FFFFFF observatory's crew walked out. Run the night shift, or finish the study."
+   },
+   "6C": {
+    "title": "Trigger-happy",
+    "line": "An old UHM defense sat shoots at anything. Hack its targeting, or shoot back."
+   },
+   "7C": {
+    "title": "Runaway rover",
+    "line": "800800's prototype rover fell off a moon cliff. Find where, or fly in after it."
+   },
+   "8C": {
+    "title": "Ring run",
+    "line": "Aarak wants spores from a gas giant's rings. Thread the ice, or grow them in a lab."
+   },
+   "9C": {
+    "title": "Hot cargo",
+    "line": "Ruin tech in a crate, humming louder by the hour. Shield it, or bluff past customs."
+   },
+   "10C": {
+    "title": "Gala escort",
+    "line": "Bring a Grull envoy to a Kralkin gala. Keep the peace, or keep the guards in line."
+   },
+   "JC": {
+    "title": "Digger's tip",
+    "line": "A drunk digger sold you coordinates to a shallow ruin. Probably real."
+   },
+   "QC": {
+    "title": "Salvage rights",
+    "line": "WinchesterZhang wants ancient guns out before its rivals get there."
+   },
+   "KC": {
+    "title": "The deep dig",
+    "line": "Three maps down, something still keeps the lights on. No one has said what."
+   },
+   "AC": {
+    "title": "Kralkin-built?",
+    "line": "Kralkin-built ruins, older than Kralkin flight. The court wants answers."
+   }
+  },
+  "habitats": {
+   "1": {
+    "number": 1,
+    "name": "Xaxalon 4",
+    "lore_topic": "xaxalon-4",
+    "missions": [
+     {
+      "id": "h1-m1",
+      "distance": 3,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "RES",
+       "min_roll": 10
+      },
+      "credits": 300,
+      "xp": 1,
+      "title": "Hydroponics Mold"
+     },
+     {
+      "id": "h1-m2",
+      "distance": 3,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "DIP",
+       "min_roll": 10
+      },
+      "credits": 300,
+      "xp": 1,
+      "title": "Scrapyard Squabble"
+     },
+     {
+      "id": "h1-m3",
+      "distance": 3,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "MEC",
+       "min_roll": 10
+      },
+      "credits": 300,
+      "xp": 1,
+      "title": "The Leaky Recycler"
+     },
+     {
+      "id": "h1-m4",
+      "distance": 4,
+      "goal": {
+       "kind": "ruin",
+       "depth": 1
+      },
+      "credits": 600,
+      "xp": 1,
+      "title": "Dustbowl Ruin"
+     },
+     {
+      "id": "h1-m5",
+      "distance": 4,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "SWA",
+       "min_roll": 10
+      },
+      "credits": 300,
+      "xp": 1,
+      "title": "Cantina Bouncer"
+     },
+     {
+      "id": "h1-m6",
+      "distance": 4,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "ARM",
+       "min_roll": 10
+      },
+      "credits": 300,
+      "xp": 1,
+      "title": "Scrap Convoy Escort"
+     },
+     {
+      "id": "h1-m7",
+      "distance": 6,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "ACT",
+       "min_roll": 12
+      },
+      "credits": 400,
+      "xp": 1,
+      "title": "The Fake Inspector"
+     }
+    ],
+    "shop": [
+     {
+      "id": "h1-s1",
+      "name": "Consumable +1 Any",
+      "type": "consumable",
+      "effect": {
+       "kind": "ability_bonus",
+       "ability": "ANY",
+       "bonus": 1
+      },
+      "cost": 200,
+      "title": "Sustenance Cube"
+     },
+     {
+      "id": "h1-s2",
+      "name": "Weapon +1 GUN",
+      "type": "weapon",
+      "effect": {
+       "kind": "ability_bonus",
+       "ability": "GUN",
+       "bonus": 1
+      },
+      "cost": 300,
+      "title": "WinchesterZhang Plinker"
+     },
+     {
+      "id": "h1-s3",
+      "name": "Armor Combat Advantage",
+      "type": "armor",
+      "effect": {
+       "kind": "ground_combat_advantage"
+      },
+      "cost": 400,
+      "title": "Salvaged Riot Plate"
+     },
+     {
+      "id": "h1-s4",
+      "name": "Ship part +1 Speed",
+      "type": "ship_part",
+      "effect": {
+       "kind": "ship_stat",
+       "stat": "speed",
+       "bonus": 1
+      },
+      "cost": 400,
+      "title": "Patched Thruster"
+     },
+     {
+      "id": "h1-s5",
+      "name": "Ship part +2 Capacity",
+      "type": "ship_part",
+      "effect": {
+       "kind": "ship_stat",
+       "stat": "capacity",
+       "bonus": 2
+      },
+      "cost": 700,
+      "title": "Bolt-on Bunk Pod"
+     }
+    ],
+    "cantina": [
+     {
+      "id": "h1-c1",
+      "race": "human",
+      "idealized": "brawn",
+      "min_roll": 11,
+      "abilities": {
+       "PIL": 1
+      },
+      "name": "Wang"
+     },
+     {
+      "id": "h1-c2",
+      "race": "kralkin",
+      "idealized": "moxie",
+      "min_roll": 11,
+      "abilities": {
+       "PIL": 1
+      },
+      "name": "Chirp"
+     },
+     {
+      "id": "h1-c3",
+      "race": "hexapod",
+      "idealized": "smarts",
+      "min_roll": 11,
+      "abilities": {
+       "HAK": 1
+      },
+      "name": "7EE700"
+     },
+     {
+      "id": "h1-c4",
+      "race": "grull",
+      "idealized": "finesse",
+      "min_roll": 11,
+      "abilities": {
+       "DIP": 1
+      },
+      "name": "Slate"
+     },
+     {
+      "id": "h1-c5",
+      "race": "human",
+      "idealized": "brawn",
+      "min_roll": 11,
+      "abilities": {
+       "ACT": 1
+      },
+      "name": "Michael"
+     }
+    ],
+    "progression": {
+     "kind": "missions_then_travel",
+     "missions_required": 4,
+     "distance_one_way": 6
+    }
+   },
+   "2": {
+    "number": 2,
+    "name": "Kookookachaa",
+    "lore_topic": null,
+    "missions": [
+     {
+      "id": "h2-m1",
+      "distance": 5,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "PIL",
+       "min_roll": 11
+      },
+      "credits": 400,
+      "xp": 2,
+      "title": "The Belt Run"
+     },
+     {
+      "id": "h2-m2",
+      "distance": 5,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "GUN",
+       "min_roll": 12
+      },
+      "credits": 500,
+      "xp": 2,
+      "title": "Bounty on Krazz's Crew"
+     },
+     {
+      "id": "h2-m3",
+      "distance": 5,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "SNE",
+       "min_roll": 11
+      },
+      "credits": 400,
+      "xp": 2,
+      "title": "Into the Royal Aviary"
+     },
+     {
+      "id": "h2-m4",
+      "distance": 6,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "HAK",
+       "min_roll": 12
+      },
+      "credits": 500,
+      "xp": 2,
+      "title": "Crack the Court Ledger"
+     },
+     {
+      "id": "h2-m5",
+      "distance": 6,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "LEA",
+       "min_roll": 12
+      },
+      "credits": 500,
+      "xp": 2,
+      "title": "Lead the Wing Drill"
+     },
+     {
+      "id": "h2-m6",
+      "distance": 7,
+      "goal": {
+       "kind": "ruin",
+       "depth": 2
+      },
+      "credits": 1000,
+      "xp": 4,
+      "title": "The Feathered Vault"
+     }
+    ],
+    "shop": [
+     {
+      "id": "h2-s1",
+      "name": "Ship part +3 Capacity",
+      "type": "ship_part",
+      "effect": {
+       "kind": "ship_stat",
+       "stat": "capacity",
+       "bonus": 3
+      },
+      "cost": 1200,
+      "title": "Roost Module"
+     },
+     {
+      "id": "h2-s2",
+      "name": "Ship part +2 Handling",
+      "type": "ship_part",
+      "effect": {
+       "kind": "ship_stat",
+       "stat": "handling",
+       "bonus": 2
+      },
+      "cost": 600,
+      "title": "Talon-grip Stabilizers"
+     },
+     {
+      "id": "h2-s3",
+      "name": "Ship part Space Combat Advantage",
+      "type": "ship_part",
+      "effect": {
+       "kind": "space_combat_advantage"
+      },
+      "cost": 600,
+      "title": "Imperial Targeting Array"
+     },
+     {
+      "id": "h2-s4",
+      "name": "Ship part +2 Speed",
+      "type": "ship_part",
+      "effect": {
+       "kind": "ship_stat",
+       "stat": "speed",
+       "bonus": 2
+      },
+      "cost": 800,
+      "title": "Updraft Engine"
+     },
+     {
+      "id": "h2-s5",
+      "name": "Weapon +2 GUN",
+      "type": "weapon",
+      "effect": {
+       "kind": "ability_bonus",
+       "ability": "GUN",
+       "bonus": 2
+      },
+      "cost": 600,
+      "title": "Raptor Rifle"
+     },
+     {
+      "id": "h2-s6",
+      "name": "Armor +2 SNE",
+      "type": "armor",
+      "effect": {
+       "kind": "ability_bonus",
+       "ability": "SNE",
+       "bonus": 2
+      },
+      "cost": 400,
+      "title": "Quiet-Feather Cloak"
+     }
+    ],
+    "cantina": [
+     {
+      "id": "h2-c1",
+      "race": "kralkin",
+      "idealized": "moxie",
+      "min_roll": 11,
+      "abilities": {
+       "HAK": 1
+      },
+      "name": "Arrak"
+     },
+     {
+      "id": "h2-c2",
+      "race": "grull",
+      "idealized": "finesse",
+      "min_roll": 12,
+      "abilities": {
+       "PIL": 2
+      },
+      "name": "Basalt"
+     },
+     {
+      "id": "h2-c3",
+      "race": "human",
+      "idealized": "brawn",
+      "min_roll": 11,
+      "abilities": {
+       "SWA": 1,
+       "DIP": 1
+      },
+      "name": "Zhang"
+     },
+     {
+      "id": "h2-c4",
+      "race": "kralkin",
+      "idealized": "moxie",
+      "min_roll": 12,
+      "abilities": {
+       "HAK": 2
+      },
+      "name": "Trill"
+     },
+     {
+      "id": "h2-c5",
+      "race": "kralkin",
+      "idealized": "moxie",
+      "min_roll": 11,
+      "abilities": {
+       "GUN": 1
+      },
+      "name": "Kraa"
+     }
+    ],
+    "progression": {
+     "kind": "travel",
+     "distance_one_way": 12
+    }
+   },
+   "3": {
+    "number": 3,
+    "name": "FFD700 Base",
+    "lore_topic": null,
+    "missions": [
+     {
+      "id": "h3-m1",
+      "distance": 7,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "RES",
+       "min_roll": 13
+      },
+      "credits": 600,
+      "xp": 3,
+      "title": "Spore Census"
+     },
+     {
+      "id": "h3-m2",
+      "distance": 7,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "DIP",
+       "min_roll": 14
+      },
+      "credits": 700,
+      "xp": 4,
+      "title": "Six Minds, One Deal"
+     },
+     {
+      "id": "h3-m3",
+      "distance": 8,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "MEC",
+       "min_roll": 14
+      },
+      "credits": 700,
+      "xp": 4,
+      "title": "Walker Overhaul"
+     },
+     {
+      "id": "h3-m4",
+      "distance": 8,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "SNE",
+       "min_roll": 14
+      },
+      "credits": 700,
+      "xp": 4,
+      "title": "The FFFFFF Leak"
+     },
+     {
+      "id": "h3-m5",
+      "distance": 8,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "ARM",
+       "min_roll": 15
+      },
+      "credits": 750,
+      "xp": 4,
+      "title": "Hold the Airlock"
+     },
+     {
+      "id": "h3-m6",
+      "distance": 9,
+      "goal": {
+       "kind": "ability_check",
+       "ability": "PIL",
+       "min_roll": 18
+      },
+      "credits": 1500,
+      "xp": 5,
+      "title": "The Gold Run"
+     }
+    ],
+    "shop": [
+     {
+      "id": "h3-s1",
+      "name": "Consumable +3 SWA",
+      "type": "consumable",
+      "effect": {
+       "kind": "ability_bonus",
+       "ability": "SWA",
+       "bonus": 3
+      },
+      "cost": 600,
+      "title": "Aarak Adrenal Spray"
+     },
+     {
+      "id": "h3-s2",
+      "name": "Consumable +3 RES",
+      "type": "consumable",
+      "effect": {
+       "kind": "ability_bonus",
+       "ability": "RES",
+       "bonus": 3
+      },
+      "cost": 600,
+      "title": "Aarak Focus Tabs"
+     },
+     {
+      "id": "h3-s3",
+      "name": "Armor +3 ARM",
+      "type": "armor",
+      "effect": {
+       "kind": "ability_bonus",
+       "ability": "ARM",
+       "bonus": 3
+      },
+      "cost": 800,
+      "title": "Ruin-forged Plate"
+     },
+     {
+      "id": "h3-s4",
+      "name": "Weapon +3 GUN",
+      "type": "weapon",
+      "effect": {
+       "kind": "ability_bonus",
+       "ability": "GUN",
+       "bonus": 3
+      },
+      "cost": 800,
+      "title": "Ruin Lance"
+     },
+     {
+      "id": "h3-s5",
+      "name": "Ship part Armor +2",
+      "type": "ship_part",
+      "effect": {
+       "kind": "ship_stat",
+       "stat": "armor",
+       "bonus": 2
+      },
+      "cost": 1000,
+      "title": "Hex-weave Hull Plating"
+     },
+     {
+      "id": "h3-s6",
+      "name": "Ship part Capacity +3",
+      "type": "ship_part",
+      "effect": {
+       "kind": "ship_stat",
+       "stat": "capacity",
+       "bonus": 3
+      },
+      "cost": 1500,
+      "title": "Pod Habitat Ring"
+     }
+    ],
+    "cantina": [
+     {
+      "id": "h3-c1",
+      "race": "grull",
+      "idealized": "finesse",
+      "min_roll": 14,
+      "abilities": {
+       "SNE": 3,
+       "PIL": 1
+      },
+      "name": "Galena"
+     },
+     {
+      "id": "h3-c2",
+      "race": "kralkin",
+      "idealized": "moxie",
+      "min_roll": 14,
+      "abilities": {
+       "DIP": 3,
+       "ARM": 1
+      },
+      "name": "Coo"
+     },
+     {
+      "id": "h3-c3",
+      "race": "hexapod",
+      "idealized": "smarts",
+      "min_roll": 13,
+      "abilities": {
+       "HAK": 3
+      },
+      "name": "ACCE55"
+     },
+     {
+      "id": "h3-c4",
+      "race": "human",
+      "idealized": "brawn",
+      "min_roll": 14,
+      "abilities": {
+       "SWA": 3,
+       "GUN": 1
+      },
+      "name": "Diego"
+     },
+     {
+      "id": "h3-c5",
+      "race": "hexapod",
+      "idealized": "smarts",
+      "min_roll": 13,
+      "abilities": {
+       "MEC": 3
+      },
+      "name": "5EA1ED"
+     },
+     {
+      "id": "h3-c6",
+      "race": "human",
+      "idealized": "brawn",
+      "min_roll": 14,
+      "abilities": {
+       "LEA": 3,
+       "DEM": 1
+      },
+      "name": "Priya"
+     }
+    ],
+    "progression": {
+     "kind": "final_ruin",
+     "depth": 3
+    }
+   }
+  },
+  "ruins": {
+   "note": "Attacker/item/being lists and map grids are locked (designer-confirmed). Cells are addressed r{row}c{col}, 1-based.",
+   "maps": {
+    "R1": {
+     "id": "R1",
+     "attackers": {
+      "1": [
+       {
+        "atk": 5,
+        "move": 3,
+        "range": 1,
+        "xp": 5
+       },
+       {
+        "atk": 3,
+        "move": 3,
+        "range": 1,
+        "xp": 3
+       },
+       {
+        "atk": 3,
+        "move": 3,
+        "range": 1,
+        "xp": 3
+       }
+      ],
+      "2": [
+       {
+        "atk": 3,
+        "move": 4,
+        "range": 3,
+        "xp": 3
+       },
+       {
+        "atk": 3,
+        "move": 3,
+        "range": 1,
+        "xp": 3
+       },
+       {
+        "atk": 3,
+        "move": 3,
+        "range": 1,
+        "xp": 3
+       }
+      ],
+      "3": [
+       {
+        "atk": 5,
+        "move": 3,
+        "range": 1,
+        "xp": 5
+       },
+       {
+        "atk": 3,
+        "move": 3,
+        "range": 1,
+        "xp": 3
+       },
+       {
+        "atk": 3,
+        "move": 3,
+        "range": 1,
+        "xp": 3
+       }
+      ]
+     },
+     "items": {
+      "1": null,
+      "2": {
+       "id": "r1-i2",
+       "name": "Consumable SWA +3",
+       "type": "consumable",
+       "effect": {
+        "kind": "ability_bonus",
+        "ability": "SWA",
+        "bonus": 3
+       }
+      },
+      "3": {
+       "id": "r1-i3",
+       "name": "Consumable PIL +3",
+       "type": "consumable",
+       "effect": {
+        "kind": "ability_bonus",
+        "ability": "PIL",
+        "bonus": 3
+       }
+      },
+      "4": {
+       "id": "r1-i4",
+       "name": "Ship Part Speed +2",
+       "type": "ship_part",
+       "effect": {
+        "kind": "ship_stat",
+        "stat": "speed",
+        "bonus": 2
+       }
+      },
+      "5": {
+       "id": "r1-i5",
+       "name": "Armor +3 ARM",
+       "type": "armor",
+       "effect": {
+        "kind": "ability_bonus",
+        "ability": "ARM",
+        "bonus": 3
+       }
+      },
+      "6": {
+       "id": "r1-i6",
+       "name": "Weapon +4 GUN",
+       "type": "weapon",
+       "effect": {
+        "kind": "ability_bonus",
+        "ability": "GUN",
+        "bonus": 4
+       }
+      }
+     },
+     "beings": {
+      "1": null,
+      "2": {
+       "id": "r1-b2",
+       "race": "kralkin",
+       "idealized": "moxie",
+       "min_roll": 13,
+       "abilities": {
+        "SWA": 2,
+        "ACT": 2
+       }
+      },
+      "3": {
+       "id": "r1-b3",
+       "race": "human",
+       "idealized": "brawn",
+       "min_roll": 14,
+       "abilities": {
+        "DEM": 3,
+        "LEA": 2
+       }
+      },
+      "4": {
+       "id": "r1-b4",
+       "race": "human",
+       "idealized": "smarts",
+       "min_roll": 13,
+       "abilities": {
+        "DIP": 3,
+        "HAK": 2
+       }
+      },
+      "5": {
+       "id": "r1-b5",
+       "race": "grull",
+       "idealized": "finesse",
+       "min_roll": 14,
+       "abilities": {
+        "GUN": 3,
+        "LEA": 2
+       }
+      },
+      "6": {
+       "id": "r1-b6",
+       "race": "kralkin",
+       "idealized": "moxie",
+       "min_roll": 13,
+       "abilities": {
+        "GUN": 2,
+        "SWA": 2
+       }
+      }
+     },
+     "grid": {
+      "rows": [
+       "GA.B....A",
+       "A#..#..#.",
+       ".#A.I....",
+       "B#....A..",
+       "A#..####.",
+       ".....I.B.",
+       ".........",
+       ".#..#..#.",
+       "S...I...S"
+      ]
+     }
+    },
+    "R2": {
+     "id": "R2",
+     "attackers": {
+      "1": [
+       {
+        "atk": 5,
+        "move": 3,
+        "range": 1,
+        "xp": 5
+       },
+       {
+        "atk": 5,
+        "move": 3,
+        "range": 1,
+        "xp": 5
+       },
+       {
+        "atk": 5,
+        "move": 3,
+        "range": 1,
+        "xp": 5
+       }
+      ],
+      "2": [
+       {
+        "atk": 3,
+        "move": 3,
+        "range": 4,
+        "xp": 3
+       },
+       {
+        "atk": 3,
+        "move": 3,
+        "range": 4,
+        "xp": 3
+       },
+       {
+        "atk": 5,
+        "move": 4,
+        "range": 1,
+        "xp": 5
+       }
+      ],
+      "3": [
+       {
+        "atk": 5,
+        "move": 3,
+        "range": 4,
+        "xp": 5
+       },
+       {
+        "atk": 5,
+        "move": 3,
+        "range": 4,
+        "xp": 5
+       },
+       {
+        "atk": 5,
+        "move": 4,
+        "range": 1,
+        "xp": 5
+       }
+      ]
+     },
+     "items": {
+      "1": null,
+      "2": {
+       "id": "r2-i2",
+       "name": "Consumable DEM +4",
+       "type": "consumable",
+       "effect": {
+        "kind": "ability_bonus",
+        "ability": "DEM",
+        "bonus": 4
+       }
+      },
+      "3": {
+       "id": "r2-i3",
+       "name": "Consumable DIP +4",
+       "type": "consumable",
+       "effect": {
+        "kind": "ability_bonus",
+        "ability": "DIP",
+        "bonus": 4
+       }
+      },
+      "4": {
+       "id": "r2-i4",
+       "name": "Ship Part Capacity +2",
+       "type": "ship_part",
+       "effect": {
+        "kind": "ship_stat",
+        "stat": "capacity",
+        "bonus": 2
+       }
+      },
+      "5": {
+       "id": "r2-i5",
+       "name": "Weapon DEM +4",
+       "type": "weapon",
+       "effect": {
+        "kind": "ability_bonus",
+        "ability": "DEM",
+        "bonus": 4
+       }
+      },
+      "6": {
+       "id": "r2-i6",
+       "name": "Armor SNE +4",
+       "type": "armor",
+       "effect": {
+        "kind": "ability_bonus",
+        "ability": "SNE",
+        "bonus": 4
+       }
+      }
+     },
+     "beings": {
+      "1": null,
+      "2": {
+       "id": "r2-b2",
+       "race": "grull",
+       "idealized": "finesse",
+       "min_roll": 14,
+       "abilities": {
+        "LEA": 3,
+        "ACT": 2
+       }
+      },
+      "3": {
+       "id": "r2-b3",
+       "race": "kralkin",
+       "idealized": "moxie",
+       "min_roll": 14,
+       "abilities": {
+        "HAK": 3,
+        "LEA": 2
+       }
+      },
+      "4": {
+       "id": "r2-b4",
+       "race": "human",
+       "idealized": "smarts",
+       "min_roll": 14,
+       "abilities": {
+        "DIP": 3,
+        "LEA": 2
+       }
+      },
+      "5": {
+       "id": "r2-b5",
+       "race": "grull",
+       "idealized": "finesse",
+       "min_roll": 14,
+       "abilities": {
+        "SNE": 3,
+        "LEA": 2
+       }
+      },
+      "6": {
+       "id": "r2-b6",
+       "race": "human",
+       "idealized": "brawn",
+       "min_roll": 14,
+       "abilities": {
+        "LEA": 4
+       }
+      }
+     },
+     "grid": {
+      "rows": [
+       "GA..~I..A",
+       ".#A.~~.#.",
+       "B~....A..",
+       "~~..B..~~",
+       "~~#.I.#~~",
+       "~~A.....~",
+       "B...~....",
+       ".#I.~~.#.",
+       "A...~~..S"
+      ]
+     }
+    },
+    "R3": {
+     "id": "R3",
+     "attackers": {
+      "1": [
+       {
+        "atk": 7,
+        "move": 3,
+        "range": 1,
+        "xp": 7
+       },
+       {
+        "atk": 5,
+        "move": 4,
+        "range": 2,
+        "xp": 5
+       },
+       {
+        "atk": 5,
+        "move": 4,
+        "range": 2,
+        "xp": 5
+       }
+      ],
+      "2": [
+       {
+        "atk": 5,
+        "move": 4,
+        "range": 2,
+        "xp": 5
+       },
+       {
+        "atk": 5,
+        "move": 4,
+        "range": 2,
+        "xp": 5
+       },
+       {
+        "atk": 5,
+        "move": 4,
+        "range": 2,
+        "xp": 5
+       }
+      ],
+      "3": [
+       {
+        "atk": 7,
+        "move": 4,
+        "range": 4,
+        "xp": 7
+       },
+       {
+        "atk": 7,
+        "move": 4,
+        "range": 2,
+        "xp": 7
+       },
+       {
+        "atk": 5,
+        "move": 4,
+        "range": 4,
+        "xp": 5
+       }
+      ]
+     },
+     "items": {
+      "1": null,
+      "2": {
+       "id": "r3-i2",
+       "name": "Consumable +5 HAK",
+       "type": "consumable",
+       "effect": {
+        "kind": "ability_bonus",
+        "ability": "HAK",
+        "bonus": 5
+       }
+      },
+      "3": {
+       "id": "r3-i3",
+       "name": "Consumable +5 RES",
+       "type": "consumable",
+       "effect": {
+        "kind": "ability_bonus",
+        "ability": "RES",
+        "bonus": 5
+       }
+      },
+      "4": {
+       "id": "r3-i4",
+       "name": "Ship Part +4 Handling",
+       "type": "ship_part",
+       "effect": {
+        "kind": "ship_stat",
+        "stat": "handling",
+        "bonus": 4
+       }
+      },
+      "5": {
+       "id": "r3-i5",
+       "name": "Weapon +4 SWA",
+       "type": "weapon",
+       "effect": {
+        "kind": "ability_bonus",
+        "ability": "SWA",
+        "bonus": 4
+       }
+      },
+      "6": {
+       "id": "r3-i6",
+       "name": "Armor +4 GUN",
+       "type": "armor",
+       "effect": {
+        "kind": "ability_bonus",
+        "ability": "GUN",
+        "bonus": 4
+       }
+      }
+     },
+     "beings": {
+      "1": null,
+      "2": {
+       "id": "r3-b2",
+       "race": "human",
+       "idealized": "smarts",
+       "min_roll": 14,
+       "abilities": {
+        "SWA": 4
+       }
+      },
+      "3": {
+       "id": "r3-b3",
+       "race": "human",
+       "idealized": "brawn",
+       "min_roll": 14,
+       "abilities": {
+        "ACT": 4
+       }
+      },
+      "4": {
+       "id": "r3-b4",
+       "race": "kralkin",
+       "idealized": "moxie",
+       "min_roll": 14,
+       "abilities": {
+        "HAK": 4
+       }
+      },
+      "5": {
+       "id": "r3-b5",
+       "race": "grull",
+       "idealized": "finesse",
+       "min_roll": 14,
+       "abilities": {
+        "DIP": 4
+       }
+      },
+      "6": {
+       "id": "r3-b6",
+       "race": "grull",
+       "idealized": "finesse",
+       "min_roll": 14,
+       "abilities": {
+        "LEA": 4
+       }
+      }
+     },
+     "grid": {
+      "rows": [
+       "S.A.B~~~~",
+       ".A.A~~~~~",
+       ".#~.~~~.I",
+       "~~~.I~...",
+       "~~~~...A.",
+       ".........",
+       "B....A.#.",
+       "...A#....",
+       "G.......S"
+      ]
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,673 @@
+{
+ "key": "habitat-2",
+ "viewer": "p1",
+ "view": {
+  "phase": "at_habitat",
+  "pending": null,
+  "roll_facts": null,
+  "last_roll": {
+   "reason": "evade",
+   "dice": [
+    1,
+    3,
+    6
+   ],
+   "parts": [
+    {
+     "label": "SNE +2 (Hexapod (SNE+2 DIP+1))",
+     "bonus": 2,
+     "kind": "score",
+     "ability": "SNE",
+     "who": "Hexapod (SNE+2 DIP+1)"
+    }
+   ],
+   "bonus": 2,
+   "total": 12,
+   "target": 10,
+   "outcome": "pass"
+  },
+  "character": {
+   "name": "Bot Pilot",
+   "race": "human",
+   "disposition_roleplay_hint": null,
+   "level": 4,
+   "xp": 7,
+   "xp_to_next_level": 41,
+   "credits": 1850,
+   "wounded": false,
+   "dread": 0,
+   "abilities": {
+    "RES": {
+     "name": "Research",
+     "stat": "smarts",
+     "natural": 1,
+     "effective": 1
+    },
+    "MEC": {
+     "name": "Mechanics",
+     "stat": "smarts",
+     "natural": 2,
+     "effective": 2
+    },
+    "PIL": {
+     "name": "Piloting",
+     "stat": "finesse",
+     "natural": 6,
+     "effective": 6
+    }
+   },
+   "skills": [
+    "Research (RES basic)",
+    "Mechanics (MEC basic)",
+    "Piloting (PIL basic)",
+    "Piloting advanced"
+   ],
+   "equipped": {
+    "weapon": null,
+    "armor": null
+   }
+  },
+  "crew": [
+   {
+    "name": "Hexapod (SNE+2 DIP+1)",
+    "title": "DEC0DE",
+    "race": "hexapod",
+    "idealizes": "smarts",
+    "abilities": {
+     "SNE": 2,
+     "DIP": 1
+    },
+    "skills": [
+     "Sneaking (SNE basic)",
+     "Diplomacy (DIP basic)"
+    ],
+    "anger_tokens": 2,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   },
+   {
+    "name": "Kralkin (MEC+3)",
+    "title": "Tweet",
+    "race": "kralkin",
+    "idealizes": "moxie",
+    "abilities": {
+     "MEC": 3
+    },
+    "skills": [
+     "Mechanics (MEC basic)",
+     "Mechanics advanced"
+    ],
+    "anger_tokens": 2,
+    "equipped": {
+     "weapon": null,
+     "armor": null
+    }
+   }
+  ],
+  "unnamed_crew": 1,
+  "unnamed_crew_cap": 1,
+  "season_endings": {
+   "conquest": "clear the depth-3 ruin beyond Habitat #3",
+   "fortune": "1850/6000c banked while at a habitat",
+   "legend": "level 4/5",
+   "plunder": "0/6 ruin caches opened",
+   "bounty": "0/8 foes defeated face to face (boarding captures + ruin kills)"
+  },
+  "ship": {
+   "name": "Harness Runner",
+   "capacity": 3,
+   "speed": 0,
+   "handling": 0,
+   "armor": 2,
+   "damage": "pristine",
+   "parts": [
+    "fabricated-armor-1",
+    "fabricated-armor-2"
+   ],
+   "hits_to_lost": 4
+  },
+  "items": [
+   {
+    "id": "fabricated-armor-1",
+    "name": "Fabricated part: +1 armor",
+    "type": "ship_part",
+    "consumed": false,
+    "title": "Fabricated part: +1 armor",
+    "effect": "Ship armor +1. Taken off the pirates' total in every exchange of fire.",
+    "worn_by": null,
+    "fitted": true
+   },
+   {
+    "id": "fabricated-armor-2",
+    "name": "Fabricated part: +1 armor",
+    "type": "ship_part",
+    "consumed": false,
+    "title": "Fabricated part: +1 armor",
+    "effect": "Ship armor +1. Taken off the pirates' total in every exchange of fire.",
+    "worn_by": null,
+    "fitted": true
+   }
+  ],
+  "bulkheads_spent": false,
+  "habitat": {
+   "number": 2,
+   "name": "Kookookachaa",
+   "shop": [
+    {
+     "name": "Ship part +3 Capacity",
+     "cost": 1200,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +2 Handling",
+     "cost": 600,
+     "purchased": false
+    },
+    {
+     "name": "Ship part Space Combat Advantage",
+     "cost": 600,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +2 Speed",
+     "cost": 800,
+     "purchased": false
+    },
+    {
+     "name": "Weapon +2 GUN",
+     "cost": 600,
+     "purchased": false
+    },
+    {
+     "name": "Armor +2 SNE",
+     "cost": 400,
+     "purchased": false
+    }
+   ],
+   "cantina": [
+    {
+     "recruit": "Kralkin (HAK +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Grull (PIL +2, min roll 12)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (SWA +1 DIP +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Kralkin (HAK +2, min roll 12)",
+     "status": "available"
+    },
+    {
+     "recruit": "Kralkin (GUN +1, min roll 11)",
+     "status": "available"
+    }
+   ],
+   "missions": [
+    {
+     "id": "h2-m1",
+     "mission": "distance 5, PIL 11, 400c, 2 XP",
+     "status": "available"
+    },
+    {
+     "id": "h2-m2",
+     "mission": "distance 5, GUN 12, 500c, 2 XP",
+     "status": "available"
+    },
+    {
+     "id": "h2-m3",
+     "mission": "distance 5, SNE 11, 400c, 2 XP",
+     "status": "available"
+    },
+    {
+     "id": "h2-m4",
+     "mission": "distance 6, HAK 12, 500c, 2 XP",
+     "status": "available"
+    },
+    {
+     "id": "h2-m5",
+     "mission": "distance 6, LEA 12, 500c, 2 XP",
+     "status": "available"
+    },
+    {
+     "id": "h2-m6",
+     "mission": "distance 7, R2 ruin, 1000c, 4 XP",
+     "status": "available"
+    }
+   ],
+   "progression": "travel 12 one-way to the next habitat",
+   "repair_roll_available": true,
+   "unrest_roll_available": true,
+   "docks_unnamed_roll_available": true,
+   "fabrication_available_this_visit": true
+  },
+  "journey": null,
+  "space_combat": null,
+  "ruin": null,
+  "travel_deck": {
+   "cards_in_draw_pile": 51,
+   "cards_in_discard": 1,
+   "discard": [
+    "4D"
+   ]
+  },
+  "stat_reference": {
+   "brawn": "SWA/ARM/DEM",
+   "smarts": "HAK/RES/MEC",
+   "finesse": "PIL/GUN/SNE",
+   "moxie": "LEA/DIP/ACT"
+  },
+  "lore_refs": [
+   "galaxy-overview",
+   "humans",
+   "hexapods",
+   "kralkin"
+  ],
+  "result": null
+ },
+ "legalMoves": [
+  {
+   "move_id": "buy-h2-s1",
+   "description": "Buy Roost Module (Ship part +3 Capacity) for 1200c (you have 1850c).",
+   "move": {
+    "type": "buy_item",
+    "item_name": "Ship part +3 Capacity"
+   },
+   "preview": {
+    "then": "Ship capacity +3. How many can be aboard, the captain included. Red shirts do not take a berth. Fitted at once."
+   }
+  },
+  {
+   "move_id": "buy-h2-s2",
+   "description": "Buy Talon-grip Stabilizers (Ship part +2 Handling) for 600c (you have 1850c).",
+   "move": {
+    "type": "buy_item",
+    "item_name": "Ship part +2 Handling"
+   },
+   "preview": {
+    "then": "Ship handling +2. Added to an escape roll. Fitted at once."
+   }
+  },
+  {
+   "move_id": "buy-h2-s3",
+   "description": "Buy Imperial Targeting Array (Ship part Space Combat Advantage) for 600c (you have 1850c).",
+   "move": {
+    "type": "buy_item",
+    "item_name": "Ship part Space Combat Advantage"
+   },
+   "preview": {
+    "then": "The ship takes the higher pair in every exchange of fire. Fitted at once."
+   }
+  },
+  {
+   "move_id": "buy-h2-s4",
+   "description": "Buy Updraft Engine (Ship part +2 Speed) for 800c (you have 1850c).",
+   "move": {
+    "type": "buy_item",
+    "item_name": "Ship part +2 Speed"
+   },
+   "preview": {
+    "then": "Ship speed +2. Each point takes one card off every leg of a trip. Fitted at once."
+   }
+  },
+  {
+   "move_id": "buy-h2-s5",
+   "description": "Buy Raptor Rifle (Weapon +2 GUN) for 600c (you have 1850c).",
+   "move": {
+    "type": "buy_item",
+    "item_name": "Weapon +2 GUN"
+   },
+   "preview": {
+    "then": "+2 Gunslinging for whoever wears it. One weapon and one armor per being."
+   }
+  },
+  {
+   "move_id": "buy-h2-s6",
+   "description": "Buy Quiet-Feather Cloak (Armor +2 SNE) for 400c (you have 1850c).",
+   "move": {
+    "type": "buy_item",
+    "item_name": "Armor +2 SNE"
+   },
+   "preview": {
+    "then": "+2 Sneaking for whoever wears it. One weapon and one armor per being."
+   }
+  },
+  {
+   "move_id": "recruit-h2-c1",
+   "description": "Attempt to recruit Arrak, the Kralkin (HAK +1, min roll 11), at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h2-c1"
+   },
+   "preview": {
+    "roll": {
+     "reason": "recruit",
+     "name": "Recruit",
+     "carrier": "DEC0DE",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "DIP +1 (Hexapod (SNE+2 DIP+1))",
+       "bonus": 1,
+       "kind": "score",
+       "ability": "DIP",
+       "who": "Hexapod (SNE+2 DIP+1)"
+      }
+     ],
+     "bonus": 1,
+     "on_pass": "Arrak joins the crew. The ship would then be over capacity: someone must be released.",
+     "on_fail": "Arrak is marked: no second try at this cantina, ever.",
+     "notes": [],
+     "target": 11,
+     "dice_need": 10,
+     "chance": 0.625,
+     "subject": "Arrak"
+    }
+   }
+  },
+  {
+   "move_id": "recruit-h2-c2",
+   "description": "Attempt to recruit Basalt, the Grull (PIL +2, min roll 12), at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h2-c2"
+   },
+   "preview": {
+    "roll": {
+     "reason": "recruit",
+     "name": "Recruit",
+     "carrier": "you",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "PIL +6 (you)",
+       "bonus": 6,
+       "kind": "score",
+       "ability": "PIL",
+       "who": "you"
+      }
+     ],
+     "bonus": 6,
+     "on_pass": "Basalt joins the crew. The ship would then be over capacity: someone must be released.",
+     "on_fail": "Basalt is marked: no second try at this cantina, ever.",
+     "notes": [],
+     "target": 12,
+     "dice_need": 6,
+     "chance": 0.9537,
+     "subject": "Basalt"
+    }
+   }
+  },
+  {
+   "move_id": "recruit-h2-c3",
+   "description": "Attempt to recruit Zhang, the Human (SWA +1 DIP +1, min roll 11), at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h2-c3"
+   },
+   "preview": {
+    "roll": {
+     "reason": "recruit",
+     "name": "Recruit",
+     "dice": 3,
+     "parts": [],
+     "bonus": 0,
+     "on_pass": "Zhang joins the crew. The ship would then be over capacity: someone must be released.",
+     "on_fail": "Zhang is marked: no second try at this cantina, ever.",
+     "notes": [],
+     "target": 11,
+     "dice_need": 11,
+     "chance": 0.5,
+     "subject": "Zhang"
+    }
+   }
+  },
+  {
+   "move_id": "recruit-h2-c4",
+   "description": "Attempt to recruit Trill, the Kralkin (HAK +2, min roll 12), at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h2-c4"
+   },
+   "preview": {
+    "roll": {
+     "reason": "recruit",
+     "name": "Recruit",
+     "carrier": "DEC0DE",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "DIP +1 (Hexapod (SNE+2 DIP+1))",
+       "bonus": 1,
+       "kind": "score",
+       "ability": "DIP",
+       "who": "Hexapod (SNE+2 DIP+1)"
+      }
+     ],
+     "bonus": 1,
+     "on_pass": "Trill joins the crew. The ship would then be over capacity: someone must be released.",
+     "on_fail": "Trill is marked: no second try at this cantina, ever.",
+     "notes": [],
+     "target": 12,
+     "dice_need": 11,
+     "chance": 0.5,
+     "subject": "Trill"
+    }
+   }
+  },
+  {
+   "move_id": "recruit-h2-c5",
+   "description": "Attempt to recruit Kraa, the Kralkin (GUN +1, min roll 11), at the cantina.",
+   "move": {
+    "type": "attempt_recruit",
+    "recruit_name": "h2-c5"
+   },
+   "preview": {
+    "roll": {
+     "reason": "recruit",
+     "name": "Recruit",
+     "carrier": "DEC0DE",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "DIP +1 (Hexapod (SNE+2 DIP+1))",
+       "bonus": 1,
+       "kind": "score",
+       "ability": "DIP",
+       "who": "Hexapod (SNE+2 DIP+1)"
+      }
+     ],
+     "bonus": 1,
+     "on_pass": "Kraa joins the crew. The ship would then be over capacity: someone must be released.",
+     "on_fail": "Kraa is marked: no second try at this cantina, ever.",
+     "notes": [],
+     "target": 11,
+     "dice_need": 10,
+     "chance": 0.625,
+     "subject": "Kraa"
+    }
+   }
+  },
+  {
+   "move_id": "fabricate-speed",
+   "description": "Shipwright: pay 400c — fabricate a +1 speed part (ship speed 0 → 1). Once per habitat visit.",
+   "move": {
+    "type": "fabricate_part",
+    "stat": "speed"
+   }
+  },
+  {
+   "move_id": "fabricate-handling",
+   "description": "Shipwright: pay 400c — fabricate a +1 handling part (ship handling 0 → 1). Once per habitat visit.",
+   "move": {
+    "type": "fabricate_part",
+    "stat": "handling"
+   }
+  },
+  {
+   "move_id": "fabricate-armor",
+   "description": "Shipwright: pay 400c — fabricate a +1 armor part (ship armor 2 → 3). Once per habitat visit.",
+   "move": {
+    "type": "fabricate_part",
+    "stat": "armor"
+   }
+  },
+  {
+   "move_id": "release-Hexapod (SNE+2 DIP+1)",
+   "description": "Release DEC0DE from the crew (they take their equipped gear).",
+   "move": {
+    "type": "release_crew",
+    "crew_name": "Hexapod (SNE+2 DIP+1)"
+   },
+   "preview": {
+    "then": "DEC0DE leaves for good and takes the weapon and armor they wear."
+   }
+  },
+  {
+   "move_id": "release-Kralkin (MEC+3)",
+   "description": "Release Tweet from the crew (they take their equipped gear).",
+   "move": {
+    "type": "release_crew",
+    "crew_name": "Kralkin (MEC+3)"
+   },
+   "preview": {
+    "then": "Tweet leaves for good and takes the weapon and armor they wear."
+   }
+  },
+  {
+   "move_id": "take-mission-h2-m1",
+   "description": "The Belt Run: Take the PIL 11 mission (distance 5, PIL 11, 400c, 2 XP).",
+   "move": {
+    "type": "take_mission",
+    "mission_name": "h2-m1"
+   },
+   "preview": {
+    "check": {
+     "reason": "mission_check",
+     "name": "Mission",
+     "carrier": "you",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "PIL +6 (you)",
+       "bonus": 6,
+       "kind": "score",
+       "ability": "PIL",
+       "who": "you"
+      }
+     ],
+     "bonus": 6,
+     "on_pass": "400c and 2 XP. The trip back is still to fly.",
+     "on_fail": "No credits and no XP. The trip back is still to fly.",
+     "notes": [],
+     "target": 11,
+     "dice_need": 5,
+     "chance": 0.9815,
+     "subject": "The Belt Run"
+    },
+    "then": "You leave Kookookachaa at once: 5 cards out, the check, then 5 cards back. A mission can be tried once."
+   }
+  },
+  {
+   "move_id": "take-mission-h2-m3",
+   "description": "Into the Royal Aviary: Take the SNE 11 mission (distance 5, SNE 11, 400c, 2 XP).",
+   "move": {
+    "type": "take_mission",
+    "mission_name": "h2-m3"
+   },
+   "preview": {
+    "check": {
+     "reason": "mission_check",
+     "name": "Mission",
+     "carrier": "DEC0DE",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "SNE +2 (Hexapod (SNE+2 DIP+1))",
+       "bonus": 2,
+       "kind": "score",
+       "ability": "SNE",
+       "who": "Hexapod (SNE+2 DIP+1)"
+      }
+     ],
+     "bonus": 2,
+     "on_pass": "400c and 2 XP. The trip back is still to fly.",
+     "on_fail": "No credits and no XP. The trip back is still to fly.",
+     "notes": [],
+     "target": 11,
+     "dice_need": 9,
+     "chance": 0.7407,
+     "subject": "Into the Royal Aviary"
+    },
+    "then": "You leave Kookookachaa at once: 5 cards out, the check, then 5 cards back. A mission can be tried once."
+   }
+  },
+  {
+   "move_id": "take-mission-h2-m6",
+   "description": "The Feathered Vault: Take the R2 RUINS mission (distance 7, R2 ruin, 1000c, 4 XP) — travel there, then delve to depth 2.",
+   "move": {
+    "type": "take_mission",
+    "mission_name": "h2-m6"
+   },
+   "preview": {
+    "then": "You leave Kookookachaa at once: 7 cards out, the ruin to depth 2, then 7 cards back. A mission can be tried once."
+   }
+  },
+  {
+   "move_id": "depart",
+   "description": "Depart for Habitat #3 — one-way trip, distance 12.",
+   "move": {
+    "type": "depart_for_next_habitat"
+   },
+   "preview": {
+    "then": "A one-way trip of 12 cards. You do not come back to Kookookachaa: what its shop, cantina and missions still hold is left behind."
+   }
+  }
+ ],
+ "unavailable": [
+  {
+   "moveType": "take_mission",
+   "item": "h2-m2",
+   "reason": "Nobody aboard has Gunslinging (GUN), and no item you hold gives it."
+  },
+  {
+   "moveType": "take_mission",
+   "item": "h2-m4",
+   "reason": "Nobody aboard has Hacking (HAK), and no item you hold gives it."
+  },
+  {
+   "moveType": "take_mission",
+   "item": "h2-m5",
+   "reason": "Nobody aboard has Leadership (LEA), and no item you hold gives it."
+  },
+  {
+   "moveType": "attempt_repair",
+   "reason": "The Harness Runner is Pristine: nothing to repair."
+  },
+  {
+   "moveType": "pay_repair",
+   "reason": "The Harness Runner is Pristine: nothing to repair."
+  },
+  {
+   "moveType": "attempt_reduce_unrest",
+   "reason": "Needs Leadership (LEA) aboard."
+  },
+  {
+   "moveType": "recruit_unnamed",
+   "reason": "You hold 1 of 1 red shirts. The most you can hold is your best natural Diplomacy."
+  },
+  {
+   "moveType": "upgrade_item",
+   "reason": "You hold no weapon or armor that adds to a score and is not already an MK-II."
+  },
+  {
+   "moveType": "equip_item",
+   "reason": "You hold no weapon or armor."
+  }
+ ]
+}

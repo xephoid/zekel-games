@@ -1,0 +1,377 @@
+{
+ "key": "combat-choose_action",
+ "viewer": "p1",
+ "view": {
+  "phase": "space_combat",
+  "pending": {
+   "kind": "space_combat_action"
+  },
+  "roll_facts": null,
+  "last_roll": null,
+  "character": {
+   "name": "Bot Pilot",
+   "race": "human",
+   "disposition_roleplay_hint": null,
+   "level": 2,
+   "xp": 0,
+   "xp_to_next_level": 12,
+   "credits": 700,
+   "wounded": false,
+   "dread": 0,
+   "abilities": {
+    "RES": {
+     "name": "Research",
+     "stat": "smarts",
+     "natural": 1,
+     "effective": 1
+    },
+    "MEC": {
+     "name": "Mechanics",
+     "stat": "smarts",
+     "natural": 2,
+     "effective": 2
+    },
+    "PIL": {
+     "name": "Piloting",
+     "stat": "finesse",
+     "natural": 4,
+     "effective": 4
+    }
+   },
+   "skills": [
+    "Research (RES basic)",
+    "Mechanics (MEC basic)",
+    "Piloting (PIL basic)",
+    "Piloting advanced"
+   ],
+   "equipped": {
+    "weapon": null,
+    "armor": null
+   }
+  },
+  "crew": [],
+  "unnamed_crew": 0,
+  "unnamed_crew_cap": 0,
+  "season_endings": {
+   "conquest": "clear the depth-3 ruin beyond Habitat #3",
+   "fortune": "700/6000c banked while at a habitat",
+   "legend": "level 2/5",
+   "plunder": "0/6 ruin caches opened",
+   "bounty": "0/8 foes defeated face to face (boarding captures + ruin kills)"
+  },
+  "ship": {
+   "name": "Harness Runner",
+   "capacity": 3,
+   "speed": 0,
+   "handling": 0,
+   "armor": 0,
+   "damage": "pristine",
+   "parts": [],
+   "hits_to_lost": 4
+  },
+  "items": [],
+  "bulkheads_spent": false,
+  "habitat": {
+   "number": 1,
+   "name": "Xaxalon 4",
+   "shop": [
+    {
+     "name": "Consumable +1 Any",
+     "cost": 200,
+     "purchased": false
+    },
+    {
+     "name": "Weapon +1 GUN",
+     "cost": 300,
+     "purchased": false
+    },
+    {
+     "name": "Armor Combat Advantage",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +1 Speed",
+     "cost": 400,
+     "purchased": false
+    },
+    {
+     "name": "Ship part +2 Capacity",
+     "cost": 700,
+     "purchased": false
+    }
+   ],
+   "cantina": [
+    {
+     "recruit": "Human (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Kralkin (PIL +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Hexapod (HAK +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Grull (DIP +1, min roll 11)",
+     "status": "available"
+    },
+    {
+     "recruit": "Human (ACT +1, min roll 11)",
+     "status": "available"
+    }
+   ],
+   "missions": [
+    {
+     "id": "h1-m1",
+     "mission": "distance 3, RES 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m2",
+     "mission": "distance 3, DIP 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m3",
+     "mission": "distance 3, MEC 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m4",
+     "mission": "distance 4, R1 ruin, 600c, 1 XP",
+     "status": "succeeded"
+    },
+    {
+     "id": "h1-m5",
+     "mission": "distance 4, SWA 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m6",
+     "mission": "distance 4, ARM 10, 300c, 1 XP",
+     "status": "available"
+    },
+    {
+     "id": "h1-m7",
+     "mission": "distance 6, ACT 12, 400c, 1 XP",
+     "status": "available"
+    }
+   ],
+   "progression": "complete 4 missions (any result; 1 done), then travel 6 one-way",
+   "repair_roll_available": false,
+   "unrest_roll_available": false,
+   "docks_unnamed_roll_available": true,
+   "fabrication_available_this_visit": true
+  },
+  "journey": {
+   "note": "Legs resolve top-down (a sandwiched mission finishes before the journey under it resumes).",
+   "legs": [
+    {
+     "position": "current",
+     "purpose": "outbound — distance 8, PIL 15, 400c, 2 XP",
+     "kind": "mission_outbound",
+     "mission_id": "club-7-2",
+     "cards_remaining": 4
+    },
+    {
+     "position": "queued 1",
+     "purpose": "return — distance 8, PIL 15, 400c, 2 XP",
+     "kind": "mission_return",
+     "mission_id": "club-7-2",
+     "cards_remaining": 8
+    },
+    {
+     "position": "queued 2",
+     "purpose": "outbound — distance 4, MEC 10, 250c, 1 XP",
+     "kind": "mission_outbound",
+     "mission_id": "club-9-1",
+     "cards_remaining": 3
+    },
+    {
+     "position": "queued 3",
+     "purpose": "return — distance 4, MEC 10, 250c, 1 XP",
+     "kind": "mission_return",
+     "mission_id": "club-9-1",
+     "cards_remaining": 4
+    },
+    {
+     "position": "queued 4",
+     "purpose": "return — distance 4, R1 ruin, 600c, 1 XP",
+     "kind": "mission_return",
+     "mission_id": "h1-m4",
+     "cards_remaining": 1
+    }
+   ]
+  },
+  "space_combat": {
+   "pirate": "♦4",
+   "stats": {
+    "id": "pirate-4",
+    "space_attack": 5,
+    "ground_attack": 2,
+    "capacity": 5,
+    "speed": 0,
+    "handling": 0,
+    "min_hacking": 13,
+    "special": "space_combat_advantage"
+   },
+   "stage": "choose_action",
+   "flying_ace_reroll_used": false,
+   "opening_volley_used": false,
+   "pirate_debuff": 0,
+   "player_buff": 0,
+   "redline_used": false,
+   "survivors_roll_used": false
+  },
+  "ruin": null,
+  "travel_deck": {
+   "cards_in_draw_pile": 37,
+   "cards_in_discard": 15,
+   "discard": [
+    "9S",
+    "4S",
+    "2C",
+    "AC",
+    "2S",
+    "6S",
+    "KH",
+    "9C",
+    "8D",
+    "7C",
+    "KS",
+    "QS",
+    "10S",
+    "5C",
+    "4D"
+   ]
+  },
+  "stat_reference": {
+   "brawn": "SWA/ARM/DEM",
+   "smarts": "HAK/RES/MEC",
+   "finesse": "PIL/GUN/SNE",
+   "moxie": "LEA/DIP/ACT"
+  },
+  "lore_refs": [
+   "galaxy-overview",
+   "xaxalon-4",
+   "humans"
+  ],
+  "result": null
+ },
+ "legalMoves": [
+  {
+   "move_id": "attempt-escape",
+   "description": "Try to run: 3d6 + handling (+PIL) vs 10 + the pirate's space bonus. Fail = 1 ship damage, then escape anyway.",
+   "move": {
+    "type": "attempt_escape"
+   },
+   "preview": {
+    "roll": {
+     "reason": "escape",
+     "name": "Escape",
+     "carrier": "you",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "PIL +4 (you)",
+       "bonus": 4,
+       "kind": "score",
+       "ability": "PIL",
+       "who": "you"
+      }
+     ],
+     "bonus": 4,
+     "on_pass": "A clean getaway. The encounter ends.",
+     "on_fail": "The Harness Runner takes one damage, to Used. Then you get away all the same.",
+     "notes": [],
+     "target": 15,
+     "dice_need": 11,
+     "chance": 0.5,
+     "subject": "the pirates"
+    }
+   }
+  },
+  {
+   "move_id": "fight-round",
+   "description": "Exchange fire: 4d6 pairing.",
+   "move": {
+    "type": "fight_round"
+   },
+   "preview": {
+    "roll": {
+     "reason": "space_combat",
+     "name": "Exchange of fire",
+     "dice": 4,
+     "parts": [],
+     "bonus": 0,
+     "on_pass": "Their ship is disabled: board it or fly on. A disabled ship does not count toward Bounty.",
+     "on_fail": "Flying Ace lets you roll the exchange again, once. Otherwise: The Harness Runner takes one damage, to Used.",
+     "notes": [
+      "A tie is rolled again."
+     ],
+     "pairing": {
+      "you_take": "lower",
+      "why": "These pirates have space combat advantage of their own, which cancels yours: you take the lower pair.",
+      "your_add": 0,
+      "their_add": 5,
+      "their_name": "the pirates",
+      "rider_dice": 0,
+      "win": 0,
+      "tie": 0,
+      "lose": 1
+     },
+     "chance": 0,
+     "subject": "the pirates"
+    }
+   }
+  },
+  {
+   "move_id": "redline",
+   "description": "Redline (once per encounter): 3d6 + MEC vs 12. Success: +2 to YOUR exchange totals this combat; failure: they attack unopposed.",
+   "move": {
+    "type": "redline"
+   },
+   "preview": {
+    "roll": {
+     "reason": "redline",
+     "name": "Redline",
+     "carrier": "you",
+     "dice": 3,
+     "parts": [
+      {
+       "label": "MEC +2 (you)",
+       "bonus": 2,
+       "kind": "score",
+       "ability": "MEC",
+       "who": "you"
+      }
+     ],
+     "bonus": 2,
+     "on_pass": "+2 to your total in every exchange for the rest of this fight.",
+     "on_fail": "They attack unopposed: The Harness Runner takes one damage, to Used. The fight goes on, and the redline is spent.",
+     "notes": [],
+     "target": 12,
+     "dice_need": 10,
+     "chance": 0.625
+    }
+   }
+  }
+ ],
+ "unavailable": [
+  {
+   "moveType": "attempt_hack",
+   "reason": "Needs Hacking (HAK) aboard."
+  },
+  {
+   "moveType": "open_fire",
+   "reason": "Needs Gunslinging (GUN) aboard."
+  },
+  {
+   "moveType": "attempt_intimidate",
+   "reason": "Needs Demolitions (DEM) aboard."
+  }
+ ]
+}
