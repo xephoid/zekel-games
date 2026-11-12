@@ -339,8 +339,20 @@ describe('Red captures: the player picks who', () => {
     fireEvent.click(within(panel()).getAllByRole('button').find((b) => b.classList.contains('sl-option'))!);
     expect(within(panel()).getByRole('button', { name: 'Capture AI (easy)’s Leader (scores your secret goal, +2)' })).toBeTruthy();
     expect(within(panel()).getByRole('button', { name: 'Capture AI (easy)’s Leader (scores the public goal, +1)' })).toBeTruthy();
+    // the shared sentence speaks for no one option
+    expect(within(panel()).getByText('Taking the action captures one enemy piece there. Pick which:')).toBeTruthy();
     fireEvent.click(within(panel()).getByRole('button', { name: 'Capture AI (easy)’s Ambassador' }));
     expect(props.onMove).toHaveBeenCalledWith(CAPTURES[2]);
+  });
+
+  it('keeps the warning when an enemy Knight there must be beaten first', () => {
+    const guarded = CAPTURES.map((m) => (m.move['takeAction']
+      ? { ...m, description: `${m.description} (you must first beat p2's knight in that region; losing that battle cancels the capture)` }
+      : m)) as LegalMove[];
+    render(<SlScreen {...slProps({ legalMoves: guarded })} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Red card: Battle' }));
+    fireEvent.click(within(panel()).getAllByRole('button').find((b) => b.classList.contains('sl-option'))!);
+    expect(within(panel()).getByRole('button', { name: 'Capture AI (easy)’s Ambassador. Beat the Knight there first; losing cancels the capture' })).toBeTruthy();
   });
 
   it("a double red card's second capture gets its own panel", () => {

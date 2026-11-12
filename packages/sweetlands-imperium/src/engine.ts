@@ -638,10 +638,16 @@ function doPlayIntel(state: SweetlandsState, playerId: string, move: Extract<Swe
     // than one answer (a capture_choice pending); an AI takes leaders first and
     // the secret objective, its policy.
     const r0 = resolveColorPlay(state, p, card.color, move);
+    // Secret objectives score the moment they're done (rules §7), so the first
+    // capture's can win the game before the second Red is asked about.
+    scoreSecretObjectives(state, p);
     const second = card.color === 'red'
       ? { ...move, targetPlayerId: undefined, targetUnit: undefined, captureLeaderScores: undefined }
       : move;
-    const r1 = resolveColorPlay(state, p, card.color, second, card.color === 'red');
+    // A win on the first half ends the game there: the second half doesn't happen.
+    const r1 = (state.phase as string) === 'game_over'
+      ? { summary: 'the game is over, so the second half does not happen', keepPlaying: false }
+      : resolveColorPlay(state, p, card.color, second, card.color === 'red');
     summary = `${playerId} played a double ${card.color} card — ${r0.summary}, then ${r1.summary}`;
     if (r0.keepPlaying || r1.keepPlaying) endsPlayStep = false;
   }
@@ -651,6 +657,8 @@ function doPlayIntel(state: SweetlandsState, playerId: string, move: Extract<Swe
   // report (doReportIntelDraw), so don't advance here while one is outstanding.
   if (endsPlayStep && !state.pending) p.turn.step = 'influence';
   scoreSecretObjectives(state, p);
+  // A game that has ended asks nothing more.
+  if ((state.phase as string) === 'game_over' && state.pending?.kind === 'capture_choice') state.pending = null;
   return summary;
 }
 

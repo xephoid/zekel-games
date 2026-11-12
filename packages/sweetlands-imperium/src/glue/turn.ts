@@ -110,7 +110,9 @@ export function playOptions(table: SlTable, moves: LegalMove[]): PlayOption[] {
     out.push({
       n: out.length + 1, unit, tile: tileOf(landing?.to), landing,
       title: `${UNIT_NAME[unit] ?? unit} → ${where}`,
-      sentence: (act ?? template ?? move ?? first).description ?? '',
+      // With several captures listed, no one option's words speak for all of
+      // them: each button carries its own.
+      sentence: captures.length > 1 ? 'Taking the action captures one enemy piece there. Pick which:' : (act ?? template ?? move ?? first).description ?? '',
       act, captures, move, raise, template,
     });
   }

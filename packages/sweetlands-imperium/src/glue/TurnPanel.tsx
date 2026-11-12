@@ -139,9 +139,10 @@ function captureLabel(m: LegalMove, nameFor: (pid: string) => string): string {
   const unit = asStr(m.move['targetUnit']);
   const who = `Capture ${nameFor(asStr(m.move['targetPlayerId']))}’s ${UNIT_NAME[unit as keyof typeof UNIT_NAME] ?? unit}`;
   const scores = m.move['captureLeaderScores'];
-  if (scores === 'secret') return `${who} (scores your secret goal, +2)`;
-  if (scores === 'public') return `${who} (scores the public goal, +1)`;
-  return who;
+  const goal = scores === 'secret' ? ' (scores your secret goal, +2)' : scores === 'public' ? ' (scores the public goal, +1)' : '';
+  // The engine's description warns when an enemy Knight there must be beaten first.
+  const fight = /you must first beat/i.test(m.description ?? '') ? '. Beat the Knight there first; losing cancels the capture' : '';
+  return `${who}${goal}${fight}`;
 }
 
 function pickedColor(table: SlTable, picked: string | null): string {

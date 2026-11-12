@@ -220,6 +220,15 @@ describe("a double red card asks a human for its second capture", () => {
     expect(a.secretObjectivesScored ?? []).not.toContain('capture_leader');
   });
 
+  it('a first capture that wins the game asks nothing more', () => {
+    const s = humanDouble(['capture_ambassador']);
+    A(s).points = 3; // the secret "capture an ambassador" (+2) reaches 5
+    const r = playDouble(s, { targetPlayerId: 'b', targetUnit: 'ambassador' });
+    expect(r.newState.phase).toBe('game_over');
+    expect(r.newState.pending).toBeNull();
+    expect(B(r.newState).units.leader).toEqual({ zone: 'ring', region: 2, ringIndex: 3 }); // no second capture
+  });
+
   it('an AI seat is not asked: its second capture takes a leader first', () => {
     const r = playDouble(standoff([], DOUBLE), { targetPlayerId: 'b', targetUnit: 'ambassador' });
     expect(r.newState.pending).toBeNull();
