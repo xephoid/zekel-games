@@ -1,6 +1,6 @@
 {
   "name": "@zekel/cybernoir-2127",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Cybernoir 2127, a Zekel Games board game: its rules as a game module for the zekel MCP server, and its screen for Zekel Universe.",
   "license": "Apache-2.0",
   "repository": {
