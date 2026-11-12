@@ -84,6 +84,10 @@ packages/cybernoir-2127/src/dev/verify/rules-pre-v2.3.txt
 packages/cybernoir-2127/src/dev/verify/rules-v2.3.txt
 packages/cybernoir-2127/src/dev/verify/rules.ts
 packages/cybernoir-2127/src/engine.ts
+packages/cybernoir-2127/src/glue/cn.css
+packages/cybernoir-2127/src/glue/faces.ts
+packages/cybernoir-2127/src/glue/index.ts
+packages/cybernoir-2127/src/glue/metro.ts
 packages/cybernoir-2127/src/index.ts
 packages/cybernoir-2127/src/legalMoves.ts
 packages/cybernoir-2127/src/mctsHooks.ts

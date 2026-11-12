@@ -1,0 +1,333 @@
+/* Cybernoir 2127's rain and neon theme (docs/design/cybernoir-rain-neon/, the
+   build in docs/games/cybernoir-2127-theme-build.md). Every rule is scoped
+   under .cn-theme, the class the glue's themeFor puts on the table shell, so
+   no other game and no other page changes. The city is dark in both of the
+   site's light and dark settings: it is the game's own look, not a mode.
+
+   The seat adds .cn-theme-detective (stamp red, a case file after dark) or
+   .cn-theme-hacker (glacier ice, a terminal); a watcher gets neither.
+
+   Values are the boards' (Main.dc.html, Table-Detective.dc.html,
+   Table-Hacker.dc.html). The faction colours are the glue's palette, keyed
+   by the engine's affiliation ids, so the map, the cards and the case file
+   all read them from --zekel-c-<id>. */
+
+.table-shell.cn-theme {
+  --cn-ground: #0A0D13;
+  --cn-bar: #0c1018;
+  --cn-panel: #121722;
+  --cn-raised: #1a2130;
+  --cn-rule: #242B3A;
+  --cn-text: #E8ECF2;
+  --cn-muted: #8A93A6;
+  --cn-stamp: #E23B45;
+  --cn-ice: #5FE3FF;
+  --cn-manila: #1F1B15;
+  --cn-manila-edge: #3A3226;
+  /* The seat's accent; a watcher sees the neutral text colour. */
+  --cn-accent: var(--cn-text);
+  --cn-accent-ink: var(--cn-ground);
+
+  /* Self-hosted in fonts.css: Chakra Petch for signage, Special Elite for
+     the Detective, Share Tech Mono for the Hacker. */
+  --cn-sign: 'Chakra Petch', 'IBM Plex Sans', system-ui, sans-serif;
+  --cn-type: 'Special Elite', 'Courier New', 'IBM Plex Mono', monospace;
+  --cn-term: 'Share Tech Mono', 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Universe's own tokens, redefined for everything on the page. */
+  --bg: var(--cn-ground); --bg-raised: var(--cn-panel); --card: var(--cn-panel); --chip: var(--cn-raised);
+  --fg: var(--cn-text); --fg-muted: var(--cn-muted);
+  --accent: var(--cn-accent); --accent-tint: var(--cn-raised); --accent-tint-2: var(--cn-raised); --highlight: var(--cn-raised);
+  --border: var(--cn-rule); --line: var(--cn-rule);
+  --you-bg: var(--cn-raised); --you-fg: var(--cn-accent);
+  --lit: var(--cn-accent);
+  --danger: var(--cn-stamp);
+  --card-back: #0f131b;
+  --shadow-sm: none; --shadow-md: none;
+  --shadow-card: 0 1px 0 rgba(0, 0, 0, .5), 0 6px 18px rgba(0, 0, 0, .45);
+  --shadow-card-hover: 0 10px 28px rgba(0, 0, 0, .6);
+  --shadow-pop: 0 18px 40px rgba(0, 0, 0, .6);
+  --shadow-lift: 0 12px 22px rgba(0, 0, 0, .6);
+  --font-display: var(--cn-sign);
+
+  background: var(--cn-ground);
+  color: var(--cn-text);
+}
+.table-shell.cn-theme.cn-theme-detective { --cn-accent: var(--cn-stamp); --cn-accent-ink: #ffffff; }
+.table-shell.cn-theme.cn-theme-hacker { --cn-accent: var(--cn-ice); --cn-accent-ink: var(--cn-ground); }
+
+/* ---------- small labels and signage ---------- */
+.cn-theme :is(.zk-zone-label, .zk-tableau-title, .move-menu summary, .side-section h3) {
+  font-family: var(--cn-sign); font-weight: 700; text-transform: uppercase; letter-spacing: .14em;
+}
+/* Stat names stay quiet and in plain case, as on the boards' bench. */
+.cn-theme .zk-stat span { color: var(--cn-muted); }
+.cn-theme-detective .zk-tableau-title { font-family: var(--cn-type); font-weight: 400; letter-spacing: .08em; }
+.cn-theme-hacker .zk-tableau-title { font-family: var(--cn-term); font-weight: 400; letter-spacing: .1em; }
+
+/* ---------- the top bar: near black, a rule under it ---------- */
+.cn-theme .table-topbar { background: var(--cn-bar); border-bottom: 1px solid var(--cn-rule); }
+.cn-theme .table-topbar .divider { background: var(--cn-rule); }
+.cn-theme .table-topbar .wordmark { color: var(--cn-text); }
+.cn-theme .table-topbar .title {
+  font: 700 15px/1 var(--cn-sign); letter-spacing: .1em; text-transform: uppercase;
+}
+.cn-theme .table-topbar .round-note { font-family: var(--font-mono); font-size: 11px; color: var(--cn-muted); }
+/* "Your move": an outlined box in the seat's voice. */
+.cn-theme .turn-pill { border-radius: 4px; background: transparent; border: 1px solid var(--cn-rule); color: var(--cn-muted); }
+.cn-theme .turn-pill.mine { border-color: var(--cn-accent); color: var(--cn-accent); background: transparent; }
+.cn-theme-detective .turn-pill.mine { font-family: var(--cn-type); }
+.cn-theme-hacker .turn-pill.mine { font-family: var(--cn-term); }
+.cn-theme .turn-pill .dot { display: none; }
+
+/* ---------- panels: flat, a hairline edge ---------- */
+.cn-theme :is(.zone:not(.zone-tableau), .zk-tableau, .caption-card, .action-bar, .move-menu, .lesson-note, .toast, .json-inspector) {
+  background: var(--cn-panel); color: var(--cn-text); border: 1px solid var(--cn-rule); border-radius: 10px;
+}
+/* The Detective's panel is a case folder after dark, for both seats. */
+.cn-theme .zk-tableau[data-flip-id='cn:detective'] { background: var(--cn-manila); border-color: var(--cn-manila-edge); }
+.cn-theme .zk-tableau.active { box-shadow: 0 0 0 1px var(--cn-accent); }
+
+/* ---------- buttons ---------- */
+.cn-theme :is(.chip-btn, .btn) { border-radius: 6px; }
+.cn-theme .btn:not(.secondary) { background: var(--cn-raised); color: var(--cn-text); border: 1px solid var(--cn-accent); }
+.cn-theme .btn:not(.secondary):hover:not(:disabled) { background: #222a3b; }
+.cn-theme .btn.secondary { background: var(--cn-raised); color: var(--cn-text); border: 1px solid var(--cn-rule); }
+.cn-theme :is(.chip-btn, .btn):focus-visible { outline: 2px solid var(--cn-accent); outline-offset: 2px; }
+
+/* ---------- cards: a dark face, the faction's line along the top ----------
+   The primitive paints the face in its colour key; on a dark table the line
+   colours are too bright to carry text, so the face goes dark and the colour
+   becomes the edge, as on the boards' Contact and Location cards. */
+.cn-theme .zk-card-face:not(.layout-portrait, .layout-sign) {
+  background: var(--cn-panel) !important; color: var(--cn-text); text-shadow: none;
+  border: 1px solid var(--cn-rule); border-top: 3px solid var(--cn-line, var(--cn-rule));
+}
+.cn-theme .zk-card-row-cost { color: var(--cn-ground); }
+.cn-theme :is(.zk-card, .zk-card-row)[data-color-key='none'] { --cn-line: var(--zekel-c-none); }
+.cn-theme :is(.zk-card, .zk-card-row)[data-color-key='corp-1'] { --cn-line: var(--zekel-c-corp-1); }
+.cn-theme :is(.zk-card, .zk-card-row)[data-color-key='corp-2'] { --cn-line: var(--zekel-c-corp-2); }
+.cn-theme :is(.zk-card, .zk-card-row)[data-color-key='gang-1'] { --cn-line: var(--zekel-c-gang-1); }
+.cn-theme :is(.zk-card, .zk-card-row)[data-color-key='gang-2'] { --cn-line: var(--zekel-c-gang-2); }
+.cn-theme :is(.zk-card, .zk-card-row)[data-color-key='gang-3'] { --cn-line: var(--zekel-c-gang-3); }
+/* The case file's kinds of Evidence and the reach states use the same edge. */
+.cn-theme :is(.zk-card, .zk-card-row):is([data-color-key='witness'], [data-color-key='motive'], [data-color-key='weapon'], [data-color-key='evidence'], [data-color-key='out-of-reach'], [data-color-key='not']) {
+  --cn-line: var(--zekel-c-witness);
+}
+.cn-theme :is(.zk-card, .zk-card-row)[data-color-key='motive'] { --cn-line: var(--zekel-c-motive); }
+.cn-theme :is(.zk-card, .zk-card-row)[data-color-key='weapon'] { --cn-line: var(--zekel-c-weapon); }
+.cn-theme :is(.zk-card, .zk-card-row)[data-color-key='evidence'] { --cn-line: var(--zekel-c-evidence); }
+.cn-theme :is(.zk-card, .zk-card-row):is([data-color-key='out-of-reach'], [data-color-key='not']) { --cn-line: var(--cn-rule); }
+.cn-theme .zk-card.zk-lit .zk-card-face { border-color: var(--cn-accent); box-shadow: 0 0 0 1px var(--cn-accent), 0 0 14px color-mix(in srgb, var(--cn-accent) 45%, transparent); }
+.cn-theme .zk-card.zk-lit:focus-visible .zk-card-face { box-shadow: 0 0 0 3px var(--cn-accent); }
+
+/* ---------- the map, until it is a subway map (build item 2) ----------
+   The line colours are bright, so a station's name is dark on its colour. */
+.cn-theme .zk-map-blob { border-color: rgba(0, 0, 0, .55); }
+.cn-theme .zk-map-blob-name { color: var(--cn-ground); text-shadow: none; font-family: var(--cn-sign); font-weight: 700; }
+
+/* ---------- the subway map (build item 2) ----------
+   Columns are faint panels, the rings sit on the asphalt, the lines are
+   muted so the stations carry the light. */
+.cn-theme .zk-stationmap { background: var(--cn-ground); border-color: var(--cn-rule); --bg-raised: var(--cn-ground); --station-head: 24px; }
+.cn-theme .zk-station-area { background: rgba(255, 255, 255, .015); border-color: var(--cn-rule); border-radius: 12px; }
+.cn-theme .zk-station-area-head .zk-map-area-name {
+  font: 700 12px/1 var(--cn-sign); letter-spacing: .14em; text-transform: uppercase; color: var(--cn-text);
+}
+.cn-theme .zk-station-area-head .zk-map-area-note { font: 400 10px/1 var(--font-mono); color: var(--cn-muted); opacity: 1; }
+.cn-theme .zk-station-lines polyline { opacity: .32; }
+.cn-theme .zk-station-name { font-family: var(--cn-sign); font-weight: 600; color: var(--cn-muted); }
+.cn-theme .zk-station.glow .zk-station-name { font-weight: 700; color: var(--cn-text); }
+.cn-theme .zk-station.crossed .zk-station-name { text-decoration-color: var(--cn-stamp); }
+.cn-theme .zk-map-legend { color: var(--cn-muted); }
+
+/* ---------- people as street-camera grabs (build item 4) ----------
+   The crops are plain; the look is applied here. Blurred, drained, a green
+   cast, a little dark, and scanlines: the mask lets the dark card show
+   through one line in three. The image is clipped to its own box so the blur
+   does not bleed. Small pictures blur less. Nothing here changes with the
+   game: no camera number, timestamp or match box carries information. */
+.cn-theme .zk-card-art {
+  filter: blur(2.2px) grayscale(.92) contrast(1.25) brightness(.9) sepia(.4) hue-rotate(65deg) saturate(1.3);
+  clip-path: inset(0 round 4px);
+  -webkit-mask-image: repeating-linear-gradient(to bottom, #000 0 2px, rgba(0, 0, 0, .55) 2px 3px);
+  mask-image: repeating-linear-gradient(to bottom, #000 0 2px, rgba(0, 0, 0, .55) 2px 3px);
+  object-position: 50% 30%;
+}
+.cn-theme .zk-zone-small .zk-card-art { filter: blur(1.4px) grayscale(.92) contrast(1.25) brightness(.9) sepia(.4) hue-rotate(65deg) saturate(1.3); }
+/* A revealed informant: a rubber stamp, in the Detective's typewriter. */
+.cn-theme .zk-card-stamp {
+  font: 400 12px/1.2 var(--cn-type); letter-spacing: .1em; color: var(--cn-stamp);
+  border-color: var(--cn-stamp); background: rgba(10, 13, 19, .55);
+}
+/* A face-down informant, as the Hacker sees it: a dead camera feed. */
+.cn-theme .zk-card-back:has(.zk-card-back-label) {
+  background:
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, .05) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(97deg, rgba(255, 255, 255, .07) 0 2px, transparent 2px 5px, rgba(0, 0, 0, .25) 5px 7px),
+    repeating-linear-gradient(13deg, rgba(255, 255, 255, .04) 0 1px, transparent 1px 4px),
+    #0f131b;
+  border: 1px dashed var(--cn-ice); color: var(--cn-ice);
+}
+.cn-theme .zk-card-back-label { font: 400 11px/1.2 var(--cn-term); letter-spacing: .12em; text-shadow: 0 0 6px var(--cn-ice); }
+
+/* ---------- the cards (build item 5) ----------
+   Contacts are tall portrait cards; Locations are wide station signs. Sizes
+   are the table boards' hand sizes. Costs are ice diamonds for both seats:
+   a Contact's price is in the Hacker's currency. */
+.cn-theme .zk-card-face:is(.layout-portrait, .layout-sign) { background: var(--cn-panel); border-color: var(--cn-rule); border-radius: 10px; }
+.cn-theme .zk-card-pip { background: var(--cn-ice); }
+.cn-theme .layout-portrait .zk-card-label { font-family: var(--cn-sign); letter-spacing: .02em; }
+.cn-theme .layout-sign .zk-card-label { font-family: var(--cn-sign); }
+.cn-theme .zk-card-meter-pip { border-color: var(--cn-text); }
+.cn-theme .zk-card-meter-pip.on { background: var(--cn-text); }
+.cn-theme .zk-card-face-pic {
+  filter: blur(1px) grayscale(.92) contrast(1.25) brightness(.9) sepia(.4) hue-rotate(65deg) saturate(1.3);
+  border-color: var(--cn-rule);
+}
+.cn-theme-hacker [data-flip-id='cn:hand'] { --zekel-card-w: 118px; --zekel-card-h: 196px; }
+.cn-theme-detective [data-flip-id='cn:hand'] { --zekel-card-w: 196px; --zekel-card-h: 134px; }
+/* In a small zone a person is a picture and a name. */
+.cn-theme .zk-zone-small .layout-portrait .zk-card-sub,
+.cn-theme .zk-zone-small .layout-portrait .zk-card-badges { display: none; }
+.cn-theme .zk-zone-small .layout-portrait .zk-card-emblem { width: 16px; height: 16px; top: 3px; right: 3px; }
+.cn-theme .zk-zone-small .layout-portrait .zk-card-cost { top: 3px; left: 3px; }
+.cn-theme .zk-zone-small .layout-portrait .zk-card-label { font-size: 9.5px; }
+.cn-theme .zk-zone-small .layout-portrait .zk-card-body { padding: 3px 5px; }
+
+/* ---------- the two tables (build item 6) ----------
+   The table boards' layout: the top bar across; on the left the map and the
+   clue row, then the hand, then the lesson and the verb bar along the
+   bottom; on the right a 404 px column (the case first, then who you can
+   reach or who is facing you, the holding cells, both seats' counts, the
+   deck, the last move and the log). The page's own parts are placed on one
+   grid; nothing is moved between them. Overlays are fixed and stay out of
+   it. */
+.table-shell.cn-theme:not(.phone) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+  grid-template-areas: "top top" "board side" "bench side" "lesson side" "actions side";
+}
+.cn-theme:not(.phone) > .table-topbar { grid-area: top; }
+.cn-theme:not(.phone) :is(.table-main, .table-play) { display: contents; }
+.cn-theme:not(.phone) .table-board { grid-area: board; min-height: 0; padding-bottom: 8px; }
+.cn-theme:not(.phone) .table-bench { grid-area: bench; border-top: none; background: transparent; padding: 0 16px 8px; min-height: 0; align-items: flex-start; }
+.cn-theme:not(.phone) .table-play > .lesson-note { grid-area: lesson; }
+.cn-theme:not(.phone) .table-play > .action-bar { grid-area: actions; margin: 0 16px 12px; }
+.cn-theme:not(.phone) .table-side { grid-area: side; width: 404px; box-sizing: border-box; background: var(--cn-ground); border-left: 1px solid var(--cn-rule); }
+.cn-theme .table-side.collapsed { width: 0; }
+.cn-theme .table-side > [data-flip-id='cn:case'] { order: -1; }
+/* The deck is a counter here (the top bar says how many are left), small. */
+.cn-theme .table-side > [data-flip-id$='-deck'] { --zekel-card-w: 52px; --zekel-card-h: 72px; }
+
+/* Holding cells: dashed manila wells, the person's face beside their name. */
+.cn-theme [data-flip-id='cn:jail'] { background: var(--cn-manila); border: 1px solid var(--cn-manila-edge); border-radius: 10px; padding: 10px 12px; }
+.cn-theme [data-flip-id='cn:jail'] .zk-track-slot {
+  border: 1px dashed var(--cn-manila-edge); background: repeating-linear-gradient(135deg, transparent 0 8px, rgba(255, 255, 255, .02) 8px 16px);
+}
+.cn-theme [data-flip-id='cn:jail'] .zk-track-slot-name { font: 400 10px/1.2 var(--cn-type); letter-spacing: .12em; text-transform: uppercase; color: #8c826f; }
+.cn-theme [data-flip-id='cn:jail'] .zk-track-card { background: transparent; border-left: none; padding: 0; font-weight: 600; white-space: normal; overflow: visible; line-height: 1.15; }
+.cn-theme .zk-track-card-art { filter: blur(1px) grayscale(.92) contrast(1.25) brightness(.9) sepia(.4) hue-rotate(65deg) saturate(1.3); }
+/* Who you can reach: rows with a face. */
+.cn-theme [data-flip-id='cn:reach'] .zk-card-row-art { filter: blur(1.2px) grayscale(.92) contrast(1.25) brightness(.9) sepia(.4) hue-rotate(65deg) saturate(1.3); border-radius: 50%; }
+.cn-theme [data-flip-id='cn:reach'] .zk-card-row { grid-template-columns: 5px 30px auto minmax(0, 1fr); gap: 8px; background: var(--cn-panel); border-color: var(--cn-rule); }
+.cn-theme [data-flip-id='cn:reach'] .zk-card-row-cost { width: 5px; height: 26px; border-radius: 3px; font-size: 0; }
+.cn-theme [data-flip-id='cn:reach'] .zk-card-row-art { width: 30px; height: 30px; }
+.cn-theme [data-flip-id='cn:reach'] .zk-card-row-label { max-width: 150px; font-family: var(--cn-sign); }
+.cn-theme [data-flip-id='cn:reach'] .zk-card-row-sub { overflow: hidden; text-overflow: ellipsis; }
+
+/* The case file: thirteen small slots, the rows side by side as on the
+   boards, each filled slot just the person's face over their faction rule. */
+.cn-theme [data-flip-id='cn:case'], .cn-theme [data-flip-id='cn:case'] .zk-zone { --zekel-card-w: 54px; --zekel-card-h: 80px; }
+.cn-theme [data-flip-id='cn:case'] .zk-tableau-slot { gap: 10px 14px; }
+.cn-theme [data-flip-id='cn:case'] .zk-tableau-slot > * { flex: none; }
+.cn-theme [data-flip-id='cn:case'] .zk-zone-label { font-size: 9px; letter-spacing: .14em; margin-bottom: 3px; }
+.cn-theme [data-flip-id='cn:case'] .zk-zone-row { gap: 4px; flex-wrap: nowrap; }
+/* Where each person lives is what narrows the city down, so it stays: the
+   face, then "at <home>" in small type. */
+.cn-theme [data-flip-id='cn:case'] .layout-portrait .zk-card-pic { flex: 0 0 52%; }
+.cn-theme [data-flip-id='cn:case'] .layout-portrait :is(.zk-card-label, .zk-card-badges, .zk-card-cost, .zk-card-emblem) { display: none; }
+.cn-theme [data-flip-id='cn:case'] .layout-portrait .zk-card-body { padding: 2px 3px; }
+.cn-theme [data-flip-id='cn:case'] .layout-portrait .zk-card-sub { font-size: 7.5px; line-height: 1.15; -webkit-line-clamp: 3; }
+/* The subway map is laid out for the full board width; the general cap on
+   a map's width would squeeze its names together on the watch page. */
+.cn-theme .zones .zone-map { max-width: none; }
+
+/* ---------- motion (build item 7) ----------
+   The motion system moves cards, tokens and the played station's diamond.
+   A revealed informant's camera grab flickers once as it turns up: the
+   picture stutters, the card itself does not fade in. */
+@keyframes cn-grab-flicker {
+  0% { opacity: .2; } 12% { opacity: 1; } 22% { opacity: .35; } 34% { opacity: 1; } 46% { opacity: .6; } 58%, 100% { opacity: 1; }
+}
+.cn-theme .zk-card:has(.zk-card-stamp) .zk-card-art { animation: cn-grab-flicker 520ms steps(1, end) 1; }
+[data-motion='reduced'].cn-theme .zk-card-art, [data-motion='reduced'] .cn-theme .zk-card-art { animation: none; }
+@media (prefers-reduced-motion: reduce) { .cn-theme .zk-card-art { animation: none !important; } }
+
+/* ---------- the phone (build item 8) ----------
+   The shared phone frame: the top bar keeps the title, the turn and the case
+   clock, the menu sheet holds the rest, the side column goes and sheets rise
+   from the bottom. The glue puts every zone in one column (phoneColumn); here
+   each is sized for 390 px. */
+.cn-theme.phone .table-board { padding: 8px 12px 0; }
+.cn-theme.phone .table-board .zones { flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 12px; }
+.cn-theme.phone .table-board .zones > *, .cn-theme.phone .zones .zone-map { width: 100%; max-width: none; flex: none; margin: 0; }
+.cn-theme.phone .zk-zone-label { font-size: 11px; letter-spacing: .12em; }
+/* The city: the small overview, the borough tabs and the station list. */
+.cn-theme.phone .zk-stationmap.overview { background: var(--cn-panel); }
+.cn-theme.phone .zk-station-tab { border-color: var(--cn-rule); font-family: var(--cn-sign); }
+.cn-theme.phone .zk-station-tab.current { border-color: var(--cn-accent); color: var(--cn-text); }
+.cn-theme.phone .zk-station-row { background: var(--cn-panel); border-color: var(--cn-rule); }
+.cn-theme.phone .zk-station-row .zk-station-name { font-size: 13px; font-family: var(--cn-sign); }
+.cn-theme.phone .zk-station-row-faces .zk-card-face-pic { width: 22px; height: 22px; }
+.cn-theme.phone .zk-map-legend { display: none; }
+/* Clues, NOT tokens and the holding cells share a strip: 40 px tokens. */
+.cn-theme.phone .zone-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.cn-theme.phone .zone-row > * { flex: 1 1 auto; min-width: 0; }
+.cn-theme.phone :is(.zk-track-token, .zk-pool-token) { zoom: .56; }
+.cn-theme.phone [data-flip-id='cn:jail'] { flex-basis: 100%; padding: 8px 10px; }
+.cn-theme.phone [data-flip-id='cn:jail'] .zk-track-slot { min-height: 0; padding: 4px 6px; }
+.cn-theme.phone [data-flip-id='cn:jail'] .zk-track-card { font-size: 11px; }
+/* Your hand is a row you swipe; the next card peeks at the edge. */
+.cn-theme.phone [data-flip-id='cn:hand'] .zk-zone-row {
+  flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding: 2px 40px 6px 2px;
+  -webkit-overflow-scrolling: touch;
+}
+.cn-theme.phone [data-flip-id='cn:hand'] .zk-card { flex: none; scroll-snap-align: start; }
+/* Informants: four small camera grabs for the Detective; one strip facing the Hacker. */
+.cn-theme.phone :is([data-flip-id='cn:informants'], [data-flip-id='cn:informants-facing']) { --zekel-card-w: 76px; --zekel-card-h: 104px; }
+.cn-theme.phone :is([data-flip-id='cn:informants'], [data-flip-id='cn:informants-facing']) .zk-zone-row { flex-wrap: nowrap; overflow-x: auto; gap: 6px; }
+.cn-theme.phone [data-flip-id='cn:informants'] .layout-portrait :is(.zk-card-sub, .zk-card-badges, .zk-card-emblem) { display: none; }
+/* The case: the 1 + 3 + 3 × 3 grid of small slots. Where each person lives
+   is on the card up close, a tap away. */
+.cn-theme.phone [data-flip-id='cn:case'], .cn-theme.phone [data-flip-id='cn:case'] .zk-zone { --zekel-card-w: 30px; --zekel-card-h: 40px; }
+.cn-theme.phone [data-flip-id='cn:case'] .layout-portrait .zk-card-pic { flex: 1 1 auto; }
+.cn-theme.phone [data-flip-id='cn:case'] .layout-portrait .zk-card-body { display: none; }
+.cn-theme.phone [data-flip-id='cn:case'] .zk-tableau-slot { gap: 8px 10px; }
+/* The verbs: a grid above the bottom of the screen, every button 48 px tall
+   (3 across for the Detective, 4 for the Hacker). */
+.cn-theme.phone .action-bar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 6px 10px 10px; padding: 8px; }
+.cn-theme-hacker.phone .action-bar { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cn-theme.phone .action-bar > :is(.words, .steps) { grid-column: 1 / -1; }
+.cn-theme.phone .action-bar > .divider { display: none; }
+.cn-theme.phone .action-bar .words .sub { display: none; }
+.cn-theme.phone .action-bar > .btn {
+  min-height: 48px; margin: 0; padding: 4px 6px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; white-space: normal; text-align: center; line-height: 1.1;
+}
+.cn-theme.phone .action-bar > .btn .note { font-size: 9px; opacity: .75; }
+/* A card up close, in a sheet from the bottom: the full-size card. */
+.cn-theme .card-up-close-card { display: flex; justify-content: center; padding: 4px 0 12px; }
+.cn-theme .card-up-close-card .zk-card { --zekel-card-w: 240px; --zekel-card-h: 360px; }
+.cn-theme .card-up-close-card .zk-card:has(.layout-sign) { --zekel-card-w: 340px; --zekel-card-h: 214px; }
+.cn-theme .card-up-close-card .layout-portrait .zk-card-label { font-size: 18px; }
+.cn-theme .card-up-close-card .layout-portrait .zk-card-sub { font-size: 13px; -webkit-line-clamp: 6; }
+.cn-theme .card-up-close-card .layout-portrait .zk-card-emblem { width: 34px; height: 34px; }
+.cn-theme .card-up-close-card .zk-card-art { filter: blur(3px) grayscale(.92) contrast(1.25) brightness(.9) sepia(.4) hue-rotate(65deg) saturate(1.3); }
+.cn-theme .card-up-close-lines { margin: 0 0 12px; padding: 0; list-style: none; color: var(--cn-muted); font-size: 13px; }
+.cn-theme .card-up-close-moves { display: flex; flex-direction: column; gap: 8px; }
+.cn-theme .card-up-close-moves .btn { min-height: 48px; }
+.cn-theme.phone .zone-row > :is([data-flip-id='cn:clues'], [data-flip-id='cn:not-clues']) { flex: 1 1 0; min-width: 0; padding: 8px 10px; }
+.cn-theme.phone .zone-row > [data-flip-id='cn:clues'] { flex: 0 0 auto; }
+.cn-theme .card-up-close-moves .btn { white-space: normal; height: auto; text-align: left; justify-content: flex-start; line-height: 1.3; padding: 10px 14px; }
