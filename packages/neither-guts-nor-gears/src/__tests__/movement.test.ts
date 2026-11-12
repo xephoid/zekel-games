@@ -179,6 +179,24 @@ describe('M3 movement + battle trigger (PORT-PLAN §7b)', () => {
     expect(removedByHostile).toContain("wiz's Surf");
     expect(g.placements.some((c) => c.collectorId === 'surf-1')).toBe(false);
   });
+  it('(e2) T32: a Shared Resources partner\'s hero entering does not destroy the partner\'s collector (§6.2, §9)', () => {
+    // Bug report 2026-10-26: under Shared Resources, the partner's hero walked
+    // onto a tile where Zeke had collected and destroyed his collector. The
+    // treaty is standing permission to collect, and permission protects the
+    // collector from the consenting player's passive removal — even when it
+    // sits on an empty tile (so no single owner consented at placement).
+    let s = baseSession();
+    const g = s.gameState;
+    g.treaties.push({ type: 'shared-resources', partners: ['wiz', 'rob'] });
+    g.placements.push({ collectorId: 'water-collector-1', ownerId: 'rob', coord: '-2,8', resource: 'water', authorizedBy: null });
+    s = startWizardMove(s);
+    s = apply(s, 'wiz', { type: 'move_units', from: '-2,10', to: '-2,8', units: ['warden'] }).s;
+    expect(s.gameState.battle).toBeNull();
+    expect(s.gameState.placements.some((c) => c.collectorId === 'water-collector-1')).toBe(true);
+    // The protection is only from the partner: an unrelated hostile still sweeps it.
+    const removed = sweepLocation(s.gameState, null, '-2,8', new Set(['third-hostile']));
+    expect(removed).toContain("rob's Water collector");
+  });
   it('(f) attack-origin hex is exposed in battle state and blocks retreat/Decoy into it', () => {
     let s = baseSession();
     placeUnit(s.gameState, 'rob', '-2,8', 'spitter');
