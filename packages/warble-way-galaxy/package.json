@@ -1,6 +1,6 @@
 {
   "name": "@zekel/warble-way-galaxy",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "Warble Way Galaxy, a Zekel Games board game: its rules as a game module for the zekel MCP server, and its screen for Zekel Universe.",
   "license": "Apache-2.0",
   "repository": {
