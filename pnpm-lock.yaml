@@ -56,6 +56,9 @@ importers:
       '@zekel/sweetlands-imperium':
         specifier: workspace:*
         version: link:packages/sweetlands-imperium
+      '@zekel/tokens':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@zekel/warble-way-galaxy':
         specifier: workspace:*
         version: link:packages/warble-way-galaxy
@@ -92,12 +95,33 @@ importers:
 
   packages/adventurer-olympics:
     devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.7(@types/react@18.3.31)
       '@zekel/dev':
         specifier: ^0.1.2
         version: 0.1.2
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
+      '@zekel/glue-kit':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@zekel/primitives':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@zekel/wire-types':
+        specifier: ^0.1.0
+        version: 0.1.0
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
 
   packages/cybernoir-2127:
     devDependencies:
@@ -119,18 +143,45 @@ importers:
 
   packages/fractured-fist:
     devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.7(@types/react@18.3.31)
       '@zekel/dev':
         specifier: ^0.1.2
         version: 0.1.2
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
+      '@zekel/glue-kit':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@zekel/primitives':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@zekel/tokens':
+        specifier: ^0.1.0
+        version: 0.1.0
+      '@zekel/wire-types':
+        specifier: ^0.1.0
+        version: 0.1.0
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
 
   packages/neither-guts-nor-gears:
     devDependencies:
       '@types/react':
         specifier: ^18.3.12
         version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.7(@types/react@18.3.31)
       '@zekel/dev':
         specifier: ^0.1.2
         version: 0.1.2
@@ -146,24 +197,69 @@ importers:
       react:
         specifier: ^18.3.1
         version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
 
   packages/sweetlands-imperium:
     devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.7(@types/react@18.3.31)
       '@zekel/dev':
         specifier: ^0.1.2
         version: 0.1.2
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
+      '@zekel/glue-kit':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@zekel/primitives':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@zekel/wire-types':
+        specifier: ^0.1.0
+        version: 0.1.0
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
 
   packages/warble-way-galaxy:
     devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.7(@types/react@18.3.31)
       '@zekel/dev':
         specifier: ^0.1.2
         version: 0.1.2
       '@zekel/game-kit':
         specifier: ^0.1.0
         version: 0.1.0
+      '@zekel/glue-kit':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@zekel/primitives':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@zekel/wire-types':
+        specifier: ^0.1.0
+        version: 0.1.0
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
 
   packages/word-debauchee:
     devDependencies:
