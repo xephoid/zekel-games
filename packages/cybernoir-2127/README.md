@@ -4,6 +4,19 @@ Cybernoir 2127, a Zekel Games board game (2 players), as a game module for the [
 
 A 2-player hidden-movement deduction game of frame-ups and false leads. The Detective (who committed the crime) races to arrest the framed Hacker before the Hacker assembles 3 pieces of Evidence and clears their name.
 
+## The screen
+
+`@zekel/cybernoir-2127/glue` is the game's screen for Zekel Universe: the glue
+module Universe's table loads (`cybernoirGlue`), which lays the game out from
+its views with Universe's own parts (the subway map, cards, tracks). It needs
+`@zekel/glue-kit`, `@zekel/primitives` and `@zekel/wire-types`, which are
+optional peer dependencies: a server that only plays the game needs none of
+them. It imports its own stylesheet, so load it through a bundler.
+
+The portraits and faction marks are not in this package. The screen names
+them by address (`/art/cybernoir/...`), and the site that shows the screen
+serves them; Zekel Universe does, from `apps/web/public/art/cybernoir/`.
+
 ## Use
 
 Register it on [`@zekel/mcp`](https://www.npmjs.com/package/@zekel/mcp):

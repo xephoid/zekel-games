@@ -50,6 +50,9 @@ importers:
       '@zekel/neither-guts-nor-gears':
         specifier: workspace:*
         version: link:packages/neither-guts-nor-gears
+      '@zekel/primitives':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@zekel/sweetlands-imperium':
         specifier: workspace:*
         version: link:packages/sweetlands-imperium
@@ -102,6 +105,15 @@ importers:
         specifier: ^0.1.2
         version: 0.1.2
       '@zekel/game-kit':
+        specifier: ^0.1.0
+        version: 0.1.0
+      '@zekel/glue-kit':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@zekel/primitives':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@zekel/wire-types':
         specifier: ^0.1.0
         version: 0.1.0
 
