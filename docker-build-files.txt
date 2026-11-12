@@ -181,9 +181,11 @@ packages/warble-way-galaxy/src/data/flavour.ts
 packages/warble-way-galaxy/src/data/habitats.ts
 packages/warble-way-galaxy/src/data/levels.ts
 packages/warble-way-galaxy/src/data/ruins.ts
+packages/warble-way-galaxy/src/data/sheetText.ts
 packages/warble-way-galaxy/src/data/travelTables.ts
 packages/warble-way-galaxy/src/dev/index.ts
 packages/warble-way-galaxy/src/engine.ts
+packages/warble-way-galaxy/src/facts.ts
 packages/warble-way-galaxy/src/index.ts
 packages/warble-way-galaxy/src/legalMoves.ts
 packages/warble-way-galaxy/src/lore.ts
@@ -197,6 +199,7 @@ packages/warble-way-galaxy/src/lore/kralkin.md
 packages/warble-way-galaxy/src/lore/organizations.md
 packages/warble-way-galaxy/src/lore/story-seeds.md
 packages/warble-way-galaxy/src/lore/xaxalon-4.md
+packages/warble-way-galaxy/src/plainWords.ts
 packages/warble-way-galaxy/src/rng.ts
 packages/warble-way-galaxy/src/types.ts
 packages/warble-way-galaxy/src/views.ts
