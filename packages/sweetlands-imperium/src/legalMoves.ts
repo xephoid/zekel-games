@@ -8,6 +8,7 @@ import type { LegalMove, MoveLanding } from '@zekel/game-kit';
 import { availableFactionIds } from './data/factions.js';
 import { REGION_TREAT, type RegionId, type TreatId } from './data/board.js';
 import { hasJunctionChoice, JUNCTION_INDEX, advanceToColor, pathToColor, regionOf } from './geometry.js';
+import { captureTargetsIn, captureChoices, type CaptureChoice } from './capture.js';
 import type {
   SweetlandsState, SweetlandsMove, PlayerState, SpaceColor, UnitType, FoeType,
   UnitLocation,
@@ -80,63 +81,60 @@ interface RedActionVariant {
 }
 const NO_RED_VARIANT: RedActionVariant[] = [{ extra: {}, note: '' }];
 
-/** The enemy Leaders and Ambassadors this Red play could capture, leaders first.
- *
- *  The engine resolves the capture in the KNIGHT's region after the move
- *  (engine.ts actionBattleCapture), so this works from where the knight will be
- *  then, using the same scan as the engine. A knight already inside the castle
- *  attacks the foe with Red instead, so it has no targets. */
-function redCaptureTargets(
+/** Where the knight stands when this Red play's capture resolves: the engine
+ *  captures in the KNIGHT's region after the move (engine.ts
+ *  actionBattleCapture). null when there is no capture: a knight already inside
+ *  the castle attacks the foe with Red instead. */
+function redCaptureRegion(
   state: SweetlandsState, p: PlayerState, movedUnit: UnitType, from: UnitLocation, viaRoad: boolean,
-): { region: RegionId | null; targets: Array<{ ownerId: string; unit: UnitType }> } {
-  const none = { region: null, targets: [] };
-  if (state.foe && !state.foe.defeated && p.units.knight.zone === 'castle') return none;
+): RegionId | null {
+  if (state.foe && !state.foe.defeated && p.units.knight.zone === 'castle') return null;
   const knightAt = movedUnit === 'knight' ? (advanceToColor(from, 'red', viaRoad) ?? from) : p.units.knight;
-  const region = regionOf(knightAt);
-  if (region == null) return none;
-  const targets: Array<{ ownerId: string; unit: UnitType }> = [];
-  // Leaders first: the AI picks the first of equally scored options, and its
-  // policy is to take a leader when it can.
-  for (const u of ['leader', 'ambassador'] as UnitType[]) {
-    for (const other of state.players) {
-      if (other.playerId === p.playerId) continue;
-      if (regionOf(other.units[u]) === region) targets.push({ ownerId: other.playerId, unit: u });
-    }
-  }
-  return { region, targets };
+  return regionOf(knightAt);
 }
 
-/** One option per capture target, so WHO you capture is the player's pick, not
- *  the server's ("capture a leader" and "capture an ambassador" are different
- *  secret objectives). When taking a leader would meet both the public and the
- *  secret "capture a leader", only one scores and the capturer picks which, so
- *  that splits into two options (secret first, the AI's pick). */
-function redActionVariants(
-  state: SweetlandsState, p: PlayerState, movedUnit: UnitType, from: UnitLocation, viaRoad: boolean, actsTwice: boolean,
-): RedActionVariant[] {
-  const { region, targets } = redCaptureTargets(state, p, movedUnit, from, viaRoad);
-  if (targets.length === 0) return NO_RED_VARIANT;
+/** The words for each capture answer in `region` (capture.ts captureChoices):
+ *  who is taken, the enemy knight to beat first, and which "capture a leader"
+ *  objective it scores when that is also a choice. */
+function describeCaptureChoices(state: SweetlandsState, p: PlayerState, region: RegionId): Array<{ choice: CaptureChoice; note: string }> {
+  const choices = captureChoices(p, captureTargetsIn(state, p, region));
   // An enemy knight in that region must be beaten first; losing cancels the capture.
   const guards = state.players.filter((o) => o.playerId !== p.playerId && regionOf(o.units.knight) === region).map((o) => `${o.playerId}'s`);
   const fight = guards.length > 0 ? ` (you must first beat ${guards.join(' / ')} knight in that region; losing that battle cancels the capture)` : '';
-  // A double resolves Red twice; the second capture's region can't be known now.
+  return choices.map((c) => {
+    const who = `capturing ${c.targetPlayerId}'s ${c.targetUnit}${fight}`;
+    const scores = c.captureLeaderScores === 'secret'
+      ? ', scoring your secret "capture a leader" (+2; the public one stays open for a later capture)'
+      : c.captureLeaderScores === 'public'
+        ? ', scoring the public "capture a leader" (+1; your secret one stays open for a later capture)'
+        : '';
+    return { choice: c, note: `${who}${scores}` };
+  });
+}
+
+/** One option per capture answer, so WHO you capture is the player's pick, not
+ *  the server's ("capture a leader" and "capture an ambassador" are different
+ *  secret objectives). For a double card these are the FIRST capture's; the
+ *  second is asked once the knight has moved again (choose_capture). */
+function redActionVariants(
+  state: SweetlandsState, p: PlayerState, movedUnit: UnitType, from: UnitLocation, viaRoad: boolean, actsTwice: boolean,
+): RedActionVariant[] {
+  const region = redCaptureRegion(state, p, movedUnit, from, viaRoad);
   const twice = actsTwice
-    ? ' (a double resolves Red twice: this is the first capture. The server picks the second, wherever your knight then stands: the same kind of unit if there is one, else a unit of the same owner, else the only target, else a leader. If the second takes a leader while both "capture a leader" objectives are open, it scores the one you pick here, or the secret)'
+    ? ' (a double resolves Red twice: this is the first capture. After your knight moves again you choose the second capture, if there is more than one way it can go)'
     : '';
-  const secretOpen = p.secretObjectives.includes('capture_leader') && !(p.secretObjectivesScored ?? []).includes('capture_leader');
-  const publicOpen = !p.publicObjectivesScored.includes('capture_leader');
-  const out: RedActionVariant[] = [];
-  for (const t of targets) {
-    const base = { targetPlayerId: t.ownerId, targetUnit: t.unit };
-    const who = `, capturing ${t.ownerId}'s ${t.unit}${fight}`;
-    if (t.unit === 'leader' && secretOpen && publicOpen) {
-      out.push({ extra: { ...base, captureLeaderScores: 'secret' }, note: `${who}, scoring your secret "capture a leader" (+2; the public one stays open for a later capture)${twice}` });
-      out.push({ extra: { ...base, captureLeaderScores: 'public' }, note: `${who}, scoring the public "capture a leader" (+1; your secret one stays open for a later capture)${twice}` });
-    } else {
-      out.push({ extra: base, note: `${who}${twice}` });
-    }
-  }
-  return out;
+  const described = region == null ? [] : describeCaptureChoices(state, p, region);
+  if (described.length === 0) return actsTwice ? [{ extra: {}, note: twice }] : NO_RED_VARIANT;
+  return described.map(({ choice, note }) => ({ extra: choice, note: `, ${note}${twice}` }));
+}
+
+/** The answers while a double red card's second capture waits (capture_choice).
+ *  The knight is already where the capture happens. */
+function captureChoiceMoves(state: SweetlandsState, p: PlayerState): LegalMove<SweetlandsMove>[] {
+  const region = regionOf(p.units.knight);
+  if (region == null) return [];
+  return describeCaptureChoices(state, p, region).map(({ choice, note }) =>
+    mk({ type: 'choose_capture', ...choice }, `Second Red of your double card: ${note}.`));
 }
 
 // A report move can't be enumerated to a single move_id (the cards are whatever
@@ -171,6 +169,13 @@ function listLegalMoves(state: SweetlandsState, playerId: string): LegalMove<Swe
       return [mk({ type: 'resolve_report' }, `${label} ${state.pending.count} Intel card(s) (the server deals them when you press this).`)];
     }
     return [mk({ type: 'report_intel_draw', cards: reportCardSkeleton(state.pending.count) }, reportCardInstruction(state.pending.count))];
+  }
+
+  // ---- a double red card's second capture waits for its answer ----
+  if (state.pending?.kind === 'capture_choice') {
+    if (state.pending.forPlayerId !== playerId) return [];
+    const p = byId(state, playerId);
+    return p ? captureChoiceMoves(state, p) : [];
   }
 
   // ---- setup phases ----

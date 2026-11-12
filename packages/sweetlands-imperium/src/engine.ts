@@ -17,6 +17,7 @@ import {
   influenceGainForDistance, CASTLE_INFLUENCE_GAIN, regionsOnPath, colorOf, JUNCTION_INDEX,
 } from './geometry.js';
 import { shuffle, rollDice, rollSugarDice, randomSeed } from './rng.js';
+import { captureTargetsIn, captureChoices } from './capture.js';
 import type {
   SweetlandsState, SweetlandsMove, PlayerState, PlayerTurnFlags, IntelCard,
   UnitType, UnitLocation, FactionId, FoeType, Phase, SecretObjectiveId, ColorPlayParams, LastBattle,
@@ -331,6 +332,10 @@ function dispatch(state: SweetlandsState, playerId: string, move: SweetlandsMove
   if (state.pending?.kind === 'report_intel' && move.type !== 'report_intel_draw' && move.type !== 'resolve_report') {
     throw new GameError('ILLEGAL_MOVE', `${state.pending.forPlayerId} must report their ${state.pending.count} drawn Intel first (report_intel_draw, or the resolve_report button for a digital seat)`);
   }
+  // A double red card's second capture waits for its player's answer.
+  if (state.pending?.kind === 'capture_choice' && move.type !== 'choose_capture') {
+    throw new GameError('ILLEGAL_MOVE', `${state.pending.forPlayerId} must first choose who the second Red of their double card captures (choose_capture)`);
+  }
   switch (move.type) {
     // ---- setup ----
     case 'assign_setup_choices': return doAssignFactions(state, playerId, move.selections);
@@ -342,6 +347,7 @@ function dispatch(state: SweetlandsState, playerId: string, move: SweetlandsMove
     case 'recall': return doRecall(state, playerId, move.units);
     case 'play_intel': return doPlayIntel(state, playerId, move);
     case 'play_token': return doPlayToken(state, playerId, move);
+    case 'choose_capture': return doChooseCapture(state, playerId, move);
     case 'pass': return doPass(state, playerId);
     case 'discard_for_color': return doDiscardForColor(state, playerId, move.cardIds, move.color);
     case 'discard_sugar': return doDiscardSugar(state, playerId, move.count);
@@ -626,8 +632,16 @@ function doPlayIntel(state: SweetlandsState, playerId: string, move: Extract<Swe
     if (r.keepPlaying) endsPlayStep = false;
   } else {
     // double card = the SAME color played twice (move+action, then move+action).
+    // A double RED's second capture happens wherever the knight then stands, so
+    // it can't be chosen when the move is listed: the targets named in the move
+    // are the FIRST capture's. The second is asked of a human when it has more
+    // than one answer (a capture_choice pending); an AI takes leaders first and
+    // the secret objective, its policy.
     const r0 = resolveColorPlay(state, p, card.color, move);
-    const r1 = resolveColorPlay(state, p, card.color, move);
+    const second = card.color === 'red'
+      ? { ...move, targetPlayerId: undefined, targetUnit: undefined, captureLeaderScores: undefined }
+      : move;
+    const r1 = resolveColorPlay(state, p, card.color, second, card.color === 'red');
     summary = `${playerId} played a double ${card.color} card — ${r0.summary}, then ${r1.summary}`;
     if (r0.keepPlaying || r1.keepPlaying) endsPlayStep = false;
   }
@@ -647,6 +661,7 @@ function resolveColorPlay(
   p: PlayerState,
   color: SpaceColor,
   move: ColorPlayParams,
+  askCapture = false,
 ): { summary: string; keepPlaying: boolean } {
   // GREEN with takeAction = discard the card (no move) to unlock unlimited plays.
   if (color === 'green' && move.takeAction) {
@@ -674,7 +689,7 @@ function resolveColorPlay(
   } else {
     parts.push(`${move.unit} could not advance (${color})`);
   }
-  if (move.takeAction) parts.push(resolveColorAction(state, p, color, move));
+  if (move.takeAction) parts.push(resolveColorAction(state, p, color, move, askCapture));
   return { summary: parts.join(', '), keepPlaying: false };
 }
 
@@ -684,12 +699,13 @@ function resolveColorAction(
   p: PlayerState,
   color: SpaceColor,
   move: ColorPlayParams,
+  askCapture = false,
 ): string {
   switch (color) {
     case 'orange': return actionAcquireInfluence(p);
     case 'yellow': return actionTaxes(state, p, move.raiseTaxes ?? false);
     case 'blue': return actionCollectIntel(state, p);
-    case 'red': return actionBattleCapture(state, p, move);
+    case 'red': return actionBattleCapture(state, p, move, askCapture);
     case 'purple': return actionCastle(state, p, move);
     case 'green': return 'pushed'; // Green move already applied; push folded into movement
   }
@@ -748,7 +764,10 @@ function actionTaxes(state: SweetlandsState, p: PlayerState, raise: boolean): st
   return parts.length ? `taxes: ${parts.join('; ')}` : 'collected taxes (none owed)';
 }
 
-function actionBattleCapture(state: SweetlandsState, p: PlayerState, move: ColorPlayParams): string {
+/** Red: battle the foe from inside the castle, or capture an enemy Leader or
+ *  Ambassador in the knight's region. `askCapture` (a human's second Red of a
+ *  double card) stops to ask when the capture has more than one answer. */
+function actionBattleCapture(state: SweetlandsState, p: PlayerState, move: ColorPlayParams, askCapture = false): string {
   const kloc = p.units.knight;
   // Red action: Attack the castle foe ONLY if the knight is already inside the
   // castle (entered previously by a Purple play). Red does NOT carry a unit
@@ -758,24 +777,23 @@ function actionBattleCapture(state: SweetlandsState, p: PlayerState, move: Color
   }
   const knightRegion = regionOf(p.units.knight);
   if (knightRegion == null) return 'no battle/capture available (knight is in the castle / off-board)';
-  // find an enemy leader/ambassador in the knight's region
-  const targets: Array<{ owner: PlayerState; unit: UnitType }> = [];
-  for (const other of state.players) {
-    if (other.playerId === p.playerId) continue;
-    for (const u of ['leader', 'ambassador'] as UnitType[]) {
-      if (regionOf(other.units[u]) === knightRegion) targets.push({ owner: other, unit: u });
-    }
-  }
+  // the enemy leaders/ambassadors in the knight's region, leaders first
+  const found = captureTargetsIn(state, p, knightRegion);
+  const targets = found.map((t) => ({ owner: findPlayer(state, t.ownerId), unit: t.unit }));
   if (targets.length === 0) return 'no capture target in range';
+  if (askCapture && p.kind === 'human' && state.phase !== 'game_over' && captureChoices(p, found).length > 1) {
+    state.pending = { kind: 'capture_choice', forPlayerId: p.playerId };
+    return `${p.playerId} now chooses who the second Red captures`;
+  }
   // if an enemy knight is in-region, must battle it first
   const enemyKnight = state.players.find((o) => o.playerId !== p.playerId && regionOf(o.units.knight) === knightRegion);
   // WHO you capture is the player's choice: "capture a leader" and "capture an
   // ambassador" are different secret objectives. getLegalMoves offers one option
-  // per target (redActionVariants), so these fallbacks only cover a move that
-  // named no exact target, mainly a DOUBLE red card, whose second capture happens
-  // in a region that could not be known when the move was built:
+  // per target, and a human's second Red of a double card asks (above), so these
+  // fallbacks only cover a move that named no exact target (an AI's second Red,
+  // or a hand-written move):
   //   1. the exact owner and unit named;
-  //   2. the same kind of unit named, any owner ("I am hunting ambassadors");
+  //   2. the same kind of unit named, any owner;
   //   3. the same owner named, any unit;
   //   4. the only target, when there is just one;
   //   5. leaders first (the AI's policy when nothing was named).
@@ -825,6 +843,32 @@ function scoreLeaderCapture(state: SweetlandsState, p: PlayerState, prefer?: 'pu
     return ` (scored the public "capture a leader", +1${secretOpen ? '; the secret one stays open for a later capture' : ''})`;
   }
   return '';
+}
+
+/** The answer to a capture_choice pending: the second Red of a human's double
+ *  card captures the unit they picked. The knight hasn't moved since the
+ *  question was asked, so the answers are worked out again from where it is. */
+function doChooseCapture(state: SweetlandsState, playerId: string, move: Extract<SweetlandsMove, { type: 'choose_capture' }>): string {
+  const pend = state.pending;
+  if (pend?.kind !== 'capture_choice') throw new GameError('ILLEGAL_MOVE', 'No capture is waiting for a choice');
+  if (pend.forPlayerId !== playerId) throw new GameError('NOT_YOUR_TURN', `Waiting on ${pend.forPlayerId} to choose the second capture`);
+  const p = findPlayer(state, playerId);
+  const region = regionOf(p.units.knight);
+  const found = region == null ? [] : captureTargetsIn(state, p, region);
+  if (!found.some((t) => t.ownerId === move.targetPlayerId && t.unit === move.targetUnit)) {
+    const list = found.map((t) => `${t.ownerId}'s ${t.unit}`).join(', ');
+    throw new GameError('ILLEGAL_MOVE', `${move.targetPlayerId}'s ${move.targetUnit} is not in your knight's region. You can capture: ${list}`);
+  }
+  state.pending = null;
+  const summary = actionBattleCapture(state, p, {
+    unit: 'knight', takeAction: true,
+    targetPlayerId: move.targetPlayerId, targetUnit: move.targetUnit,
+    ...(move.captureLeaderScores ? { captureLeaderScores: move.captureLeaderScores } : {}),
+  });
+  // The double card's play ends here, as it would have without the question.
+  p.turn.step = p.turn.unlimitedPlays ? 'play' : 'influence';
+  scoreSecretObjectives(state, p);
+  return `${playerId}'s second Red: ${summary}`;
 }
 
 /** Keep a battle's dice for the views (SweetlandsState.lastBattle). */

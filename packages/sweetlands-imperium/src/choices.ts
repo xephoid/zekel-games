@@ -116,12 +116,25 @@ export const SWEETLANDS_CHOICES: PlayerChoice[] = [
     resolvedBy: ['play_intel'],
     distinguishedBy: 'targetPlayerId',
     dependsOn:
-      "playing Red and ending your move where another player's unit stands. KNOWN DEFECT, not " +
-      'a rules-faithful auto-resolution: getLegalMoves never offers targetPlayerId/targetUnit ' +
-      '(the targets are not known until the move resolves), so an assistant reading the move ' +
-      'list sees no choice, and engine.ts:702 then takes the enemy Leader. The rules make the ' +
-      'target matter — "capture a leader" and "capture an ambassador" are different secret ' +
-      'objectives — so a player chasing the ambassador gets the leader taken for them.',
+      "playing Red with your knight's region holding another player's Leader or Ambassador. " +
+      'getLegalMoves offers one option per target, worked out from where the knight ends up.',
+  },
+  {
+    id: 'capture-leader-scores',
+    description: 'Red: which "capture a leader" objective a leader capture scores (public 1 or secret 2)',
+    owner: 'player',
+    when: 'in-game',
+    resolvedBy: ['play_intel', 'play_token', 'choose_capture'],
+    distinguishedBy: 'captureLeaderScores',
+    dependsOn: 'capturing a leader while holding the secret "capture a leader" and the public one is still open',
+  },
+  {
+    id: 'second-capture',
+    description: 'Double red card: who the second Red captures',
+    owner: 'player',
+    when: 'in-game',
+    resolvedBy: ['choose_capture'],
+    dependsOn: 'a double red card whose second capture has more than one answer once the knight has moved again',
   },
   {
     id: 'nomads-entry',
