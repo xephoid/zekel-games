@@ -25,7 +25,7 @@ import { unitById, resolveBattleCard, resolveCoord } from './resolvers.js';
 import { tileName } from './names.js';
 import type {
   Phase,
-  BattleState, BattleUnit, CommittedCard, Coord, HeroInstance, MapUnit,
+  BattleState, BattleUnit, CollectorPlacement, CommittedCard, Coord, HeroInstance, MapUnit,
   NGGMove, NGGState, PlayerState,
 } from './types.js';
 import {
@@ -1875,9 +1875,15 @@ export function sweepLocation(state: NGGState, actor: PlayerState | null, coord:
     removeMapUnit(state, u);
     removed.push(`${u.ownerId}'s ${unitById(u.typeId)?.name ?? u.typeId}`);
   }
+  // A collector its owner was permitted to place is spared by the player who
+  // permitted it (§6.2, §9): the location owner who said yes (authorizedBy),
+  // or a Shared Resources partner, whose treaty is standing permission — even
+  // for a collector on an empty tile, where no one owner consented (T32).
+  const permitted = (w: string, c: CollectorPlacement) => w === c.authorizedBy
+    || treatyBetween(state, w, c.ownerId, 'shared-resources');
   for (const c of [...collectorsAt(state, coord)]) {
     if (isProtected(c.ownerId)) continue;
-    if (!by.some((w) => w !== c.authorizedBy && hostileTo(w, c.ownerId))) continue;
+    if (!by.some((w) => !permitted(w, c) && hostileTo(w, c.ownerId))) continue;
     destroyCollector(state, c, 'left without protection');
     removed.push(`${c.ownerId}'s ${collectorLabel(c.collectorId)}`);
   }
