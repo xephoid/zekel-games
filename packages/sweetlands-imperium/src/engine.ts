@@ -18,6 +18,7 @@ import {
 } from './geometry.js';
 import { shuffle, rollDice, rollSugarDice, randomSeed } from './rng.js';
 import { captureTargetsIn, captureChoices } from './capture.js';
+import { colorCardLeft } from './trade.js';
 import type {
   SweetlandsState, SweetlandsMove, PlayerState, PlayerTurnFlags, IntelCard,
   UnitType, UnitLocation, FactionId, FoeType, Phase, SecretObjectiveId, ColorPlayParams, LastBattle,
@@ -215,15 +216,14 @@ function dealIntelToPlayer(state: SweetlandsState, p: PlayerState, n: number): I
 }
 
 /** Pull one single-color card of `color` from the deck (reshuffling the discard
- *  in if needed) for the discard-for-color conversion. Falls back to a synthesized
- *  card only in the degenerate case where all copies of that color are in hands —
- *  preserving the conversion's guarantee without normally breaking deck conservation. */
+ *  in if needed) for the discard-for-color trade. The caller checks first that
+ *  one is left (`colorCardLeft`); the game never makes up a card (T45 ruling). */
 function takeColorFromDeck(state: SweetlandsState, color: SpaceColor): IntelCard {
   const find = (): number => state.intelDeck.findIndex((c) => c.kind === 'single' && c.color === color);
   let idx = find();
   if (idx < 0 && state.intelDiscard.length > 0) { reshuffleDiscard(state); idx = find(); }
-  if (idx >= 0) return state.intelDeck.splice(idx, 1)[0]!;
-  return { cardId: `conv-${color}-${state.seed}`, kind: 'single', color }; // degenerate fallback
+  if (idx < 0) throw new GameError('ILLEGAL_MOVE', `No ${color} Intel card is left in the deck or the discard pile`);
+  return state.intelDeck.splice(idx, 1)[0]!;
 }
 
 function reshuffleDiscard(state: SweetlandsState): void {
@@ -1009,6 +1009,11 @@ function doDiscardForColor(state: SweetlandsState, playerId: string, cardIds: st
   const p = requireActive(state, playerId);
   const need = isNomads(p.faction) ? 4 : (p.faction === 'fudge' ? 2 : 4);
   if (cardIds.length !== need) throw new GameError('ILLEGAL_MOVE', `Discard exactly ${need} Intel to convert`);
+  // Check before changing anything: a card of that color must be left to take.
+  const traded = p.hand.filter((c) => cardIds.includes(c.cardId));
+  if (!colorCardLeft(state, color, traded)) {
+    throw new GameError('ILLEGAL_MOVE', `No ${color} Intel card is left in the deck or the discard pile, so you cannot trade for ${color}.`);
+  }
   removeCards(state, p, cardIds);
   p.turn.intelDiscardedThisTurn += need;
   p.progress.intelDiscardedTotal += need;

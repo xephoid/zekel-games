@@ -98,7 +98,7 @@ Public objectives (one-time each): ${PUBLIC_OBJECTIVES.map((o) => `${o.descripti
 
 One foe guards the castle (chosen at setup): Dragon rolls 5 dice, Orc 3, Fiend 2. Battle by rolling your sugar cubes vs the foe/knight; ties go to the defender. Only knights battle/capture. SUGAR CUBES ARE CUSTOM DICE — each has 3 blank faces (0), plus a 1, a 2, and a 3 (so each cube averages 1 pip). You roll one die per sugar cube you own.
 
-Players may TRADE at any time on their turn (influence, sugar, Intel cards/tokens, or swap unit locations) — the table agrees and you record it with the trade move. A player may also voluntarily discard sugar cubes (discard_sugar). Nomads start OFF the board and pick an entry region the first time each unit moves.`;
+Players may TRADE at any time on their turn (influence, sugar, Intel cards/tokens, or swap unit locations) — the table agrees and you record it with the trade move. A player may also voluntarily discard sugar cubes (discard_sugar). On your turn you may discard 4 Intel cards (General Fudge: 2) to take one one-color Intel card of a color you pick from the deck or the discard pile (discard_for_color); a color with no such card left there cannot be picked. Nomads start OFF the board and pick an entry region the first time each unit moves.`;
 
 export class SweetlandsImperiumGame implements Game<SweetlandsState, SweetlandsMove, SweetlandsOptions> {
   readonly id = 'sweetlands-imperium';

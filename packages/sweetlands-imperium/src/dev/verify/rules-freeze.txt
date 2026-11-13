@@ -118,6 +118,9 @@ On your turn, in order:
 
 **Any time:** trade freely (Intel cards/tokens, sugar, influence, swap unit locations — no limits).
 **Any time on your turn:** discard 4 Intel → 1 Intel of any color (Fudge: 2 → 1).
+   ✅ designer ruling 2026-11-13: the card you take is a real one-color card from the deck or the
+   discard pile. When no card of the chosen color is left in either, that color cannot be picked.
+   Never make up a new card: the deck stays 80 cards.
 
 **Scoring phase (after every player has gone this round):**
 1. Score end-of-round objectives in turn order.
