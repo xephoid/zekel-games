@@ -77,7 +77,7 @@ function units(x: unknown): Unit[] {
   }));
 }
 
-/** The rulebook page's data, or null when the reference has no rulebook. */
+/** The rulebook page's data, or null when the reference has no rulebook or is missing part of what the page draws. */
 export function readRulebook(referenceData: unknown): RulebookData | null {
   if (!isObj(referenceData) || !isObj(referenceData['rulebook'])) return null;
   const text = referenceData['rulebook'] as unknown as RulebookText;
@@ -118,7 +118,7 @@ export function readRulebook(referenceData: unknown): RulebookData | null {
   const eco = isObj(v['economic_collectors_by_layout']) ? v['economic_collectors_by_layout'] : {};
   const tech = isObj(v['tech_target']) ? asNum(v['tech_target']['wizard']) : 0;
 
-  return {
+  const data: RulebookData = {
     text, maps, wizardUnits, robotUnits, treaties, deck, ladder,
     victory: {
       milestones,
@@ -128,6 +128,30 @@ export function readRulebook(referenceData: unknown): RulebookData | null {
       tech,
     },
   };
+  return complete(data, heroes.length) ? data : null;
+}
+
+const PLAYER_COUNTS = [2, 3, 4, 5, 6];
+const MILESTONE_COLUMNS = 5;
+const positive = (x: unknown): boolean => typeof x === 'number' && Number.isFinite(x) && x > 0;
+
+/**
+ * Whether the data holds everything the page draws. The readers above fill a
+ * missing number with 0 and a missing list with nothing, and a page showing a
+ * wrong number is worse than no page: a site then shows the plain rules text.
+ */
+function complete(data: RulebookData, heroCount: number): boolean {
+  const v = data.victory;
+  const milestonesOk = (n: number) => {
+    const row = v.milestones[n];
+    return Array.isArray(row) && row.length === MILESTONE_COLUMNS && row.every(positive);
+  };
+  return PLAYER_COUNTS.every((n) => positive(v.cultureTarget[n]) && positive(v.kills[n]) && milestonesOk(n))
+    && positive(v.tech)
+    && LAYOUTS.every((k) => positive(v.economicCollectors[k]) && data.maps[k].length > 0)
+    && heroCount > 0
+    && data.wizardUnits.length > 0 && data.robotUnits.length > 0
+    && data.treaties.length > 0 && data.deck.length > 0;
 }
 
 export function layoutFor(data: RulebookData, players: number): LayoutKey {

@@ -1,6 +1,6 @@
 {
   "name": "@zekel/neither-guts-nor-gears",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Neither Guts nor Gears, a Zekel Games board game: its rules as a game module for the zekel MCP server, and its screen for Zekel Universe.",
   "license": "Apache-2.0",
   "repository": {

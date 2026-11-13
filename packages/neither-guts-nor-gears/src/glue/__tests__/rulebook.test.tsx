@@ -30,6 +30,24 @@ describe('the Neither Guts nor Gears rulebook page', () => {
     expect(readRulebook({})).toBeNull();
   });
 
+  it('refuses data missing part of what the page draws, rather than drawing zeros', () => {
+    expect(data).not.toBeNull();
+    for (const drop of ['victory', 'maps', 'treaties', 'wizard_units', 'robot_units', 'battle_deck', 'heroes']) {
+      const { [drop]: _gone, ...rest } = referenceData;
+      expect(readRulebook(rest), drop).toBeNull();
+    }
+    const v = referenceData.victory;
+    const m = v.milestones_by_player_count;
+    const broken = [
+      { ...referenceData, victory: { ...v, milestones_by_player_count: { ...m, 4: [null, ...m['4'].slice(1)] } } },
+      { ...referenceData, victory: { ...v, milestones_by_player_count: { ...m, 4: m['4'].slice(0, 3) } } },
+      { ...referenceData, victory: { ...v, tech_target: {} } },
+      { ...referenceData, heroes: [] },
+      { ...referenceData, maps: { ...referenceData.maps, '2p': [] } },
+    ];
+    for (const [i, bad] of broken.entries()) expect(readRulebook(bad), `broken data ${i}`).toBeNull();
+  });
+
   it('shows the engine\'s win numbers for the chosen player count', () => {
     render(<NggRulebook reference={reference} />);
     const win = () => section(/Four ways to win/);
