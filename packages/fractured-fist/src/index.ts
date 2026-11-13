@@ -20,6 +20,7 @@ import { suggestOpaqueMove } from './suggest.js';
 import { physicalSetupSteps, sessionContext } from './setup.js';
 import { getCard as cardDef } from './cards.js';
 import { FF_RULE_SECTIONS } from './rulesSections.js';
+import { ffRulebook } from './rulebook.js';
 import { renderRulesText } from '@zekel/game-kit';
 
 const optionsSchema = {
@@ -484,6 +485,9 @@ export class FracturedFistGame implements Game<FFState, FFMove, FFOptions> {
       starting_stamina_default: 7,
       starting_hand_size_default: 5,
       max_missteps: 10,
+      // The rules laid out as a rulebook for the rules page (rulebook.ts); the
+      // page draws every card face from the cards above.
+      rulebook: ffRulebook(),
     };
   }
 

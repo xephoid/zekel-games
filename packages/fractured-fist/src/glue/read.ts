@@ -169,6 +169,12 @@ function cardData(cardId: string, instance: string, defs: Map<string, CardDef>, 
   };
 }
 
+/** A card's face as the table draws it, for pages that show cards outside a
+ *  game (the rulebook). */
+export function printedCard(cardId: string, defs: Map<string, CardDef>, instance: string = cardId): CardData {
+  return cardData(cardId, instance, defs);
+}
+
 const ZONES = ['hand', 'played', 'discard'] as const;
 
 type Contents = { hand: string[]; played: string[]; discard: string[] };

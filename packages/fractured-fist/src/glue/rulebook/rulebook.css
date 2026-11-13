@@ -1,0 +1,163 @@
+/* Fractured Fist rulebook, in the table's arcade look. The tokens are the
+   table's (ff.css, .table-shell.ff-theme): the page is dark in both of the
+   site's light and dark settings, as the table is. Card faces, slanted tags,
+   counters, damage and defense chips and the VS burst are the table's own
+   classes from ff.css; this file only lays the page out. */
+
+.ff-theme.ff-rulebook {
+  --ff-ground: #131116; --ff-stage: #18151c; --ff-panel: #221e27; --ff-raised: #2c2732;
+  --ff-text: #f4efe6; --ff-muted: #a9a2b3; --ff-hi: #FFD23F; --ff-hi-2: #FF5A1F;
+  --ff-damage: #ff5646; --ff-defense: #4ea3ff; --ff-shadow: 4px 4px 0 #000; --ff-radius: 6px;
+  --ff-display: 'Barlow Condensed', 'Arial Narrow', 'IBM Plex Sans', sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --zekel-card-w: 92px; --zekel-card-h: 130px;
+  background: var(--ff-ground);
+  background-image: repeating-linear-gradient(-12deg, rgba(255, 255, 255, .018) 0 2px, transparent 2px 14px);
+  color: var(--ff-text); font: 400 15px/1.55 var(--font-body);
+  display: grid; gap: 36px; padding: 0 16px 56px; border-radius: 10px; overflow: hidden;
+}
+.ff-rulebook * { box-sizing: border-box; }
+.ff-rulebook :is(h1, h2, h3) { margin: 0; font-family: var(--ff-display); font-style: italic; font-weight: 800; text-transform: uppercase; letter-spacing: .01em; line-height: 1; text-wrap: balance; }
+.ff-rulebook h1 { font-size: clamp(3rem, 11vw, 5.6rem); letter-spacing: -.01em; color: var(--ff-text); text-shadow: 4px 4px 0 #000, 0 0 0 transparent; }
+.ff-rulebook h2 { font-size: clamp(1.7rem, 5vw, 2.3rem); }
+.ff-rulebook h3 { font-size: 1.25rem; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; margin-bottom: 10px; }
+.ff-rulebook p { margin: 0 0 10px; max-width: 72ch; }
+.ff-rulebook ol, .ff-rulebook ul { margin: 0; }
+.ff-rulebook figure { margin: 0; }
+.ffr-note { color: var(--ff-muted); font-size: 14px; }
+:is(.ffr-steps, .ffr-moves, .ffr-strike) + .ffr-note { margin-top: 14px; }
+.ffr-intro { color: var(--ff-muted); }
+.ffr-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- the cover ---------- */
+.ffr-cover {
+  position: relative; display: grid; gap: 14px; align-content: start; margin: 0 -16px; padding: 30px 16px 28px;
+  background: #0b0a0d; border-bottom: 4px solid var(--ff-hi);
+  background-image: repeating-conic-gradient(from 0deg at 82% 50%, rgba(255, 210, 63, .07) 0 4deg, transparent 4deg 12deg);
+}
+.ffr-cover > .ff-tag { justify-self: start; }
+.ffr-lede { font-size: 17px; max-width: 54ch; }
+.ffr-cover-cards { display: flex; justify-content: flex-end; gap: 0; pointer-events: none; }
+.ffr-cover-cards > span { margin-left: -26px; }
+@media (min-width: 760px) {
+  .ffr-cover { grid-template-columns: 1fr auto; padding: 40px 28px 34px; margin: 0 -16px; }
+  .ffr-cover > :not(.ffr-cover-cards) { grid-column: 1; }
+  .ffr-cover-cards { grid-column: 2; grid-row: 1 / span 4; align-self: center; padding-right: 12px; }
+}
+
+/* ---------- a section's heading: a slanted number, then the title ---------- */
+.ff-rulebook section { display: grid; gap: 14px; }
+.ffr-head { display: flex; align-items: center; gap: 14px; }
+.ffr-num { position: relative; isolation: isolate; display: grid; place-items: center; width: 44px; height: 40px; flex: none;
+  font: italic 800 24px/1 var(--ff-display); color: #111; }
+.ffr-num::before { content: ''; position: absolute; inset: 0; z-index: -1; transform: skewX(-12deg); background: var(--ff-hi); border: 2px solid #000; box-shadow: 3px 3px 0 #000; }
+
+.ffr-panel { background: var(--ff-panel); border: 2px solid #000; border-radius: var(--ff-radius); box-shadow: var(--ff-shadow); padding: 16px; min-width: 0; }
+.ffr-callout { border-left: 6px solid var(--ff-hi); }
+.ffr-two { display: grid; gap: 14px; }
+@media (min-width: 760px) { .ffr-two { grid-template-columns: 1fr 1fr; } }
+
+/* ---------- card rows ---------- */
+.ffr-cards { display: flex; flex-wrap: wrap; gap: 12px; }
+.ffr-cards-sm { --zekel-card-w: 72px; --zekel-card-h: 102px; gap: 8px; }
+.ffr-cards-lg { --zekel-card-w: 128px; --zekel-card-h: 180px; }
+.ffr-cards-lg .zk-card-label { font-size: 15px; }
+.ffr-cards-sm .zk-card-label { font-size: 10px; }
+.ffr-cards-sm .zk-card-badge { font-size: 8px; }
+.ff-rulebook .zk-card { cursor: default; }
+
+/* the starting deck as a fan */
+.ffr-fan { display: flex; padding: 4px 0 12px 42px; --zekel-card-w: 72px; --zekel-card-h: 102px; }
+.ffr-fan > span { margin-left: -42px; }
+.ffr-fan :is(.zk-card-badges, .zk-card-sub) { visibility: hidden; }
+.ffr-fan .zk-card-label { font-size: 10px; }
+
+/* ---------- how you win ---------- */
+.ffr-win { display: grid; gap: 6px; }
+.ffr-meter { display: flex; gap: 5px; margin-bottom: 8px; }
+.ffr-meter > span { width: 26px; height: 18px; transform: skewX(-12deg); border: 2px solid #000;
+  background: linear-gradient(180deg, #FFD23F 0 55%, #FF8A1F 55%); }
+.ffr-meter > span.gone { background: #3a3440; }
+.ffr-meter.small { gap: 3px; margin: 0; }
+.ffr-meter.small > span { width: 9px; height: 30px; border-width: 1.5px; }
+
+/* ---------- what each player needs ---------- */
+.ffr-comp { list-style: none; padding: 0; display: grid; gap: 10px; margin: 6px 0 12px; --zekel-card-w: 52px; --zekel-card-h: 74px; }
+@media (min-width: 760px) { .ffr-comp { grid-template-columns: 1fr 1fr; } }
+.ffr-comp li { display: grid; grid-template-columns: 60px 1fr auto; align-items: center; gap: 12px; padding: 8px 10px; background: var(--ff-raised); border: 2px solid #000; }
+.ffr-comp-pic { display: grid; place-items: center; }
+.ffr-comp-pic .zk-card-label { font-size: 7px; }
+.ffr-comp-pic :is(.zk-card-badges, .zk-card-sub) { display: none; }
+.ffr-comp-body { display: grid; gap: 2px; font-size: 13.5px; color: var(--ff-muted); }
+.ffr-comp-body b { font: italic 800 18px/1 var(--ff-display); text-transform: uppercase; color: var(--ff-text); }
+.ffr-count { font: italic 800 34px/1 var(--ff-display); color: var(--ff-hi); }
+
+/* ---------- numbered steps ---------- */
+.ffr-steps { padding: 0; list-style: none; counter-reset: ffr; display: grid; gap: 10px; }
+.ffr-steps > li { counter-increment: ffr; display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: baseline; }
+.ffr-steps > li::before { content: counter(ffr); font: italic 800 22px/1 var(--ff-display); color: var(--ff-hi); text-align: right; }
+
+/* ---------- a round: two turns, then the strike ---------- */
+.ffr-flow { list-style: none; padding: 0; display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px; margin: 6px 0 16px; }
+.ffr-turn { display: grid; gap: 8px; padding: 10px 12px; background: var(--ff-raised); border: 2px solid #000; }
+.ffr-turn ol { list-style: none; padding: 0; display: flex; gap: 4px; align-items: center; }
+.ffr-turn ol li + li::before { content: '▸'; color: var(--ff-muted); margin-right: 4px; }
+.ffr-flow-strike { display: grid; grid-template-columns: auto auto; align-items: center; gap: 10px; padding: 0 8px; }
+.ffr-flow-strike b { font: italic 800 26px/1 var(--ff-display); text-transform: uppercase; color: var(--ff-hi); }
+.ffr-burst { width: 48px; height: 48px; background: var(--ff-hi-2);
+  clip-path: polygon(50% 0, 61% 18%, 82% 8%, 80% 30%, 100% 36%, 86% 52%, 100% 68%, 79% 72%, 82% 94%, 61% 84%, 50% 100%, 39% 84%, 18% 94%, 21% 72%, 0 68%, 14% 52%, 0 36%, 20% 30%, 18% 8%, 39% 18%); }
+.ffr-defs, .ffr-effects { display: grid; gap: 8px; margin: 0 0 12px; }
+.ffr-defs > div, .ffr-effects > div { display: grid; grid-template-columns: 120px 1fr; gap: 12px; align-items: baseline; }
+.ffr-defs dt { font: italic 800 17px/1 var(--ff-display); text-transform: uppercase; }
+.ff-rulebook dd { margin: 0; }
+
+/* ---------- effects, as the badges on a card ---------- */
+.ffr-effect { display: inline-block; background: #fff; color: #111; border: 1.5px solid #111; border-radius: 999px; padding: 1px 10px; font: 600 13px/1.5 var(--font-body); white-space: nowrap; }
+.ffr-effect.damage { background: var(--ff-damage); color: #fff; }
+.ffr-effect.defense { background: var(--ff-defense); color: #fff; }
+@media (min-width: 760px) { .ffr-effects { grid-template-columns: 1fr 1fr; column-gap: 24px; } }
+
+/* ---------- a worked example ---------- */
+.ffr-example { margin-top: 14px; padding: 14px; background: var(--ff-stage); border: 2px solid #000; border-left: 6px solid var(--ff-hi); }
+.ffr-hand { display: grid; gap: 8px; padding-bottom: 14px; margin-bottom: 12px; border-bottom: 2px dashed rgba(255, 255, 255, .12); }
+.ffr-moves { list-style: none; padding: 0; display: grid; gap: 10px; margin-bottom: 12px; --zekel-card-w: 58px; --zekel-card-h: 82px; }
+.ffr-moves > li { display: grid; grid-template-columns: 64px 1fr; gap: 10px 14px; align-items: center; }
+.ffr-moves > li > .ffr-counters { grid-column: 2; }
+@media (min-width: 760px) { .ffr-moves > li { grid-template-columns: 64px 1fr auto; } .ffr-moves > li > .ffr-counters { grid-column: auto; } }
+.ffr-move-pic { display: grid; place-items: center; }
+.ffr-move-pic .zk-card-label { font-size: 8px; }
+.ffr-move-pic :is(.zk-card-badges, .zk-card-sub) { display: none; }
+.ffr-counters { display: flex; gap: 6px; flex-wrap: wrap; }
+.ff-rulebook .ff-counter { min-width: 58px; }
+.ff-rulebook .ff-counter:not(.changed) b { color: var(--ff-muted); }
+.ff-rulebook .ff-counter.changed { border-color: var(--ff-hi); }
+
+/* resources and what they are worth */
+.ffr-worth { display: flex; gap: 18px; flex-wrap: wrap; margin: 6px 0 4px; }
+.ffr-worth figure { display: grid; justify-items: center; gap: 6px; }
+.ffr-worth figcaption { font: 700 13px/1 var(--ff-display); letter-spacing: .08em; text-transform: uppercase; color: var(--ff-muted); }
+.ffr-worth figcaption b { font: italic 800 22px/1 var(--ff-display); color: var(--ff-hi); margin-right: 3px; }
+
+/* a card beside a paragraph */
+.ffr-aside { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; margin: 8px 0; --zekel-card-w: 64px; --zekel-card-h: 90px; }
+.ffr-aside p { margin: 0; }
+.ffr-aside .zk-card-label { font-size: 9px; }
+
+/* ---------- the strike ---------- */
+.ffr-strike { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; padding: 16px 12px; margin-bottom: 12px;
+  background: #0b0a0d; border: 2px solid #000;
+  background-image: repeating-conic-gradient(from 0deg at 50% 50%, rgba(255, 210, 63, .06) 0 4deg, transparent 4deg 12deg); }
+.ffr-fighter { display: grid; gap: 8px; justify-items: start; min-width: 0; }
+.ffr-fighter.right { justify-items: end; }
+.ffr-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ffr-fighter.right .ffr-chips { justify-content: flex-end; }
+.ffr-stam { display: inline-flex; align-items: baseline; gap: 6px; font: italic 800 20px/1 var(--ff-display); color: var(--ff-muted); }
+.ffr-stam b { font-size: 40px; color: var(--ff-hi); }
+.ffr-stam small { font: 700 11px/1 var(--ff-display); letter-spacing: .1em; text-transform: uppercase; font-style: normal; }
+@media (max-width: 520px) { .ffr-strike { grid-template-columns: 1fr; justify-items: center; } .ffr-fighter, .ffr-fighter.right { justify-items: center; } }
+
+/* ---------- every card ---------- */
+.ffr-group { border-left: 6px solid var(--ffr-school, var(--ff-raised)); --zekel-card-w: 104px; --zekel-card-h: 152px; }
+.ffr-group h3 { margin-bottom: 4px; }
+.ffr-group .ff-count { margin-left: 0; }
+.ffr-swatch { width: 16px; height: 16px; transform: skewX(-12deg); background: var(--ffr-school); border: 2px solid #000; outline: 1.5px solid rgba(255, 255, 255, .55); }

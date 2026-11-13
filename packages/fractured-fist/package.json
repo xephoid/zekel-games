@@ -1,6 +1,6 @@
 {
   "name": "@zekel/fractured-fist",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Fractured Fist, a Zekel Games board game: its rules as a game module for the zekel MCP server, and its screen for Zekel Universe.",
   "license": "Apache-2.0",
   "repository": {
@@ -24,6 +24,10 @@
     "./glue": {
       "types": "./dist/glue/index.d.ts",
       "default": "./dist/glue/index.js"
+    },
+    "./glue/rulebook": {
+      "types": "./dist/glue/rulebook/index.d.ts",
+      "default": "./dist/glue/rulebook/index.js"
     },
     "./*": {
       "types": "./dist/*.d.ts",
