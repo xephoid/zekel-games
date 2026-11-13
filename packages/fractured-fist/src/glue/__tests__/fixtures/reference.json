@@ -1,0 +1,878 @@
+{
+ "cards": [
+  {
+   "id": "focus",
+   "name": "Focus",
+   "type": "RESOURCE",
+   "cost": 0,
+   "value": 1,
+   "description": "1 Spirit. If your stamina < opponent, discard all Focus for redraw (max 3 reloads per turn)."
+  },
+  {
+   "id": "momentum",
+   "name": "Momentum",
+   "type": "RESOURCE",
+   "cost": 3,
+   "value": 2,
+   "description": "2 Spirit."
+  },
+  {
+   "id": "mastery",
+   "name": "Mastery",
+   "type": "RESOURCE",
+   "cost": 6,
+   "value": 3,
+   "description": "3 Spirit."
+  },
+  {
+   "id": "misstep",
+   "name": "Misstep",
+   "type": "MISSTEP",
+   "cost": 0,
+   "value": 0,
+   "description": "Unplayable. Refine to remove."
+  },
+  {
+   "id": "attack",
+   "name": "Attack",
+   "type": "TECHNIQUE",
+   "cost": 4,
+   "description": "+1 Damage.",
+   "effects": {
+    "damage": 1
+   }
+  },
+  {
+   "id": "block",
+   "name": "Block",
+   "type": "TECHNIQUE",
+   "cost": 3,
+   "description": "+1 Defense.",
+   "effects": {
+    "defense": 1
+   }
+  },
+  {
+   "id": "react",
+   "name": "React",
+   "type": "TECHNIQUE",
+   "cost": 3,
+   "description": "+2 Tech.",
+   "effects": {
+    "actions": 2
+   }
+  },
+  {
+   "id": "quicken",
+   "name": "Quicken",
+   "type": "TECHNIQUE",
+   "cost": 2,
+   "description": "+2 Draws.",
+   "effects": {
+    "draw": 2
+   }
+  },
+  {
+   "id": "center",
+   "name": "Center",
+   "type": "TECHNIQUE",
+   "cost": 2,
+   "description": "+2 Spirit.",
+   "effects": {
+    "spirit": 2
+   }
+  },
+  {
+   "id": "distract",
+   "name": "Distract",
+   "type": "TECHNIQUE",
+   "cost": 3,
+   "description": "+2 Missteps.",
+   "effects": {
+    "add_misstep": 2
+   }
+  },
+  {
+   "id": "assess",
+   "name": "Assess",
+   "type": "TECHNIQUE",
+   "cost": 2,
+   "description": "+2 Refine.",
+   "effects": {
+    "refine": 2
+   }
+  },
+  {
+   "id": "defensive_kata",
+   "name": "Defensive Kata",
+   "type": "TECHNIQUE",
+   "cost": 4,
+   "description": "+2 Refine, +2 Defense.",
+   "effects": {
+    "defense": 2,
+    "refine": 2
+   },
+   "faction": "masters_circle"
+  },
+  {
+   "id": "perfect_form",
+   "name": "Perfect Form",
+   "type": "TECHNIQUE",
+   "cost": 5,
+   "description": "+1 Refine, +2 Draw, +1 Tech.",
+   "effects": {
+    "refine": 1,
+    "draw": 2,
+    "actions": 1
+   },
+   "faction": "masters_circle"
+  },
+  {
+   "id": "masters_riposte",
+   "name": "Master's Riposte",
+   "type": "TECHNIQUE",
+   "cost": 5,
+   "description": "+1 Defense, +1 Damage.",
+   "effects": {
+    "defense": 1,
+    "damage": 1
+   },
+   "faction": "masters_circle"
+  },
+  {
+   "id": "flowing_counter",
+   "name": "Flowing Counter",
+   "type": "TECHNIQUE",
+   "cost": 5,
+   "description": "+2 Tech, +3 Defense.",
+   "effects": {
+    "defense": 3,
+    "actions": 2
+   },
+   "faction": "masters_circle"
+  },
+  {
+   "id": "impose_pressure",
+   "name": "Impose Pressure",
+   "type": "TECHNIQUE",
+   "cost": 4,
+   "description": "+1 Draw, +2 Spirit, +1 Channel.",
+   "effects": {
+    "draw": 1,
+    "spirit": 2,
+    "channels": 1
+   },
+   "faction": "uncounted"
+  },
+  {
+   "id": "leg_sweep",
+   "name": "Leg Sweep",
+   "type": "TECHNIQUE",
+   "cost": 5,
+   "description": "+2 Missteps, +1 Damage.",
+   "effects": {
+    "damage": 1,
+    "add_misstep": 2
+   },
+   "faction": "uncounted"
+  },
+  {
+   "id": "overwhelming_assault",
+   "name": "Overwhelming Assault",
+   "type": "TECHNIQUE",
+   "cost": 8,
+   "description": "+2 Tech, +2 Damage.",
+   "effects": {
+    "damage": 2,
+    "actions": 2
+   },
+   "faction": "uncounted"
+  },
+  {
+   "id": "ruthless_barrage",
+   "name": "Ruthless Barrage",
+   "type": "TECHNIQUE",
+   "cost": 5,
+   "description": "+1 Draw, +2 Tech, +3 Missteps.",
+   "effects": {
+    "actions": 2,
+    "add_misstep": 3,
+    "draw": 1
+   },
+   "faction": "uncounted"
+  },
+  {
+   "id": "showstopper",
+   "name": "Showstopper",
+   "type": "TECHNIQUE",
+   "cost": 5,
+   "description": "+2 Spirit, +1 Damage.",
+   "effects": {
+    "damage": 1,
+    "spirit": 2
+   },
+   "faction": "titan_entertainment"
+  },
+  {
+   "id": "targeted_strike",
+   "name": "Targeted Strike",
+   "type": "TECHNIQUE",
+   "cost": 5,
+   "description": "+1 Refine, +1 Damage.",
+   "effects": {
+    "refine": 1,
+    "damage": 1
+   },
+   "faction": "titan_entertainment"
+  },
+  {
+   "id": "grand_finale",
+   "name": "Grand Finale",
+   "type": "TECHNIQUE",
+   "cost": 10,
+   "description": "+5 Damage.",
+   "effects": {
+    "damage": 5
+   },
+   "faction": "titan_entertainment"
+  },
+  {
+   "id": "devastating_blow",
+   "name": "Devastating Blow",
+   "type": "TECHNIQUE",
+   "cost": 8,
+   "description": "+1 Draw, +3 Damage.",
+   "effects": {
+    "draw": 1,
+    "damage": 3
+   },
+   "faction": "titan_entertainment"
+  },
+  {
+   "id": "energy_channeling",
+   "name": "Energy Channeling",
+   "type": "TECHNIQUE",
+   "cost": 4,
+   "description": "+2 Spirit, +1 Channel.",
+   "effects": {
+    "spirit": 2,
+    "channels": 1
+   },
+   "faction": "the_awakened"
+  },
+  {
+   "id": "enlightened_flow",
+   "name": "Enlightened Flow",
+   "type": "TECHNIQUE",
+   "cost": 5,
+   "description": "+3 Tech, +2 Spirit.",
+   "effects": {
+    "actions": 3,
+    "spirit": 2
+   },
+   "faction": "the_awakened"
+  },
+  {
+   "id": "inner_harmony",
+   "name": "Inner Harmony",
+   "type": "TECHNIQUE",
+   "cost": 6,
+   "description": "+2 Heal, +2 Refine.",
+   "effects": {
+    "heal": 2,
+    "refine": 2
+   },
+   "faction": "the_awakened"
+  },
+  {
+   "id": "transcendent_strike",
+   "name": "Transcendent Strike",
+   "type": "TECHNIQUE",
+   "cost": 8,
+   "description": "+1 Draw, +3 Heal, +2 Damage.",
+   "effects": {
+    "damage": 2,
+    "heal": 3,
+    "draw": 1
+   },
+   "faction": "the_awakened"
+  },
+  {
+   "id": "reading_the_opponent",
+   "name": "Read Opponent",
+   "type": "TECHNIQUE",
+   "cost": 4,
+   "description": "+1 Draw, +2 Tech.",
+   "effects": {
+    "draw": 1,
+    "actions": 2
+   }
+  },
+  {
+   "id": "deflecting_block",
+   "name": "Deflecting Block",
+   "type": "TECHNIQUE",
+   "cost": 3,
+   "description": "+1 Tech, +1 Defense.",
+   "effects": {
+    "actions": 1,
+    "defense": 1
+   }
+  },
+  {
+   "id": "smoke_bomb",
+   "name": "Smoke Bomb",
+   "type": "TECHNIQUE",
+   "cost": 3,
+   "description": "+2 Tech, +1 Misstep.",
+   "effects": {
+    "actions": 2,
+    "add_misstep": 1
+   }
+  },
+  {
+   "id": "combination_rush",
+   "name": "Combination Rush",
+   "type": "TECHNIQUE",
+   "cost": 3,
+   "description": "+2 Tech, +1 Channel.",
+   "effects": {
+    "actions": 2,
+    "channels": 1
+   }
+  },
+  {
+   "id": "thoughtful_composure",
+   "name": "Thoughtful Composure",
+   "type": "TECHNIQUE",
+   "cost": 4,
+   "description": "+2 Tech, +2 Refine.",
+   "effects": {
+    "actions": 2,
+    "refine": 2
+   }
+  },
+  {
+   "id": "mental_clarity",
+   "name": "Mental Clarity",
+   "type": "TECHNIQUE",
+   "cost": 3,
+   "description": "+3 Draw.",
+   "effects": {
+    "draw": 3
+   }
+  },
+  {
+   "id": "flying_kick",
+   "name": "Flying Kick",
+   "type": "TECHNIQUE",
+   "cost": 6,
+   "description": "+2 Damage.",
+   "effects": {
+    "damage": 2
+   }
+  }
+ ],
+ "starter_loadout": [
+  "attack",
+  "block",
+  "assess",
+  "center",
+  "distract",
+  "quicken",
+  "react"
+ ],
+ "starting_deck": [
+  "focus",
+  "focus",
+  "focus",
+  "focus",
+  "focus",
+  "focus",
+  "focus",
+  "misstep",
+  "misstep",
+  "misstep"
+ ],
+ "starting_stamina_default": 7,
+ "starting_hand_size_default": 5,
+ "max_missteps": 10,
+ "rulebook": {
+  "title": "Fractured Fist",
+  "intro": "Two fighters, two decks. Each turn you play techniques to queue damage and defense, then spend spirit to buy better cards. When both of you have had a turn, the blows land at the same time. Bring your opponent's stamina to 0.",
+  "facts": [
+   "2 players",
+   "deck-building",
+   "7 techniques a game"
+  ],
+  "win": {
+   "title": "Bring their stamina to 0",
+   "text": "Each player starts with the same stamina. Damage lands in the strike at the end of each round. A player at 0 stamina or less loses.",
+   "tie": "If both players reach 0 in the same strike, the game is a tie."
+  },
+  "components": {
+   "intro": "Each player has their own copy of everything below. Nothing is shared, not even the cards you buy from.",
+   "items": [
+    {
+     "card": "focus",
+     "name": "Focus",
+     "count": 27,
+     "text": "7 in your starting deck and 20 in your supply. Worth 1 spirit."
+    },
+    {
+     "card": "momentum",
+     "name": "Momentum",
+     "count": 20,
+     "text": "In your supply. Worth 2 spirit."
+    },
+    {
+     "card": "mastery",
+     "name": "Mastery",
+     "count": 20,
+     "text": "In your supply. Worth 3 spirit."
+    },
+    {
+     "card": "misstep",
+     "name": "Missteps",
+     "count": 10,
+     "text": "3 in your starting deck. Keep the rest within reach: your opponent can push more into your discard pile."
+    },
+    {
+     "card": "attack",
+     "name": "Technique cards",
+     "count": 35,
+     "text": "5 copies of each of the game's 7 techniques, one pile per card."
+    },
+    {
+     "card": null,
+     "name": "Stamina tracker",
+     "count": 1,
+     "text": "A die, a dial or a counter."
+    }
+   ],
+   "note": "You can never hold more than 10 Missteps across your deck, hand and discard pile. Missteps sent past that are not added."
+  },
+  "setup": {
+   "steps": [
+    "Choose the 7 techniques for this game. Both players use the same ones. For a first game, use the starter set shown below.",
+    "Each player makes their own supply: 5 copies of each technique, and 20 each of Focus, Momentum and Mastery.",
+    "Each player shuffles a starting deck of 7 Focus and 3 Missteps, then draws a hand of 5.",
+    "Set both stamina trackers to 7.",
+    "Choose who goes first. That order stays for the whole game."
+   ],
+   "deck": [
+    "focus",
+    "focus",
+    "focus",
+    "focus",
+    "focus",
+    "focus",
+    "focus",
+    "misstep",
+    "misstep",
+    "misstep"
+   ],
+   "deck_caption": "Your starting deck: 7 Focus and 3 Missteps.",
+   "loadout": [
+    "attack",
+    "block",
+    "assess",
+    "center",
+    "distract",
+    "quicken",
+    "react"
+   ],
+   "loadout_caption": "The starter set. Between them they do everything: Attack, Block, Assess, Center, Distract, Quicken, React."
+  },
+  "round": {
+   "intro": "In each round, both players take one turn, in seat order. Then the strike settles the round.",
+   "turn": [
+    {
+     "name": "Technique",
+     "text": "Play technique cards. Each one uses 1 action, and you start with 1."
+    },
+    {
+     "name": "Channel",
+     "text": "Play resource cards for spirit. Spend it to buy cards into your discard pile."
+    },
+    {
+     "name": "Cleanup",
+     "text": "Discard the rest of your hand and draw 5 new cards."
+    }
+   ],
+   "strike": {
+    "name": "Strike",
+    "text": "Both players' damage and defense land at the same time."
+   },
+   "note": "You can skip the Channel phase by ending your turn straight from the Technique phase. You can't go back to the Technique phase once you are channeling."
+  },
+  "technique": {
+   "intro": "You start each turn with 1 action. Playing a technique uses 1 action, and its effects happen right away, in the order you play. A card that gives more Tech lets you play more techniques this turn. Played cards stay face up in front of you until the strike. A card's cost is only what it takes to buy it.",
+   "example": {
+    "title": "Example: one action becomes three",
+    "hand": [
+     "react",
+     "attack",
+     "block",
+     "focus",
+     "focus"
+    ],
+    "start": {
+     "actions": 1,
+     "damage": 0,
+     "defense": 0
+    },
+    "steps": [
+     {
+      "move": "play",
+      "card": "react",
+      "text": "Play React. It uses your 1 action and gives you 2 more.",
+      "after": {
+       "actions": 2,
+       "damage": 0,
+       "defense": 0
+      }
+     },
+     {
+      "move": "play",
+      "card": "attack",
+      "text": "Play Attack: 1 damage queued.",
+      "after": {
+       "actions": 1,
+       "damage": 1,
+       "defense": 0
+      }
+     },
+     {
+      "move": "play",
+      "card": "block",
+      "text": "Play Block: 1 defense queued.",
+      "after": {
+       "actions": 0,
+       "damage": 1,
+       "defense": 1
+      }
+     }
+    ],
+    "close": "With no actions left, move on to the Channel phase. The two Focus cards will pay for something there."
+   }
+  },
+  "effects": {
+   "intro": "Every technique is a list of these effects, printed on the card.",
+   "list": [
+    {
+     "key": "damage",
+     "word": "Damage",
+     "text": "Added to the damage you deal in this round's strike."
+    },
+    {
+     "key": "defense",
+     "word": "Defense",
+     "text": "Taken off the damage your opponent deals you in this round's strike."
+    },
+    {
+     "key": "actions",
+     "word": "Tech",
+     "text": "That many more actions this turn."
+    },
+    {
+     "key": "draw",
+     "word": "Draw",
+     "text": "Draw that many cards right now."
+    },
+    {
+     "key": "spirit",
+     "word": "Spirit",
+     "text": "That much spirit to spend in this turn's Channel phase."
+    },
+    {
+     "key": "channels",
+     "word": "Channel",
+     "text": "You may buy that many more cards this turn."
+    },
+    {
+     "key": "refine",
+     "word": "Refine",
+     "text": "Remove up to that many cards in your hand from the game, right now."
+    },
+    {
+     "key": "add_misstep",
+     "word": "Missteps",
+     "text": "Put that many Missteps into your opponent's discard pile (never past 10)."
+    },
+    {
+     "key": "heal",
+     "word": "Heal",
+     "text": "Get back that much stamina, never above what you started with."
+    }
+   ]
+  },
+  "channel": {
+   "intro": "In the Channel phase, play resource cards for spirit. Spirit from techniques you played this turn adds to it. To buy a card, spend spirit equal to its cost; it goes into your discard pile. You may buy 1 card a turn, plus 1 more for each Channel effect you played. Leftover spirit can pay for another buy, and is lost when your turn ends.",
+   "worth": [
+    {
+     "card": "focus",
+     "spirit": 1
+    },
+    {
+     "card": "momentum",
+     "spirit": 2
+    },
+    {
+     "card": "mastery",
+     "spirit": 3
+    }
+   ],
+   "example": {
+    "title": "Example: buying an Attack",
+    "hand": [
+     "focus",
+     "focus",
+     "momentum",
+     "misstep",
+     "block"
+    ],
+    "start": {
+     "spirit": 0,
+     "channels": 1
+    },
+    "steps": [
+     {
+      "move": "next-phase",
+      "text": "Move on to the Channel phase.",
+      "after": {
+       "spirit": 0,
+       "channels": 1
+      }
+     },
+     {
+      "move": "play",
+      "card": "focus",
+      "text": "Play Focus: 1 spirit.",
+      "after": {
+       "spirit": 1,
+       "channels": 1
+      }
+     },
+     {
+      "move": "play",
+      "card": "focus",
+      "text": "Play the other Focus: 2 spirit.",
+      "after": {
+       "spirit": 2,
+       "channels": 1
+      }
+     },
+     {
+      "move": "play",
+      "card": "momentum",
+      "text": "Play Momentum: 4 spirit.",
+      "after": {
+       "spirit": 4,
+       "channels": 1
+      }
+     },
+     {
+      "move": "buy",
+      "card": "attack",
+      "text": "Buy Attack for 4. It goes into your discard pile, and that is your one buy this turn.",
+      "after": {
+       "spirit": 0,
+       "channels": 0
+      }
+     }
+    ],
+    "close": "The Misstep and the Block are still in your hand. They are discarded at cleanup."
+   }
+  },
+  "refine": {
+   "intro": "A card with Refine lets you remove up to that many cards in your hand from the game, one at a time. They are gone for good, not discarded. You must finish refining, or skip the rest, before you do anything else.",
+   "missteps": "Missteps do nothing and can never be played. Your starting deck has 3. Refining is the only way to get rid of them.",
+   "example": {
+    "title": "Example: clearing out two Missteps",
+    "hand": [
+     "assess",
+     "misstep",
+     "misstep",
+     "focus",
+     "focus"
+    ],
+    "start": {
+     "actions": 1,
+     "refine": 0,
+     "missteps": 3
+    },
+    "steps": [
+     {
+      "move": "play",
+      "card": "assess",
+      "text": "Play Assess: Refine 2.",
+      "after": {
+       "actions": 0,
+       "refine": 2,
+       "missteps": 3
+      }
+     },
+     {
+      "move": "refine",
+      "card": "misstep",
+      "text": "Remove a Misstep from the game.",
+      "after": {
+       "actions": 0,
+       "refine": 1,
+       "missteps": 2
+      }
+     },
+     {
+      "move": "refine",
+      "card": "misstep",
+      "text": "Remove the other one.",
+      "after": {
+       "actions": 0,
+       "refine": 0,
+       "missteps": 1
+      }
+     }
+    ],
+    "close": "Only 1 Misstep is left in your deck now, so your future hands are stronger."
+   }
+  },
+  "reload": {
+   "title": "Focus reload: the catch-up rule",
+   "text": "If your stamina is lower than your opponent's, you may discard every Focus card in your hand and draw that many new cards. You may do this up to 3 times a turn, in either phase, but not while you still have refines to use."
+  },
+  "cleanup": {
+   "intro": "When you end your turn:",
+   "steps": [
+    "Discard the rest of your hand.",
+    "Draw 5 new cards. If your deck runs out, draw what is left, shuffle your discard pile into a new deck, and draw the rest.",
+    "The cards you played stay in front of you until the strike."
+   ]
+  },
+  "strike": {
+   "intro": "After both players have had a turn, both deal damage at the same time. You deal your damage minus your opponent's defense, never less than 0.",
+   "example": {
+    "title": "Example: both fighters land a blow",
+    "you": {
+     "name": "You",
+     "damage": 3,
+     "defense": 1,
+     "stamina": 7,
+     "after": 6
+    },
+    "them": {
+     "name": "Opponent",
+     "damage": 2,
+     "defense": 2,
+     "stamina": 7,
+     "after": 6
+    },
+    "steps": [
+     "You deal 3 − 2 = 1, so your opponent loses 1 stamina.",
+     "They deal 2 − 1 = 1, so you lose 1 stamina.",
+     "Had they queued 4 defense, you would deal 0, not a negative amount."
+    ]
+   },
+   "end": "Then every played card goes to its owner's discard pile, actions, buys and spirit reset, and the next round starts with the first player."
+  },
+  "cards": {
+   "intro": "Every card in the game. Each game uses seven techniques; the resources and Missteps are always in play.",
+   "groups": [
+    {
+     "id": "resources",
+     "title": "Resources",
+     "text": "Played in the Channel phase for spirit.",
+     "cards": [
+      "focus",
+      "momentum",
+      "mastery"
+     ]
+    },
+    {
+     "id": "misstep",
+     "title": "Misstep",
+     "text": "Can never be played. Refine it to remove it.",
+     "cards": [
+      "misstep"
+     ]
+    },
+    {
+     "id": "starter",
+     "title": "The starter set",
+     "text": "One technique for each kind of effect.",
+     "cards": [
+      "attack",
+      "block",
+      "assess",
+      "center",
+      "distract",
+      "quicken",
+      "react"
+     ]
+    },
+    {
+     "id": "titan_entertainment",
+     "title": "Titan Entertainment",
+     "text": "Big damage in one burst.",
+     "cards": [
+      "showstopper",
+      "targeted_strike",
+      "grand_finale",
+      "devastating_blow"
+     ],
+     "school": "titan-entertainment"
+    },
+    {
+     "id": "the_awakened",
+     "title": "The Awakened",
+     "text": "Spirit and healing: last longer and buy more.",
+     "cards": [
+      "energy_channeling",
+      "enlightened_flow",
+      "inner_harmony",
+      "transcendent_strike"
+     ],
+     "school": "the-awakened"
+    },
+    {
+     "id": "masters_circle",
+     "title": "Masters' Circle",
+     "text": "Defense and counters.",
+     "cards": [
+      "defensive_kata",
+      "perfect_form",
+      "masters_riposte",
+      "flowing_counter"
+     ],
+     "school": "masters-circle"
+    },
+    {
+     "id": "uncounted",
+     "title": "Uncounted",
+     "text": "Fill the other player's deck with Missteps.",
+     "cards": [
+      "impose_pressure",
+      "leg_sweep",
+      "overwhelming_assault",
+      "ruthless_barrage"
+     ],
+     "school": "uncounted"
+    },
+    {
+     "id": "general",
+     "title": "Other techniques",
+     "text": "Belong to no school.",
+     "cards": [
+      "reading_the_opponent",
+      "deflecting_block",
+      "smoke_bomb",
+      "combination_rush",
+      "thoughtful_composure",
+      "mental_clarity",
+      "flying_kick"
+     ]
+    }
+   ]
+  }
+ }
+}

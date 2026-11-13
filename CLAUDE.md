@@ -85,6 +85,9 @@ import each other**, and `tests/glueBoundary.test.ts` fails if they do.
   (`table/`) and the rulebook page (`rulebook/`, with its own small copies of
   `ui.tsx`, `ink.ts` and `icons.gen.ts`). Folding the copies together is still
   to do.
+- Fractured Fist has a rulebook page too (`src/glue/rulebook/`, notes in its
+  `RULEBOOK.md`). It draws card faces with the table screen's own code and
+  styles, so it has no copies to fold together.
 - Sweetlands Imperium's board test checks positions against
   `__tests__/fixtures/sweetlands-imperium-reference.md`, a copy of Universe's
   `docs/games/sweetlands-imperium.md`.

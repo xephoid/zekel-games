@@ -155,3 +155,7 @@ export const fracturedFistGlue: GlueModule = {
 };
 
 export default fracturedFistGlue;
+
+// The rulebook page (rulebook/). For the rulebook alone, without react-dom,
+// import `@zekel/fractured-fist/glue/rulebook` instead.
+export { FfRulebook, type FfRulebookProps, readRulebook, type RulebookData } from './rulebook/index.js';

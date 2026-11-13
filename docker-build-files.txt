@@ -118,12 +118,17 @@ packages/fractured-fist/src/glue/StrikeMoment.tsx
 packages/fractured-fist/src/glue/ff.css
 packages/fractured-fist/src/glue/index.ts
 packages/fractured-fist/src/glue/read.ts
+packages/fractured-fist/src/glue/rulebook/FfRulebook.tsx
+packages/fractured-fist/src/glue/rulebook/index.ts
+packages/fractured-fist/src/glue/rulebook/read.ts
+packages/fractured-fist/src/glue/rulebook/rulebook.css
 packages/fractured-fist/src/index.ts
 packages/fractured-fist/src/legalMoves.ts
 packages/fractured-fist/src/mctsHooks.ts
 packages/fractured-fist/src/moveGates.ts
 packages/fractured-fist/src/narration.ts
 packages/fractured-fist/src/nextStep.ts
+packages/fractured-fist/src/rulebook.ts
 packages/fractured-fist/src/rulesSections.ts
 packages/fractured-fist/src/setup.ts
 packages/fractured-fist/src/suggest.ts
@@ -193,6 +198,7 @@ packages/neither-guts-nor-gears/src/views.ts
 packages/neither-guts-nor-gears/tsconfig.json
 packages/sweetlands-imperium/package.json
 packages/sweetlands-imperium/src/ai.ts
+packages/sweetlands-imperium/src/capture.ts
 packages/sweetlands-imperium/src/choices.ts
 packages/sweetlands-imperium/src/data/board.ts
 packages/sweetlands-imperium/src/data/factions.ts
