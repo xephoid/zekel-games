@@ -9,7 +9,7 @@
 // AI reads the rules through getRulesText (rulesSections.ts); this is the
 // same rules laid out for a person at the table.
 
-import { ECONOMIC_SPEND, MAX_BASES, MAX_RESERVES, MANA_PER_RESERVE, BASE_MAX_MANA, TREATIES, HEROES, type ResourceCost, type TreatyType } from './data/catalogs.js';
+import { ECONOMIC_SPEND, MAX_BASES, MAX_RESERVES, MANA_PER_RESERVE, BASE_MAX_MANA, TREATIES, HEROES, WIZARD_UNITS, ROBOT_UNITS, BATTLE_CARDS, type ResourceCost, type TreatyType } from './data/catalogs.js';
 import { coreSupplyFor, economicCollectorsFor, robotCollectorCaps } from './economicScale.js';
 import { tileLabel, tilesForLayout, type LayoutId } from './data/maps.js';
 
@@ -70,6 +70,11 @@ export interface Rulebook {
   battle: { title: string; intro: string; ladder_title: string; example: { title: string; units: string[]; steps: string[] } };
   treaties: { intro: string; chart: RulebookTreatyRow[] };
   units: { note: string };
+  /**
+   * How many entries each list beside the rulebook in the reference data
+   * holds, so the page can tell a list arrived whole and refuse one that did not.
+   */
+  counts: { tiles: ByLayout<number>; wizard_units: number; robot_units: number; treaties: number; battle_deck: number; heroes: number };
 }
 
 const treatyName = (id: TreatyType) => TREATIES.find((t) => t.id === id)!.name;
@@ -214,6 +219,11 @@ export function nggRulebook(): Rulebook {
       ],
     },
     units: { note: 'Robot platforms need a Core to work, except the Infiltrator. A dash means the piece does not fight.' },
+    counts: {
+      tiles: byLayout((l) => tilesForLayout(l).length),
+      wizard_units: WIZARD_UNITS.length, robot_units: ROBOT_UNITS.length,
+      treaties: TREATIES.length, battle_deck: BATTLE_CARDS.length, heroes: HEROES.length,
+    },
   };
 }
 

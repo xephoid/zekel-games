@@ -24,6 +24,12 @@ describe('the rulebook agrees with the engine', () => {
     expect(ref.rulebook).toEqual(book);
   });
 
+  it('counts each list the reference data carries beside it', () => {
+    const ref = neitherGutsNorGears.getReferenceData() as Record<string, unknown[]> & { maps: Record<LayoutKey, unknown[]> };
+    for (const k of Object.keys(book.counts.tiles) as LayoutKey[]) expect(ref.maps[k].length, k).toBe(book.counts.tiles[k]);
+    for (const k of ['wizard_units', 'robot_units', 'treaties', 'battle_deck', 'heroes'] as const) expect(ref[k]!.length, k).toBe(book.counts[k]);
+  });
+
   it('puts each player count on the engine\'s layout', () => {
     for (const [key, counts] of Object.entries(book.players_by_layout)) {
       for (const n of counts) expect(layoutForPlayerCount(n)).toBe(LAYOUT_KEYS[key as LayoutKey]);

@@ -2429,6 +2429,18 @@
   },
   "units": {
    "note": "Robot platforms need a Core to work, except the Infiltrator. A dash means the piece does not fight."
+  },
+  "counts": {
+   "tiles": {
+    "2p": 24,
+    "3-4p": 29,
+    "5-6p": 52
+   },
+   "wizard_units": 7,
+   "robot_units": 12,
+   "treaties": 5,
+   "battle_deck": 9,
+   "heroes": 20
   }
  },
  "eligible_leaders_by_species": {
