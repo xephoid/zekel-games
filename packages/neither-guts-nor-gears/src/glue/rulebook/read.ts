@@ -38,6 +38,7 @@ export interface RulebookText {
   battle: { title: string; intro: string; ladder_title: string; example: { title: string; units: string[]; steps: string[] } };
   treaties: { intro: string; chart: Array<{ treaty: string; allies: boolean; collection: boolean; hands: boolean; victory: boolean }> };
   units: { note: string };
+  counts: { tiles: ByLayout<number>; wizard_units: number; robot_units: number; treaties: number; battle_deck: number; heroes: number };
 }
 
 export interface Figure {
@@ -77,13 +78,95 @@ function units(x: unknown): Unit[] {
   }));
 }
 
+// Checks that a value is what the page draws. The reader runs them on the raw
+// reference data before reading it, so a missing or wrong field (which the
+// readers below would fill with 0 or '') refuses the whole rulebook, and a
+// site shows the plain rules text instead of wrong numbers or a broken page.
+type Check = (x: unknown) => boolean;
+const isStr: Check = (x) => typeof x === 'string';
+const isNum: Check = (x) => typeof x === 'number' && Number.isFinite(x);
+const isBool: Check = (x) => typeof x === 'boolean';
+const positive: Check = (x) => isNum(x) && (x as number) > 0;
+const count: Check = (x) => Number.isInteger(x) && (x as number) > 0;
+const absentOr = (ok: Check): Check => (x) => x === null || x === undefined || ok(x);
+const listOf = (ok: Check): Check => (x) => Array.isArray(x) && x.length > 0 && x.every(ok);
+const strs = listOf(isStr);
+const has = (fields: Record<string, Check>): Check => (x) => isObj(x) && Object.entries(fields).every(([k, ok]) => ok(x[k]));
+const eachLayout = (ok: Check): Check => (x) => isObj(x) && LAYOUTS.every((k) => ok(x[k]));
+const amounts: Check = (x) => isObj(x) && Object.keys(x).length > 0 && Object.values(x).every(positive);
+
+const side = has({ faction: isStr, factions: isStr, pieces: listOf(has({ icon: isStr, count, name: isStr })), note: isStr });
+const figure = has({
+  tiles: listOf(has({ c: isNum, r: isNum, resource: isStr, label: isStr })),
+  pieces: listOf(has({ c: isNum, r: isNum, faction: isStr, icon: isStr, name: isStr, placed: isBool })),
+  caption: isStr,
+});
+/** Every part of the rulebook's words the page reads. */
+const rulebookText = has({
+  title: isStr, intro: isStr, facts: strs,
+  players_by_layout: eachLayout(listOf(count)),
+  victory: has({ intro: isStr, military: isStr, cultural: isStr, economic: isStr, technological: isStr, economic_mix: amounts }),
+  components: listOf(has({ icon: isStr, name: isStr, count: (x) => count(x) || eachLayout(count)(x), text: (x) => isStr(x) || eachLayout(isStr)(x) })),
+  map: has({ intro: isStr }),
+  setup: has({ steps: strs, wizard: side, robot: side }),
+  round: has({
+    steps: listOf(has({ icon: isStr, name: isStr, text: isStr })),
+    note: isStr,
+    stack: has({ title: isStr, intro: isStr, steps: strs, cards: listOf(has({ faction: isStr, action: isStr, placed: isStr })) }),
+    milestones: has({ intro: isStr }),
+  }),
+  paying: has({ title: isStr, intro: isStr, example: has({ title: isStr, buys: isStr, steps: strs, figure }) }),
+  battle: has({ title: isStr, intro: isStr, ladder_title: isStr, example: has({ title: isStr, units: strs, steps: strs }) }),
+  treaties: has({ intro: isStr, chart: listOf(has({ treaty: isStr, allies: isBool, collection: isBool, hands: isBool, victory: isBool })) }),
+  units: has({ note: isStr }),
+  counts: has({ tiles: eachLayout(count), wizard_units: count, robot_units: count, treaties: count, battle_deck: count, heroes: count }),
+});
+
+const tile = has({ c: isNum, r: isNum, resource: isStr, label: isStr, start: absentOr(isNum) });
+const STATS = ['init', 'dmg', 'def'];
+/** A unit that fights has all three stats; one that does not has none. */
+const unit: Check = (x) => has({ name: isStr, species: isStr, cost: amounts, notes: isStr })(x) && isObj(x)
+  && (STATS.every((k) => isNum(x[k])) || STATS.every((k) => x[k] === null || x[k] === undefined));
+const treaty = has({ name: isStr, cultureIncome: isNum, breakingCondition: isStr });
+const BATTLE_LABEL = /^(.*?) \((.*)\)$/;
+const battleCard: Check = (x) => has({ label: isStr, copies: count })(x) && isObj(x)
+  && (BATTLE_LABEL.test(x['label'] as string) || isStr(x['effect']));
+const hero = has({ name: isStr, category: isStr });
+/** The hero the battle ladder draws with its own stat line. */
+const LADDER_HERO = 'evo-angel';
+const ladderHero = has({ name: isStr, species: isStr, stats: has({ init: isNum, dmg: isNum, def: isNum }) });
+
+/** Whether a list is there whole: as many entries as the rulebook says, each one complete. */
+const whole = (x: unknown, n: number, ok: Check) => Array.isArray(x) && x.length === n && x.every(ok);
+const names = (x: unknown) => (x as Array<{ name: string }>).map((e) => e.name);
+
+/** Whether the raw reference data holds every part the page draws, whole. */
+function rawComplete(ref: Record<string, unknown>): boolean {
+  if (!rulebookText(ref['rulebook'])) return false;
+  const t = ref['rulebook'] as unknown as RulebookText;
+  const n = t.counts;
+  const maps = ref['maps'];
+  if (!isObj(maps) || !LAYOUTS.every((k) => whole(maps[k], n.tiles[k], tile))) return false;
+  if (!whole(ref['wizard_units'], n.wizard_units, unit) || !whole(ref['robot_units'], n.robot_units, unit)) return false;
+  if (!whole(ref['treaties'], n.treaties, treaty) || !whole(ref['battle_deck'], n.battle_deck, battleCard)) return false;
+  if (!whole(ref['heroes'], n.heroes, hero)) return false;
+  const ladder = (ref['heroes'] as Array<Record<string, unknown>>).filter((h) => h['category'] === LADDER_HERO);
+  if (ladder.length === 0 || !ladder.every(ladderHero)) return false;
+  // Names the page looks up in the lists: each treaty in the chart, and the units the examples use.
+  const treatyNames = new Set(names(ref['treaties']));
+  const unitNames = new Set([...names(ref['wizard_units']), ...names(ref['robot_units'])]);
+  return t.treaties.chart.every((row) => treatyNames.has(row.treaty))
+    && unitNames.has(t.paying.example.buys)
+    && t.battle.example.units.every((u) => unitNames.has(u));
+}
+
 /** The rulebook page's data, or null when the reference has no rulebook or is missing part of what the page draws. */
 export function readRulebook(referenceData: unknown): RulebookData | null {
   if (!isObj(referenceData) || !isObj(referenceData['rulebook'])) return null;
+  if (!rawComplete(referenceData)) return null;
   const text = referenceData['rulebook'] as unknown as RulebookText;
-  if (typeof text.title !== 'string' || !Array.isArray(text.components)) return null;
 
-  const mapsIn = isObj(referenceData['maps']) ? referenceData['maps'] : {};
+  const mapsIn = referenceData['maps'] as Record<string, unknown>;
   const maps = Object.fromEntries(LAYOUTS.map((k) => [k, asArr(mapsIn[k]).filter(isObj).map((t) => ({
     c: asNum(t['c']), r: asNum(t['r']), resource: asStr(t['resource']), label: asStr(t['label']), start: numOrNull(t['start']),
   }))])) as ByLayout<Tile[]>;
@@ -96,18 +179,18 @@ export function readRulebook(referenceData: unknown): RulebookData | null {
   // A printed label reads "Bonus (+1 DEF to all your units)": the kind, then what it does.
   const deck = asArr(referenceData['battle_deck']).filter(isObj).map((c) => {
     const label = asStr(c['label']);
-    const m = /^(.*?) \((.*)\)$/.exec(label);
+    const m = BATTLE_LABEL.exec(label);
     return { kind: m ? m[1]! : label, effect: m ? m[2]! : asStr(c['effect']), copies: asNum(c['copies']) };
   });
 
   const heroes = asArr(referenceData['heroes']).filter(isObj);
   const ladder: LadderRung[] = [...wizardUnits, ...robotUnits]
     .filter((u) => u.init !== null)
-    .map((u) => ({ name: u.name, species: u.species, init: u.init!, dmg: u.dmg ?? 0, def: u.def ?? 0 }));
+    .map((u) => ({ name: u.name, species: u.species, init: u.init!, dmg: u.dmg!, def: u.def! }));
   // The one hero with its own stat line, not its category's.
-  for (const h of heroes.filter((x) => asStr(x['category']) === 'evo-angel')) {
-    const s = isObj(h['stats']) ? h['stats'] : {};
-    ladder.push({ name: `${asStr(h['name'])} (hero)`, species: asStr(h['species'], 'robot'), init: asNum(s['init']), dmg: asNum(s['dmg']), def: asNum(s['def']) });
+  for (const h of heroes.filter((x) => x['category'] === LADDER_HERO)) {
+    const s = h['stats'] as Record<string, unknown>;
+    ladder.push({ name: `${asStr(h['name'])} (hero)`, species: asStr(h['species']), init: asNum(s['init']), dmg: asNum(s['dmg']), def: asNum(s['def']) });
   }
   ladder.sort((a, b) => b.init - a.init);
 
@@ -128,30 +211,25 @@ export function readRulebook(referenceData: unknown): RulebookData | null {
       tech,
     },
   };
-  return complete(data, heroes.length) ? data : null;
+  return victoryComplete(data) ? data : null;
 }
 
 const PLAYER_COUNTS = [2, 3, 4, 5, 6];
 const MILESTONE_COLUMNS = 5;
-const positive = (x: unknown): boolean => typeof x === 'number' && Number.isFinite(x) && x > 0;
 
 /**
- * Whether the data holds everything the page draws. The readers above fill a
- * missing number with 0 and a missing list with nothing, and a page showing a
- * wrong number is worse than no page: a site then shows the plain rules text.
+ * Whether every win number the page draws is there. The readers above fill a
+ * missing number with 0, and a wrong number is worse than no page.
  */
-function complete(data: RulebookData, heroCount: number): boolean {
+function victoryComplete(data: RulebookData): boolean {
   const v = data.victory;
-  const milestonesOk = (n: number) => {
-    const row = v.milestones[n];
+  const milestonesOk = (p: number) => {
+    const row = v.milestones[p];
     return Array.isArray(row) && row.length === MILESTONE_COLUMNS && row.every(positive);
   };
-  return PLAYER_COUNTS.every((n) => positive(v.cultureTarget[n]) && positive(v.kills[n]) && milestonesOk(n))
+  return PLAYER_COUNTS.every((p) => positive(v.cultureTarget[p]) && positive(v.kills[p]) && milestonesOk(p))
     && positive(v.tech)
-    && LAYOUTS.every((k) => positive(v.economicCollectors[k]) && data.maps[k].length > 0)
-    && heroCount > 0
-    && data.wizardUnits.length > 0 && data.robotUnits.length > 0
-    && data.treaties.length > 0 && data.deck.length > 0;
+    && LAYOUTS.every((k) => positive(v.economicCollectors[k]));
 }
 
 export function layoutFor(data: RulebookData, players: number): LayoutKey {

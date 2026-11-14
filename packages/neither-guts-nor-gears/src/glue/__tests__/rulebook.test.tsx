@@ -48,6 +48,70 @@ describe('the Neither Guts nor Gears rulebook page', () => {
     for (const [i, bad] of broken.entries()) expect(readRulebook(bad), `broken data ${i}`).toBeNull();
   });
 
+  // A copy of the reference data with one change made to it.
+  const changed = (change: (d: any) => void) => {
+    const d = structuredClone(referenceData);
+    change(d);
+    return d;
+  };
+  const without = (o: Record<string, unknown>, key: string) => { delete o[key]; };
+
+  it('refuses a list with one entry missing', () => {
+    const cases: Record<string, (d: any) => void> = {
+      'a tile from the 2-player map': (d) => d.maps['2p'].pop(),
+      'a tile from the 5-6 player map': (d) => d.maps['5-6p'].shift(),
+      'a wizard unit': (d) => d.wizard_units.pop(),
+      'a robot unit': (d) => d.robot_units.pop(),
+      'a treaty': (d) => d.treaties.pop(),
+      'a battle card': (d) => d.battle_deck.pop(),
+      'a hero': (d) => d.heroes.pop(),
+      'the Evo Angel': (d) => { d.heroes = d.heroes.filter((h: any) => h.category !== 'evo-angel'); },
+      'the counts': (d) => without(d.rulebook, 'counts'),
+    };
+    for (const [what, change] of Object.entries(cases)) expect(readRulebook(changed(change)), what).toBeNull();
+  });
+
+  it('refuses an entry with a field the page draws missing', () => {
+    const cases: Record<string, (d: any) => void> = {
+      'a tile\'s resource': (d) => without(d.maps['2p'][0], 'resource'),
+      'a tile\'s column': (d) => without(d.maps['3-4p'][0], 'c'),
+      'a fighting unit\'s DMG': (d) => without(d.wizard_units.find((u: any) => u.init !== null), 'dmg'),
+      'a unit\'s cost': (d) => without(d.robot_units[0], 'cost'),
+      'a unit\'s name': (d) => without(d.robot_units[0], 'name'),
+      'a treaty\'s culture': (d) => without(d.treaties[0], 'cultureIncome'),
+      'a battle card\'s copies': (d) => without(d.battle_deck[0], 'copies'),
+      'a battle card\'s label': (d) => without(d.battle_deck[0], 'label'),
+      'the Evo Angel\'s stats': (d) => without(d.heroes.find((h: any) => h.category === 'evo-angel'), 'stats'),
+      'the Evo Angel\'s DEF': (d) => without(d.heroes.find((h: any) => h.category === 'evo-angel').stats, 'def'),
+    };
+    for (const [what, change] of Object.entries(cases)) expect(readRulebook(changed(change)), what).toBeNull();
+  });
+
+  it('refuses rulebook words with a part the page reads missing, so the page never fails while drawing', () => {
+    const cases: Record<string, (d: any) => void> = {
+      'players by layout': (d) => without(d.rulebook, 'players_by_layout'),
+      'one layout\'s players': (d) => without(d.rulebook.players_by_layout, '3-4p'),
+      'the facts': (d) => without(d.rulebook, 'facts'),
+      'the victory words': (d) => without(d.rulebook.victory, 'economic_mix'),
+      'the setup': (d) => without(d.rulebook, 'setup'),
+      'the robots\' setup pieces': (d) => without(d.rulebook.setup.robot, 'pieces'),
+      'the Action Stack': (d) => without(d.rulebook.round, 'stack'),
+      'the paying example\'s figure': (d) => without(d.rulebook.paying.example, 'figure'),
+      'the battle example': (d) => without(d.rulebook.battle, 'example'),
+      'the treaty chart': (d) => without(d.rulebook.treaties, 'chart'),
+      'the unit note': (d) => without(d.rulebook, 'units'),
+      'a treaty the chart names': (d) => { d.rulebook.treaties.chart[0].treaty = 'No Such Treaty'; },
+      'a unit the battle example names': (d) => { d.rulebook.battle.example.units = ['No Such Unit']; },
+    };
+    for (const [what, change] of Object.entries(cases)) {
+      const bad = changed(change);
+      expect(readRulebook(bad), what).toBeNull();
+      const { container, unmount } = render(<NggRulebook reference={{ ...reference, referenceData: bad }} />);
+      expect(container.innerHTML, what).toBe('');
+      unmount();
+    }
+  });
+
   it('shows the engine\'s win numbers for the chosen player count', () => {
     render(<NggRulebook reference={reference} />);
     const win = () => section(/Four ways to win/);
