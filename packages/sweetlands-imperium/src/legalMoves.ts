@@ -307,10 +307,11 @@ function listLegalMoves(state: SweetlandsState, playerId: string): LegalMove<Swe
     // discard-for-color conversion (4, or 2 for Fudge)
     const need = p.faction === 'fudge' ? 2 : 4;
     if (p.hand.length >= need) {
-      const traded = p.hand.slice(0, need);
-      const ids = traded.map((c) => c.cardId);
-      // only colors a real card can be taken for (T45 ruling: never make one up)
-      for (const color of COLORS) if (colorCardLeft(state, color, traded)) moves.push(mk({ type: 'discard_for_color', cardIds: ids, color }, `Discard ${need} Intel to gain one ${color} Intel.`));
+      // The ids are a placeholder; the player picks which cards to give up.
+      const ids = p.hand.slice(0, need).map((c) => c.cardId);
+      // Only colors with a real card left in the deck or the discard pile (T45
+      // ruling: never make one up). This never depends on the cards picked.
+      for (const color of COLORS) if (colorCardLeft(state, color)) moves.push(mk({ type: 'discard_for_color', cardIds: ids, color }, `Discard ${need} Intel to gain one ${color} Intel.`));
     }
     addSugarDiscards(p, moves);
     moves.push(mk({ type: 'pass' }, 'Pass your turn to gain 1 influence.'));

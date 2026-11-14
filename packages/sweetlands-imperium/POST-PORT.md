@@ -117,8 +117,10 @@ exists so the harness needs no human handshake (`createInitialState` !anyHuman b
 - ~~`discard_for_color` MINTS the chosen-color card~~ — **fixed 2026-11-13 (T45).** The trade takes a
   real one-color card from the deck, shuffling the discard pile in if needed. Designer ruling: when no
   card of the chosen color is left in either, that color is not offered (`colorCardLeft` in
-  `trade.ts`, used by both the engine and the move list), and the engine refuses it if sent. The cards
-  traded in go to the discard pile first, so one of them counts. The game never makes up a card.
+  `trade.ts`, used by both the engine and the move list), and the engine refuses it if sent. The check
+  looks at the deck and discard pile before the trade; cards in the player's hand, including the ones
+  they give up, never count. So any cards the player picks work for any listed color. The game never
+  makes up a card.
 - ~~Red capture **target** auto-prioritizes a Leader when the move doesn't name one~~ — **fixed
   2026-11-12 (T37).** The move list offers one ready-to-send option per enemy Leader/Ambassador the
   knight can capture, leaders first, so the choice is the player's. It matters because "capture a
