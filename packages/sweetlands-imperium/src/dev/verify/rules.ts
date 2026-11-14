@@ -121,6 +121,33 @@ export const SWEETLANDS_ORACLE_RULES: OracleRule<V>[] = [
     },
   },
   {
+    // The trade takes a real card out of the deck or the discard pile, never a
+    // made-up one: the trader's hand drops by (4, or 2 for Fudge) minus the one
+    // taken, and deck + discard together gain exactly that many minus one.
+    id: 'trade-for-color-takes-a-real-card',
+    on: ['discard_for_color'],
+    citation: {
+      section: '4',
+      quote: 'Never make up a new card: the deck stays 80 cards.',
+    },
+    check: (prev, event, next) => {
+      const before = byId(prev, event.actor);
+      const after = byId(next, event.actor);
+      if (!before || !after) return [];
+      const need = before.faction === 'fudge' ? 2 : 4;
+      const violations: RuleViolation[] = [];
+      if (after.handCount !== before.handCount - need + 1) {
+        violations.push({ field: `${event.actor}.handCount`, predicted: String(before.handCount - need + 1), actual: String(after.handCount) });
+      }
+      const pileBefore = prev.deckCount + prev.discardCount;
+      const pileAfter = next.deckCount + next.discardCount;
+      if (pileAfter !== pileBefore + need - 1) {
+        violations.push({ field: 'intel.deckPlusDiscard', predicted: String(pileBefore + need - 1), actual: String(pileAfter) });
+      }
+      return violations;
+    },
+  },
+  {
     id: 'token-supply-four-per-color',
     on: '*',
     citation: { section: '1', quote: '24 (4× each of 6 colors)' },

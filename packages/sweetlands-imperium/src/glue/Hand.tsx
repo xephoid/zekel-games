@@ -118,7 +118,7 @@ export function Hand({ table, input, picked, onPick, pressable, formFor, onForm,
         </span>
         {trades.length > 0 && (
           <button type="button" className="sl-quiet-btn" disabled={!pressable} onClick={() => setTrading(true)}>
-            Trade {need} cards for any color
+            Trade {need} cards for one color
           </button>
         )}
       </div>

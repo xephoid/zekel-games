@@ -9,6 +9,7 @@ import { availableFactionIds } from './data/factions.js';
 import { REGION_TREAT, type RegionId, type TreatId } from './data/board.js';
 import { hasJunctionChoice, JUNCTION_INDEX, advanceToColor, pathToColor, regionOf } from './geometry.js';
 import { captureTargetsIn, captureChoices, type CaptureChoice } from './capture.js';
+import { colorCardLeft } from './trade.js';
 import type {
   SweetlandsState, SweetlandsMove, PlayerState, SpaceColor, UnitType, FoeType,
   UnitLocation,
@@ -306,8 +307,10 @@ function listLegalMoves(state: SweetlandsState, playerId: string): LegalMove<Swe
     // discard-for-color conversion (4, or 2 for Fudge)
     const need = p.faction === 'fudge' ? 2 : 4;
     if (p.hand.length >= need) {
-      const ids = p.hand.slice(0, need).map((c) => c.cardId);
-      for (const color of COLORS) moves.push(mk({ type: 'discard_for_color', cardIds: ids, color }, `Discard ${need} Intel to gain one ${color} Intel.`));
+      const traded = p.hand.slice(0, need);
+      const ids = traded.map((c) => c.cardId);
+      // only colors a real card can be taken for (T45 ruling: never make one up)
+      for (const color of COLORS) if (colorCardLeft(state, color, traded)) moves.push(mk({ type: 'discard_for_color', cardIds: ids, color }, `Discard ${need} Intel to gain one ${color} Intel.`));
     }
     addSugarDiscards(p, moves);
     moves.push(mk({ type: 'pass' }, 'Pass your turn to gain 1 influence.'));

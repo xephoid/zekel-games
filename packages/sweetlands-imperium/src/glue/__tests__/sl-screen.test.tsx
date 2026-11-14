@@ -134,7 +134,7 @@ describe('the hand', () => {
 
   it('names the trade-in from the engine’s own move: how many cards, and only when it is listed', () => {
     const { unmount } = render(<SlScreen {...slProps({ legalMoves: LEGAL })} />);
-    expect(screen.getByRole('button', { name: 'Trade 4 cards for any color' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Trade 4 cards for one color' })).toBeTruthy();
     unmount();
     render(<SlScreen {...slProps({ legalMoves: LEGAL.slice(0, 2) })} />);
     expect(screen.queryByRole('button', { name: /^Trade/ })).toBeNull();
@@ -143,7 +143,7 @@ describe('the hand', () => {
   it('trades in only the cards and color the player picks, as the engine’s listed template', () => {
     const props = slProps({ legalMoves: LEGAL });
     render(<SlScreen {...props} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Trade 4 cards for any color' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Trade 4 cards for one color' }));
     fireEvent.click(screen.getByRole('button', { name: /Red · Battle/ }));
     const form = screen.getByRole('dialog', { name: 'Discard 4 Intel for Red' });
     const boxes = within(form).getAllByRole('checkbox');
