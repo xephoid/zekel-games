@@ -289,3 +289,180 @@
 .ao-quest .tag.claimed { background: var(--ao-you-bg); color: var(--ao-you-fg); }
 .ao-quest .tag.lead { background: #fff3b0; color: #2b2233; }
 .ao-side-inline { padding: 12px 16px; }
+
+/* ---------- on a phone (docs/design/adventurer-olympics/Phone-*.dc.html) ----------
+   Below 640 px the table uses the shared phone frame (GlueModule.phone): a
+   one-line top bar and the menu sheet, no side column. The screen is a column:
+   a 46 px deck strip, the map filling the middle, and at the bottom either the
+   "You" row and the action row or the panel that is up, as a bottom sheet with
+   the map shrunk to the height above it. Every control is at least 44 px tall.
+   Nothing here applies on a desktop. */
+.table-shell.phone.ao-theme .table-board { padding: 0; gap: 0; overflow: hidden; }
+.table-shell.phone.ao-theme .table-topbar .title { font-size: 15px; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.table-shell.phone.ao-theme .turn-pill { font-size: 13px; }
+/* The menu's log: each line opens its details, so each is a touch target. */
+.table-shell.phone.ao-theme .menu-sheet .key-log .log-line { box-sizing: border-box; min-height: 44px; display: flex; align-items: center; }
+/* A rules lesson stays in the flow above the board, so it covers nothing; its buttons are touch targets. */
+.table-shell.phone.ao-theme .table-play > .lesson-note { margin: 6px 8px; }
+.table-shell.phone.ao-theme .lesson-actions .btn { min-height: 44px; padding: 0 14px; }
+
+.ao-screen.phone { overflow: hidden; }
+.ao-screen.phone .ao-btn { min-height: 44px; }
+
+/* The deck strip: small backs with their counts, the tile stack, the runes still free. */
+.ao-screen.phone .ao-strip { height: 46px; gap: 8px; padding: 0 10px; overflow: hidden; }
+.ao-screen.phone .ao-deck { gap: 3px; }
+.ao-screen.phone .ao-deck-pile { width: 24px; height: 32px; }
+.ao-screen.phone .ao-deck-pile span { border-radius: 5px; border-width: 2px; }
+.ao-screen.phone .ao-deck-pile span:not(.top) { display: none; }
+.ao-screen.phone .ao-deck-pile .ao-icon { width: 20px; height: 20px; }
+.ao-screen.phone .ao-count .label, .ao-screen.phone .ao-rule { display: none; }
+.ao-screen.phone .ao-count .n { font-size: 16px; }
+.ao-screen.phone .ao-tilestack { transform: scale(0.55); margin: -11px -12px; }
+.ao-screen.phone .ao-runes { margin-left: auto; flex-direction: row; align-items: center; gap: 2px; }
+.ao-screen.phone .ao-runes .label { font-size: 12px; margin-right: 2px; }
+.ao-screen.phone .ao-runes .row { gap: 1px; }
+.ao-screen.phone .ao-rune-chip { width: auto; }
+
+/* The map, with Key at the top left and zoom at the top right. */
+.ao-screen.phone .ao-map { min-height: 0; }
+.ao-screen.phone .ao-key {
+  position: absolute; left: 10px; top: 10px; z-index: 4; height: 44px; padding: 0 12px; border-radius: 12px;
+  border: 2.5px solid var(--ao-line); background: var(--ao-surface); color: var(--ao-text); font: 700 15px var(--ao-font);
+  cursor: pointer; box-shadow: var(--ao-shadow);
+}
+.ao-screen.phone .ao-key[aria-expanded='true'] { background: var(--ao-hl); }
+.ao-screen.phone .ao-legend { left: 10px; right: auto; top: 60px; z-index: 4; }
+.ao-screen.phone .ao-zoom { left: auto; right: 10px; top: 10px; bottom: auto; z-index: 4; }
+.ao-screen.phone .ao-zoom button { width: 44px; height: 44px; border-radius: 12px; font-size: 22px; }
+.ao-screen.phone .ao-zoom button.fit { width: 44px; padding: 0; font-size: 14px; font-weight: 700; }
+
+/* The hint: one line in a pill over the bottom of the map. */
+.ao-screen.phone .ao-phone-hint {
+  position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); z-index: 3; box-sizing: border-box;
+  width: max-content; max-width: calc(100% - 20px); padding: 6px 14px; border-radius: 999px;
+  background: var(--ao-surface); border: 2.5px solid var(--ao-line); box-shadow: var(--ao-shadow);
+  font-size: 14px; font-weight: 600; line-height: 1.3; text-align: center; pointer-events: none;
+}
+.ao-screen.phone .ao-map > .ao-panel.result ~ .ao-phone-hint { display: none; }
+
+/* The last move over the top of the map while the others play. */
+.ao-screen.phone .ao-phone-caption { position: absolute; left: 8px; right: 8px; top: 8px; z-index: 7; }
+.ao-theme .ao-screen.phone .ao-phone-caption .caption-card { position: static; width: auto; max-width: none; margin: 0; box-shadow: var(--ao-shadow-lg); }
+
+/* How a test went, over the bottom of the map; nothing to press. */
+.ao-screen.phone .ao-map > .ao-panel.result {
+  position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 6; width: auto; max-width: none;
+  padding: 10px 12px; gap: 8px; pointer-events: none;
+}
+.ao-screen.phone .ao-panel.result h3 { font-size: 19px; }
+.ao-screen.phone .ao-panel.result p { font-size: 15px; }
+
+/* A panel as a bottom sheet: a drag handle and the hand-drawn top edge. It is
+   not modal; the map above stays in view and stays tappable. */
+.ao-screen.phone .ao-phone-sheet {
+  flex: none; position: relative; z-index: 8; box-sizing: border-box; max-height: calc(100% - 200px); overflow-y: auto;
+  display: flex; flex-direction: column; gap: 10px; padding: 8px 14px 14px;
+  background: var(--ao-surface); border-top: 3px solid var(--ao-line); border-radius: 20px 16px 0 0 / 18px 22px 0 0;
+  box-shadow: 0 -5px 0 rgba(43, 34, 51, 0.16); animation: ao-sheet-grow 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.ao-screen.phone .ao-phone-sheet .grip { align-self: center; width: 44px; height: 5px; border-radius: 3px; background: var(--ao-soft); flex: none; }
+.ao-screen.phone .ao-phone-sheet .ao-panel {
+  width: auto; max-width: none; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; animation: none; gap: 10px;
+}
+.ao-screen.phone .ao-phone-sheet .ao-panel h3 { font-size: 21px; }
+.ao-screen.phone .ao-phone-sheet .ao-panel .words { gap: 10px; }
+.ao-screen.phone .ao-phone-sheet .ao-panel .words .ao-btn.primary,
+.ao-screen.phone .ao-phone-sheet .ao-order > .ao-btn.primary,
+.ao-screen.phone .ao-phone-sheet .ao-explore .actions .ao-btn.primary { height: 52px; font-size: 18px; border-radius: 14px; }
+.ao-screen.phone .ao-phone-sheet .ao-test .words .ao-btn.primary { align-self: stretch; }
+.ao-screen.phone .ao-phone-sheet .ao-explore .actions { flex-wrap: nowrap; }
+.ao-screen.phone .ao-phone-sheet .ao-explore .actions .ao-btn { flex: 1 1 0; min-width: 0; height: 48px; padding: 0 6px; }
+.ao-screen.phone .ao-phone-sheet .ao-explore .actions .ao-btn.push { margin-left: 0; }
+.ao-screen.phone .ao-phone-sheet .ao-option { min-height: 48px; }
+.ao-screen.phone .ao-phone-sheet .ao-order .row { min-height: 48px; }
+.ao-screen.phone .ao-phone-sheet .ao-pick { min-height: 48px; }
+.ao-screen.phone .ao-phone-sheet .ao-order h3 { font-size: 22px; }
+/* The beats of a test: Step, Draw, Roll, Result, the current one picked out. */
+.ao-beats { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.ao-beats li {
+  height: 32px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border-radius: 10px;
+  border: 2px solid var(--ao-soft); color: var(--ao-muted); font-size: 14px; font-weight: 600;
+}
+.ao-beats li.done { border-color: var(--ao-line); color: var(--ao-text); }
+.ao-beats li.done::before { content: '✓'; margin-right: 4px; }
+.ao-beats li.now { border: 2.5px solid var(--ao-line); background: var(--ao-action); color: #2b2233; font-weight: 700; }
+/* The icon being tested, picked out on the map with a ring. */
+.ao-theme .ao-screen.phone .zk-hex.selected:not(.ghost)::before {
+  content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 4px solid var(--ao-action); pointer-events: none; z-index: 2;
+}
+
+/* The bottom: the "You" row (one button) and the action row. */
+.ao-screen.phone .ao-dock {
+  flex: none; box-sizing: border-box; padding: 8px 10px 12px; display: flex; flex-direction: column; gap: 8px;
+  background: var(--ao-surface); border-top: 3px solid var(--ao-line);
+}
+.ao-screen.phone .ao-you {
+  position: relative; min-height: 52px; box-sizing: border-box; display: flex; align-items: center; gap: 5px; padding: 2px 8px 2px 2px;
+  border-radius: 14px; border: 2.5px solid var(--ao-line); background: var(--ao-bg); color: var(--ao-text);
+  font: 700 16px var(--ao-font); cursor: pointer; text-align: left; box-shadow: var(--ao-shadow);
+}
+.ao-screen.phone .ao-you .you { margin-right: 2px; }
+.ao-screen.phone .ao-you-stat {
+  display: inline-flex; align-items: center; gap: 1px; padding: 1px 6px 1px 2px; border-radius: 999px;
+  border: 2px solid var(--ao-line); color: #2b2233; font-size: 15px;
+}
+.ao-screen.phone .ao-you-stat.glow { animation: ao-stat-glow 0.6s ease-in-out 3; }
+.ao-screen.phone .ao-you-n { display: inline-flex; align-items: center; gap: 1px; font-size: 15px; }
+.ao-screen.phone .ao-you .up { margin-left: auto; flex: none; }
+/* The same opener, smaller, at the top of a bottom sheet (and a watcher's "Players and quests"). */
+.ao-screen.phone .ao-you.compact { min-height: 44px; flex: none; box-shadow: none; }
+.ao-screen.phone .ao-you.compact .ao-you-catch { left: 24px; }
+/* Where a kept card lands while the sheet is closed: a small pile at your adventurer's foot. */
+.ao-screen.phone .ao-you-catch { position: absolute; left: 30px; bottom: 3px; width: 13px; height: 18px; pointer-events: none; }
+.ao-screen.phone .ao-catch-card { position: absolute; inset: 0; box-sizing: border-box; border-radius: 3px; border: 2px solid var(--ao-line); }
+.ao-screen.phone .ao-catch-card.rune { background: var(--ao-hl); border-radius: 50%; }
+.ao-screen.phone .ao-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ao-screen.phone .ao-pips { flex: none; display: flex; align-items: center; gap: 3px; padding-right: 2px; }
+.ao-screen.phone .ao-pips i { width: 16px; height: 16px; border-radius: 50%; box-sizing: border-box; border: 2.5px solid var(--ao-line); transition: background 0.2s; }
+.ao-screen.phone .ao-pips i.on { background: var(--ao-action); }
+.ao-screen.phone .ao-actions .ao-btn { flex: 1 1 0; min-width: 0; height: 48px; padding: 0 8px; border-radius: 13px; font-size: 16px; font-weight: 700; line-height: 1.1; }
+.ao-screen.phone .ao-actions .ao-btn.stay { flex: 1 0 100%; order: -1; }
+
+/* The adventurer sheet: You, Everyone, Quests. The frame's phone sheet rises from the bottom. */
+.ao-adventurer-sheet .ao-tabs { display: flex; gap: 6px; margin: 2px 0 12px; }
+.ao-adventurer-sheet .ao-tabs [role='tab'] {
+  flex: 1; height: 44px; border-radius: 12px; border: 2.5px solid var(--ao-line); background: var(--ao-surface);
+  color: var(--ao-text); font: 600 15px var(--ao-font); cursor: pointer;
+}
+.ao-screen.phone .ao-adventurer-sheet .ao-tabs [role='tab'] { position: relative; }
+.ao-screen.phone .ao-adventurer-sheet [role='tab'] .ao-you-catch { left: auto; right: 8px; bottom: auto; top: calc(50% - 9px); }
+.ao-adventurer-sheet .ao-tabs [role='tab'][aria-selected='true'] { background: var(--ao-hl); font-weight: 700; box-shadow: var(--ao-shadow); }
+.ao-adventurer-sheet .ao-tabpanel { display: flex; flex-direction: column; gap: 12px; font-family: var(--ao-font); color: var(--ao-text); }
+.ao-adventurer-sheet .ao-me { width: auto; }
+.ao-adventurer-sheet .ao-holdings { flex-wrap: wrap; overflow: visible; gap: 12px 16px; }
+.ao-adventurer-sheet .ao-holdings .group.push { margin-left: 0; }
+.ao-adventurer-sheet :is(.ao-holdings, .ao-sheet-part, .ao-this-turn) .label { font-size: 13px; font-weight: 600; color: var(--ao-muted); }
+.ao-adventurer-sheet .muted { color: var(--ao-muted); }
+.ao-adventurer-sheet .ao-this-turn { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 14px; border: 2px dashed var(--ao-soft); }
+.ao-adventurer-sheet .ao-this-turn .steps { display: flex; align-items: center; gap: 6px; font-weight: 600; }
+.ao-adventurer-sheet .ao-this-turn .steps .label { margin-right: auto; }
+.ao-adventurer-sheet .ao-this-turn .pips { display: flex; gap: 4px; }
+.ao-adventurer-sheet .ao-this-turn .pips i { width: 16px; height: 16px; border-radius: 50%; box-sizing: border-box; border: 2.5px solid var(--ao-line); }
+.ao-adventurer-sheet .ao-this-turn .pips i.on { background: var(--ao-action); }
+.ao-adventurer-sheet .ao-this-turn .hint { margin: 0; font-size: 15px; line-height: 1.4; }
+.ao-adventurer-sheet .ao-tabpanel[hidden] { display: none; }
+.ao-adventurer-sheet .ao-sheet-part { display: flex; flex-direction: column; gap: 12px; }
+
+/* The sheet rises by growing from about the dock's height to its own: its top
+   edge climbs, and the map, which takes the height left, eases down with it
+   (its hexes refit as it goes). No fade. */
+@keyframes ao-sheet-grow { from { max-height: 120px; } }
+@keyframes ao-stat-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 138, 61, 0); } 50% { box-shadow: 0 0 0 5px rgba(255, 138, 61, 0.6); } }
+/* Under reduced motion a sheet fades with the same timing, as everywhere else. */
+@media (prefers-reduced-motion: reduce) {
+  .ao-screen.phone .ao-phone-sheet { animation-name: ao-sheet-fade; }
+  .ao-screen.phone .ao-you-stat.glow { animation: none; outline: 3px solid var(--ao-action); }
+}
+.table-shell[data-motion='reduced'] .ao-screen.phone .ao-phone-sheet { animation-name: ao-sheet-fade; }
+@keyframes ao-sheet-fade { from { opacity: 0; } to { opacity: 1; } }

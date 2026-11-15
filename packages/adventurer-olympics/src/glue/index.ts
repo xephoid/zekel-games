@@ -225,12 +225,22 @@ function plan(input: GlueInput): TablePlan | null {
   // and the quests in the side column itself; the table draws a plan's side
   // zones and points track even beside a screen, so the plan gives none.
   void side; void points;
-  return { board, bench, side: [], palette: PALETTE, title: 'Adventurer Olympics', titleArt: iconUrl('quest', { wobble: false }), status, prompt: prompt(view, input, me) };
+  return {
+    board, bench, side: [], palette: PALETTE, title: 'Adventurer Olympics', titleArt: iconUrl('quest', { wobble: false }), status,
+    // "R7" for the phone's one-line top bar, as Fractured Fist does.
+    statusShort: `R${asNum(view['round'], 1)}`,
+    prompt: prompt(view, input, me),
+  };
 }
 
 // ---- the glue -------------------------------------------------------------------
 
-export const adventurerOlympicsGlue: GlueModule = {
+/** `captionInPhoneMenu` is new in zekel-universe's glue-kit (beside
+ *  `placesCaption`); until the published @zekel/glue-kit carries it, the
+ *  glue states it here. A table that does not know the flag ignores it. */
+type AoGlue = GlueModule & { captionInPhoneMenu?: boolean };
+
+export const adventurerOlympicsGlue: AoGlue = {
   gameId: GAME,
   title: 'Adventurer Olympics',
 
@@ -242,13 +252,22 @@ export const adventurerOlympicsGlue: GlueModule = {
   // plan() still gives the title and the status line.
   Screen: AoScreen,
   placesCaption: true,
+  // Below 640 px the table uses the shared phone frame and AoScreen lays
+  // itself out as the Phone-* boards do (phone build guide).
+  phone: true,
+  // The approved phone menu (Phone-Menu) shows the last move too, though the
+  // screen places the caption card over the map itself.
+  captionInPhoneMenu: true,
 
-  /** "Your turn · 3 steps left" while you move, as the canvas's top bar says. */
+  /** "Your turn · 3 steps left" while you move, as the canvas's top bar says.
+   *  On a phone just "Your turn": the long label does not fit on one line at
+   *  390 px, and the steps are the pips in the action row. */
   yourTurnLabel(input: GlueInput): string | null {
     const view = isObj(input.view) ? input.view : null;
     const p = view ? pendingOf(view) : null;
     if (!view || !p || p.seat !== input.playerId) return null;
     const me = players(view).find((x) => x.id === input.playerId);
+    if (input.phone) return 'Your turn';
     if ((p.kind === 'move' || p.kind === 'try_again') && me) return `Your turn · ${me.stepsLeft} step${me.stepsLeft === 1 ? '' : 's'} left`;
     return 'Your turn';
   },
