@@ -10,11 +10,11 @@
 // is put together on screen (a slot, a turn) and sent with Place as the one
 // listed move for that slot and turn.
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { CardZone, Map as MapPart, type CardData, type SelectEvent } from '@zekel/primitives';
 import type { GameScreenProps, GlueInput, LegalMove } from '@zekel/glue-kit';
-import { asArr, asNum, asStr, isObj } from '@zekel/glue-kit';
+import { asArr, asNum, asStr, isObj, Sheet } from '@zekel/glue-kit';
 import { iconUrl } from './icons.js';
 import {
   ADVENTURERS, COMPANION_ART, DECKS, DUNGEON_CARD, ICON, LAND, MONSTER_ART,
@@ -44,7 +44,7 @@ const find = (moves: LegalMove[], pred: (m: LegalMove) => boolean) => moves.find
 
 // ---- the deck strip ------------------------------------------------------------
 
-function DeckStrip({ view, all }: { view: Record<string, unknown>; all: Player[] }) {
+function DeckStrip({ view, all, phone = false }: { view: Record<string, unknown>; all: Player[]; phone?: boolean }) {
   const decks = isObj(view['decks']) ? view['decks'] : {};
   const holder = (a: string) => all.find((p) => p.artifacts.includes(a));
   return (
@@ -65,14 +65,15 @@ function DeckStrip({ view, all }: { view: Record<string, unknown>; all: Player[]
       </div>
       <span className="ao-rule" />
       <div className="ao-runes">
-        <div className="label">Runes</div>
+        {/* On a phone only the runes still free; the adventurer sheet has who holds the rest. */}
+        <div className="label">{phone ? 'Free' : 'Runes'}</div>
         <div className="row">
-          {RUNES.map((a) => {
+          {RUNES.filter((a) => !phone || !holder(a)).map((a) => {
             const h = holder(a);
             return (
               <div key={a} className="ao-rune-chip" title={`${ICON[a]?.name ?? a} · ${h ? `held by ${h.name}` : 'in the supply'}`}>
-                <Icon name={a} size={32} />
-                <span className="who"><span className="dot" style={{ background: h ? tint(h.colour) : 'transparent' }} />{h ? h.name : 'Free'}</span>
+                <Icon name={a} size={phone ? 24 : 32} />
+                {!phone && <span className="who"><span className="dot" style={{ background: h ? tint(h.colour) : 'transparent' }} />{h ? h.name : 'Free'}</span>}
               </div>
             );
           })}
@@ -90,11 +91,11 @@ function chipsOf(view: Record<string, unknown>, cardId: string): Array<{ icon: s
   return (Object.keys(STAT) as Array<keyof typeof STAT>).filter((k) => c.bonus[k]).map((k) => ({ icon: STAT[k].icon, v: c.bonus[k]!, bg: STAT[k].bg }));
 }
 
-function MiniCard({ view, cardId, tilt = 0 }: { view: Record<string, unknown>; cardId: string; tilt?: number }) {
+function MiniCard({ view, cardId, tilt = 0, flip = true }: { view: Record<string, unknown>; cardId: string; tilt?: number; flip?: boolean }) {
   const c = cardFor(view, cardId);
   const art = companionOrMonsterArt(cardId, view);
   return (
-    <div className="ao-mini-card" data-flip-id={c.id} title={`${c.label}${c.subtitle ? ` · ${c.subtitle}` : ''}`} style={{ transform: `rotate(${tilt}deg)` }}>
+    <div className="ao-mini-card" data-flip-id={flip ? c.id : undefined} title={`${c.label}${c.subtitle ? ` · ${c.subtitle}` : ''}`} style={{ transform: `rotate(${tilt}deg)` }}>
       <div className="band" style={{ background: c.colorKey === 'companion' ? '#5aa9e6' : c.colorKey === 'big' ? '#ff7a59' : '#8fd14f' }} />
       {art && <Icon name={art} size={46} />}
       <div className="name">{c.label}</div>
@@ -134,9 +135,27 @@ function Dice({ dice, total, good }: { dice: number[]; total: number; good: bool
 
 const DECK_OF: Record<string, string> = { recruit: 'companion', little: 'little', big: 'big' };
 
-function TestPanel({ view, previous, all, mine, meId, onDraw, showResult }: {
+/** The four beats of a test, the current one marked (Phone-Test). */
+function Beats({ at }: { at: 'draw' | 'roll' | 'result' }) {
+  const order = ['step', 'draw', 'roll', 'result'] as const;
+  const now = order.indexOf(at);
+  return (
+    <ol className="ao-beats" aria-label="The steps of a test">
+      {order.map((b, i) => (
+        <li key={b} className={i < now ? 'done' : i === now ? 'now' : ''} aria-current={i === now ? 'step' : undefined}>
+          {b === 'step' ? 'Step' : b === 'draw' ? 'Draw' : b === 'roll' ? 'Roll' : 'Result'}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function TestPanel({ view, previous, all, mine, meId, onDraw, showResult, phone = false, only }: {
   view: Record<string, unknown>; previous: unknown; all: Player[]; mine: boolean; meId: string | null; onDraw?: () => void;
   showResult: boolean;
+  /** On a phone the live test is a bottom sheet with the beats strip, and how
+   *  it went shows over the map: each place asks for its own half. */
+  phone?: boolean; only?: 'live' | 'result';
 }): ReactNode {
   const p = pendingOf(view);
   const who = (id: string) => all.find((x) => x.id === id);
@@ -145,7 +164,7 @@ function TestPanel({ view, previous, all, mine, meId, onDraw, showResult }: {
   // Just after a roll: the card that was tested, the dice, and how it went.
   const before = isObj(previous) ? pendingOf(previous) : null;
   const last = isObj(view['lastRoll']) ? view['lastRoll'] : null;
-  if (showResult && (!p || (p.kind !== 'draw' && p.kind !== 'roll')) && before?.kind === 'roll' && before.payload['rollKind'] === 'test' && last) {
+  if (only !== 'live' && showResult && (!p || (p.kind !== 'draw' && p.kind !== 'roll')) && before?.kind === 'roll' && before.payload['rollKind'] === 'test' && last) {
     const cardId = asStr(before.payload['cardId']);
     const tester = who(before.seat);
     const kept = !!tester && [...tester.companions, ...tester.little, ...tester.big].includes(cardId);
@@ -154,7 +173,8 @@ function TestPanel({ view, previous, all, mine, meId, onDraw, showResult }: {
       <section className="ao-panel ao-test result" aria-label="How the test went">
         <header><Icon name={ICON[asStr(before.payload['test']) === 'recruit' ? 'city' : asStr(before.payload['test']) === 'big' ? 'big_monster' : 'little_monster']?.art ?? 'city'} size={40} /><h3>{kept ? 'Success!' : 'Not enough'}</h3></header>
         <div className="body">
-          <MiniCard view={view} cardId={cardId} />
+          {/* On a phone a kept card flies into the "You" row; this copy stays put. */}
+          <MiniCard view={view} cardId={cardId} flip={!(phone && kept)} />
           <div className="words">
             <p>{kept
               ? `${tester?.id === meId ? 'You keep' : `${tester?.name ?? 'They'} keeps`} ${cardFor(view, cardId).label}.`
@@ -165,7 +185,7 @@ function TestPanel({ view, previous, all, mine, meId, onDraw, showResult }: {
       </section>
     );
   }
-  if (!p) return null;
+  if (!p || only === 'result') return null;
   const tester = who(p.seat);
   if (p.kind === 'draw' && asStr(p.payload['deck']) !== 'tile') {
     const deck = asStr(p.payload['deck']);
@@ -177,6 +197,7 @@ function TestPanel({ view, previous, all, mine, meId, onDraw, showResult }: {
     return (
       <section className="ao-panel ao-test" aria-label="The test">
         <header><Icon name={p.payload['dungeon'] ? 'dungeon' : icon} size={40} /><h3>{p.payload['dungeon'] ? `Dungeon · ${dungeonCard ?? ''}` : title}</h3></header>
+        {phone && <Beats at="draw" />}
         <div className="body">
           <div className="ao-card-slot">The card lands here</div>
           <div className="words">
@@ -196,6 +217,7 @@ function TestPanel({ view, previous, all, mine, meId, onDraw, showResult }: {
     return (
       <section className="ao-panel ao-test" aria-label="The test">
         <header><Icon name={p.payload['dungeon'] ? 'dungeon' : p.payload['test'] === 'recruit' ? 'city' : p.payload['test'] === 'big' ? 'big' : 'little'} size={40} /><h3>{p.payload['dungeon'] ? `Dungeon · ${dungeonCard ?? ''}` : `Beat ${asNum(p.payload['number'])}`}</h3></header>
+        {phone && <Beats at="roll" />}
         <div className="body">
           <DrawnCard view={view} cardId={cardId} from={`ao:deck:${DECK_OF[asStr(p.payload['test'])] ?? 'companion'}`} />
           <div className="words">
@@ -354,69 +376,98 @@ function SetupPanel({ input, onForm }: { input: GlueInput; onForm: GameScreenPro
 
 // ---- your board --------------------------------------------------------------------------
 
+/** This turn's buttons, as the engine lists them: the same on a desktop and a phone. */
+function turnMoves(input: GlueInput) {
+  return {
+    explore: find(input.legalMoves, (m) => typeOf(m) === 'explore' && m.move['slot'] === undefined),
+    stop: find(input.legalMoves, (m) => typeOf(m) === 'stop'),
+    stay: find(input.legalMoves, (m) => typeOf(m) === 'try_again'),
+    exploreWhy: input.unavailable?.find((u) => u.moveType === 'explore')?.reason,
+  };
+}
+
+/** The one line your board says about what to do now. */
+function boardHint(view: Record<string, unknown>, input: GlueInput, me: Player): string {
+  const p = pendingOf(view);
+  const myTurn = p?.seat === me.id;
+  const { explore } = turnMoves(input);
+  return !myTurn ? 'Watching the others. Change the speed or replay a move at the top of the map.'
+    : p?.kind === 'try_again' ? 'You failed here last turn: stay and try again with a fresh card, walk away (tap a glowing hex), or explore.'
+    : p?.kind === 'move' ? (explore ? 'You are next to an empty slot. Explore now, or keep walking. Exploring ends your turn.' : me.stepsLeft > 0 ? 'Tap a glowing hex to step. A glowing icon starts the moment you step on it, and ends your turn.' : 'No steps left. End your turn.')
+    : 'Finish what is on the map first.';
+}
+
+/** Your adventurer, quest points and three stats (your board's left end). */
+function MeCard({ view, me, all }: { view: Record<string, unknown>; me: Player; all: Player[] }) {
+  const bonus = (k: keyof typeof STAT) => me.companions.reduce((n, c) => n + (refCards(view, 'companions').find((x) => x.id === c)?.bonus[k] ?? 0), 0);
+  return (
+    <div className="ao-me">
+      <div className="head">
+        <Icon name={adventurerOf(all, me.id).toLowerCase()} size={42} tint={tint(me.colour)} />
+        <div><div className="who">You · {adventurerOf(all, me.id)}</div><div className="muted small">{me.colour}</div></div>
+        <span className="ao-qp" title="Quest points"><Icon name="quest" size={22} />{me.questPoints}</span>
+      </div>
+      {me.stats && (Object.keys(STAT) as Array<keyof typeof STAT>).map((k) => (
+        <div key={k} className="ao-stat" style={{ background: STAT[k].bg }}>
+          <Icon name={STAT[k].icon} size={26} /><span className="name">{STAT[k].name}</span>
+          <span className="note">{bonus(k) ? `+${bonus(k)} from friends` : 'to start'}</span><b>{me.stats![k]}</b>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** What you keep: companions, monsters beaten, runes, coins, tiles and dungeons. */
+function Holdings({ view, me }: { view: Record<string, unknown>; me: Player }) {
+  const rd = isObj(view['referenceData']) ? view['referenceData'] : {};
+  const perColour = asNum(rd['tokensPerColour'], 0);
+  const raw = asArr(view['players']).find((x) => isObj(x) && x['player_id'] === me.id);
+  const left = isObj(raw) && typeof raw['tokensLeft'] === 'number' ? raw['tokensLeft'] : null;
+  const little = me.little, big = me.big;
+  return (
+    <div className="ao-holdings">
+      <div className="group"><div className="label">Companions {me.companions.length}</div>
+        <div className="cards">{me.companions.length ? me.companions.map((c, i) => <MiniCard key={c} view={view} cardId={c} tilt={((i * 7) % 5) - 2} />) : <div className="ao-empty">None yet</div>}</div></div>
+      <div className="group"><div className="label">Monsters beaten</div>
+        <div className="cards">
+          {([['Little', little], ['Big', big]] as const).map(([name, list]) => (
+            <div key={name} className="ao-stack">
+              <div className="pile">{list.length > 1 && <span className="under" />}{list.length ? <MiniCard view={view} cardId={list[list.length - 1]!} /> : <div className="ao-empty">None yet</div>}</div>
+              <div className="caption">{name} <b>{list.length}</b></div>
+            </div>
+          ))}
+        </div></div>
+      <div className="group"><div className="label">Runes {me.artifacts.length}</div>
+        <div className="cards">{me.artifacts.length ? me.artifacts.map((a) => (
+          <div key={a} className="ao-rune-card" data-flip-id={`ao:rune:${a}`}><Icon name={a} size={46} /><span>{ICON[a]?.name ?? a}</span></div>
+        )) : <div className="ao-empty">None yet</div>}</div></div>
+      <div className="group push">
+        {left !== null && perColour > 0 && <>
+          <div className="label">Coins left {left} of {perColour}</div>
+          <div className="ao-coins">{Array.from({ length: perColour }, (_, i) => (
+            <span key={i}>{i < left ? <Icon name="coin" size={20} tint={tint(me.colour)} /> : <i />}</span>
+          ))}</div>
+        </>}
+        <div className="muted small">Tiles explored <b>{me.exploredTiles.length}</b><br />Dungeons done <b>{me.dungeonsCompleted}</b></div>
+      </div>
+    </div>
+  );
+}
+
 function YourBoard({ view, input, me, all, pressable, onMove, menu }: {
   view: Record<string, unknown>; input: GlueInput; me: Player; all: Player[]; pressable: boolean;
   onMove: (m: LegalMove) => void; menu?: ReactNode;
 }) {
   const p = pendingOf(view);
   const myTurn = p?.seat === me.id;
-  const bonus = (k: keyof typeof STAT) => me.companions.reduce((n, c) => n + (refCards(view, 'companions').find((x) => x.id === c)?.bonus[k] ?? 0), 0);
-  const rd = isObj(view['referenceData']) ? view['referenceData'] : {};
-  const perColour = asNum(rd['tokensPerColour'], 0);
-  const raw = asArr(view['players']).find((x) => isObj(x) && x['player_id'] === me.id);
-  const left = isObj(raw) && typeof raw['tokensLeft'] === 'number' ? raw['tokensLeft'] : null;
-  const explore = find(input.legalMoves, (m) => typeOf(m) === 'explore' && m.move['slot'] === undefined);
-  const stop = find(input.legalMoves, (m) => typeOf(m) === 'stop');
-  const stay = find(input.legalMoves, (m) => typeOf(m) === 'try_again');
-  const exploreWhy = input.unavailable?.find((u) => u.moveType === 'explore')?.reason;
+  const { explore, stop, stay, exploreWhy } = turnMoves(input);
   const moving = myTurn && (p?.kind === 'move' || p?.kind === 'try_again');
   const movement = me.stats?.movement ?? 0;
-  const hint = !myTurn ? 'Watching the others. Change the speed or replay a move at the top of the map.'
-    : p?.kind === 'try_again' ? 'You failed here last turn: stay and try again with a fresh card, walk away (tap a glowing hex), or explore.'
-    : p?.kind === 'move' ? (explore ? 'You are next to an empty slot. Explore now, or keep walking. Exploring ends your turn.' : me.stepsLeft > 0 ? 'Tap a glowing hex to step. A glowing icon starts the moment you step on it, and ends your turn.' : 'No steps left. End your turn.')
-    : 'Finish what is on the map first.';
-  const little = me.little, big = me.big;
+  const hint = boardHint(view, input, me);
   return (
     <section className="ao-board" aria-label="Your board">
-      <div className="ao-me">
-        <div className="head">
-          <Icon name={adventurerOf(all, me.id).toLowerCase()} size={42} tint={tint(me.colour)} />
-          <div><div className="who">You · {adventurerOf(all, me.id)}</div><div className="muted small">{me.colour}</div></div>
-          <span className="ao-qp" title="Quest points"><Icon name="quest" size={22} />{me.questPoints}</span>
-        </div>
-        {me.stats && (Object.keys(STAT) as Array<keyof typeof STAT>).map((k) => (
-          <div key={k} className="ao-stat" style={{ background: STAT[k].bg }}>
-            <Icon name={STAT[k].icon} size={26} /><span className="name">{STAT[k].name}</span>
-            <span className="note">{bonus(k) ? `+${bonus(k)} from friends` : 'to start'}</span><b>{me.stats![k]}</b>
-          </div>
-        ))}
-      </div>
-      <div className="ao-holdings">
-        <div className="group"><div className="label">Companions {me.companions.length}</div>
-          <div className="cards">{me.companions.length ? me.companions.map((c, i) => <MiniCard key={c} view={view} cardId={c} tilt={((i * 7) % 5) - 2} />) : <div className="ao-empty">None yet</div>}</div></div>
-        <div className="group"><div className="label">Monsters beaten</div>
-          <div className="cards">
-            {([['Little', little], ['Big', big]] as const).map(([name, list]) => (
-              <div key={name} className="ao-stack">
-                <div className="pile">{list.length > 1 && <span className="under" />}{list.length ? <MiniCard view={view} cardId={list[list.length - 1]!} /> : <div className="ao-empty">None yet</div>}</div>
-                <div className="caption">{name} <b>{list.length}</b></div>
-              </div>
-            ))}
-          </div></div>
-        <div className="group"><div className="label">Runes {me.artifacts.length}</div>
-          <div className="cards">{me.artifacts.length ? me.artifacts.map((a) => (
-            <div key={a} className="ao-rune-card" data-flip-id={`ao:rune:${a}`}><Icon name={a} size={46} /><span>{ICON[a]?.name ?? a}</span></div>
-          )) : <div className="ao-empty">None yet</div>}</div></div>
-        <div className="group push">
-          {left !== null && perColour > 0 && <>
-            <div className="label">Coins left {left} of {perColour}</div>
-            <div className="ao-coins">{Array.from({ length: perColour }, (_, i) => (
-              <span key={i}>{i < left ? <Icon name="coin" size={20} tint={tint(me.colour)} /> : <i />}</span>
-            ))}</div>
-          </>}
-          <div className="muted small">Tiles explored <b>{me.exploredTiles.length}</b><br />Dungeons done <b>{me.dungeonsCompleted}</b></div>
-        </div>
-      </div>
+      <MeCard view={view} me={me} all={all} />
+      <Holdings view={view} me={me} />
       <div className="ao-turn">
         <div className="steps"><Icon name="mov" size={26} /><span>Steps</span>
           <span className="pips">{Array.from({ length: movement }, (_, i) => <i key={i} className={moving && i < me.stepsLeft ? 'on' : ''} />)}</span>
@@ -433,11 +484,82 @@ function YourBoard({ view, input, me, all, pressable, onMove, menu }: {
   );
 }
 
+// ---- the bottom of a phone screen (Phone-Table) --------------------------------------------
+
+/**
+ * Whether a panel is up, so on a phone it rises as a bottom sheet in the
+ * dock's place: a test or a roll (anyone's, as the desktop shows them), and
+ * your own exploring, "Any rune" and setup. The same conditions the panels
+ * themselves draw on.
+ */
+function phoneSheetUp(view: Record<string, unknown>, input: GlueInput, mine: boolean): boolean {
+  const p = pendingOf(view);
+  if (!p) return false;
+  if (p.kind === 'draw' && asStr(p.payload['deck']) !== 'tile') return true;
+  if (p.kind === 'roll' && (p.payload['rollKind'] === 'test' || p.payload['rollKind'] === 'turn_order')) return true;
+  if (!mine) return false;
+  if (p.kind === 'draw') return true;
+  if (p.kind === 'explore_place') return !!placementOf(view);
+  if (p.kind === 'take_artifact') return true;
+  if (p.kind === 'setup_standee_colour') return input.legalMoves.some((m) => typeOf(m) === 'setup_standee');
+  return false;
+}
+
+/**
+ * The "You" row and the action row. The row is one button that opens the
+ * adventurer sheet. While the sheet is closed the row also holds a small pile
+ * carrying the flip ids of everything you keep, so a recruited companion, a
+ * beaten monster or a rune flies down into the row (Phone-Test-Done) instead
+ * of vanishing into the closed sheet; a stat that just changed glows.
+ */
+function PhoneDock({ view, input, me, all, pressable, onMove, onOpen, catching }: {
+  view: Record<string, unknown>; input: GlueInput; me: Player; all: Player[]; pressable: boolean;
+  onMove: (m: LegalMove) => void; onOpen: () => void; catching: boolean;
+}) {
+  const p = pendingOf(view);
+  const myTurn = p?.seat === me.id;
+  const { explore, stop, stay, exploreWhy } = turnMoves(input);
+  const moving = myTurn && (p?.kind === 'move' || p?.kind === 'try_again');
+  const movement = me.stats?.movement ?? 0;
+  const before = isObj(input.previous) ? players(input.previous).find((x) => x.id === me.id) ?? null : null;
+  const kept = [...me.companions, ...me.little, ...me.big];
+  return (
+    <div className="ao-dock">
+      <button type="button" className="ao-you" aria-label="Your adventurer, companions and quests" aria-haspopup="dialog" onClick={onOpen}>
+        <Icon name={adventurerOf(all, me.id).toLowerCase()} size={44} tint={tint(me.colour)} />
+        <span className="you">You</span>
+        {me.stats && (Object.keys(STAT) as Array<keyof typeof STAT>).map((k) => (
+          <span key={k} title={STAT[k].name} className={`ao-you-stat${before?.stats && before.stats[k] !== me.stats![k] ? ' glow' : ''}`} style={{ background: STAT[k].bg }}>
+            <Icon name={STAT[k].icon} size={18} />{me.stats![k]}
+          </span>
+        ))}
+        {me.tokensLeft !== null && <span title="Coins left" className="ao-you-n"><Icon name="coin" size={18} tint={tint(me.colour)} />{me.tokensLeft}</span>}
+        <span title="Quest points" className="ao-you-n"><Icon name="quest" size={20} />{me.questPoints}</span>
+        {catching && (
+          <span className="ao-you-catch" aria-hidden="true">
+            {kept.map((id) => { const c = cardFor(view, id); return <span key={id} className="ao-catch-card" data-flip-id={c.id} data-flip-ghost="" style={{ background: c.colorKey === 'companion' ? '#5aa9e6' : c.colorKey === 'big' ? '#ff7a59' : '#8fd14f' }} />; })}
+            {me.artifacts.map((a) => <span key={a} className="ao-catch-card rune" data-flip-id={`ao:rune:${a}`} data-flip-ghost="" />)}
+          </span>
+        )}
+        <svg className="up" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 11l5-5 5 5" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </button>
+      <div className={`ao-actions${stay ? ' with-stay' : ''}`}>
+        {stay && <button className="ao-btn stay" disabled={!pressable} onClick={() => onMove(stay)}>Stay and try again</button>}
+        <span className="ao-pips" title="Steps left this turn"><Icon name="mov" size={26} />{Array.from({ length: movement }, (_, i) => <i key={i} className={moving && i < me.stepsLeft ? 'on' : ''} />)}</span>
+        <button className="ao-btn" disabled={!pressable || !explore} title={explore ? undefined : exploreWhy} onClick={() => explore && onMove(explore)}>Explore</button>
+        <button className="ao-btn primary" disabled={!pressable || !stop} onClick={() => stop && onMove(stop)}>{p?.kind === 'try_again' ? 'Do nothing this turn' : 'End turn'}</button>
+      </div>
+    </div>
+  );
+}
+
 // ---- the side column ------------------------------------------------------------------------------
 
-function Side({ view, all, me, nameOf, caption, isAI }: {
+function Side({ view, all, me, nameOf, caption, isAI, part }: {
   view: Record<string, unknown>; all: Player[]; me: string | null; nameOf: (p: Player) => string;
   caption?: ReactNode; isAI: (pid: string) => boolean;
+  /** On a phone the adventurer sheet draws one part per tab: turn order and the seats, or the quests. */
+  part?: 'everyone' | 'quests';
 }) {
   const rolls = isObj(view['turnOrderRolls']) && isObj(view['turnOrderRolls']['totals']) ? view['turnOrderRolls']['totals'] : {};
   const order = [...all].sort((a, b) => (a.initiative || 99) - (b.initiative || 99));
@@ -456,9 +578,9 @@ function Side({ view, all, me, nameOf, caption, isAI }: {
   // The quests with what it takes and how far each seat has got, from the engine.
   const listed = asArr(view['quests']).filter(isObj);
   return (
-    <div className="ao-side">
+    <div className={part ? `ao-sheet-part ${part}` : 'ao-side'}>
       {caption && <div className="ao-side-caption">{caption}</div>}
-      <div className="ao-side-block">
+      {part !== 'quests' && <><div className="ao-side-block">
         <div className="label">Turn order</div>
         <div className="ao-order-strip">
           {order.map((p, i) => (
@@ -486,8 +608,8 @@ function Side({ view, all, me, nameOf, caption, isAI }: {
             </div>
           </div>
         ))}
-      </div>
-      <div className="ao-side-block">
+      </div></>}
+      {part !== 'everyone' && <div className="ao-side-block">
         <div className="label">Quests in play · {Object.keys(inPlay).length}</div>
         {listed.length > 0 && listed.map((q) => {
           const kind = asStr(q['kind']);
@@ -539,8 +661,61 @@ function Side({ view, all, me, nameOf, caption, isAI }: {
             </div>
           );
         })}
-      </div>
+      </div>}
     </div>
+  );
+}
+
+// ---- the adventurer sheet (Phone-Sheet) --------------------------------------------------------
+
+const TABS = [['you', 'You'], ['everyone', 'Everyone'], ['quests', 'Quests']] as const;
+
+/**
+ * Everything your board and the side column hold on a desktop, in one sheet
+ * with three tabs. It is the table's Sheet: modal, a Close button, Escape and
+ * a tap outside close it, and it scrolls inside itself.
+ */
+function AdventurerSheet({ view, me, all, onClose, side, hint }: {
+  view: Record<string, unknown>; me: Player; all: Player[]; onClose: () => void;
+  side: (part: 'everyone' | 'quests') => ReactNode;
+  /** your board's hint, read from the view: the sheet restates no rule */
+  hint: string;
+}) {
+  const [tab, setTab] = useState(0);
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const p = pendingOf(view);
+  const moving = p?.seat === me.id && (p?.kind === 'move' || p?.kind === 'try_again');
+  const movement = me.stats?.movement ?? 0;
+  // Tabs as the ARIA pattern has them: one tab stop, arrows move and select, Home and End.
+  const go = (i: number) => { const n = (i + TABS.length) % TABS.length; setTab(n); tabRefs.current[n]?.focus(); };
+  const onKey = (e: KeyboardEvent<HTMLButtonElement>) => {
+    const to = e.key === 'ArrowRight' ? tab + 1 : e.key === 'ArrowLeft' ? tab - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? TABS.length - 1 : null;
+    if (to === null) return;
+    e.preventDefault();
+    go(to);
+  };
+  return (
+    <Sheet title="Your adventurer" className="ao-adventurer-sheet" onClose={onClose}>
+      <div className="ao-tabs" role="tablist" aria-label="Your adventurer">
+        {TABS.map(([key, label], i) => (
+          <button key={key} ref={(el) => { tabRefs.current[i] = el; }} type="button" role="tab" id={`ao-tab-${key}`}
+            aria-selected={tab === i} aria-controls={`ao-tabpanel-${key}`} tabIndex={tab === i ? 0 : -1}
+            className={tab === i ? 'on' : ''} onClick={() => setTab(i)} onKeyDown={onKey}>{label}</button>
+        ))}
+      </div>
+      <div className="ao-tabpanel" role="tabpanel" id="ao-tabpanel-you" aria-labelledby="ao-tab-you" hidden={tab !== 0}>
+        <MeCard view={view} me={me} all={all} />
+        <div className="ao-this-turn">
+          <div className="steps"><span className="label">This turn</span><Icon name="mov" size={22} />
+            <span className="pips">{Array.from({ length: movement }, (_, i) => <i key={i} className={moving && i < me.stepsLeft ? 'on' : ''} />)}</span>
+            <span className="muted">{moving ? `${me.stepsLeft} of ${movement}` : ''}</span></div>
+          <p className="hint">{hint}</p>
+        </div>
+        <Holdings view={view} me={me} />
+      </div>
+      <div className="ao-tabpanel" role="tabpanel" id="ao-tabpanel-everyone" aria-labelledby="ao-tab-everyone" hidden={tab !== 1}>{side('everyone')}</div>
+      <div className="ao-tabpanel" role="tabpanel" id="ao-tabpanel-quests" aria-labelledby="ao-tab-quests" hidden={tab !== 2}>{side('quests')}</div>
+    </Sheet>
   );
 }
 
@@ -550,6 +725,10 @@ export function AoScreen(props: GameScreenProps) {
   const { input, yourTurn, busy, interactive, onMove, onForm, onDraw, nameFor, menu, sideSlot, caption } = props;
   const [pick, setPick] = useState<{ slot: string; rotation: number } | null>(null);
   const [zoom, setZoom] = useState(0);
+  /** the phone's adventurer sheet (Phone-Sheet) */
+  const [sheetOpen, setSheetOpen] = useState(false);
+  /** the phone's legend, behind the Key button */
+  const [keyOpen, setKeyOpen] = useState(false);
   // A new event drops a choice being put together: its moves may be gone.
   useEffect(() => { setPick(null); }, [input.seq]);
   // How a test went shows for a beat after the roll, then closes by itself.
@@ -562,6 +741,7 @@ export function AoScreen(props: GameScreenProps) {
   const view = isObj(input.view) ? input.view : null;
   const all = useMemo(() => (view ? players(view) : []), [view]);
   const pressable = interactive && yourTurn && !busy;
+  const phone = !!props.phone;
   const withPick: GlueInput = useMemo(() => ({ ...input, ui: pick ? { slot: pick.slot, rotation: pick.rotation } : {} }), [input, pick]);
   const lit = useMemo(() => (pressable ? litFor(input) : []), [input, pressable]);
   if (!view || !isObj(view['map'])) return null;
@@ -580,7 +760,10 @@ export function AoScreen(props: GameScreenProps) {
     const moves = movesForHex(sel.id, input);
     if (moves.length === 1) onMove(moves[0]!);
   };
-  const nodes = mapNodes(view, withPick, all);
+  const testing = !!p && ((p.kind === 'draw' && asStr(p.payload['deck']) !== 'tile') || (p.kind === 'roll' && p.payload['rollKind'] === 'test'));
+  const testHex = phone && testing ? all.find((x) => x.id === p!.seat)?.hex ?? null : null;
+  // On a phone the icon being tested is picked out with a ring (Phone-Test).
+  const nodes = mapNodes(view, withPick, all).map((n) => (testHex && n.id === `ao:hex:${testHex}` ? { ...n, selected: true } : n));
   const isAI = (pid: string) => props.seatKind?.(pid) === 'ai';
   const side = <Side view={view} all={named} me={me?.id ?? null} nameOf={nameOf} caption={caption} isAI={isAI} />;
   const panel = (
@@ -590,23 +773,76 @@ export function AoScreen(props: GameScreenProps) {
       <RunePanel view={view} input={input} all={named} mine={mine} onMove={onMove} />
     </>
   );
+  // On a phone a hex is drawn at the boards' radius (28 px, a hex 48 px tall)
+  // and never under 26 px (45 px tall, a touch target): a map too big for the
+  // screen at that size scrolls inside itself. minRadius is new in Universe's
+  // @zekel/primitives; a primitives build without it ignores the key.
+  const hex = phone
+    ? { orientation: 'flat' as const, maxRadius: 28, minRadius: 26, zoom: ZOOMS[zoom], drawn: true }
+    : { orientation: 'flat' as const, maxRadius: 34, zoom: ZOOMS[zoom], drawn: true };
+  const mapPart = <MapPart id="ao:map" data={{ hex, fill: { minHeight: phone ? 160 : 200 }, nodes }} lit={lit} onSelect={onSelect} className="ao-map-board" />;
+  const legend = (
+    <div className="ao-legend" aria-label="What the icons are">
+      {LEGEND.map(([icon, name]) => <div key={icon}><Icon name={icon} size={24} />{name}</div>)}
+    </div>
+  );
+  const zoomButtons = (
+    <div className="ao-zoom">
+      <button aria-label="Zoom in" disabled={zoom >= ZOOMS.length - 1} onClick={() => setZoom((z) => Math.min(ZOOMS.length - 1, z + 1))}>+</button>
+      <button aria-label="Zoom out" disabled={zoom === 0} onClick={() => setZoom((z) => Math.max(0, z - 1))}>−</button>
+      <button className="fit" onClick={() => setZoom(0)}>Fit</button>
+    </div>
+  );
   const centre = p?.kind === 'roll' && p.payload['rollKind'] === 'turn_order'
     ? <OrderPanel view={view} all={named} mine={mine} onDraw={onDraw} />
     : mine && p?.kind === 'setup_standee_colour' ? <SetupPanel input={input} onForm={onForm} /> : null;
+
+  if (phone) {
+    // The phone layout (Phone-*.dc.html): the deck strip, the map filling the
+    // middle, and at the bottom either the "You" row and the action row or the
+    // panel that is up, as a bottom sheet with the map shrunk above it. No
+    // side column (the frame drops it) and no numbered move menu, which is for
+    // the keyboard; your board and the side column are in the adventurer sheet.
+    const sheetUp = phoneSheetUp(view, input, mine);
+    return (
+      <div className={`ao-screen phone${sheetUp ? ' sheet-up' : ''}`}>
+        <DeckStrip view={view} all={named} phone />
+        <div className="ao-map">
+          {mapPart}
+          {/* The legend is behind Key on a phone (Phone-Table); zoom stays. */}
+          <button type="button" className="ao-key" aria-expanded={keyOpen} title="What the icons are" onClick={() => setKeyOpen((k) => !k)}>Key</button>
+          {keyOpen && legend}
+          {zoomButtons}
+          {/* The last move over the top of the map while the others play; on your turn it is in the menu. */}
+          {caption && !yourTurn && <div className="ao-phone-caption">{caption}</div>}
+          <TestPanel view={view} previous={input.previous} all={named} mine={mine} meId={me?.id ?? null} onDraw={onDraw} showResult={showResult} phone only="result" />
+          {me && !sheetUp && <div className="ao-phone-hint">{boardHint(view, input, me)}</div>}
+        </div>
+        {sheetUp && (
+          <div className="ao-phone-sheet">
+            <span className="grip" aria-hidden="true" />
+            <TestPanel view={view} previous={input.previous} all={named} mine={mine} meId={me?.id ?? null} onDraw={onDraw} showResult={showResult} phone only="live" />
+            <ExplorePanel view={view} input={input} pick={pick} setPick={setPick} onMove={onMove} onDraw={onDraw} mine={mine} />
+            <RunePanel view={view} input={input} all={named} mine={mine} onMove={onMove} />
+            {centre}
+          </div>
+        )}
+        {me && !sheetUp && <PhoneDock view={view} input={input} me={me} all={named} pressable={pressable} onMove={onMove} onOpen={() => setSheetOpen(true)} catching={!sheetOpen} />}
+        {me && sheetOpen && (
+          <AdventurerSheet view={view} me={me} all={named} onClose={() => setSheetOpen(false)} hint={boardHint(view, input, me)}
+            side={(part) => <Side view={view} all={named} me={me.id} nameOf={nameOf} isAI={isAI} part={part} />} />
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="ao-screen">
       <DeckStrip view={view} all={named} />
       <div className="ao-map">
-        <MapPart id="ao:map" data={{ hex: { orientation: 'flat', maxRadius: 34, zoom: ZOOMS[zoom], drawn: true }, fill: { minHeight: 200 }, nodes }} lit={lit} onSelect={onSelect} className="ao-map-board" />
-        <div className="ao-legend" aria-label="What the icons are">
-          {LEGEND.map(([icon, name]) => <div key={icon}><Icon name={icon} size={24} />{name}</div>)}
-        </div>
-        <div className="ao-zoom">
-          <button aria-label="Zoom in" disabled={zoom >= ZOOMS.length - 1} onClick={() => setZoom((z) => Math.min(ZOOMS.length - 1, z + 1))}>+</button>
-          <button aria-label="Zoom out" disabled={zoom === 0} onClick={() => setZoom((z) => Math.max(0, z - 1))}>−</button>
-          <button className="fit" onClick={() => setZoom(0)}>Fit</button>
-        </div>
+        {mapPart}
+        {legend}
+        {zoomButtons}
         <div className="ao-panels">{panel}</div>
         {centre && <div className="ao-centre">{centre}</div>}
       </div>
