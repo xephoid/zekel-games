@@ -36,7 +36,7 @@ export function cardLabel(c: SlCard): string {
   return `${cap(c.color)}${c.kind === 'double' ? ' double' : ''} card: ${action}`;
 }
 
-function WrapperCard({ c, picked, playable, dim, disabled, onPick }: { c: SlCard; picked: boolean; playable: boolean; dim: boolean; disabled: boolean; onPick(): void }) {
+function WrapperCard({ c, picked, playable, dim, disabled, onPick, phone }: { c: SlCard; picked: boolean; playable: boolean; dim: boolean; disabled: boolean; onPick(): void; phone?: boolean }) {
   const treat = c.kind === 'treat';
   const fill = treat ? '#ffd6e6' : `var(--zekel-c-${c.color})`;
   const name = treat ? treatName(c.treat) : isColor(c.color) ? COLOR_ACTION[c.color].name : words(c.color);
@@ -44,7 +44,7 @@ function WrapperCard({ c, picked, playable, dim, disabled, onPick }: { c: SlCard
   return (
     <button
       type="button" className={`sl-card${picked ? ' picked' : ''}${playable ? ' playable' : ''}${dim ? ' dim' : ''}${treat ? ' treat' : ''}`}
-      aria-pressed={picked} aria-label={cardLabel(c)} disabled={disabled} onClick={onPick}
+      aria-pressed={picked} aria-label={phone && line ? `${cardLabel(c)} · ${line}` : cardLabel(c)} disabled={disabled} onClick={onPick}
       data-flip-id={`sl:card:${c.cardId}`} data-flip-from="sl:intel-deck"
     >
       <svg className="sl-crimp top" width="100%" height="12" viewBox="0 0 112 12" preserveAspectRatio="none" aria-hidden="true"><path d={TOP_CRIMP} fill={fill} stroke="#5a3214" strokeWidth="1.6" strokeLinejoin="round" /></svg>
@@ -72,6 +72,11 @@ interface HandProps {
   pressable: boolean;
   formFor(move: LegalMove): MoveForm | null;
   onForm(template: LegalMove, move: Record<string, unknown>, editableKeys: string[]): void;
+  /** on a phone: the card's line joins its name, and the trade-in is opened
+   *  from the turn panel (trading / onTrading), not from the hand's title row */
+  phone?: boolean;
+  trading?: boolean;
+  onTrading?: (open: boolean) => void;
 }
 
 function secretWords(input: GlueInput, id: string): { name: string; text: string } {
@@ -80,14 +85,18 @@ function secretWords(input: GlueInput, id: string): { name: string; text: string
   return { name: words(id), text: isObj(def) ? asStr(def['description']) : '' };
 }
 
-export function Hand({ table, input, picked, onPick, pressable, formFor, onForm, discardTop }: HandProps) {
+export function Hand({ table, input, picked, onPick, pressable, formFor, onForm, discardTop, phone, ...trade }: HandProps) {
   const hand = table.hand ?? [];
   const playing = table.step === 'play';
   // Step 4 comes after the card: the rest of the hand dims until your next turn.
   const played = table.step === 'influence';
-  const trades = input.legalMoves.filter((m) => m.move['type'] === 'discard_for_color');
-  const need = trades[0] ? asArr(trades[0].move['cardIds']).length : 0;
-  const [trading, setTrading] = useState(false);
+  const offered = input.legalMoves.filter((m) => m.move['type'] === 'discard_for_color');
+  // the title row's trade-in button: on a phone it is in the turn panel instead
+  const trades = phone ? [] : offered;
+  const need = offered[0] ? asArr(offered[0].move['cardIds']).length : 0;
+  const [ownTrading, setOwnTrading] = useState(false);
+  const trading = trade.trading ?? ownTrading;
+  const setTrading = trade.onTrading ?? setOwnTrading;
   const [tradeMove, setTradeMove] = useState<LegalMove | null>(null);
   const tradeForm = tradeMove ? formFor(tradeMove) : null;
   const hint = !playing ? (table.step ? 'Cards are played in step 3.' : '') : picked ? 'Click the card again to put it back.' : 'Click a card to see where it can take each of your pieces.';
@@ -131,7 +140,7 @@ export function Hand({ table, input, picked, onPick, pressable, formFor, onForm,
             return (
               <WrapperCard
                 key={c.cardId} c={c} picked={picked === c.cardId} playable={playable}
-                dim={played} disabled={!pressable || !playable}
+                dim={played} disabled={!pressable || !playable} phone={phone}
                 onPick={() => onPick(picked === c.cardId ? null : c.cardId)}
               />
             );
@@ -150,7 +159,7 @@ export function Hand({ table, input, picked, onPick, pressable, formFor, onForm,
         <Sheet title={`Trade ${need} cards for one color`} onClose={() => setTrading(false)}>
           <p className="muted">Which color do you want? You pick the {need} cards to give up next.</p>
           <div className="sl-trade-colors">
-            {trades.map((m) => {
+            {offered.map((m) => {
               const color = asStr(m.move['color']);
               return (
                 <button key={m.move_id} type="button" className="btn secondary" onClick={() => setTradeMove(m)}>

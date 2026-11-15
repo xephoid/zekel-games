@@ -84,6 +84,21 @@ export function destinationWords(table: SlTable, l: Landing | null): string {
   return loc.zone === 'road' ? `the ${color} road space in ${land}` : `the ${color} space in ${land}`;
 }
 
+/** Where a piece lands in a word, for the phone's grid of choices: the
+ *  space's color, or "road", "castle", "home", the treat. */
+export function destinationShort(table: SlTable, l: Landing | null, anyTreat = false): string {
+  if (anyTreat) return 'any treat';
+  const to = l ? tileOf(l.to) : null;
+  if (!l || !l.to || !to) return '';
+  if (to === 'castle') return 'castle';
+  const t = TILE_BY_ID[to];
+  if (!t) return '';
+  if (l.to.zone === 'treat') return treatName(l.to.slotKind === 'random' ? table.randomTreat[t.region] : REGION_TREAT[t.region]);
+  if (l.to.zone === 'start') return 'home';
+  if (l.to.zone === 'road') return 'road';
+  return t.space?.color ?? '';
+}
+
 function groupKey(m: LegalMove): string {
   const mv = m.move;
   return [mv['unit'], mv['viaRoad'] ? 'road' : 'ring', asNum(mv['entryRegion']), 'treatRegion' in mv ? 'any-treat' : ''].join('|');

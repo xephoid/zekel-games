@@ -35,7 +35,7 @@ const PIECES: Array<{ u: UnitKey; name: string; text: string }> = [
 
 interface Goal { text: string; points: number }
 
-function goals(input: GlueInput): { toWin: number | null; list: Goal[]; faces: number[] } {
+export function goals(input: GlueInput): { toWin: number | null; list: Goal[]; faces: number[] } {
   const rd = input.reference?.referenceData;
   if (!isObj(rd)) return { toWin: null, list: [], faces: [] };
   const list: Goal[] = asArr(rd['public_objectives']).filter(isObj).map((o) => ({ text: asStr(o['description']), points: asNum(o['points']) }));
@@ -53,7 +53,7 @@ function Num({ n }: { n: number }) {
   return <span className="sl-howto-n">{n}</span>;
 }
 
-export function FirstGame({ input, onClose }: { input: GlueInput; onClose(): void }) {
+export function FirstGame({ input, onClose, phone }: { input: GlueInput; onClose(): void; phone?: boolean }) {
   const g = goals(input);
   const faces = g.faces.length ? g.faces.join(', ').replace(/, (\d+)$/, ' or $1') : null;
   return (
@@ -123,7 +123,11 @@ export function FirstGame({ input, onClose }: { input: GlueInput; onClose(): voi
           </div>
         </section>
       </div>
-      <p className="sl-hint sl-howto-foot">You can open this page again any time from <b>How to play</b> at the top of the turn column.</p>
+      <p className="sl-hint sl-howto-foot">
+        {phone
+          ? <>You can open this page again any time from the menu’s <b>How to play</b> tab.</>
+          : <>You can open this page again any time from <b>How to play</b> at the top of the turn column.</>}
+      </p>
     </Sheet>
   );
 }

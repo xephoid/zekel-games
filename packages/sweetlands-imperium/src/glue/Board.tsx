@@ -14,6 +14,45 @@ const GAP = 14;
 const FULL_W = LABEL * 2 + GAP * 2 + COLS * SQUARE;
 const FULL_H = LABEL * 2 + GAP * 2 + ROWS * SQUARE;
 
+/** What the phone's board is zoomed on: the whole board, or one land. */
+export type Zoom = 'all' | Region;
+
+/** A square to centre a land's zoom on instead of the land's middle (a
+ *  chosen destination near the land's edge), as geometry.ts counts squares. */
+export interface ZoomAt { row: number; col: number }
+
+/** Each land's middle square, as geometry.ts counts them (rows from 1 at the
+ *  top, columns from 0 at the left; fractions fall between squares), from
+ *  the phone boards. The castle belongs to no land. */
+export const LAND_MIDDLE: Record<Region, { row: number; col: number }> = {
+  1: { row: 10.2, col: 7 },
+  2: { row: 6.5, col: 11.6 },
+  3: { row: 2.2, col: 7 },
+  4: { row: 6.5, col: 1.8 },
+};
+
+/** How much a land zooms: double size, so a 26 px space is 52 px. */
+const ZOOM = 2;
+
+/**
+ * The zoom as a translate (window px) and a factor, for a window w × h that
+ * shows the whole grid at z = 1 (the phone draws no side labels): the middle
+ * of the land's middle square (or of `at`) in the middle of the window,
+ * clamped so the window never shows past the board's edge.
+ */
+export function zoomView(zoom: Zoom, w: number, h: number, at?: ZoomAt | null): { x: number; y: number; z: number } {
+  if (zoom === 'all') return { x: 0, y: 0, z: 1 };
+  const m = at ?? LAND_MIDDLE[zoom];
+  const fx = (m.col + 0.5) * (w / COLS) * ZOOM;
+  const fy = (m.row - 0.5) * (h / ROWS) * ZOOM;
+  const clamp = (v: number, lo: number) => Math.min(0, Math.max(lo, v));
+  return { x: clamp(w / 2 - fx, w - w * ZOOM), y: clamp(h / 2 - fy, h - h * ZOOM), z: ZOOM };
+}
+
+/** The phone's board is the bare grid: no side labels round it. */
+const GRID_W = COLS * SQUARE;
+const GRID_H = ROWS * SQUARE;
+
 const ACTION: Record<string, string> = { red: 'Battle', orange: 'Influence', yellow: 'Taxes', green: 'Free play', blue: 'Intel', purple: 'Castle' };
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -26,6 +65,10 @@ export interface BoardProps {
   /** tiles a tap means something on */
   lit?: string[];
   onTile?: (tileId: string) => void;
+  /** the phone's zoom; absent on the desktop, where the board never zooms */
+  zoom?: Zoom;
+  /** the square the zoom centres on, when not the land's middle */
+  zoomAt?: ZoomAt | null;
 }
 
 /** A land inside a sentence: "your land", "Fudge’s land". */
@@ -147,7 +190,7 @@ function SideLabel({ table, r }: { table: SlTable; r: Region }) {
 }
 
 /** Scale the design-size board to the box it is given, never past 1.25. */
-function useFit(ref: React.RefObject<HTMLDivElement | null>) {
+function useFit(ref: React.RefObject<HTMLDivElement | null>, fullW: number, fullH: number) {
   const [scale, setScale] = useState(1);
   useLayoutEffect(() => {
     const el = ref.current;
@@ -156,27 +199,34 @@ function useFit(ref: React.RefObject<HTMLDivElement | null>) {
       const w = el.clientWidth;
       const h = el.clientHeight;
       if (!w || !h) return;
-      setScale(Math.max(0.4, Math.min(1.25, w / FULL_W, h / FULL_H)));
+      setScale(Math.max(0.4, Math.min(1.25, w / fullW, h / fullH)));
     };
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [ref]);
+  }, [ref, fullW, fullH]);
   return scale;
 }
 
-export function Board({ table, pieces, marks = {}, lit = [], onTile }: BoardProps) {
+export function Board({ table, pieces, marks = {}, lit = [], onTile, zoom, zoomAt }: BoardProps) {
   const box = useRef<HTMLDivElement>(null);
-  const scale = useFit(box);
+  // On a phone (a zoom is given) the board is the bare grid, the fitted box is
+  // a window onto it, and a zoom is a second transform inside the window. The
+  // frame is the FLIP frame, so a zoom is never read as the pieces moving.
+  const phone = zoom !== undefined;
+  const fullW = phone ? GRID_W : FULL_W;
+  const fullH = phone ? GRID_H : FULL_H;
+  const scale = useFit(box, fullW, fullH);
+  const w = fullW * scale;
+  const h = fullH * scale;
+  const v = zoomView(zoom ?? 'all', w, h, zoomAt);
+  const transform = v.z === 1 ? `scale(${scale})` : `translate(${v.x}px, ${v.y}px) scale(${scale * v.z})`;
   return (
     <div className="sl-board-box" ref={box}>
-      <div className="sl-board-fit" style={{ width: FULL_W * scale, height: FULL_H * scale }}>
-        <div className="sl-board-frame" style={{ width: FULL_W, height: FULL_H, transform: `scale(${scale})` }} data-flip-frame="sl-board">
-          <span />
-          <SideLabel table={table} r={3} />
-          <span />
-          <SideLabel table={table} r={4} />
+      <div className="sl-board-fit" style={{ width: w, height: h }} data-zoom={zoom === undefined ? undefined : String(zoom)}>
+        <div className="sl-board-frame" style={{ width: fullW, height: fullH, transform }} data-flip-frame="sl-board">
+          {!phone && <><span /><SideLabel table={table} r={3} /><span /><SideLabel table={table} r={4} /></>}
           <div className="sl-board" role="group" aria-label="The Sweetlands board">
             <Lands />
             {TILES.map((t) => (
@@ -186,10 +236,7 @@ export function Board({ table, pieces, marks = {}, lit = [], onTile }: BoardProp
             ))}
             <Castle table={table} mark={marks['castle']}>{pieces['castle']?.length ? pieces['castle'] : null}</Castle>
           </div>
-          <SideLabel table={table} r={2} />
-          <span />
-          <SideLabel table={table} r={1} />
-          <span />
+          {!phone && <><SideLabel table={table} r={2} /><span /><SideLabel table={table} r={1} /><span /></>}
         </div>
       </div>
     </div>

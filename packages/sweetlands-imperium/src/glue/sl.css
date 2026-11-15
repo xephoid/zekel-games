@@ -447,3 +447,175 @@ button.sl-piece { cursor: pointer; }
 @keyframes sl-mark-in { from { opacity: 0; transform: scale(1.12); } }
 @media (prefers-reduced-motion: reduce) { .sl-die.rolled, .sl-mark { animation: none; } }
 .table-shell[data-motion="reduced"] :is(.sl-die.rolled, .sl-mark) { animation: none; }
+
+/* ======================================================================
+   The phone (docs/design/sweetlands-candy/Phone-*.dc.html; what to build is
+   zekel-universe docs/games/sweetlands-phone-build.md). Only when the table
+   is laid out for a phone (.table-shell.phone) and the screen is told
+   (.sl-screen.phone): one column, the board always in view, nothing wider
+   than the screen, every control at least 44 px.
+   ====================================================================== */
+
+/* ---------- the top bar: one line ---------- */
+.table-shell.phone.sl-theme .table-topbar { height: 54px; gap: 8px; padding: 0 6px 0 14px; }
+.table-shell.phone.sl-theme .table-topbar .title { font: 800 19px/1 var(--sl-display); flex: none; }
+.table-shell.phone.sl-theme .round-tag {
+  flex: none; padding: 3px 7px; border-radius: 999px; background: var(--sl-panel);
+  border: 2px solid var(--sl-choc); font: 800 12px/1 var(--sl-display); white-space: nowrap;
+}
+.table-shell.phone.sl-theme .turn-pill { padding: 6px 11px; font: 800 13px/1 var(--sl-display); }
+.table-shell.phone.sl-theme .table-menu-btn { border: 2px solid var(--sl-choc); border-radius: 12px; background: var(--sl-panel); color: var(--sl-ink); box-shadow: 0 2px 0 var(--sl-choc); }
+
+/* ---------- the column ---------- */
+.table-shell.phone.sl-theme .table-board { padding: 0; gap: 0; min-width: 0; }
+.table-shell.phone.sl-theme .table-bench { display: none; }
+.sl-screen.phone { flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: column; gap: 0; }
+.sl-screen.phone > * { min-width: 0; }
+
+/* the score chips: one button, a chip per seat */
+.sl-screen.phone .sl-chips {
+  flex: none; margin: 10px 12px 0; padding: 0; border: 0; background: transparent; cursor: pointer; text-align: left;
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; min-height: 44px; color: var(--sl-ink);
+}
+.sl-chip {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 4px 5px; padding: 6px 7px; border-radius: 12px; min-width: 0;
+  background: var(--sl-panel); border: 2px solid var(--sl-choc); box-shadow: 0 2px 0 var(--sl-choc);
+}
+.sl-chip.me { outline: 3px solid #f5a623; outline-offset: -6px; }
+.sl-chip-plain { width: 17px; height: 17px; border-radius: 50%; background: #2c2c2c; }
+.sl-chip-n { font: 800 12.5px var(--sl-display); white-space: nowrap; }
+.sl-chip-bar {
+  grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.5px; height: 7px; padding: 1.5px;
+  border: 1.5px solid var(--sl-choc); border-radius: 999px; background: var(--sl-blush);
+}
+.sl-chip-bar > span { border-radius: 2px; }
+.sl-chip-bar > span.on { background-image: repeating-linear-gradient(-45deg, rgba(255, 255, 255, .5) 0 2px, transparent 2px 5px); }
+
+/* the zoom buttons: five equal columns, the treat over a short name */
+.sl-zoom { flex: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; padding: 9px 12px 8px; }
+.sl-zoom > button {
+  min-width: 0; min-height: 46px; padding: 4px 2px; border-radius: 12px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  font: 700 10.5px/1.1 var(--font-body); white-space: nowrap; color: var(--sl-ink);
+  background: var(--sl-panel); border: 2px solid var(--sl-pink-line);
+}
+.sl-zoom > button > span:last-child { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.sl-zoom > button.on { background: var(--sl-choc); border-color: var(--sl-choc); color: #fff; }
+.sl-zoom-all { width: 14px; height: 14px; border: 2px solid currentColor; border-radius: 3px; box-sizing: border-box; background-image: linear-gradient(currentColor, currentColor), linear-gradient(currentColor, currentColor); background-size: 2px 100%, 100% 2px; background-position: center; background-repeat: no-repeat; }
+
+/* the board: fitted to the column's width, the wafer frame round it; the
+   fitted box is a window the zoomed board is clipped by */
+.sl-screen.phone .sl-board-box { flex: none; min-height: 0; margin: 6px 13px 0; aspect-ratio: 672 / 528; display: block; }
+.sl-screen.phone .sl-board-fit {
+  overflow: hidden; border-radius: 8px; background: #fff4e2;
+  box-shadow: 0 0 0 4px var(--sl-caramel), 0 0 0 6px #b8733a, 0 0 0 7.5px var(--sl-choc);
+}
+.sl-screen.phone .sl-board-frame { display: block; transition: transform 350ms ease; }
+.sl-screen.phone .sl-board-frame > .sl-board { position: absolute; left: 0; top: 0; }
+@media (prefers-reduced-motion: reduce) { .sl-screen.phone .sl-board-frame { transition: none; } }
+.table-shell[data-motion="reduced"] .sl-screen.phone .sl-board-frame { transition: none; }
+
+/* the space under the board: the turn panel scrolls inside itself, the hand under it */
+.sl-under { flex: 1; min-height: 0; display: flex; flex-direction: column; position: relative; }
+.sl-screen.phone .sl-now {
+  flex: 1; min-height: 0; margin: 14px 12px 10px; padding: 10px 12px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 8px; border-radius: 16px; box-shadow: 0 3px 0 var(--sl-choc);
+}
+.sl-screen.phone .sl-panel-title { font-size: 18px; }
+.sl-screen.phone .sl-panel-text { font-size: 13.5px; line-height: 1.45; }
+.sl-screen.phone .sl-tip { display: none; }
+.sl-steps-row { display: flex; align-items: center; gap: 6px; margin-bottom: -2px; font-size: 11.5px; color: var(--sl-quiet); }
+.sl-step-dots { display: flex; gap: 3px; }
+.sl-step-dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--sl-choc); background: var(--sl-panel); }
+.sl-step-dot.done { background: #9be3b5; }
+.sl-step-dot.now { background: var(--sl-rasp); }
+.sl-screen.phone :is(.sl-back, .sl-back-btn) { min-height: 44px; }
+.sl-panel-head { display: flex; align-items: center; gap: 8px; }
+.sl-panel-head .sl-panel-title { flex: 1; min-width: 0; font-size: 17px; }
+.sl-back-btn {
+  flex: none; min-height: 44px; padding: 0 6px; border: 0; background: transparent; color: var(--sl-quiet);
+  font: 12.5px var(--font-body); cursor: pointer; white-space: nowrap;
+}
+.sl-screen.phone .sl-options.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.sl-screen.phone .sl-options.grid .sl-option { min-width: 0; min-height: 46px; padding: 6px 8px; gap: 7px; align-items: center; border-radius: 12px; }
+.sl-screen.phone .sl-options.grid .sl-option-n { width: 19px; height: 19px; font-size: 10.5px; }
+.sl-screen.phone .sl-options.grid .sl-option-words { min-width: 0; gap: 1px; }
+.sl-screen.phone .sl-options.grid .sl-option-words > b { font-size: 12.5px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sl-option-where { font-weight: 500; color: var(--sl-ink-2); }
+.sl-option-arrow { font-weight: 400; color: var(--sl-quiet); }
+.sl-screen.phone .sl-options.grid .sl-option-sentence {
+  font-size: 11px; line-height: 1.25; color: var(--sl-ink-2);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+}
+.sl-screen.phone :is(.sl-main-btn, .sl-quiet-choice) { border-radius: 12px; }
+.sl-screen.phone .sl-main-btn { font: 800 15px var(--sl-display); }
+.sl-screen.phone .sl-quiet-choice { font-size: 12.5px; }
+
+/* a battle in the space under the board */
+.sl-screen.phone .sl-battle { gap: 6px; }
+.sl-screen.phone .sl-battle-side { align-items: center; text-align: center; padding: 8px 6px; }
+.sl-battle-portrait { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 3px solid var(--sl-choc); box-sizing: border-box; background: #f4e7dc; }
+.sl-battle-portrait.foe { display: block; background: #7a1f1f; }
+.sl-screen.phone .sl-roll-btn { min-height: 52px; font-size: 20px; border-radius: 12px; }
+
+/* the hand: across the bottom, six equal columns of 82 px wrappers */
+.sl-screen.phone .sl-hand {
+  flex: none; padding: 8px 12px 14px; border: 0; border-top: 2.5px solid var(--sl-choc); border-radius: 0; box-shadow: none;
+  position: relative; z-index: 2;
+}
+.sl-screen.phone .sl-hand-head { flex-wrap: nowrap; gap: 8px; margin-bottom: 6px; min-width: 0; }
+.sl-screen.phone .sl-hand-head .sl-h { font-size: 14px; flex: none; }
+.sl-screen.phone .sl-hand-head .sl-hint { flex: 1; min-width: 0; font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sl-screen.phone .sl-hand-fill { display: none; }
+.sl-screen.phone .sl-token-chip { font-size: 0; gap: 0; flex: none; }
+.sl-screen.phone .sl-counts { font-size: 11px; flex: none; }
+.sl-screen.phone .sl-cards {
+  display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 35px) / 6); grid-template-columns: none;
+  gap: 7px; padding-top: 6px; overflow-x: auto; overflow-y: visible; overscroll-behavior-x: contain;
+}
+.sl-screen.phone .sl-card { height: 82px; filter: drop-shadow(0 2px 0 var(--sl-choc)); }
+.sl-screen.phone .sl-card.picked { transform: translateY(-8px); outline-width: 2.5px; outline-offset: 3px; }
+.sl-screen.phone .sl-crimp { height: 7px; }
+.sl-screen.phone .sl-card-body { top: 6px; bottom: 6px; gap: 4px; border-width: 1.5px; }
+.sl-screen.phone .sl-card-plate { width: 28px; height: 28px; border-width: 1.5px; }
+.sl-screen.phone .sl-card-plate img { width: 20px; height: 20px; }
+.sl-screen.phone .sl-card-label { padding: 3px 2px; border-width: 1.5px; }
+.sl-screen.phone .sl-card-name { font-size: 10px; letter-spacing: -.01em; hyphens: manual; overflow-wrap: normal; }
+.sl-screen.phone .sl-card-line { display: none; }
+.sl-screen.phone .sl-double { top: 9px; right: 3px; padding: 1px 4px 2px; font-size: 10px; border-width: 1.5px; }
+.sl-screen.phone .sl-secrets { display: none; }
+
+/* ---------- the menu: stops under the board (--sl-under-board, set by SlScreen) ---------- */
+.table-shell.phone.sl-theme .sheet-backdrop:has(> .menu-sheet) { top: var(--sl-under-board, 0px); }
+.table-shell.phone.sl-theme .menu-sheet { max-height: 100%; box-sizing: border-box; border-bottom: 0; box-shadow: 0 -3px 0 var(--sl-choc); }
+.table-shell.phone.sl-theme .menu-sheet .chip-btn { height: auto; min-height: 44px; }
+/* the last move's pace buttons (1×, 2×) are as wide as a thumb too */
+.table-shell.phone.sl-theme .menu-sheet .pace .btn { min-width: 44px; min-height: 44px; }
+.sl-phone-menu { display: flex; flex-direction: column; gap: 10px; }
+.sl-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sl-tab {
+  min-height: 44px; border-radius: 12px; border: 2px solid var(--sl-choc); background: var(--sl-panel); color: var(--sl-ink);
+  font: 800 14px var(--sl-display); cursor: pointer;
+}
+.sl-tab[aria-pressed="true"] { background: var(--sl-choc); color: #fff; }
+.sl-phone-menu .sl-players { overflow: visible; padding: 0; }
+.sl-phone-menu .sl-col-head { white-space: normal; }
+.sl-phone-menu .sl-col-head .sl-h { margin: 0; padding: 0; font-size: 15px; }
+.sl-phone-menu .sl-piece-row { min-height: 44px; }
+.sl-phone-menu .sl-piece-where { flex: 1; white-space: normal; }
+.sl-find {
+  flex: none; margin-left: auto; padding: 4px 10px; border-radius: 999px; border: 2px solid var(--sl-pink-line);
+  font-weight: 700; font-size: 12px; color: var(--sl-rasp); background: var(--sl-panel);
+}
+.sl-menu-howto { display: flex; flex-direction: column; gap: 10px; font-size: 13.5px; line-height: 1.45; color: #4a2a18; }
+.sl-menu-howto p { margin: 0; }
+
+/* ---------- How to play: one scrolling column ---------- */
+.table-shell.phone.sl-theme .sheet.sl-howto { padding: 18px 14px 16px; }
+.table-shell.phone.sl-theme .sl-howto-head { flex-wrap: wrap; gap: 10px; padding-right: 44px; }
+.table-shell.phone.sl-theme .sl-howto-head img { width: 52px; height: 52px; }
+.table-shell.phone.sl-theme .sl-howto-head h2 { font-size: 22px; }
+.table-shell.phone.sl-theme .sl-howto-head .sl-main-btn { flex: 1 1 100%; }
+.table-shell.phone.sl-theme :is(.sl-howto-grid.top, .sl-howto-grid.bottom) { grid-template-columns: minmax(0, 1fr); }
+.table-shell.phone.sl-theme .sl-howto-colors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.table-shell.phone.sl-theme .sl-howto-strip > span { width: auto; flex: 1; }
