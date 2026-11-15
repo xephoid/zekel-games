@@ -232,6 +232,7 @@ packages/sweetlands-imperium/src/glue/turn.ts
 packages/sweetlands-imperium/src/index.ts
 packages/sweetlands-imperium/src/legalMoves.ts
 packages/sweetlands-imperium/src/rng.ts
+packages/sweetlands-imperium/src/trade.ts
 packages/sweetlands-imperium/src/types.ts
 packages/sweetlands-imperium/src/views.ts
 packages/sweetlands-imperium/src/viz/board.ts
