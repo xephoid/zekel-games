@@ -463,7 +463,9 @@ button.sl-piece { cursor: pointer; }
   flex: none; padding: 3px 7px; border-radius: 999px; background: var(--sl-panel);
   border: 2px solid var(--sl-choc); font: 800 12px/1 var(--sl-display); white-space: nowrap;
 }
-.table-shell.phone.sl-theme .turn-pill { padding: 6px 11px; font: 800 13px/1 var(--sl-display); }
+.table-shell.phone.sl-theme .turn-pill { padding: 6px 11px; font: 800 13px/1 var(--sl-display); min-width: 0; }
+/* one line: the pill gives way with an ellipsis (a long name while waiting) */
+.table-shell.phone.sl-theme .turn-pill .turn-text { display: block; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .table-shell.phone.sl-theme .table-menu-btn { border: 2px solid var(--sl-choc); border-radius: 12px; background: var(--sl-panel); color: var(--sl-ink); box-shadow: 0 2px 0 var(--sl-choc); }
 
 /* ---------- the column ---------- */
@@ -530,6 +532,7 @@ button.sl-piece { cursor: pointer; }
 .sl-step-dot.done { background: #9be3b5; }
 .sl-step-dot.now { background: var(--sl-rasp); }
 .sl-screen.phone :is(.sl-back, .sl-back-btn) { min-height: 44px; }
+.sl-screen.phone .sl-more summary { min-height: 44px; display: flex; align-items: center; margin-bottom: 0; }
 .sl-panel-head { display: flex; align-items: center; gap: 8px; }
 .sl-panel-head .sl-panel-title { flex: 1; min-width: 0; font-size: 17px; }
 .sl-back-btn {
@@ -583,10 +586,12 @@ button.sl-piece { cursor: pointer; }
 .sl-screen.phone .sl-card-name { font-size: 10px; letter-spacing: -.01em; hyphens: manual; overflow-wrap: normal; }
 .sl-screen.phone .sl-card-line { display: none; }
 .sl-screen.phone .sl-double { top: 9px; right: 3px; padding: 1px 4px 2px; font-size: 10px; border-width: 1.5px; }
-.sl-screen.phone .sl-secrets { display: none; }
 
 /* ---------- the menu: stops under the board (--sl-under-board, set by SlScreen) ---------- */
-.table-shell.phone.sl-theme .sheet-backdrop:has(> .menu-sheet) { top: var(--sl-under-board, 0px); }
+/* the game's own choice sheets (the trade-in, a treat picked by form) stop
+   there too: the board is never covered while a choice is open */
+.table-shell.phone.sl-theme :is(.sheet-backdrop:has(> .menu-sheet), .sl-screen.phone .sheet-backdrop) { top: var(--sl-under-board, 0px); }
+.table-shell.phone.sl-theme .sl-screen.phone .sheet { max-height: 100%; box-sizing: border-box; overflow-y: auto; border-bottom: 0; box-shadow: 0 -3px 0 var(--sl-choc); }
 .table-shell.phone.sl-theme .menu-sheet { max-height: 100%; box-sizing: border-box; border-bottom: 0; box-shadow: 0 -3px 0 var(--sl-choc); }
 .table-shell.phone.sl-theme .menu-sheet .chip-btn { height: auto; min-height: 44px; }
 /* the last move's pace buttons (1×, 2×) are as wide as a thumb too */

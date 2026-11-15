@@ -85,6 +85,20 @@ function secretWords(input: GlueInput, id: string): { name: string; text: string
   return { name: words(id), text: isObj(def) ? asStr(def['description']) : '' };
 }
 
+/** This seat's secret goals, in its own words: under the hand on a desktop,
+ *  in the menu's Players tab on a phone. Only the seat's own view has them. */
+export function SecretGoals({ table, input }: { table: SlTable; input: GlueInput }) {
+  if (table.secrets.length === 0) return null;
+  return (
+    <div className="sl-secrets">
+      {table.secrets.map((s) => {
+        const w = secretWords(input, s);
+        return <span key={s} className="sl-secret" title={w.text || undefined}><b>Your secret goal:</b> {w.text || w.name}</span>;
+      })}
+    </div>
+  );
+}
+
 export function Hand({ table, input, picked, onPick, pressable, formFor, onForm, discardTop, phone, ...trade }: HandProps) {
   const hand = table.hand ?? [];
   const playing = table.step === 'play';
@@ -147,14 +161,7 @@ export function Hand({ table, input, picked, onPick, pressable, formFor, onForm,
           })}
         </div>
       )}
-      {table.secrets.length > 0 && (
-        <div className="sl-secrets">
-          {table.secrets.map((s) => {
-            const w = secretWords(input, s);
-            return <span key={s} className="sl-secret" title={w.text || undefined}><b>Your secret goal:</b> {w.text || w.name}</span>;
-          })}
-        </div>
-      )}
+      {!phone && <SecretGoals table={table} input={input} />}
       {trading && !tradeMove && (
         <Sheet title={`Trade ${need} cards for one color`} onClose={() => setTrading(false)}>
           <p className="muted">Which color do you want? You pick the {need} cards to give up next.</p>

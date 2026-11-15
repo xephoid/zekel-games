@@ -142,6 +142,13 @@ describe('the menu’s two tabs (item 6)', () => {
     expect(within(mine).getAllByRole('button', { name: /Find/ })).toHaveLength(3);
   });
 
+  it('keeps the secret goal in the menu’s Players tab, not under the hand', () => {
+    const slot = openMenuSlot();
+    const { container } = render(<SlScreen {...phoneProps({}, { menuSlot: slot })} />);
+    expect(within(slot).getByText(/Your secret goal:/).closest('.sl-secret')!.textContent).toMatch(/defeat knight/i);
+    expect(container.querySelector('.sl-hand .sl-secrets')).toBeNull();
+  });
+
   it('Find rings the piece on the board and zooms to its land; it sends nothing', () => {
     const slot = openMenuSlot();
     const props = phoneProps({}, { menuSlot: slot });
@@ -260,7 +267,9 @@ describe('the turn panel and the hand on a phone (item 5)', () => {
     const hand = screen.getByRole('region', { name: 'Your hand' });
     expect(within(hand).queryByRole('button', { name: /^Trade/ })).toBeNull();
     fireEvent.click(within(panel()).getByRole('button', { name: /^Trade 4 cards/ }));
-    expect(screen.getByRole('dialog', { name: 'Trade 4 cards for one color' })).toBeTruthy();
+    const sheet = screen.getByRole('dialog', { name: 'Trade 4 cards for one color' });
+    // Inside the phone column, where the sheet stops under the board (sl.css).
+    expect(sheet.closest('.sl-screen.phone')).not.toBeNull();
   });
 
   it('a battle takes the place of the turn panel and the hand, never the board', () => {

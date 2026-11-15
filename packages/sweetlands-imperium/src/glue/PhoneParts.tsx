@@ -9,6 +9,7 @@ import { TreatChip } from './art.js';
 import { ColorGuide } from './ColorGuide.js';
 import { goals } from './FirstGame.js';
 import { Players } from './Players.js';
+import { SecretGoals } from './Hand.js';
 import { FACTION_LOOK, LAND_EDGE, REGION_HOME, type SlTable } from './read.js';
 import { REGIONS } from './geometry.js';
 import type { Zoom } from './Board.js';
@@ -105,7 +106,10 @@ export function PhoneMenu({ table, input, tab, onTab, focus, onFind, nameFor, on
         <button type="button" className="sl-tab" aria-pressed={tab === 'howto'} onClick={() => onTab('howto')}>How to play</button>
       </div>
       {tab === 'players' ? (
-        <Players table={table} focus={focus} onFocus={onFind} nameFor={nameFor} find />
+        <>
+          <SecretGoals table={table} input={input} />
+          <Players table={table} focus={focus} onFocus={onFind} nameFor={nameFor} find />
+        </>
       ) : (
         <div className="sl-menu-howto">
           <p>
