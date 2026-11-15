@@ -333,6 +333,47 @@ describe('the panels become bottom sheets on a phone (Phone-Test, Phone-Explore)
     expect(container.querySelectorAll(`[data-flip-id$="${cardId}"]`)).toHaveLength(1);
   });
 
+  it('a Dungeon\'s second fight already up: someone else\'s kept card still lands on the result over the map', () => {
+    // A view where a draw is up and some seat holds a card it could just have kept.
+    const keptBy = (p: any) => [...p.companions, ...p.littleMonsters, ...p.bigMonsters];
+    const f = FIXTURES.find((x) => x.view.pending?.kind === 'draw' && x.view.pending.payload?.deck !== 'tile' && x.view.lastRoll
+      && x.view.players.some((p: any) => keptBy(p).length > 0))!;
+    expect(f).toBeTruthy();
+    const tester = f.view.players.find((p: any) => keptBy(p).length > 0)!;
+    const cardId = keptBy(tester).at(-1);
+    const viewer = f.view.players.find((p: any) => p.player_id !== tester.player_id)!;
+    const previous = { ...f.view, pending: { kind: 'roll', seat: tester.player_id, payload: { rollKind: 'test', test: 'little', cardId, dungeon: true } } };
+    const { container } = draw(f, { yourTurn: false }, { previous, playerId: viewer.player_id });
+    expect(container.querySelector('.ao-phone-sheet .ao-test')).not.toBeNull();
+    const result = container.querySelector<HTMLElement>('.ao-map .ao-panel.result')!;
+    expect(result).not.toBeNull();
+    expect(result.querySelector(`[data-flip-id$="${cardId}"]`)).not.toBeNull();
+    expect(container.querySelectorAll(`[data-flip-id$="${cardId}"]`)).toHaveLength(1);
+  });
+
+  it('with Everyone or Quests showing, your kept cards land on the You tab; back on You, in your holdings', () => {
+    const f = FIXTURES.find((x) => x.key === 'move-late-multi') ?? fx('move-late');
+    const me = f.view.players.find((p: any) => p.player_id === f.viewer);
+    const kept = [...me.companions, ...me.littleMonsters, ...me.bigMonsters, ...me.artifacts];
+    expect(kept.length).toBeGreaterThan(0);
+    draw(f);
+    fireEvent.click(screen.getByRole('button', { name: /^Your adventurer, companions and quests/ }));
+    const sheet = screen.getByRole('dialog', { name: 'Your adventurer' });
+    const ids = () => [...document.querySelectorAll('[data-flip-id]')].map((e) => e.getAttribute('data-flip-id'));
+    const dup = () => { const xs = ids(); return xs.filter((x, i) => xs.indexOf(x) !== i); };
+    for (const name of ['Everyone', 'Quests']) {
+      fireEvent.click(within(sheet).getByRole('tab', { name }));
+      const youTab = within(sheet).getByRole('tab', { name: 'You' });
+      expect(youTab.querySelectorAll('.ao-you-catch [data-flip-id]'), name).toHaveLength(kept.length);
+      expect(sheet.querySelector('#ao-tabpanel-you [data-flip-id]'), name).toBeNull();
+      expect(dup(), name).toEqual([]);
+    }
+    fireEvent.click(within(sheet).getByRole('tab', { name: 'You' }));
+    expect(sheet.querySelector('[role="tab"] .ao-you-catch')).toBeNull();
+    expect(sheet.querySelector('#ao-tabpanel-you [data-flip-id]')).not.toBeNull();
+    expect(dup()).toEqual([]);
+  });
+
   it('while a panel is up, the top of the sheet opens the adventurer sheet and holds your pile; opening sends nothing', () => {
     const ups = ['take_artifact', 'draw-companion', 'roll-test', 'explore_place-ordinary', 'roll-turn_order'];
     for (const key of ups) {

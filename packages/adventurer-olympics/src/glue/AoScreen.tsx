@@ -164,7 +164,12 @@ function TestPanel({ view, previous, all, mine, meId, onDraw, showResult, phone 
   // Just after a roll: the card that was tested, the dice, and how it went.
   const before = isObj(previous) ? pendingOf(previous) : null;
   const last = isObj(view['lastRoll']) ? view['lastRoll'] : null;
-  if (only !== 'live' && showResult && (!p || (p.kind !== 'draw' && p.kind !== 'roll')) && before?.kind === 'roll' && before.payload['rollKind'] === 'test' && last) {
+  // On a desktop the result waits for the panels to be free; on a phone it sits
+  // over the map while the next panel (a Dungeon's second fight, the roll for
+  // turn order) is already up in the bottom sheet, so a card kept just now
+  // always has its landing place.
+  const panelsFree = !p || (p.kind !== 'draw' && p.kind !== 'roll');
+  if (only !== 'live' && showResult && (panelsFree || only === 'result') && before?.kind === 'roll' && before.payload['rollKind'] === 'test' && last) {
     const cardId = asStr(before.payload['cardId']);
     const tester = who(before.seat);
     const kept = !!tester && [...tester.companions, ...tester.little, ...tester.big].includes(cardId);
@@ -421,7 +426,7 @@ function MeCard({ view, me, all }: { view: Record<string, unknown>; me: Player; 
 }
 
 /** What you keep: companions, monsters beaten, runes, coins, tiles and dungeons. */
-function Holdings({ view, me }: { view: Record<string, unknown>; me: Player }) {
+function Holdings({ view, me, flip = true }: { view: Record<string, unknown>; me: Player; flip?: boolean }) {
   const rd = isObj(view['referenceData']) ? view['referenceData'] : {};
   const perColour = asNum(rd['tokensPerColour'], 0);
   const raw = asArr(view['players']).find((x) => isObj(x) && x['player_id'] === me.id);
@@ -430,19 +435,19 @@ function Holdings({ view, me }: { view: Record<string, unknown>; me: Player }) {
   return (
     <div className="ao-holdings">
       <div className="group"><div className="label">Companions {me.companions.length}</div>
-        <div className="cards">{me.companions.length ? me.companions.map((c, i) => <MiniCard key={c} view={view} cardId={c} tilt={((i * 7) % 5) - 2} />) : <div className="ao-empty">None yet</div>}</div></div>
+        <div className="cards">{me.companions.length ? me.companions.map((c, i) => <MiniCard key={c} view={view} cardId={c} tilt={((i * 7) % 5) - 2} flip={flip} />) : <div className="ao-empty">None yet</div>}</div></div>
       <div className="group"><div className="label">Monsters beaten</div>
         <div className="cards">
           {([['Little', little], ['Big', big]] as const).map(([name, list]) => (
             <div key={name} className="ao-stack">
-              <div className="pile">{list.length > 1 && <span className="under" />}{list.length ? <MiniCard view={view} cardId={list[list.length - 1]!} /> : <div className="ao-empty">None yet</div>}</div>
+              <div className="pile">{list.length > 1 && <span className="under" />}{list.length ? <MiniCard view={view} cardId={list[list.length - 1]!} flip={flip} /> : <div className="ao-empty">None yet</div>}</div>
               <div className="caption">{name} <b>{list.length}</b></div>
             </div>
           ))}
         </div></div>
       <div className="group"><div className="label">Runes {me.artifacts.length}</div>
         <div className="cards">{me.artifacts.length ? me.artifacts.map((a) => (
-          <div key={a} className="ao-rune-card" data-flip-id={`ao:rune:${a}`}><Icon name={a} size={46} /><span>{ICON[a]?.name ?? a}</span></div>
+          <div key={a} className="ao-rune-card" data-flip-id={flip ? `ao:rune:${a}` : undefined}><Icon name={a} size={46} /><span>{ICON[a]?.name ?? a}</span></div>
         )) : <div className="ao-empty">None yet</div>}</div></div>
       <div className="group push">
         {left !== null && perColour > 0 && <>
@@ -742,7 +747,9 @@ function AdventurerSheet({ view, me, all, onClose, side, hint }: {
         {tabs.map(([key, label], i) => (
           <button key={key} ref={(el) => { tabRefs.current[i] = el; }} type="button" role="tab" id={`ao-tab-${key}`}
             aria-selected={tab === i} aria-controls={`ao-tabpanel-${key}`} tabIndex={tab === i ? 0 : -1}
-            className={tab === i ? 'on' : ''} onClick={() => setTab(i)} onKeyDown={onKey}>{label}</button>
+            className={tab === i ? 'on' : ''} onClick={() => setTab(i)} onKeyDown={onKey}>{label}
+            {/* With Everyone or Quests showing, a card you keep flies into the You tab. */}
+            {key === 'you' && me && at !== 'you' && <YouCatch view={view} me={me} />}</button>
         ))}
       </div>
       {me && <div className="ao-tabpanel" role="tabpanel" id="ao-tabpanel-you" aria-labelledby="ao-tab-you" hidden={at !== 'you'}>
@@ -753,7 +760,7 @@ function AdventurerSheet({ view, me, all, onClose, side, hint }: {
             <span className="muted">{moving ? `${me.stepsLeft} of ${movement}` : ''}</span></div>
           <p className="hint">{hint}</p>
         </div>
-        <Holdings view={view} me={me} />
+        <Holdings view={view} me={me} flip={at === 'you'} />
       </div>}
       <div className="ao-tabpanel" role="tabpanel" id="ao-tabpanel-everyone" aria-labelledby="ao-tab-everyone" hidden={at !== 'everyone'}>{side('everyone')}</div>
       <div className="ao-tabpanel" role="tabpanel" id="ao-tabpanel-quests" aria-labelledby="ao-tab-quests" hidden={at !== 'quests'}>{side('quests')}</div>

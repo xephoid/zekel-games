@@ -435,6 +435,8 @@
   flex: 1; height: 44px; border-radius: 12px; border: 2.5px solid var(--ao-line); background: var(--ao-surface);
   color: var(--ao-text); font: 600 15px var(--ao-font); cursor: pointer;
 }
+.ao-screen.phone .ao-adventurer-sheet .ao-tabs [role='tab'] { position: relative; }
+.ao-screen.phone .ao-adventurer-sheet [role='tab'] .ao-you-catch { left: auto; right: 8px; bottom: auto; top: calc(50% - 9px); }
 .ao-adventurer-sheet .ao-tabs [role='tab'][aria-selected='true'] { background: var(--ao-hl); font-weight: 700; box-shadow: var(--ao-shadow); }
 .ao-adventurer-sheet .ao-tabpanel { display: flex; flex-direction: column; gap: 12px; font-family: var(--ao-font); color: var(--ao-text); }
 .ao-adventurer-sheet .ao-me { width: auto; }
