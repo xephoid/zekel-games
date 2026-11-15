@@ -415,6 +415,9 @@
 .ao-screen.phone .ao-you-stat.glow { animation: ao-stat-glow 0.6s ease-in-out 3; }
 .ao-screen.phone .ao-you-n { display: inline-flex; align-items: center; gap: 1px; font-size: 15px; }
 .ao-screen.phone .ao-you .up { margin-left: auto; flex: none; }
+/* The same opener, smaller, at the top of a bottom sheet (and a watcher's "Players and quests"). */
+.ao-screen.phone .ao-you.compact { min-height: 44px; flex: none; box-shadow: none; }
+.ao-screen.phone .ao-you.compact .ao-you-catch { left: 24px; }
 /* Where a kept card lands while the sheet is closed: a small pile at your adventurer's foot. */
 .ao-screen.phone .ao-you-catch { position: absolute; left: 30px; bottom: 3px; width: 13px; height: 18px; pointer-events: none; }
 .ao-screen.phone .ao-catch-card { position: absolute; inset: 0; box-sizing: border-box; border-radius: 3px; border: 2px solid var(--ao-line); }

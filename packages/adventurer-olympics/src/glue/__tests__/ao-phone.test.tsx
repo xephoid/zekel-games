@@ -320,6 +320,42 @@ describe('the panels become bottom sheets on a phone (Phone-Test, Phone-Explore)
     }
   });
 
+  it('someone else\'s kept card has no pile on a phone, so the result\'s copy keeps its flip id', () => {
+    const f = fx('after-roll-test');
+    const other = f.view.players.find((p: any) => p.player_id !== f.viewer && p.companions.length === 0)!;
+    const tester = f.view.players.find((p: any) => p.companions.length > 0)!;
+    const cardId = tester.companions[0];
+    const previous = { ...f.view, pending: { kind: 'roll', seat: tester.player_id, payload: { rollKind: 'test', test: 'recruit', cardId } } };
+    const { container } = draw(f, { yourTurn: false }, { previous, playerId: other.player_id });
+    const result = container.querySelector<HTMLElement>('.ao-map .ao-panel.result')!;
+    expect(result.textContent).toContain('keeps');
+    expect(result.querySelector(`[data-flip-id$="${cardId}"]`)).not.toBeNull();
+    expect(container.querySelectorAll(`[data-flip-id$="${cardId}"]`)).toHaveLength(1);
+  });
+
+  it('while a panel is up, the top of the sheet opens the adventurer sheet and holds your pile; opening sends nothing', () => {
+    const ups = ['take_artifact', 'draw-companion', 'roll-test', 'explore_place-ordinary', 'roll-turn_order'];
+    for (const key of ups) {
+      const f = fx(key);
+      const me = f.view.players.find((p: any) => p.player_id === f.viewer);
+      const kept = [...me.companions, ...me.littleMonsters, ...me.bigMonsters, ...me.artifacts];
+      const { container, onMove, onDraw, onForm } = draw(f);
+      const sheet = sheetOf(container)!;
+      expect(sheet, key).not.toBeNull();
+      const opener = within(sheet).getByRole('button', { name: /^Your adventurer, companions and quests/ });
+      expect(opener.querySelectorAll('.ao-you-catch [data-flip-id]'), key).toHaveLength(kept.length);
+      fireEvent.click(opener);
+      const dialog = screen.getByRole('dialog', { name: 'Your adventurer' });
+      fireEvent.click(within(dialog).getByRole('tab', { name: 'Quests' }));
+      expect(document.getElementById('ao-tabpanel-quests')!.hidden, key).toBe(false);
+      // The pile steps aside for the open sheet: no flip id drawn twice.
+      const ids = [...document.querySelectorAll('[data-flip-id]')].map((e) => e.getAttribute('data-flip-id'));
+      expect(ids.filter((x, i) => ids.indexOf(x) !== i), key).toEqual([]);
+      expect(onMove).not.toHaveBeenCalled(); expect(onDraw).not.toHaveBeenCalled(); expect(onForm).not.toHaveBeenCalled();
+      cleanup();
+    }
+  });
+
   it('exploring: a short sheet with the tile, Turn left, Turn right and Place tile; the slots stay on the map', () => {
     const f = fx('explore_place-ordinary');
     const { container, onMove } = draw(f);
@@ -367,6 +403,31 @@ describe('agency on a phone', () => {
       expect(onMove).not.toHaveBeenCalled(); expect(onDraw).not.toHaveBeenCalled(); expect(onForm).not.toHaveBeenCalled();
       cleanup();
     }
+  });
+
+  it('a watcher with no seat can still open the players and the quests, and opening sends nothing', () => {
+    const f = fx('move-late-multi');
+    const { container, onMove, onDraw, onForm } = draw(f, { interactive: false, yourTurn: false }, { view: f.watcherView, legalMoves: [], playerId: null });
+    expect(screen.queryByRole('button', { name: /^Your adventurer/ })).toBeNull();
+    fireEvent.click(within(container.querySelector<HTMLElement>('.ao-dock')!).getByRole('button', { name: /Players and quests/ }));
+    const sheet = screen.getByRole('dialog', { name: 'Players and quests' });
+    expect(within(sheet).getAllByRole('tab').map((t) => t.textContent)).toEqual(['Everyone', 'Quests']);
+    expect(within(sheet).getByRole('tab', { name: 'Everyone' }).getAttribute('aria-selected')).toBe('true');
+    expect(sheet.querySelector('.ao-order-strip')!.querySelectorAll('.chip')).toHaveLength(f.watcherView.players.length);
+    expect(sheet.querySelectorAll('.ao-seat')).toHaveLength(f.watcherView.players.length);
+    fireEvent.click(within(sheet).getByRole('tab', { name: 'Quests' }));
+    expect(document.getElementById('ao-tabpanel-quests')!.hidden).toBe(false);
+    expect(sheet.querySelectorAll('.ao-quest').length).toBeGreaterThan(0);
+    expect(onMove).not.toHaveBeenCalled(); expect(onDraw).not.toHaveBeenCalled(); expect(onForm).not.toHaveBeenCalled();
+  });
+
+  it('a watcher with no seat can open them while a test is up too', () => {
+    const f = fx('draw-companion-multi');
+    const { container } = draw(f, { interactive: false, yourTurn: false }, { view: f.watcherView, legalMoves: [], playerId: null });
+    const sheet = container.querySelector<HTMLElement>('.ao-phone-sheet')!;
+    expect(sheet).not.toBeNull();
+    fireEvent.click(within(sheet).getByRole('button', { name: /Players and quests/ }));
+    expect(screen.getByRole('dialog', { name: 'Players and quests' })).toBeTruthy();
   });
 
   it('a watcher sees the phone table and can press nothing that moves', () => {

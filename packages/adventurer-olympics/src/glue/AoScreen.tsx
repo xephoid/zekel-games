@@ -173,8 +173,11 @@ function TestPanel({ view, previous, all, mine, meId, onDraw, showResult, phone 
       <section className="ao-panel ao-test result" aria-label="How the test went">
         <header><Icon name={ICON[asStr(before.payload['test']) === 'recruit' ? 'city' : asStr(before.payload['test']) === 'big' ? 'big_monster' : 'little_monster']?.art ?? 'city'} size={40} /><h3>{kept ? 'Success!' : 'Not enough'}</h3></header>
         <div className="body">
-          {/* On a phone a kept card flies into the "You" row; this copy stays put. */}
-          <MiniCard view={view} cardId={cardId} flip={!(phone && kept)} />
+          {/* On a phone a card you keep flies into your "You" button, which is
+              always there (the dock, the bottom sheet's top, or the open
+              adventurer sheet); this copy stays put. Anyone else's kept card
+              has no pile on a phone, so it lands here, as on a desktop. */}
+          <MiniCard view={view} cardId={cardId} flip={!(phone && kept && !!tester && tester.id === meId)} />
           <div className="words">
             <p>{kept
               ? `${tester?.id === meId ? 'You keep' : `${tester?.name ?? 'They'} keeps`} ${cardFor(view, cardId).label}.`
@@ -505,6 +508,47 @@ function phoneSheetUp(view: Record<string, unknown>, input: GlueInput, mine: boo
   return false;
 }
 
+/** Where a card you keep lands while the adventurer sheet is closed: a small
+ *  pile at your adventurer's foot, carrying the flip ids of everything you keep. */
+function YouCatch({ view, me }: { view: Record<string, unknown>; me: Player }) {
+  const kept = [...me.companions, ...me.little, ...me.big];
+  return (
+    <span className="ao-you-catch" aria-hidden="true">
+      {kept.map((id) => { const c = cardFor(view, id); return <span key={id} className="ao-catch-card" data-flip-id={c.id} data-flip-ghost="" style={{ background: c.colorKey === 'companion' ? '#5aa9e6' : c.colorKey === 'big' ? '#ff7a59' : '#8fd14f' }} />; })}
+      {me.artifacts.map((a) => <span key={a} className="ao-catch-card rune" data-flip-id={`ao:rune:${a}`} data-flip-ghost="" />)}
+    </span>
+  );
+}
+
+const UP_ARROW = <svg className="up" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 11l5-5 5 5" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+
+/**
+ * The opener for the adventurer sheet at the top of a bottom sheet, so a test,
+ * exploring or "Any rune" never hides your holdings, the other seats or the
+ * quests, and a card you keep still has your pile to fly to. A watcher with no
+ * seat gets "Players and quests" instead, here and in the dock.
+ */
+function SheetOpener({ view, me, all, onOpen, catching, compact }: {
+  view: Record<string, unknown>; me: Player | null; all: Player[]; onOpen: () => void; catching: boolean; compact: boolean;
+}) {
+  if (!me) {
+    return (
+      <button type="button" className={`ao-you${compact ? ' compact' : ''}`} aria-haspopup="dialog" onClick={onOpen}>
+        <span className="you">Players and quests</span>{UP_ARROW}
+      </button>
+    );
+  }
+  return (
+    <button type="button" className="ao-you compact" aria-label="Your adventurer, companions and quests" aria-haspopup="dialog" onClick={onOpen}>
+      <Icon name={adventurerOf(all, me.id).toLowerCase()} size={36} tint={tint(me.colour)} />
+      <span className="you">You</span>
+      <span title="Quest points" className="ao-you-n"><Icon name="quest" size={18} />{me.questPoints}</span>
+      {catching && <YouCatch view={view} me={me} />}
+      {UP_ARROW}
+    </button>
+  );
+}
+
 /**
  * The "You" row and the action row. The row is one button that opens the
  * adventurer sheet. While the sheet is closed the row also holds a small pile
@@ -522,7 +566,6 @@ function PhoneDock({ view, input, me, all, pressable, onMove, onOpen, catching }
   const moving = myTurn && (p?.kind === 'move' || p?.kind === 'try_again');
   const movement = me.stats?.movement ?? 0;
   const before = isObj(input.previous) ? players(input.previous).find((x) => x.id === me.id) ?? null : null;
-  const kept = [...me.companions, ...me.little, ...me.big];
   return (
     <div className="ao-dock">
       <button type="button" className="ao-you" aria-label="Your adventurer, companions and quests" aria-haspopup="dialog" onClick={onOpen}>
@@ -535,13 +578,8 @@ function PhoneDock({ view, input, me, all, pressable, onMove, onOpen, catching }
         ))}
         {me.tokensLeft !== null && <span title="Coins left" className="ao-you-n"><Icon name="coin" size={18} tint={tint(me.colour)} />{me.tokensLeft}</span>}
         <span title="Quest points" className="ao-you-n"><Icon name="quest" size={20} />{me.questPoints}</span>
-        {catching && (
-          <span className="ao-you-catch" aria-hidden="true">
-            {kept.map((id) => { const c = cardFor(view, id); return <span key={id} className="ao-catch-card" data-flip-id={c.id} data-flip-ghost="" style={{ background: c.colorKey === 'companion' ? '#5aa9e6' : c.colorKey === 'big' ? '#ff7a59' : '#8fd14f' }} />; })}
-            {me.artifacts.map((a) => <span key={a} className="ao-catch-card rune" data-flip-id={`ao:rune:${a}`} data-flip-ghost="" />)}
-          </span>
-        )}
-        <svg className="up" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 11l5-5 5 5" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        {catching && <YouCatch view={view} me={me} />}
+        {UP_ARROW}
       </button>
       <div className={`ao-actions${stay ? ' with-stay' : ''}`}>
         {stay && <button className="ao-btn stay" disabled={!pressable} onClick={() => onMove(stay)}>Stay and try again</button>}
@@ -676,7 +714,8 @@ const TABS = [['you', 'You'], ['everyone', 'Everyone'], ['quests', 'Quests']] as
  * a tap outside close it, and it scrolls inside itself.
  */
 function AdventurerSheet({ view, me, all, onClose, side, hint }: {
-  view: Record<string, unknown>; me: Player; all: Player[]; onClose: () => void;
+  /** null for a watcher with no seat: the sheet is then Everyone and Quests */
+  view: Record<string, unknown>; me: Player | null; all: Player[]; onClose: () => void;
   side: (part: 'everyone' | 'quests') => ReactNode;
   /** your board's hint, read from the view: the sheet restates no rule */
   hint: string;
@@ -684,26 +723,29 @@ function AdventurerSheet({ view, me, all, onClose, side, hint }: {
   const [tab, setTab] = useState(0);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const p = pendingOf(view);
-  const moving = p?.seat === me.id && (p?.kind === 'move' || p?.kind === 'try_again');
-  const movement = me.stats?.movement ?? 0;
+  const moving = !!me && p?.seat === me.id && (p?.kind === 'move' || p?.kind === 'try_again');
+  const movement = me?.stats?.movement ?? 0;
+  const tabs = me ? TABS : TABS.slice(1);
+  const at = tabs[tab]?.[0];
+  const title = me ? 'Your adventurer' : 'Players and quests';
   // Tabs as the ARIA pattern has them: one tab stop, arrows move and select, Home and End.
-  const go = (i: number) => { const n = (i + TABS.length) % TABS.length; setTab(n); tabRefs.current[n]?.focus(); };
+  const go = (i: number) => { const n = (i + tabs.length) % tabs.length; setTab(n); tabRefs.current[n]?.focus(); };
   const onKey = (e: KeyboardEvent<HTMLButtonElement>) => {
-    const to = e.key === 'ArrowRight' ? tab + 1 : e.key === 'ArrowLeft' ? tab - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? TABS.length - 1 : null;
+    const to = e.key === 'ArrowRight' ? tab + 1 : e.key === 'ArrowLeft' ? tab - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : null;
     if (to === null) return;
     e.preventDefault();
     go(to);
   };
   return (
-    <Sheet title="Your adventurer" className="ao-adventurer-sheet" onClose={onClose}>
-      <div className="ao-tabs" role="tablist" aria-label="Your adventurer">
-        {TABS.map(([key, label], i) => (
+    <Sheet title={title} className="ao-adventurer-sheet" onClose={onClose}>
+      <div className="ao-tabs" role="tablist" aria-label={title}>
+        {tabs.map(([key, label], i) => (
           <button key={key} ref={(el) => { tabRefs.current[i] = el; }} type="button" role="tab" id={`ao-tab-${key}`}
             aria-selected={tab === i} aria-controls={`ao-tabpanel-${key}`} tabIndex={tab === i ? 0 : -1}
             className={tab === i ? 'on' : ''} onClick={() => setTab(i)} onKeyDown={onKey}>{label}</button>
         ))}
       </div>
-      <div className="ao-tabpanel" role="tabpanel" id="ao-tabpanel-you" aria-labelledby="ao-tab-you" hidden={tab !== 0}>
+      {me && <div className="ao-tabpanel" role="tabpanel" id="ao-tabpanel-you" aria-labelledby="ao-tab-you" hidden={at !== 'you'}>
         <MeCard view={view} me={me} all={all} />
         <div className="ao-this-turn">
           <div className="steps"><span className="label">This turn</span><Icon name="mov" size={22} />
@@ -712,9 +754,9 @@ function AdventurerSheet({ view, me, all, onClose, side, hint }: {
           <p className="hint">{hint}</p>
         </div>
         <Holdings view={view} me={me} />
-      </div>
-      <div className="ao-tabpanel" role="tabpanel" id="ao-tabpanel-everyone" aria-labelledby="ao-tab-everyone" hidden={tab !== 1}>{side('everyone')}</div>
-      <div className="ao-tabpanel" role="tabpanel" id="ao-tabpanel-quests" aria-labelledby="ao-tab-quests" hidden={tab !== 2}>{side('quests')}</div>
+      </div>}
+      <div className="ao-tabpanel" role="tabpanel" id="ao-tabpanel-everyone" aria-labelledby="ao-tab-everyone" hidden={at !== 'everyone'}>{side('everyone')}</div>
+      <div className="ao-tabpanel" role="tabpanel" id="ao-tabpanel-quests" aria-labelledby="ao-tab-quests" hidden={at !== 'quests'}>{side('quests')}</div>
     </Sheet>
   );
 }
@@ -821,6 +863,7 @@ export function AoScreen(props: GameScreenProps) {
         {sheetUp && (
           <div className="ao-phone-sheet">
             <span className="grip" aria-hidden="true" />
+            <SheetOpener view={view} me={me} all={named} onOpen={() => setSheetOpen(true)} catching={!sheetOpen} compact />
             <TestPanel view={view} previous={input.previous} all={named} mine={mine} meId={me?.id ?? null} onDraw={onDraw} showResult={showResult} phone only="live" />
             <ExplorePanel view={view} input={input} pick={pick} setPick={setPick} onMove={onMove} onDraw={onDraw} mine={mine} />
             <RunePanel view={view} input={input} all={named} mine={mine} onMove={onMove} />
@@ -828,9 +871,12 @@ export function AoScreen(props: GameScreenProps) {
           </div>
         )}
         {me && !sheetUp && <PhoneDock view={view} input={input} me={me} all={named} pressable={pressable} onMove={onMove} onOpen={() => setSheetOpen(true)} catching={!sheetOpen} />}
-        {me && sheetOpen && (
-          <AdventurerSheet view={view} me={me} all={named} onClose={() => setSheetOpen(false)} hint={boardHint(view, input, me)}
-            side={(part) => <Side view={view} all={named} me={me.id} nameOf={nameOf} isAI={isAI} part={part} />} />
+        {!me && !sheetUp && (
+          <div className="ao-dock"><SheetOpener view={view} me={null} all={named} onOpen={() => setSheetOpen(true)} catching={false} compact={false} /></div>
+        )}
+        {sheetOpen && (
+          <AdventurerSheet view={view} me={me} all={named} onClose={() => setSheetOpen(false)} hint={me ? boardHint(view, input, me) : ''}
+            side={(part) => <Side view={view} all={named} me={me?.id ?? null} nameOf={nameOf} isAI={isAI} part={part} />} />
         )}
       </div>
     );
