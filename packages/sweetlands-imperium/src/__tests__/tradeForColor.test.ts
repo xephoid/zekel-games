@@ -87,18 +87,42 @@ describe('trading Intel cards in for one color', () => {
     expect(totalCards(s)).toBe(80);
   });
 
-  it('counts a red card among the ones traded in, since it goes to the discard pile first', () => {
+  it('a red card in your own hand never makes red available, wherever it sits and whether you trade it or not', () => {
     const s = setUp();
     emptyRed(s);
     const a = s.players[0]!;
     const b = s.players[1]!;
     const red = b.hand.find(isColor('red'))!;
     b.hand = b.hand.filter((c) => c !== red);
-    a.hand.unshift(red); // the first 4 cards, which the listed trade uses, now hold it
-    expect(tradeColors(s)).toContain('red');
-    const ids = a.hand.slice(0, 4).map((c) => c.cardId);
-    const next = applyMove(s, 'a', { type: 'discard_for_color', cardIds: ids, color: 'red' }).newState;
-    expect(next.players[0]!.hand.at(-1)!.cardId).toBe(red.cardId);
+    // Once beyond the first four cards (the listed placeholder), once inside them.
+    for (const at of ['end', 'start'] as const) {
+      a.hand = a.hand.filter((c) => c !== red);
+      if (at === 'end') a.hand.push(red); else a.hand.unshift(red);
+      expect(tradeColors(s)).not.toContain('red');
+      const withRed = [red.cardId, ...a.hand.filter((c) => c !== red).slice(0, 3).map((c) => c.cardId)];
+      const withoutRed = a.hand.filter((c) => c !== red).slice(0, 4).map((c) => c.cardId);
+      for (const ids of [withRed, withoutRed]) {
+        expect(() => applyMove(s, 'a', { type: 'discard_for_color', cardIds: ids, color: 'red' })).toThrow(/No red Intel card is left/);
+      }
+    }
+  });
+
+  it('a listed color works with any cards the player picks, not just the listed ones', () => {
+    const s = setUp();
+    const a = s.players[0]!;
+    // Grow the hand so a pick can avoid the listed placeholder cards entirely.
+    while (a.hand.length < 8) {
+      const i = s.intelDeck.findIndex((c) => !isColor('red')(c));
+      a.hand.push(s.intelDeck.splice(i, 1)[0]!);
+    }
+    const listed = getLegalMoves(s, 'a').find((m) => m.move.type === 'discard_for_color' && (m.move as { color: string }).color === 'red')!;
+    const listedIds = (listed.move as { cardIds: string[] }).cardIds;
+    const otherIds = a.hand.map((c) => c.cardId).filter((id) => !listedIds.includes(id)).slice(0, 4);
+    expect(otherIds).toHaveLength(4);
+    const next = applyMove(s, 'a', { type: 'discard_for_color', cardIds: otherIds, color: 'red' }).newState;
+    const got = next.players[0]!.hand.at(-1)!;
+    expect(got.kind === 'single' && got.color).toBe('red');
+    for (const id of otherIds) expect(next.players[0]!.hand.some((c) => c.cardId === id)).toBe(false);
     expect(totalCards(next)).toBe(80);
   });
 });

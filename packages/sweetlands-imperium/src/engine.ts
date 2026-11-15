@@ -1009,9 +1009,9 @@ function doDiscardForColor(state: SweetlandsState, playerId: string, cardIds: st
   const p = requireActive(state, playerId);
   const need = isNomads(p.faction) ? 4 : (p.faction === 'fudge' ? 2 : 4);
   if (cardIds.length !== need) throw new GameError('ILLEGAL_MOVE', `Discard exactly ${need} Intel to convert`);
-  // Check before changing anything: a card of that color must be left to take.
-  const traded = p.hand.filter((c) => cardIds.includes(c.cardId));
-  if (!colorCardLeft(state, color, traded)) {
+  // Check before changing anything: a card of that color must be left in the
+  // deck or the discard pile (the cards being traded in don't count).
+  if (!colorCardLeft(state, color)) {
     throw new GameError('ILLEGAL_MOVE', `No ${color} Intel card is left in the deck or the discard pile, so you cannot trade for ${color}.`);
   }
   removeCards(state, p, cardIds);
