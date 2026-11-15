@@ -592,6 +592,15 @@ button.sl-piece { cursor: pointer; }
    there too: the board is never covered while a choice is open */
 .table-shell.phone.sl-theme :is(.sheet-backdrop:has(> .menu-sheet), .sl-screen.phone .sheet-backdrop) { top: var(--sl-under-board, 0px); }
 .table-shell.phone.sl-theme .sl-screen.phone .sheet { max-height: 100%; box-sizing: border-box; overflow-y: auto; border-bottom: 0; box-shadow: 0 -3px 0 var(--sl-choc); }
+/* their form controls are thumb-sized: each choice a 44 px row, the fields
+   and the send button 44 px tall */
+.sl-screen.phone .move-form .radio-row { gap: 6px; }
+.sl-screen.phone .move-form .radio-row label {
+  min-height: 44px; box-sizing: border-box; padding: 4px 12px; border-radius: 12px;
+  border: 2px solid var(--sl-pink-line); background: var(--sl-panel);
+}
+.sl-screen.phone .move-form :is(select, input:not([type="radio"]):not([type="checkbox"]), .btn) { min-height: 44px; }
+.sl-screen.phone .sl-trade-colors .btn { min-height: 44px; }
 .table-shell.phone.sl-theme .menu-sheet { max-height: 100%; box-sizing: border-box; border-bottom: 0; box-shadow: 0 -3px 0 var(--sl-choc); }
 .table-shell.phone.sl-theme .menu-sheet .chip-btn { height: auto; min-height: 44px; }
 /* the last move's pace buttons (1×, 2×) are as wide as a thumb too */
