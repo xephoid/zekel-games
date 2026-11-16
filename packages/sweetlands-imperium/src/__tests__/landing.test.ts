@@ -98,6 +98,33 @@ describe('where a listed play lands', () => {
     expect(discardGreen.landing).toBeUndefined();
     expect(getLegalMoves(s, 'a').find((x) => x.move.type === 'pass')!.landing).toBeUndefined();
   });
+
+  it('T49: a green card never offers a move AND the green action — the action is the discard', () => {
+    const s = atPlay(toPlay(14), [{ cardId: 'g', kind: 'single', color: 'green' }]);
+    const moves = getLegalMoves(s, 'a');
+    expect(moves.some((m) => m.description.includes('take the green action'))).toBe(false);
+    // what remains: the per-unit move-only plays, plus the discard as the action.
+    expect(moves.filter((m) => m.move.type === 'play_intel' && (m.move as { takeAction: boolean }).takeAction === false && (m.move as { cardId?: string }).cardId === 'g')).toHaveLength(3);
+    const discard = moves.find((m) => m.description.startsWith('Discard Green'))!;
+    expect(discard.landing).toBeUndefined();
+    const after = applyMove(clone(s), 'a', discard.move).newState.players.find((p) => p.playerId === 'a')!;
+    expect(after.turn.unlimitedPlays).toBe(true);
+    expect(after.hand).toHaveLength(0);
+  });
+
+  it('T49: a green token offers unlimited plays as the action, never a move with it', () => {
+    const s = atPlay(toPlay(14), []);
+    s.players.find((p) => p.playerId === 'a')!.intelTokens.green = true;
+    const moves = getLegalMoves(s, 'a');
+    expect(moves.some((m) => m.description.includes('take the green action'))).toBe(false);
+    const action = moves.find((m) => m.description.startsWith('Spend your green Intel token: play unlimited'))!;
+    expect(action.landing).toBeUndefined();
+    const after = applyMove(clone(s), 'a', action.move).newState.players.find((p) => p.playerId === 'a')!;
+    expect(after.turn.unlimitedPlays).toBe(true);
+    expect(after.intelTokens.green).toBeFalsy();
+    // the move-only variants of the green token remain.
+    expect(moves.filter((m) => m.move.type === 'play_token' && (m.move as { color: string }).color === 'green' && (m.move as { takeAction: boolean }).takeAction === false)).toHaveLength(3);
+  });
 });
 
 describe('the dice of the last battle', () => {

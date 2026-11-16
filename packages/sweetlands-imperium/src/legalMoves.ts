@@ -257,6 +257,9 @@ function listLegalMoves(state: SweetlandsState, playerId: string): LegalMove<Swe
               const landing = colorLanding(from, u, card.color, viaRoad, card.kind === 'double' ? 2 : 1);
               const redVariants = card.color === 'red' ? redActionVariants(state, p, u, from, viaRoad, card.kind === 'double') : NO_RED_VARIANT;
               for (const v of redVariants) {
+                // T49: green's action is the discard (no move), listed as its own move below;
+                // a "move AND take the green action" play does not exist (rules-freeze §5).
+                if (card.color === 'green') continue;
                 moves.push(mk({ ...base, takeAction: true, ...v.extra, ...(needsFoeTotal && !digital ? { battleTotal: 0 } : {}) }, `Play ${label}: move ${u}${where}${branch} and take the ${card.color} action${v.note}.${needsFoeTotal ? foeNote : ''}`, landing));
               }
               moves.push(mk({ ...base, takeAction: false }, `Play ${label}: move ${u}${where}${branch} only (no action).`, landing));
@@ -297,11 +300,17 @@ function listLegalMoves(state: SweetlandsState, playerId: string): LegalMove<Swe
             const landing = colorLanding(from, u, color, viaRoad, 1);
             const redVariants = color === 'red' ? redActionVariants(state, p, u, from, viaRoad, false) : NO_RED_VARIANT;
             for (const v of redVariants) {
+              // T49: green's action is unlimited plays with no move — listed once after the
+              // unit loop, never as "move AND take the green action" (rules-freeze §5).
+              if (color === 'green') continue;
               moves.push(mk({ ...base, takeAction: true, ...v.extra, ...(needsFoeTotal && !digital ? { battleTotal: 0 } : {}) }, `Spend your ${color} Intel token: move ${u}${where} and take the ${color} action${v.note}.${needsFoeTotal ? foeNote : ''}`, landing));
             }
             moves.push(mk({ ...base, takeAction: false }, `Spend your ${color} Intel token: move ${u}${where} only.`, landing));
           }
         }
+      }
+      if (color === 'green') {
+        moves.push(mk({ type: 'play_token', color, unit: 'leader', viaRoad: false, takeAction: true }, 'Spend your green Intel token: play unlimited Intel this turn (no move).'));
       }
     }
     // discard-for-color conversion (4, or 2 for Fudge)
