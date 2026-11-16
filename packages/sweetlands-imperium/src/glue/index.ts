@@ -20,6 +20,7 @@ import { asArr, asNum, asStr, isObj, shapeHas, words } from '@zekel/glue-kit';
 import { answerList, answerText } from '@zekel/glue-kit';
 import { SPACES, REGION_FACTION, SPACE_COLORS, TREATS, BOARD } from './sweetlands-board.js';
 import { SlScreen } from './SlScreen.js';
+import type { PhonePlan } from './phone.js';
 
 const PALETTE: Record<string, string> = {
   ...SPACE_COLORS,
@@ -156,6 +157,10 @@ export const sweetlandsGlue: GlueModule = {
   /** The candy table (docs/design/sweetlands-candy) draws its own screen;
    *  the plan below keeps the shared primitives' shape for the debug client. */
   Screen: SlScreen,
+  /** The phone layout (docs/design/sweetlands-candy/Phone-*.dc.html, built
+   *  from zekel-universe docs/games/sweetlands-phone-build.md): one column,
+   *  the board always in view, the side column in the table's menu. */
+  phone: true,
 
   /** The candy theme (docs/design/sweetlands-candy): the table's own look,
    *  for every seat and for a watcher, once the view is this game's. */
@@ -323,7 +328,9 @@ export const sweetlandsGlue: GlueModule = {
     const status = phase.startsWith('setup')
       ? `Setup · ${words(phase.replace(/^setup_/, ''))}`
       : `Round ${asNum(view['round'], 1)} · ${words(phase)}${step ? ` · ${words(step)}` : ''}`;
-    return { board, bench, side: [], palette: PALETTE, title: 'Sweetlands Imperium', status };
+    const statusShort = phase.startsWith('setup') ? 'Setup' : `R${asNum(view['round'], 1)}`;
+    const out: PhonePlan = { board, bench, side: [], palette: PALETTE, title: 'Sweetlands Imperium', titleShort: 'Sweetlands', status, statusShort };
+    return out;
   },
 
   litParts(input: GlueInput): string[] {

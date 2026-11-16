@@ -12,8 +12,8 @@ import type { GlueInput, LegalMove, MoveForm } from '@zekel/glue-kit';
 import { SugarCube } from './art.js';
 import { COLOR_ACTION, cap, isColor } from './colors.js';
 import { cardLabel } from './Hand.js';
-import { UNIT_NAME, type SlTable } from './read.js';
-import type { PlayOption, TurnStep } from './turn.js';
+import { FACTION_LOOK, UNIT_NAME, type SlTable } from './read.js';
+import { destinationShort, type PlayOption, type TurnStep } from './turn.js';
 
 const STEPS = ['Recall', 'Draw', 'Play a card', 'Influence'];
 const STEP_INDEX: Partial<Record<TurnStep, number>> = { recall: 0, draw: 1, play: 2, influence: 3 };
@@ -34,6 +34,20 @@ export function StepTracker({ step }: { step: TurnStep }) {
           );
         })}
       </ol>
+    </div>
+  );
+}
+
+/** The phone's step row, at the top of the turn panel: four dots and "Step 3 of 4 · Play a card". */
+function StepDots({ step }: { step: TurnStep }) {
+  const at = STEP_INDEX[step];
+  if (at === undefined) return null;
+  return (
+    <div className="sl-steps-row" aria-label="Your turn has four steps">
+      <span className="sl-step-dots" aria-hidden="true">
+        {STEPS.map((s, i) => <span key={s} className={`sl-step-dot${i < at ? ' done' : i === at ? ' now' : ''}`} />)}
+      </span>
+      <span aria-current="step">Step {at + 1} of 4 · {STEPS[at]}</span>
     </div>
   );
 }
@@ -101,7 +115,8 @@ interface PanelProps {
   onForm(template: LegalMove, move: Record<string, unknown>, keys: string[]): void;
   /** the picked card or Intel token ("token:blue"), and its numbered options */
   picked: string | null;
-  setPicked(id: string | null): void;
+  /** `sent` is set when a move went: not a card put back */
+  setPicked(id: string | null, sent?: boolean): void;
   options: PlayOption[];
   /** moves for the picked card that move nothing (Green's discard) */
   extra: LegalMove[];
@@ -115,9 +130,26 @@ interface PanelProps {
   onBattleSeen(): void;
   template: LegalMove | null;
   setTemplate(m: LegalMove | null): void;
+  /** laid out for a phone (Phone-Choose.dc.html, Phone-Zoom.dc.html, Phone-Battle.dc.html) */
+  phone?: boolean;
+  /** on a phone: the trade-in, when the engine lists it, as one of the panel's quiet buttons */
+  trade?: { need: number; open(): void } | null;
 }
 
-function Option({ o, onPick, disabled }: { o: PlayOption; onPick(): void; disabled: boolean }) {
+function Option({ o, onPick, disabled, table, phone }: { o: PlayOption; onPick(): void; disabled: boolean; table: SlTable; phone?: boolean }) {
+  if (phone) {
+    // The phone's grid: the number, the piece and where it lands in a word,
+    // the engine's sentence clamped to two lines; the whole of it is the name.
+    return (
+      <button type="button" className="sl-option" onClick={onPick} disabled={disabled} aria-label={`Option ${o.n}: ${o.title}. ${o.sentence}`}>
+        <span className="sl-option-n">{o.n}</span>
+        <span className="sl-option-words">
+          <b>{UNIT_NAME[o.unit] ?? o.unit} <span className="sl-option-arrow">→</span> <span className="sl-option-where">{destinationShort(table, o.landing, !!o.template && !o.landing)}</span></b>
+          <span className="sl-option-sentence">{o.sentence}</span>
+        </span>
+      </button>
+    );
+  }
   return (
     <button type="button" className="sl-option" onClick={onPick} disabled={disabled}>
       <span className="sl-option-n">{o.n}</span>
@@ -168,11 +200,19 @@ function objectiveText(input: GlueInput, id: string): string {
   return isObj(def) ? asStr(def['description']) : words(id);
 }
 
+/** A battle side's portrait on a phone: the faction's leader, or the castle for a foe. */
+function SidePortrait({ table, pid }: { table: SlTable; pid: string | null }) {
+  const f = pid ? table.players.find((x) => x.pid === pid)?.faction : null;
+  if (!f) return <span className="sl-battle-portrait foe" aria-hidden="true" />;
+  return <img className="sl-battle-portrait" src={FACTION_LOOK[f].portrait} alt="" style={{ borderColor: FACTION_LOOK[f].border }} />;
+}
+
 export function TurnPanel(p: PanelProps) {
-  const { table, input, step, pressable, busy, onMove, picked, options, chosen } = p;
+  const { table, input, step, pressable, busy, onMove, picked, options, chosen, phone } = p;
   const legal = input.legalMoves;
   const disabled = !pressable;
-  const send = (m: LegalMove) => { p.setChosen(null); p.setPicked(null); p.setArming(null); onMove(m); };
+  // A move sent is not a card put back: the phone keeps its zoom to watch the piece land.
+  const send = (m: LegalMove) => { p.setChosen(null); p.setPicked(null, true); p.setArming(null); onMove(m); };
   let body: ReactNode;
 
   if (p.battle) {
@@ -188,9 +228,9 @@ export function TurnPanel(p: PanelProps) {
           <p className="sl-panel-text">Jellybean’s Knight wins a knight battle without rolling.</p>
         ) : (
           <div className="sl-battle">
-            <div className="sl-battle-side mine"><b>{yourName}</b><Dice faces={b.attacker.faces ?? []} rollKey={b.id} /><span>Total {b.attacker.total}</span></div>
+            <div className="sl-battle-side mine">{phone && <SidePortrait table={table} pid={b.attacker.pid} />}<b>{yourName}</b><Dice faces={b.attacker.faces ?? []} rollKey={b.id} /><span>Total {b.attacker.total}</span></div>
             <span className="sl-vs">vs</span>
-            <div className="sl-battle-side"><b>{theirName}</b><Dice faces={b.defender.faces} rollKey={b.id} /><span>Total {b.defender.total}</span></div>
+            <div className="sl-battle-side">{phone && <SidePortrait table={table} pid={b.defender.foe ? null : b.defender.pid} />}<b>{theirName}</b><Dice faces={b.defender.faces} rollKey={b.id} /><span>Total {b.defender.total}</span></div>
           </div>
         )}
         <p className="sl-panel-text">{won ? `${yourName} wins.` : `${theirName} holds. Ties go to the defender.`}</p>
@@ -267,9 +307,9 @@ export function TurnPanel(p: PanelProps) {
       <>
         <h2 className="sl-panel-title">Battle!</h2>
         <div className="sl-battle">
-          <div className="sl-battle-side mine"><b>Your Knight</b><Dice faces={Array.from({ length: me?.sugar ?? 0 }, () => null)} blank /><span>{me?.sugar ?? 0} sugar cubes</span></div>
+          <div className="sl-battle-side mine">{phone && <SidePortrait table={table} pid={me?.pid ?? null} />}<b>Your Knight</b><Dice faces={Array.from({ length: me?.sugar ?? 0 }, () => null)} blank /><span>{me?.sugar ?? 0} sugar cubes</span></div>
           <span className="sl-vs">vs</span>
-          <div className="sl-battle-side"><b>The {words(table.foe?.type ?? 'foe')}</b><Dice faces={Array.from({ length: foeDice }, () => null)} blank /><span>{foeDice} sugar cubes</span></div>
+          <div className="sl-battle-side">{phone && <SidePortrait table={table} pid={null} />}<b>The {words(table.foe?.type ?? 'foe')}</b><Dice faces={Array.from({ length: foeDice }, () => null)} blank /><span>{foeDice} sugar cubes</span></div>
         </div>
         <p className="sl-panel-text">{p.arming.description}</p>
         <button type="button" className="sl-roll-btn" onClick={() => send(p.arming!)} disabled={disabled}>Roll</button>
@@ -304,19 +344,24 @@ export function TurnPanel(p: PanelProps) {
     );
   } else if (step === 'play' && picked) {
     const color = pickedColor(table, picked);
+    const title = (
+      <h2 className="sl-panel-title">
+        {color && <span className={`sl-swatch big sl-c-${color}`} />}
+        {pickedTitle(table, picked)}
+      </h2>
+    );
     body = (
       <>
-        <h2 className="sl-panel-title">
-          {color && <span className={`sl-swatch big sl-c-${color}`} />}
-          {pickedTitle(table, picked)}
-        </h2>
+        {phone
+          ? <div className="sl-panel-head">{title}<button type="button" className="sl-back-btn" onClick={() => p.setPicked(null)}>Put back</button></div>
+          : title}
         <p className="sl-panel-text">Which piece moves? The numbers match the dashed outlines on the board.</p>
-        <div className="sl-options">
-          {options.map((o) => <Option key={o.n} o={o} onPick={() => p.setChosen(o.n)} disabled={disabled} />)}
+        <div className={`sl-options${phone ? ' grid' : ''}`}>
+          {options.map((o) => <Option key={o.n} o={o} onPick={() => p.setChosen(o.n)} disabled={disabled} table={table} phone={phone} />)}
           {p.extra.map((m) => <Choice key={m.move_id} m={m} onMove={send} disabled={disabled} />)}
         </div>
         {options.length === 0 && p.extra.length === 0 && <p className="sl-panel-text">The engine lists no move for this card right now.</p>}
-        <button type="button" className="sl-back" onClick={() => p.setPicked(null)}>Put the card back</button>
+        {!phone && <button type="button" className="sl-back" onClick={() => p.setPicked(null)}>Put the card back</button>}
       </>
     );
   } else if (step === 'play') {
@@ -333,6 +378,9 @@ export function TurnPanel(p: PanelProps) {
           </button>
         ))}
         {pass && <Choice m={pass} onMove={send} disabled={disabled} label="Pass instead (+1 influence, ends turn)" />}
+        {phone && p.trade && (
+          <button type="button" className="sl-quiet-choice" disabled={disabled} onClick={p.trade.open}>Trade {p.trade.need} cards for any color</button>
+        )}
       </>
     );
   } else {
@@ -347,11 +395,14 @@ export function TurnPanel(p: PanelProps) {
   const tform = p.template ? p.formFor(p.template) : null;
   return (
     <>
-      <section className="sl-panel sl-now" aria-label="What to do now">{body}</section>
+      <section className="sl-panel sl-now" aria-label="What to do now">
+        {phone && !p.battle && !(step === 'play' && (picked || p.arming)) && <StepDots step={step} />}
+        {body}
+      </section>
       {p.template && tform && (
         <MoveFormSheet
           form={tform} disabled={disabled}
-          onSend={(move) => { p.onForm(p.template!, move, tform.editableKeys); p.setTemplate(null); p.setChosen(null); p.setPicked(null); }}
+          onSend={(move) => { p.onForm(p.template!, move, tform.editableKeys); p.setTemplate(null); p.setChosen(null); p.setPicked(null, true); }}
           onClose={() => p.setTemplate(null)}
         />
       )}

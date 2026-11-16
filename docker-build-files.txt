@@ -216,6 +216,7 @@ packages/sweetlands-imperium/src/glue/Board.tsx
 packages/sweetlands-imperium/src/glue/ColorGuide.tsx
 packages/sweetlands-imperium/src/glue/FirstGame.tsx
 packages/sweetlands-imperium/src/glue/Hand.tsx
+packages/sweetlands-imperium/src/glue/PhoneParts.tsx
 packages/sweetlands-imperium/src/glue/Piece.tsx
 packages/sweetlands-imperium/src/glue/Players.tsx
 packages/sweetlands-imperium/src/glue/SlScreen.tsx
@@ -225,6 +226,7 @@ packages/sweetlands-imperium/src/glue/colors.ts
 packages/sweetlands-imperium/src/glue/geometry.ts
 packages/sweetlands-imperium/src/glue/index.ts
 packages/sweetlands-imperium/src/glue/motion.ts
+packages/sweetlands-imperium/src/glue/phone.ts
 packages/sweetlands-imperium/src/glue/read.ts
 packages/sweetlands-imperium/src/glue/sl.css
 packages/sweetlands-imperium/src/glue/sweetlands-board.ts

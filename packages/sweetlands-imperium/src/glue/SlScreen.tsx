@@ -6,8 +6,10 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useReducedMotion, type SelectEvent } from '@zekel/primitives';
-import type { GameScreenProps, GlueInput, LegalMove } from '@zekel/glue-kit';
-import { Board } from './Board.js';
+import type { GlueInput, LegalMove } from '@zekel/glue-kit';
+import type { PhoneScreenProps } from './phone.js';
+import { PhoneMenu, ScoreChips, ZoomBar, useUnderBoard, type MenuTab } from './PhoneParts.js';
+import { Board, type Zoom, type ZoomAt } from './Board.js';
 import { Piece, pieceTitle } from './Piece.js';
 import { Players } from './Players.js';
 import { Hand } from './Hand.js';
@@ -16,6 +18,7 @@ import { ColorGuide } from './ColorGuide.js';
 import { FirstGame, howToPlaySeen, markHowToPlaySeen } from './FirstGame.js';
 import { cardChoices, turnStep, type PlayOption } from './turn.js';
 import { readTable, tileOf, UNITS, type SlCard, type SlTable } from './read.js';
+import { TILE_BY_ID } from './geometry.js';
 import { usePieceHops } from './motion.js';
 import { asArr, asStr, isObj } from '@zekel/glue-kit';
 import { sweetlandsGlue } from './index.js';
@@ -73,8 +76,8 @@ function justPlayed(input: GlueInput): SlCard | null {
   return { cardId: asStr(c['card_id']), kind: c['kind'] === 'double' ? 'double' : c['kind'] === 'treat' ? 'treat' : 'single', color: asStr(c['color']), treat: asStr(c['treat']) };
 }
 
-export function SlScreen(props: GameScreenProps) {
-  const { input, yourTurn, busy, interactive, onMove, onForm, onDraw, menu, nameFor, sideSlot } = props;
+export function SlScreen(props: PhoneScreenProps) {
+  const { input, yourTurn, busy, interactive, onMove, onForm, onDraw, menu, nameFor, sideSlot, phone, openMenu, menuSlot } = props;
   const table = useMemo(() => readTable(input), [input]);
   const lit = useMemo(() => (interactive && yourTurn ? sweetlandsGlue.litParts(input) : []), [input, interactive, yourTurn]);
   /** the piece being looked at ("p2:knight"): ringed on the board and in the players panel */
@@ -92,8 +95,22 @@ export function SlScreen(props: GameScreenProps) {
   const [seenBattle, setSeenBattle] = useState<number>(() => battle?.id ?? 0);
   /** the How to play page: shown by itself before a seat's first Sweetlands game here */
   const [howTo, setHowTo] = useState(false);
+  /** the phone's zoom: the whole board or one land */
+  const [zoom, setZoomOnly] = useState<Zoom>('all');
+  /** the square a choice's zoom centres on: where the piece lands */
+  const [zoomAt, setZoomAt] = useState<ZoomAt | null>(null);
+  const setZoom = (z: Zoom, at: ZoomAt | null = null) => { setZoomOnly(z); setZoomAt(at); };
+  /** the phone menu's tab, kept while the menu is closed */
+  const [menuTab, setMenuTab] = useState<MenuTab>('players');
+  /** the trade-in's sheets, opened from the hand (desktop) or the turn panel (phone) */
+  const [trading, setTrading] = useState(false);
   const main = useRef<HTMLDivElement>(null);
   usePieceHops(main, table, input, useReducedMotion());
+  useUnderBoard(main, !!phone && !!table);
+  // On a phone the How to play page goes at the end of the table, so it comes
+  // after (and over) the menu sheet it can be opened from.
+  const [shell, setShell] = useState<HTMLElement | null>(null);
+  useEffect(() => { setShell(phone ? main.current?.closest<HTMLElement>('.table-shell') ?? null : null); }, [phone, table]);
   // The card this seat last played, so it can fly onto the discard pile.
   const lastPlayed = useRef<SlCard | null>(null);
   const played = justPlayed(input);
@@ -122,46 +139,105 @@ export function SlScreen(props: GameScreenProps) {
     if (moves.length === 1) onMove(moves[0]!);
   };
   const pickedColor = picked?.startsWith('token:') ? picked.slice(6) : table.hand?.find((c) => c.cardId === picked)?.color || null;
-  const pick = (id: string | null) => { setPicked(id); setChosen(null); setArming(null); };
+  // Putting the card back zooms the phone's board out again; a move sent keeps
+  // the zoom, so the piece is seen landing.
+  const pick = (id: string | null, sent = false) => { setPicked(id); setChosen(null); setArming(null); if (id === null && !sent) setZoom('all'); };
+  /** Zoom the phone's board to the land a tile is in, centred on the tile so
+   *  it is in view even at the land's edge; the castle is no land's: All. */
+  const zoomToTile = (tile: string | null) => {
+    const t = tile ? TILE_BY_ID[tile] : undefined;
+    setZoom(t ? t.region : 'all', t ? { row: t.row, col: t.col } : null);
+  };
+  // Choosing a numbered option zooms the phone's board to where the piece lands.
+  const choose = (n: number | null) => {
+    setChosen(n);
+    if (phone && n !== null) zoomToTile(choices.options[n - 1]?.tile ?? null);
+  };
+  const trades = input.legalMoves.filter((m) => m.move['type'] === 'discard_for_color');
   const involved = (pid: string | null) => !!pid && pid === table.me?.pid;
   const shownBattle = battle && battle.id > seenBattle && (involved(battle.attacker.pid) || involved(battle.defender.pid)) ? battle : null;
 
+  const panel = (
+    <TurnPanel
+      table={table} input={input} step={step} pressable={pressable} busy={busy} nameFor={nameFor}
+      onMove={onMove} onDraw={interactive ? onDraw : undefined} formFor={(m) => sweetlandsGlue.formFor!(m, input)} onForm={onForm}
+      picked={picked} setPicked={pick} options={choices.options} extra={choices.extra}
+      chosen={chosen} setChosen={choose} arming={arming} setArming={setArming}
+      battle={shownBattle} onBattleSeen={() => setSeenBattle(battle?.id ?? 0)}
+      template={template} setTemplate={setTemplate}
+      phone={phone}
+      trade={phone && trades[0] && table.me ? { need: asArr(trades[0].move['cardIds']).length, open: () => setTrading(true) } : null}
+    />
+  );
   const turn = (
     <div className="sl-turn">
       <button type="button" className="sl-howto-btn" onClick={() => setHowTo(true)}>How to play</button>
       <StepTracker step={step} />
-      <TurnPanel
-        table={table} input={input} step={step} pressable={pressable} busy={busy} nameFor={nameFor}
-        onMove={onMove} onDraw={interactive ? onDraw : undefined} formFor={(m) => sweetlandsGlue.formFor!(m, input)} onForm={onForm}
-        picked={picked} setPicked={pick} options={choices.options} extra={choices.extra}
-        chosen={chosen} setChosen={setChosen} arming={arming} setArming={setArming}
-        battle={shownBattle} onBattleSeen={() => setSeenBattle(battle?.id ?? 0)}
-        template={template} setTemplate={setTemplate}
-      />
+      {panel}
       <ColorGuide highlight={pickedColor} />
     </div>
   );
+
+  const board = (
+    <Board
+      table={table} pieces={piecesOn(table, focus, onFocus)} lit={lit}
+      marks={marksFor(choices.options, chosen, choose)}
+      onTile={(id) => onSelect({ component: 'map', id, label: id })}
+      zoom={phone ? zoom : undefined} zoomAt={zoomAt}
+    />
+  );
+  const hand = table.me && (
+    <Hand
+      table={table} input={input} picked={picked?.startsWith('token:') ? null : picked} onPick={pick} discardTop={lastPlayed.current}
+      pressable={pressable && step === 'play'}
+      formFor={(m) => sweetlandsGlue.formFor!(m, input)} onForm={onForm}
+      phone={phone} trading={trading} onTrading={setTrading}
+    />
+  );
+  const howToPage = howTo && <FirstGame input={input} phone={phone} onClose={() => { markHowToPlaySeen(); setHowTo(false); }} />;
+
+  if (phone) {
+    /** Find, in the menu: ring the piece and zoom to it. */
+    const find = (id: string) => {
+      setFocus(id);
+      const [pid, unit] = id.split(':') as [string, (typeof UNITS)[number]];
+      zoomToTile(tileOf(table.players.find((p) => p.pid === pid)?.units[unit]));
+    };
+    // The phone (docs/design/sweetlands-candy/Phone-Table.dc.html): one
+    // column, the board always in view; what the side column holds on a
+    // desktop is in the table's menu.
+    return (
+      <div className="sl-screen phone" ref={main}>
+        <ScoreChips table={table} onOpen={openMenu && (() => { setMenuTab('players'); openMenu(); })} />
+        <ZoomBar table={table} zoom={zoom} onZoom={(z) => setZoom(z)} />
+        {board}
+        <div className="sl-under">
+          {panel}
+          {/* A battle takes the hand's place too (Phone-Battle.dc.html); never the board's. */}
+          {!shownBattle && !arming && hand}
+        </div>
+        {menuSlot && createPortal(
+          <PhoneMenu
+            table={table} input={input} tab={menuTab} onTab={setMenuTab} focus={focus} onFind={find}
+            nameFor={nameFor} onWholePage={() => setHowTo(true)}
+          />,
+          menuSlot,
+        )}
+        {howToPage && (shell ? createPortal(howToPage, shell) : howToPage)}
+      </div>
+    );
+  }
 
   return (
     <div className={`sl-screen${sideSlot ? '' : ' with-right'}`}>
       <Players table={table} focus={focus} onFocus={onFocus} nameFor={nameFor} />
       <div className="sl-main" ref={main}>
-        <Board
-          table={table} pieces={piecesOn(table, focus, onFocus)} lit={lit}
-          marks={marksFor(choices.options, chosen, setChosen)}
-          onTile={(id) => onSelect({ component: 'map', id, label: id })}
-        />
-        {table.me && (
-          <Hand
-            table={table} input={input} picked={picked?.startsWith('token:') ? null : picked} onPick={pick} discardTop={lastPlayed.current}
-            pressable={pressable && step === 'play'}
-            formFor={(m) => sweetlandsGlue.formFor!(m, input)} onForm={onForm}
-          />
-        )}
+        {board}
+        {hand}
         {menu && <div className="sl-menu">{menu}</div>}
       </div>
       {sideSlot ? createPortal(turn, sideSlot) : turn}
-      {howTo && <FirstGame input={input} onClose={() => { markHowToPlaySeen(); setHowTo(false); }} />}
+      {howToPage}
     </div>
   );
 }

@@ -15,6 +15,8 @@ interface Props {
   focus: string | null;
   onFocus(id: string): void;
   nameFor(pid: string): string;
+  /** on a phone, in the menu: each piece row is a Find button */
+  find?: boolean;
 }
 
 /** The narrow column's place: the space's color as a swatch, then the land. */
@@ -45,7 +47,7 @@ function PointsBar({ p, toWin }: { p: SlPlayer; toWin: number }) {
   );
 }
 
-function PlayerCard({ table, p, focus, onFocus, nameFor }: Props & { p: SlPlayer }) {
+function PlayerCard({ table, p, focus, onFocus, nameFor, find }: Props & { p: SlPlayer }) {
   const look = p.faction ? FACTION_LOOK[p.faction] : null;
   const short = look?.short ?? p.name;
   const pill = p.isMe ? (p.active ? 'Your turn' : null) : p.ai ? 'AI' : 'Friend';
@@ -73,13 +75,17 @@ function PlayerCard({ table, p, focus, onFocus, nameFor }: Props & { p: SlPlayer
           const on = focus === id;
           return (
             <li key={u}>
-              <button type="button" className={`sl-piece-row${on ? ' on' : ''}`} aria-pressed={on} onClick={() => onFocus(id)} title={pieceTitle(table, p, u)}>
+              <button
+                type="button" className={`sl-piece-row${on ? ' on' : ''}`} aria-pressed={on} onClick={() => onFocus(id)} title={pieceTitle(table, p, u)}
+                aria-label={find ? `Find: ${pieceTitle(table, p, u)}` : undefined}
+              >
                 <Piece player={p} unit={u} size={20} title="" />
                 <span className="sl-piece-name">{UNIT_NAME[u]}</span>
                 <span className="sl-piece-where" title={placeWords(table, p.units[u])}>
                   {where.color && <span className={`sl-swatch sl-c-${where.color}`} />}
                   <span>{where.words}</span>
                 </span>
+                {find && <span className="sl-find" aria-hidden="true">Find</span>}
               </button>
             </li>
           );
@@ -97,7 +103,7 @@ export function Players(props: Props) {
     <div className="sl-players" aria-label="Players and their pieces">
       <div className="sl-col-head">
         <h2 className="sl-h">Players and their pieces</h2>
-        <div className="sl-hint">Click a piece to find it on the board.</div>
+        <div className="sl-hint">{props.find ? 'Find shows a piece on the board.' : 'Click a piece to find it on the board.'}</div>
       </div>
       {order.map((p) => <PlayerCard key={p.pid} {...props} p={p} />)}
     </div>
