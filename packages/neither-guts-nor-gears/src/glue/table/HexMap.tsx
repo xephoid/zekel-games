@@ -106,14 +106,22 @@ function PieceBtn({ onInspect, pieces, children }: { onInspect: ((p: InspectPiec
 }
 
 /** A piece's details: its printed card, from the catalogue, and its state. */
-function PieceDetails({ v, refs, inspect, onClose }: { v: NggView; refs: NggRef | null; inspect: Inspect; onClose: () => void }) {
+function PieceDetails({ v, refs, inspect, onClose, phone = false }: {
+  v: NggView; refs: NggRef | null; inspect: Inspect; onClose: () => void;
+  /** on a phone this is the tile's readout along the foot of the map: the
+   *  tile's code and what it yields, then everything standing on it */
+  phone?: boolean;
+}) {
   const tile = v.tiles.find((t) => t.coord === inspect.coord);
+  const terrain = tile?.resource ? TERRAIN[tile.resource] : null;
   return (
-    <div className="ngg-float ngg-piece-details" role="dialog" aria-label={`Pieces at ${tile?.label ?? inspect.coord}`}>
+    <div className={`ngg-float ngg-piece-details${phone ? ' ngg-tile-readout' : ''}`} role="dialog" aria-label={`${phone ? 'Tile' : 'Pieces at'} ${tile?.label ?? inspect.coord}`}>
       <div className="ngg-piece-details-head">
         <span className="ngg-float-title">{tile?.label ?? inspect.coord}</span>
-        <button type="button" className="ngg-piece-details-close" onClick={onClose} aria-label="Close">✕</button>
+        {phone && terrain && <span className="ngg-tile-readout-terrain" style={{ color: terrain.chip }}>{terrain.name}</span>}
+        <button type="button" className="ngg-piece-details-close" data-view-only onClick={onClose} aria-label={phone ? 'Close the tile readout' : 'Close'}>✕</button>
       </div>
+      {phone && inspect.pieces.length === 0 && <p className="ngg-tile-readout-empty">Nothing stands on this tile.</p>}
       <ul>
         {inspect.pieces.map((p, i) => {
           const faction = v.players.find((x) => x.id === p.owner)?.faction ?? null;
@@ -223,6 +231,7 @@ function TilePieces({ v, t, proposals, refs, onInspect }: {
 function useFit(w: number, h: number) {
   const box = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState(1);
+  const [size, setSize] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
   useLayoutEffect(() => {
     const el = box.current;
     if (!el) return;
@@ -230,6 +239,7 @@ function useFit(w: number, h: number) {
       const r = el.getBoundingClientRect();
       if (r.width === 0 || r.height === 0) return;
       setFit(Math.max(0.3, Math.min(r.width / w, r.height / h, 1.6)));
+      setSize((old) => (old.w === r.width && old.h === r.height ? old : { w: r.width, h: r.height }));
     };
     measure();
     if (typeof ResizeObserver === 'undefined') return;
@@ -237,7 +247,7 @@ function useFit(w: number, h: number) {
     ro.observe(el);
     return () => ro.disconnect();
   }, [w, h]);
-  return { box, fit };
+  return { box, fit, size };
 }
 
 /** Three fixed stops (the canvas's Map Zoom): the whole map, the board at
@@ -259,7 +269,39 @@ function ZoomControl({ zoom, setZoom }: { zoom: ZoomStop; setZoom: (z: ZoomStop)
   );
 }
 
-export function HexMap({ v, marks = {}, seatSpecies, overlay, refs = null }: {
+/** The phone's two zoom buttons (Phone-Map-Zoom): 44 px each, nearer and farther. */
+function PhoneZoom({ onIn, onOut }: { onIn: (() => void) | null; onOut: (() => void) | null }) {
+  return (
+    <div className="ngg-zoom ngg-zoom-phone" role="group" aria-label="Map zoom">
+      <button type="button" data-view-only aria-label="Zoom in" disabled={!onIn} onClick={onIn ?? undefined}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M12 6v12M6 12h12" /></svg>
+      </button>
+      <button type="button" data-view-only aria-label="Zoom out" disabled={!onOut} onClick={onOut ?? undefined}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 12h12" /></svg>
+      </button>
+    </div>
+  );
+}
+
+/** Where the phone's window sits on the board (Phone-Map-Zoom): the same
+ *  tiles, tiny, with the part on screen drawn on them to scale. */
+function Locator({ v, k, w, h, x, y, win }: {
+  v: NggView; k: number; w: number; h: number; x: (c: number) => number; y: (r: number) => number;
+  win: { left: number; top: number; width: number; height: number };
+}) {
+  return (
+    <div className="ngg-locator" role="img" aria-label="Where this view sits on the board">
+      <div style={{ width: w * k, height: h * k }}>
+        {v.tiles.map((t) => (
+          <i key={t.coord} style={{ left: x(t.c) * k, top: y(t.r) * k, width: HEXW * k, height: HEXH * k, background: (t.resource ? TERRAIN[t.resource]?.tile : null) ?? '#8d8577' }} />
+        ))}
+        <span className="ngg-locator-window" style={{ left: win.left * k, top: win.top * k, width: win.width * k, height: win.height * k }} />
+      </div>
+    </div>
+  );
+}
+
+export function HexMap({ v, marks = {}, seatSpecies, overlay, refs = null, phone = false }: {
   v: NggView;
   marks?: MapMarks;
   /** the printed catalogue, for a piece's details */
@@ -268,6 +310,10 @@ export function HexMap({ v, marks = {}, seatSpecies, overlay, refs = null }: {
   seatSpecies?: Species | null;
   /** floating panels over the board (the action stack, pills) */
   overlay?: ReactNode;
+  /** the phone's map (Phone-Table, Phone-Move, Phone-Map-Zoom): as wide as
+   *  the screen, moved so the tiles a decision is about are in view, read a
+   *  tile at a time, and stepped nearer or farther with two buttons */
+  phone?: boolean;
 }) {
   const cs = v.tiles.map((t) => t.c);
   const rs = v.tiles.map((t) => t.r);
@@ -275,13 +321,47 @@ export function HexMap({ v, marks = {}, seatSpecies, overlay, refs = null }: {
   const cMax = cs.length ? Math.max(...cs) : 0;
   const rMin = rs.length ? Math.min(...rs) : 0;
   const rMax = rs.length ? Math.max(...rs) : 0;
-  const mapW = (cMax - cMin) * COLW + HEXW + GUTTER;
-  const mapH = (rMax - rMin) * ROWH + HEXH + GUTTER;
-  const { box, fit } = useFit(mapW + 24, mapH + 24);
+  // A phone has no width to spare: a thin margin, and room above for the column letters.
+  const gx = phone ? 5 : GUTTER;
+  const gy = phone ? 18 : GUTTER;
+  const mapW = (cMax - cMin) * COLW + HEXW + gx + (phone ? gx : 0);
+  const mapH = (rMax - rMin) * ROWH + HEXH + gy + (phone ? 5 : 0);
+  const { box, fit, size } = useFit(mapW + 24, mapH + 24);
   const [zoom, setZoom] = useState<ZoomStop>('whole');
+  const x = (c: number) => gx + (c - cMin) * COLW;
+  const y = (r: number) => gy + (r - rMin) * ROWH;
+
+  // ---- the phone's sizes ----
+  // What the open decision is about: the tiles it lights, shuts, starts from,
+  // fights over, has chosen or would place on.
+  const focus = new Set<string>([...(marks.lit ?? []), ...(marks.shut?.keys() ?? [])]);
+  for (const c of [marks.origin, marks.contested, marks.selected]) if (c) focus.add(c);
+  for (const p of marks.proposals ?? []) focus.add(p.coord);
+  const focusTiles = v.tiles.filter((t) => focus.has(t.coord));
+  const focusKey = phone ? focusTiles.map((t) => t.coord).sort().join(' ') : '';
+  const fx0 = Math.min(...focusTiles.map((t) => x(t.c)));
+  const fx1 = Math.max(...focusTiles.map((t) => x(t.c) + HEXW));
+  const fy0 = Math.min(...focusTiles.map((t) => y(t.r)));
+  const fy1 = Math.max(...focusTiles.map((t) => y(t.r) + HEXH));
+  const measured = size.w > 0 && size.h > 0;
+  // Three sizes: the whole map, the map as wide as the screen, and 1.6 times
+  // that, where a tile carries a finger. With no size picked the map shows
+  // whole, or, with a decision open, as wide as the screen and no nearer than
+  // keeps every tile of the decision in view.
+  const fitWide = measured ? Math.min(size.w / mapW, 1.3) : 1;
+  const fitWhole = measured ? Math.min(fitWide, size.h / mapH) : 1;
+  const stops = [fitWhole, fitWide, fitWide * 1.6];
+  const [picked, setPicked] = useState<number | null>(null);
+  const auto = focusTiles.length > 0 && measured
+    ? Math.max(fitWhole, Math.min(fitWide, size.w / (fx1 - fx0 + 16), size.h / (fy1 - fy0 + 28)))
+    : fitWhole;
+  const phoneScale = picked ?? auto;
+  const nearer = stops.find((z) => z > phoneScale * 1.02) ?? null;
+  const farther = [...stops].reverse().find((z) => z < phoneScale * 0.98) ?? null;
+
   // Each stop is a step closer than the one before: Board about twice the
   // whole map, Hex about four times, whatever the window.
-  const scale = zoom === 'whole' ? fit : zoom === 'board' ? Math.max(fit * 1.8, 1) : Math.max(fit * 3.6, 2.4);
+  const scale = phone ? phoneScale : zoom === 'whole' ? fit : zoom === 'board' ? Math.max(fit * 1.8, 1) : Math.max(fit * 3.6, 2.4);
   // The piece whose details are open (a click on a piece where the hex is not
   // part of the decision).
   const [inspect, setInspect] = useState<Inspect | null>(null);
@@ -291,25 +371,55 @@ export function HexMap({ v, marks = {}, seatSpecies, overlay, refs = null }: {
     window.addEventListener('keydown', close);
     return () => window.removeEventListener('keydown', close);
   }, [inspect]);
-  const panned = scale > fit + 0.001;
+  const panned = phone || scale > fit + 0.001;
   const scroller = useRef<HTMLDivElement>(null);
   // A new stop keeps what was in the middle in the middle, or starts centred.
   const lastScale = useRef(scale);
   useEffect(() => {
     const el = scroller.current;
-    if (!el) return;
+    if (!el || phone) return;
     const ratio = scale / lastScale.current;
     lastScale.current = scale;
     const cx = (el.scrollLeft + el.clientWidth / 2) * ratio;
     const cy = (el.scrollTop + el.clientHeight / 2) * ratio;
     el.scrollLeft = Math.max(0, cx - el.clientWidth / 2);
     el.scrollTop = Math.max(0, cy - el.clientHeight / 2);
-  }, [scale]);
-  // Drag to pan when zoomed in; a click on a hex is still a click.
+  }, [scale, phone]);
+  // On a phone a new decision moves the map to the tiles it is about, at the
+  // size that shows them all, dropping any size picked for the last one; a
+  // new size alone keeps the middle in the middle.
+  const lastFocus = useRef<string | null>(null);
+  const [scroll, setScroll] = useState({ left: 0, top: 0 });
+  useLayoutEffect(() => {
+    const el = scroller.current;
+    if (!el || !phone || !measured) return;
+    const ratio = scale / lastScale.current;
+    lastScale.current = scale;
+    // The map sits centred when it is smaller than its box, else from the corner.
+    const ox = Math.max(0, (el.clientWidth - mapW * scale) / 2);
+    const oy = Math.max(0, (el.clientHeight - mapH * scale) / 2);
+    if (lastFocus.current !== focusKey) {
+      const moved = lastFocus.current !== null;
+      lastFocus.current = focusKey;
+      if (moved && picked !== null) { setPicked(null); return; }
+      if (focusKey) {
+        el.scrollLeft = Math.max(0, ox + ((fx0 + fx1) / 2) * scale - el.clientWidth / 2);
+        el.scrollTop = Math.max(0, oy + ((fy0 + fy1) / 2) * scale - el.clientHeight / 2);
+      }
+    } else if (ratio !== 1) {
+      el.scrollLeft = Math.max(0, (el.scrollLeft + el.clientWidth / 2) * ratio - el.clientWidth / 2);
+      el.scrollTop = Math.max(0, (el.scrollTop + el.clientHeight / 2) * ratio - el.clientHeight / 2);
+    }
+    setScroll((old) => (old.left === el.scrollLeft && old.top === el.scrollTop ? old : { left: el.scrollLeft, top: el.scrollTop }));
+  // What the decision is about is read through focusKey; the sizes through scale.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scale, phone, measured, focusKey, size.w, size.h]);
+  // Drag to pan when zoomed in; a click on a hex is still a click. A finger
+  // pans by scrolling, so only a mouse drags.
   const drag = useRef<{ x: number; y: number; left: number; top: number; moved: boolean } | null>(null);
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
     const el = scroller.current;
-    if (!panned || !el || e.button !== 0) return;
+    if (!panned || !el || e.button !== 0 || e.pointerType === 'touch') return;
     drag.current = { x: e.clientX, y: e.clientY, left: el.scrollLeft, top: el.scrollTop, moved: false };
   };
   const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
@@ -326,6 +436,14 @@ export function HexMap({ v, marks = {}, seatSpecies, overlay, refs = null }: {
   const endDrag = () => { setTimeout(() => { drag.current = null; }, 0); };
   const onClickCapture = (e: React.MouseEvent) => { if (drag.current?.moved) { e.stopPropagation(); e.preventDefault(); } };
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (phone) {
+      if ((e.key === '+' || e.key === '=') && nearer !== null) setPicked(nearer);
+      else if (e.key === '-' && farther !== null) setPicked(farther);
+      else if (e.key === '0') setPicked(null);
+      else return;
+      e.preventDefault();
+      return;
+    }
     const order: ZoomStop[] = ['whole', 'board', 'hex'];
     const i = order.indexOf(zoom);
     if (e.key === '+' || e.key === '=') setZoom(order[Math.min(2, i + 1)]!);
@@ -334,11 +452,98 @@ export function HexMap({ v, marks = {}, seatSpecies, overlay, refs = null }: {
     else return;
     e.preventDefault();
   };
-  const x = (c: number) => GUTTER + (c - cMin) * COLW;
-  const y = (r: number) => GUTTER + (r - rMin) * ROWH;
 
   const columns = [...new Set(cs)].sort((a, b) => a - b);
   const letterOf = (c: number) => v.tiles.find((t) => t.c === c)?.label.replace(/\d+$/, '') ?? '';
+
+  const tiles = (
+    <>
+      {columns.map((c) => (
+        <span key={`col${c}`} className="ngg-map-col" style={{ left: x(c) + HEXW / 2 }}>{letterOf(c)}</span>
+      ))}
+      {v.tiles.map((t) => {
+        const lit = marks.lit?.has(t.coord) ?? false;
+        const shut = marks.shut?.get(t.coord) ?? null;
+        const isOrigin = marks.origin === t.coord;
+        const contested = marks.contested === t.coord;
+        const grey = !!marks.greyRest && !lit && !shut && !isOrigin && !contested;
+        const terrain = t.resource ? TERRAIN[t.resource] : null;
+        const cls = `ngg-hex${lit ? ' lit' : ''}${shut ? ' shut' : ''}${grey ? ' grey' : ''}${isOrigin ? ' origin' : ''}${contested ? ' contested' : ''}`;
+        const tag = marks.tags?.get(t.coord);
+        const proposals = (marks.proposals ?? []).filter((p) => p.coord === t.coord);
+        const style = { left: x(t.c), top: y(t.r) };
+        const title = [t.label, terrain?.name, shut].filter(Boolean).join(' · ');
+        const pressable = lit && !!marks.onTile;
+        const inner = (
+          <>
+            <span className="ngg-hex-rim" aria-hidden="true" />
+            <span className="ngg-hex-face" style={{ background: terrain?.tile ?? '#8d8577' }}>
+              <span className="ngg-hex-code">{t.label}</span>
+              {terrain && <span className="ngg-hex-glyph"><Icon name={terrain.icon} size={13} stroke={2.2} /></span>}
+              {t.start !== null && !t.baseOwner && <span className="ngg-hex-start">{t.start}</span>}
+              {shut && <span className="ngg-hex-bar" aria-hidden="true" />}
+            </span>
+            {/* On a phone a piece is too small to press by itself: the whole tile is read instead. */}
+            <TilePieces v={v} t={t} proposals={proposals} refs={refs}
+              onInspect={pressable || phone ? null : (pieces) => setInspect({ coord: t.coord, pieces })} />
+            {marks.selected === t.coord && <SeatMark species={seatSpecies ?? null} />}
+            {tag && <span className="ngg-hex-tag">{tag}</span>}
+          </>
+        );
+        if (pressable) return <button key={t.coord} type="button" className={cls} style={style} title={title} aria-label={title} onClick={() => marks.onTile!(t.coord)}>{inner}</button>;
+        if (phone) {
+          const all: InspectPiece[] = [...(t.baseOwner ? [{ kind: 'base' as const, owner: t.baseOwner }] : []), ...t.pieces];
+          return (
+            <button key={t.coord} type="button" data-view-only className={`${cls} readable`} style={style} aria-label={`Read tile ${title}`}
+              aria-pressed={inspect?.coord === t.coord}
+              onClick={() => setInspect(inspect?.coord === t.coord ? null : { coord: t.coord, pieces: all })}>{inner}</button>
+          );
+        }
+        return <div key={t.coord} className={cls} style={style} title={title}>{inner}</div>;
+      })}
+    </>
+  );
+
+  if (phone) {
+    const ox = Math.max(0, (size.w - mapW * scale) / 2);
+    const oy = Math.max(0, (size.h - mapH * scale) / 2);
+    const scrolls = measured && (mapW * scale > size.w + 1 || mapH * scale > size.h + 1);
+    return (
+      <div className="ngg-map-box phone" ref={box}>
+        <div
+          className="ngg-map-scroll panned"
+          ref={scroller}
+          tabIndex={0}
+          aria-label="The map. Drag to move it; the two buttons bring it nearer or farther."
+          onKeyDown={onKeyDown}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerLeave={endDrag}
+          onPointerCancel={endDrag}
+          onClickCapture={onClickCapture}
+          onScroll={(e) => { const el = e.currentTarget; setScroll({ left: el.scrollLeft, top: el.scrollTop }); }}
+        >
+          <div className="ngg-map-canvas">
+            <div className="ngg-map-sized" style={{ width: mapW * scale, height: mapH * scale }}>
+              <div className="ngg-map" data-flip-frame="ngg-map" style={{ width: mapW, height: mapH, left: 0, top: 0, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+                {tiles}
+              </div>
+            </div>
+          </div>
+        </div>
+        {overlay}
+        {scrolls && (
+          <Locator v={v} k={46 / mapW} w={mapW} h={mapH} x={x} y={y} win={{
+            left: Math.max(0, (scroll.left - ox) / scale), top: Math.max(0, (scroll.top - oy) / scale),
+            width: Math.min(mapW, size.w / scale), height: Math.min(mapH, size.h / scale),
+          }} />
+        )}
+        {inspect && <PieceDetails v={v} refs={refs} inspect={inspect} onClose={() => setInspect(null)} phone />}
+        <PhoneZoom onIn={nearer !== null ? () => setPicked(nearer) : null} onOut={farther !== null ? () => setPicked(farther) : null} />
+      </div>
+    );
+  }
 
   return (
     <div className="ngg-map-box" ref={box}>
@@ -352,46 +557,14 @@ export function HexMap({ v, marks = {}, seatSpecies, overlay, refs = null }: {
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
+        onPointerCancel={endDrag}
         onClickCapture={onClickCapture}
       >
       <div className="ngg-map-canvas" style={panned ? { width: mapW * scale + 48, height: mapH * scale + 48 } : undefined}>
       <div className="ngg-map" data-flip-frame="ngg-map" style={panned
         ? { width: mapW, height: mapH, left: 24, top: 24, transform: `scale(${scale})`, transformOrigin: 'top left' }
         : { width: mapW, height: mapH, transform: `translate(-50%, -50%) scale(${scale})` }}>
-        {columns.map((c) => (
-          <span key={`col${c}`} className="ngg-map-col" style={{ left: x(c) + HEXW / 2 }}>{letterOf(c)}</span>
-        ))}
-        {v.tiles.map((t) => {
-          const lit = marks.lit?.has(t.coord) ?? false;
-          const shut = marks.shut?.get(t.coord) ?? null;
-          const isOrigin = marks.origin === t.coord;
-          const contested = marks.contested === t.coord;
-          const grey = !!marks.greyRest && !lit && !shut && !isOrigin && !contested;
-          const terrain = t.resource ? TERRAIN[t.resource] : null;
-          const cls = `ngg-hex${lit ? ' lit' : ''}${shut ? ' shut' : ''}${grey ? ' grey' : ''}${isOrigin ? ' origin' : ''}${contested ? ' contested' : ''}`;
-          const tag = marks.tags?.get(t.coord);
-          const proposals = (marks.proposals ?? []).filter((p) => p.coord === t.coord);
-          const style = { left: x(t.c), top: y(t.r) };
-          const title = [t.label, terrain?.name, shut].filter(Boolean).join(' · ');
-          const inner = (
-            <>
-              <span className="ngg-hex-rim" aria-hidden="true" />
-              <span className="ngg-hex-face" style={{ background: terrain?.tile ?? '#8d8577' }}>
-                <span className="ngg-hex-code">{t.label}</span>
-                {terrain && <span className="ngg-hex-glyph"><Icon name={terrain.icon} size={13} stroke={2.2} /></span>}
-                {t.start !== null && !t.baseOwner && <span className="ngg-hex-start">{t.start}</span>}
-                {shut && <span className="ngg-hex-bar" aria-hidden="true" />}
-              </span>
-              <TilePieces v={v} t={t} proposals={proposals} refs={refs}
-                onInspect={lit && marks.onTile ? null : (pieces) => setInspect({ coord: t.coord, pieces })} />
-              {marks.selected === t.coord && <SeatMark species={seatSpecies ?? null} />}
-              {tag && <span className="ngg-hex-tag">{tag}</span>}
-            </>
-          );
-          return lit && marks.onTile
-            ? <button key={t.coord} type="button" className={cls} style={style} title={title} aria-label={title} onClick={() => marks.onTile!(t.coord)}>{inner}</button>
-            : <div key={t.coord} className={cls} style={style} title={title}>{inner}</div>;
-        })}
+        {tiles}
       </div>
       </div>
       </div>

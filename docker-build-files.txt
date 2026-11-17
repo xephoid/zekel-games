@@ -166,6 +166,7 @@ packages/neither-guts-nor-gears/src/glue/table/FactionBoard.tsx
 packages/neither-guts-nor-gears/src/glue/table/HexMap.tsx
 packages/neither-guts-nor-gears/src/glue/table/Layout.tsx
 packages/neither-guts-nor-gears/src/glue/table/NggScreen.tsx
+packages/neither-guts-nor-gears/src/glue/table/Phone.tsx
 packages/neither-guts-nor-gears/src/glue/table/TechTree.tsx
 packages/neither-guts-nor-gears/src/glue/table/ctx.ts
 packages/neither-guts-nor-gears/src/glue/table/factions.ts

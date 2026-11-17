@@ -4,7 +4,7 @@
 // along the bottom. These regions are ambient (SCREEN-ROUTING §7): they are
 // never routed to, and they change underneath whatever decision is open.
 
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import type { ScreenCtx } from './ctx.js';
 import { HexMap, type MapMarks } from './HexMap.js';
@@ -14,6 +14,7 @@ import { CardBack, FactionChip, HeroFacts, HeroName, Icon, Panel, SpyMark } from
 import { cultureRaceOf, economicCollectorsFor } from './ref.js';
 import { econOf, type NggPlayer } from './read.js';
 import { FactionBoard, FactionStrip } from './FactionBoard.js';
+import { PeekRow, PhoneFaction, PhoneSeats } from './Phone.js';
 
 const CARD_ICON: Record<string, string> = { build: 'Build', research: 'Research', move_battle: 'Move / Battle' };
 const CARD_NAME: Record<string, string> = { build: 'Build', research: 'Research', move_battle: 'Move / Battle' };
@@ -256,6 +257,7 @@ export function TableLayout({ ctx, marks, panel, interrupt }: {
   const [boardFor, setBoardFor] = useState<string | null>(null);
   const boardPlayer = boardFor ? ctx.v.players.find((p) => p.id === boardFor) ?? null : null;
   const species = ctx.mine?.species ?? null;
+  if (ctx.phone) return <PhoneLayout ctx={ctx} marks={marks} panel={panel} interrupt={interrupt} />;
   return (
     <div className={`ngg-root${species ? ` seat-${species}` : ''}`}>
       <div className="ngg-main">
@@ -289,6 +291,62 @@ export function TableLayout({ ctx, marks, panel, interrupt }: {
           </div>
         </div>
       )}
+      {interrupt && (
+        <div className="ngg-interrupt-layer" role="presentation">
+          <div className="ngg-interrupt" role="dialog" aria-label="Your decision, out of turn">{interrupt}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * The table on a phone (the Phone-* boards), top to bottom: the map, which
+ * never leaves the screen; the seats in one row; and the decision in a sheet
+ * under the map, which moves the map so the tiles the decision is about stay
+ * in view above it. The side column is gone: Seats and the culture race are
+ * a sheet raised from the row, and a faction board is a full panel in tabs.
+ * The same screens draw into it; only where things sit changes.
+ */
+function PhoneLayout({ ctx, marks, panel, interrupt }: {
+  ctx: ScreenCtx; marks?: MapMarks; panel?: ReactNode; interrupt?: ReactNode;
+}) {
+  const root = useRef<HTMLDivElement>(null);
+  const [seatsOpen, setSeatsOpen] = useState(false);
+  const [boardFor, setBoardFor] = useState<string | null>(null);
+  const [list, setList] = useState<'heroes' | 'treaties' | null>(null);
+  // The decision sheet folds down to its first line, to see more of the map.
+  const [folded, setFolded] = useState(false);
+  const boardPlayer = boardFor ? ctx.v.players.find((p) => p.id === boardFor) ?? null : null;
+  const species = ctx.mine?.species ?? null;
+  const watching = ctx.route.perspective === 'watch' && !!ctx.route.owner;
+  return (
+    <div className={`ngg-root phone${species ? ` seat-${species}` : ''}`} ref={root}>
+      <div className="ngg-board">
+        <HexMap v={ctx.v} marks={marks} seatSpecies={species} refs={ctx.ref} phone overlay={<ActionStack ctx={ctx} />} />
+      </div>
+      <PeekRow ctx={ctx} open={seatsOpen} onOpen={() => setSeatsOpen(true)} />
+      {(panel || watching) && (
+        <section className={`ngg-phone-sheet${folded ? ' folded' : ''}`} aria-label="The decision">
+          {panel && (
+            <button type="button" data-view-only className="ngg-phone-handle" aria-expanded={!folded}
+              aria-label={folded ? 'Show the whole decision' : 'Fold the decision down to see more of the map'} onClick={() => setFolded(!folded)}>
+              <span className="ngg-phone-grip" aria-hidden="true" />
+            </button>
+          )}
+          <div className="ngg-phone-sheet-body">
+            <WaitingLine ctx={ctx} />
+            {panel}
+          </div>
+        </section>
+      )}
+      {seatsOpen && (
+        <PhoneSeats ctx={ctx} onClose={() => setSeatsOpen(false)} onBoard={setBoardFor}
+          onHeroes={() => setList('heroes')} onTreaties={() => setList('treaties')} />
+      )}
+      {boardPlayer && <PhoneFaction ctx={ctx} player={boardPlayer} anchor={root} onClose={() => setBoardFor(null)} />}
+      {list === 'treaties' && <TreatiesSheet ctx={ctx} onClose={() => setList(null)} />}
+      {list === 'heroes' && <HeroesSheet ctx={ctx} onClose={() => setList(null)} />}
       {interrupt && (
         <div className="ngg-interrupt-layer" role="presentation">
           <div className="ngg-interrupt" role="dialog" aria-label="Your decision, out of turn">{interrupt}</div>

@@ -247,7 +247,18 @@ export function FactionStrip({ ctx, player, onOpen }: { ctx: ScreenCtx; player: 
   );
 }
 
-export function FactionBoard({ ctx, player }: { ctx: ScreenCtx; player: NggPlayer }) {
+/** The four tabs the phone's faction panel splits the board into (Phone-Faction). */
+export type BoardTab = 'board' | 'cards' | 'research' | 'treaties';
+export const BOARD_TABS: Array<{ tab: BoardTab; label: string }> = [
+  { tab: 'board', label: 'Board' }, { tab: 'cards', label: 'Cards' }, { tab: 'research', label: 'Research' }, { tab: 'treaties', label: 'Treaties' },
+];
+
+export function FactionBoard({ ctx, player, tab }: {
+  ctx: ScreenCtx; player: NggPlayer;
+  /** on a phone: draw only this tab's part of the board, without the head
+   *  (the panel around it prints the faction and its culture) */
+  tab?: BoardTab;
+}) {
   const { ref, v } = ctx;
   // The hand and the spy are private: only the seat's own board shows them.
   const own = player.id === ctx.me;
@@ -261,11 +272,14 @@ export function FactionBoard({ ctx, player }: { ctx: ScreenCtx; player: NggPlaye
   const [detail, setDetail] = useState<Detail | null>(null);
   const [treeOpen, setTreeOpen] = useState(false);
   const locked = player.locked;
+  const shows = (t: BoardTab) => tab === undefined || tab === t;
   return (
-    <div className={`ngg-faction-board seat-${species}`}>
+    <div className={`ngg-faction-board seat-${species}${tab ? ' tabbed' : ''}`}>
       <span className="ngg-ground" aria-hidden="true" />
       {treeOpen && <TechTree ctx={ctx} species={species} player={player} onClose={() => setTreeOpen(false)} />}
-      <header className="ngg-fb-head">
+      {tab === 'board' && <Numbers p={player} need={economicCollectorsFor(ctx.ref, ctx.v.layout)} />}
+      {tab === 'research' && <button type="button" data-view-only className="ngg-btn secondary ngg-fb-tree-btn" onClick={() => setTreeOpen(true)}>Open the tech tree</button>}
+      {tab === undefined && <header className="ngg-fb-head">
         <span className="ngg-fb-mark" style={{ background: ink.fill, color: ink.on }}>{ink.mark && <Icon name={ink.mark} size={34} stroke={1.8} />}</span>
         <div>
           <div className="ngg-kicker">Faction board</div>
@@ -274,9 +288,9 @@ export function FactionBoard({ ctx, player }: { ctx: ScreenCtx; player: NggPlaye
           <button type="button" data-view-only className="ngg-link ngg-fb-tree-link" onClick={() => setTreeOpen(true)}>Tech tree</button>
         </div>
         <Numbers p={player} need={economicCollectorsFor(ctx.ref, ctx.v.layout)} />
-      </header>
+      </header>}
 
-      {species === 'wizard'
+      {!shows('board') ? null : species === 'wizard'
         ? (
           <Panel title="Mana" kicker={`${player.manaCurrent} of ${player.manaMax}`}>
             <Pips have={player.manaCurrent} max={player.manaMax} cap={25} />
@@ -292,15 +306,15 @@ export function FactionBoard({ ctx, player }: { ctx: ScreenCtx; player: NggPlaye
           </Panel>
         )}
 
-      <Panel title="Technology" kicker={`${player.tech.total}${player.tech.target !== null ? ` of ${player.tech.target}` : ''} unique types`}>
+      {(shows('board') || shows('research')) && <Panel title="Technology" kicker={`${player.tech.total}${player.tech.target !== null ? ` of ${player.tech.target}` : ''} unique types`}>
         <Pips have={player.tech.total} max={player.tech.target ?? player.tech.total} cap={player.tech.target ?? player.tech.total} />
         {player.tech.acquiredTypes.length > 0 && (
           <p className="ngg-fb-note">{(player.tech.acquiredTypeNames ?? player.tech.acquiredTypes.map((id) => nameOfType(ctx, id))).join(' · ')}</p>
         )}
-      </Panel>
+      </Panel>}
 
       <div className="ngg-fb-grid">
-        <Panel title="Buildings">
+        {shows('board') && <Panel title="Buildings">
           <ul className="ngg-fb-list">
             {buildings.map((b) => {
               // A base is counted on the map, not among the buildings.
@@ -314,8 +328,8 @@ export function FactionBoard({ ctx, player }: { ctx: ScreenCtx; player: NggPlaye
               );
             })}
           </ul>
-        </Panel>
-        <Panel title="Research">
+        </Panel>}
+        {shows('research') && <Panel title="Research">
           <ul className="ngg-fb-list">
             {research.map((r) => {
               const on = player.research.includes(r.name) || player.research.includes(r.id);
@@ -334,10 +348,10 @@ export function FactionBoard({ ctx, player }: { ctx: ScreenCtx; player: NggPlaye
               );
             })}
           </ul>
-        </Panel>
+        </Panel>}
       </div>
 
-      <Panel title="Units">
+      {shows('board') && <Panel title="Units">
         <div className="ngg-fb-units">
           {units.map((u) => {
             const owned = ownedCount(player, u);
@@ -358,10 +372,10 @@ export function FactionBoard({ ctx, player }: { ctx: ScreenCtx; player: NggPlaye
             );
           })}
         </div>
-      </Panel>
+      </Panel>}
 
       <div className="ngg-fb-grid">
-        <Panel title="Heroes">
+        {shows('board') && <Panel title="Heroes">
           {(player.unrevealedSpies ?? 0) > 0 && (
             <div className="ngg-fb-spy"><SpyMark species={species} count={player.unrevealedSpies ?? 0} size={16} />
               <span>{own ? 'Your spy is marked SPY below.' : 'A spy rides one of these heroes; which one is secret.'}</span>
@@ -377,8 +391,8 @@ export function FactionBoard({ ctx, player }: { ctx: ScreenCtx; player: NggPlaye
               </li>
             ))}
           </ul>
-        </Panel>
-        <Panel title="Battle cards" kicker={`${player.handCount} held · ${v.deckCount} in the deck`}>
+        </Panel>}
+        {shows('cards') && <Panel title="Battle cards" kicker={`${player.handCount} held · ${v.deckCount} in the deck`}>
           {ref?.battleCardPurchase && (
             <div className="ngg-fb-card-cost">
               <span>Buy one on a Research action</span>
@@ -396,8 +410,8 @@ export function FactionBoard({ ctx, player }: { ctx: ScreenCtx; player: NggPlaye
               : Array.from({ length: player.handCount }, (_, i) => <CardBack key={i} />)}
             {player.handCount === 0 && <span className="muted">None held</span>}
           </div>
-        </Panel>
-        <Panel title="Treaties">
+        </Panel>}
+        {shows('treaties') && <Panel title="Treaties">
           {locked && <div className="ngg-fb-treaty-lock"><LockTag why={locked.treaties} /></div>}
           <ul className="ngg-fb-list">
             {(ref?.treaties ?? []).map((t) => {
@@ -412,10 +426,10 @@ export function FactionBoard({ ctx, player }: { ctx: ScreenCtx; player: NggPlaye
               );
             })}
           </ul>
-        </Panel>
+        </Panel>}
       </div>
 
-      <Panel title="Action cards"><ActionCards p={player} /></Panel>
+      {shows('cards') && <Panel title="Action cards"><ActionCards p={player} /></Panel>}
       {detail && <ItemDetail ctx={ctx} player={player} detail={detail} onClose={() => setDetail(null)} />}
     </div>
   );
