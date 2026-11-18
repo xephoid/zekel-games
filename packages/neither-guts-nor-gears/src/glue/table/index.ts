@@ -4,7 +4,7 @@
 // chrome; the screen does the drawing.
 
 import type { GameReferenceResponse } from '@zekel/wire-types';
-import type { GlueModule, SetupAnswers, SetupField, SetupSeat, TablePlan } from '@zekel/glue-kit';
+import type { GlueInput, GlueModule, SetupAnswers, SetupField, SetupSeat, TablePlan } from '@zekel/glue-kit';
 import { NggScreen } from './NggScreen.js';
 import { readView } from './read.js';
 import { readRef } from './ref.js';
@@ -24,10 +24,34 @@ const PHASE_WORDS: Record<string, string> = {
   game_over: 'Game over',
 };
 
+/** The resolving action card in one word, for the phone's top bar. */
+const CARD_WORDS: Record<string, string> = { build: 'Build', research: 'Research', move_battle: 'Move' };
+const PHASE_SHORT: Record<string, string> = {
+  setup_factions: 'Setup', setup_leaders: 'Draft', setup_locations: 'Sites', setup_done_pending_grants: 'Setup',
+  upkeep: 'Upkeep', planning: 'Plan', action: 'Action', culture: 'Culture', claims: 'Claims',
+  treaty_break: 'End', end_of_round: 'End', game_over: 'Over',
+};
+
+/** `titleShort` is in @zekel/glue-kit 0.1.1 (the title on a phone's top bar,
+ *  when the full one does not fit); declared here so this builds against 0.1.0. */
+type PhonePlan = TablePlan & { titleShort?: string };
+
 export const nggGlue: GlueModule = {
   gameId: 'neither-guts-nor-gears',
   title: 'Neither Guts nor Gears',
   Screen: NggScreen,
+  // Below 640 px the table uses the shared phone frame and NggScreen lays
+  // itself out as the Phone-* boards do: the map always in view, the seats in
+  // one row that opens a sheet, the decision in a sheet under the map.
+  phone: true,
+
+  /** On a phone the turn pill says whose card is resolving in three words;
+   *  the round and the card are beside it (statusShort). */
+  yourTurnLabel(input: GlueInput): string | null {
+    if (!input.phone) return null;
+    const v = readView(input.view);
+    return v?.activeAction && v.activeAction.owner === input.playerId && !v.pending ? 'Your card is up' : null;
+  },
 
   /** The seat's faction look for the whole page: Ink for a wizard seat, Oil
    *  for a robot seat; the table's own look for a watcher or before a faction. */
@@ -68,11 +92,17 @@ export const nggGlue: GlueModule = {
   plan(input): TablePlan | null {
     const v = readView(input.view);
     if (!v) return null;
-    return {
+    // "R13 · Build" for the phone's one-line top bar: the round, then the
+    // card that is resolving, or the phase when none is.
+    const short = v.activeAction ? CARD_WORDS[v.activeAction.cardKind] : PHASE_SHORT[v.phase];
+    const out: PhonePlan = {
       board: [], bench: [], side: [], palette: {},
       title: 'Neither Guts nor Gears',
+      titleShort: 'NGnG',
       status: `Round ${v.round} · ${PHASE_WORDS[v.phase] ?? v.phase}`,
+      statusShort: v.phase.startsWith('setup') ? 'Setup' : `R${v.round}${short ? ` · ${short}` : ''}`,
     };
+    return out;
   },
 
   litParts() { return []; },

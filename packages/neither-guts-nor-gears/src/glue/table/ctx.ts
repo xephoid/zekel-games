@@ -32,6 +32,8 @@ export interface ScreenCtx {
   benchSlot: HTMLElement | null;
   /** the top of the side column, above the log: Seats and the culture race go there; null to draw them in the column */
   sideSlot: HTMLElement | null;
+  /** the table is laid out for a phone (the Phone-* boards): one column, the map always in view */
+  phone: boolean;
   /** ask the engine a read-only question about this decision; null where no live table can answer */
   ask: ((name: string, args: Record<string, unknown>) => Promise<{ answer: unknown } | { refused: string }>) | null;
   /** a seat's faction name, or its display name before it has one */
@@ -72,6 +74,7 @@ export function makeCtx(props: GameScreenProps, view: NggView, route: Route): Sc
     menu: props.menu ?? null,
     benchSlot: props.benchSlot ?? null,
     sideSlot: props.sideSlot ?? null,
+    phone: !!props.phone,
     seat: (pid) => {
       if (!pid) return '';
       const p = playerOf(v, pid);

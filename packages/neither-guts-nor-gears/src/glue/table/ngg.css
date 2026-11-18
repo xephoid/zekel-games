@@ -626,3 +626,141 @@ button.ngg-seat:focus-visible { outline: 2px solid var(--n-brand); outline-offse
 }
 .ngg-tree-kinds { display: flex; flex-wrap: wrap; gap: 4px 10px; font: 500 11px var(--n-face); }
 .ngg-tree-kinds > span { display: inline-flex; align-items: center; gap: 4px; }
+
+/* ---------- on a phone (the Phone-* boards) ----------
+   Below 640 px the table uses the shared phone frame (GlueModule.phone): a
+   one-line top bar and a menu sheet, no side column, and the screen is told
+   (.ngg-root.phone). Top to bottom: the map, which never leaves the screen;
+   the seats in one row; the decision in a sheet under the map. Everything a
+   finger presses is at least 44 px. The desktop table does not change. */
+.table-shell.phone.ngg-theme .table-board { padding: 0; gap: 0; min-width: 0; overflow: hidden; }
+.table-shell.phone.ngg-theme .table-bench { display: none; }
+.table-shell.phone.ngg-theme .table-topbar .title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ngg-root.phone { position: relative; gap: 0; height: 100%; min-width: 0; overflow: hidden; }
+.ngg-root.phone .ngg-board { flex: 1 1 0; min-height: 200px; border: 0; border-bottom: 1px solid var(--n-line); border-radius: 0; }
+
+/* The map: as wide as the screen, panned with a finger. */
+.ngg-map-box.phone .ngg-map-scroll { overflow: auto; cursor: default; scrollbar-width: none; overscroll-behavior: contain; }
+.ngg-map-box.phone .ngg-map-scroll::-webkit-scrollbar { display: none; }
+.ngg-map-box.phone .ngg-map-canvas { display: flex; width: max-content; height: max-content; min-width: 100%; min-height: 100%; }
+.ngg-map-sized { position: relative; flex: none; margin: auto; }
+.ngg-map-box.phone .ngg-map-col { top: 2px; font-size: 11px; }
+.ngg-hex.readable[aria-pressed='true'] { z-index: 2; }
+.ngg-hex.readable[aria-pressed='true'] .ngg-hex-rim { background: var(--n-ink); }
+.ngg-zoom.ngg-zoom-phone { flex-direction: column; right: 10px; bottom: 10px; border: 1px solid var(--n-line); }
+.ngg-zoom-phone button { width: 44px; height: 44px; padding: 0; justify-content: center; }
+.ngg-zoom-phone button + button { border-top: 1px solid var(--n-line); }
+.ngg-zoom-phone button:disabled { color: var(--n-muted); opacity: .45; cursor: default; }
+.ngg-locator { position: absolute; right: 10px; top: 10px; z-index: 4; padding: 4px; background: var(--n-surface); border: 1px solid var(--n-line); border-radius: 6px; box-shadow: var(--n-shadow); pointer-events: none; }
+.ngg-locator > div { position: relative; }
+.ngg-locator i { position: absolute; opacity: .82; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
+.ngg-locator-window { position: absolute; box-sizing: border-box; border: 1.5px solid var(--n-action); border-radius: 2px; background: rgba(224,118,43,.14); }
+/* A tile's readout: a card along the foot of the map, beside the zoom buttons. */
+.ngg-piece-details.ngg-tile-readout { left: 8px; right: 64px; bottom: 8px; width: auto; max-height: 62%; padding: 6px 12px 10px; }
+.ngg-tile-readout .ngg-piece-details-head { justify-content: flex-start; align-items: center; gap: 8px; }
+.ngg-tile-readout .ngg-float-title { margin: 0; font: 700 20px var(--n-display); letter-spacing: -.02em; }
+.ngg-tile-readout-terrain { flex: 1; font: 600 11px var(--n-mono); letter-spacing: .1em; text-transform: uppercase; }
+.ngg-tile-readout .ngg-piece-details-close { width: 44px; height: 44px; margin: -2px -10px -2px auto; font-size: 16px; color: var(--n-text); }
+.ngg-tile-readout-empty { margin: 2px 0 0; font-size: 12.5px; color: var(--n-muted); }
+/* The action stack folds to a row of marks: whose card, which card, in order. */
+.ngg-root.phone .ngg-stack { left: 8px; top: 8px; width: auto; max-width: calc(100% - 84px); box-sizing: border-box; padding: 3px; border-radius: 9px; overflow-x: auto; scrollbar-width: none; }
+.ngg-root.phone .ngg-stack::-webkit-scrollbar { display: none; }
+.ngg-root.phone .ngg-stack .ngg-float-title, .ngg-root.phone .ngg-stack-name, .ngg-root.phone .ngg-stack .ngg-tag { display: none; }
+.ngg-root.phone .ngg-stack-rows { flex-direction: row; gap: 2px; }
+.ngg-root.phone .ngg-stack-row { flex: none; padding: 3px 4px; gap: 3px; border-radius: 6px; }
+.ngg-root.phone .ngg-stack-row .ngg-dot { width: 10px; height: 10px; }
+.ngg-root.phone .ngg-stack-row .ngg-card-back.small { width: 12px; height: 16px; font-size: 7px; box-shadow: inset 0 0 0 2px #e8dfcb, inset 0 0 0 3px #2d6a5c; }
+
+/* The seats in one row. */
+.ngg-peek { flex: none; width: 100%; height: 44px; display: flex; align-items: center; gap: 11px; padding: 0 12px; border: 0; background: var(--n-surface2); color: var(--n-muted); font: inherit; text-align: left; cursor: pointer; }
+.ngg-peek-seat { flex: none; display: inline-flex; align-items: center; gap: 4px; padding: 3px 0; font: 500 12px var(--n-mono); }
+.ngg-peek-seat b { font-weight: 500; }
+.ngg-peek-seat.you { color: var(--n-text); }
+.ngg-peek-seat.you b { font-weight: 600; }
+.ngg-peek-seat.you .ngg-dot { border-width: 2px; }
+.ngg-peek-seat.deciding { box-shadow: 0 2px 0 var(--n-action); }
+.ngg-peek-hint { margin-left: auto; flex: none; font: 600 9px var(--n-mono); letter-spacing: .12em; }
+.ngg-peek > svg { flex: none; }
+
+/* The decision, in a sheet under the map. */
+.ngg-phone-sheet { position: relative; flex: none; max-height: 54%; display: flex; flex-direction: column; background: var(--n-surface); border-top: 1px solid var(--n-line); box-shadow: 0 -6px 18px rgba(28,26,23,.10); }
+.ngg-phone-handle { flex: none; height: 28px; padding: 0; border: 0; background: none; display: grid; place-items: center; cursor: pointer; }
+.ngg-phone-grip { display: block; width: 36px; height: 4px; border-radius: 2px; background: var(--n-line); }
+.ngg-phone-sheet-body { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 0 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+.ngg-phone-sheet > .ngg-phone-sheet-body:first-child { padding-top: 10px; }
+.ngg-phone-sheet.folded .ngg-phone-sheet-body { max-height: 30px; overflow: hidden; }
+.ngg-phone-sheet .ngg-panel { padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.ngg-phone-sheet .ngg-panel + .ngg-panel { padding-top: 10px; border-top: 1px solid var(--n-line); }
+.ngg-phone-sheet .ngg-panel-title { font-size: 20px; letter-spacing: -.02em; }
+.ngg-root.phone .ngg-option { min-height: 48px; align-items: center; border-radius: 11px; }
+.ngg-root.phone .ngg-btn { min-height: 48px; border-radius: 11px; font-size: 14.5px; }
+.ngg-root.phone .ngg-link { min-height: 44px; }
+/* The last row of buttons stays in reach while the options scroll above it. */
+.ngg-phone-sheet .ngg-panel:last-child > .ngg-actions:last-child { position: sticky; bottom: -12px; margin: 0 -12px -12px; padding: 8px 12px 12px; background: var(--n-surface); }
+.ngg-phone-sheet .ngg-actions .ngg-btn.primary { flex: 1 1 auto; }
+.ngg-phone-sheet .ngg-actions .ngg-btn:not(.primary) { min-width: 84px; }
+.ngg-phone-sheet .ngg-waiting { border: 0; padding: 4px 0; }
+
+/* The seats sheet, raised from the row; the board stays behind it, dimmed. */
+.ngg-phone-scrim { position: fixed; inset: 0; z-index: 44; background: rgba(28,26,23,.42); }
+.ngg-root.phone .ngg-phone-seats { position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; box-sizing: border-box; max-height: 80vh; max-height: 80dvh; overflow: auto; overscroll-behavior: contain; gap: 0; padding: 0 12px 12px; background: var(--n-surface); border-top: 1px solid var(--n-line); border-radius: 16px 16px 0 0; box-shadow: 0 -6px 18px rgba(28,26,23,.14); animation: ngg-details-in .18s ease-out; }
+@media (prefers-reduced-motion: reduce) { .ngg-root.phone .ngg-phone-seats { animation: none; } }
+.ngg-phone-seats > .ngg-phone-grip { flex: none; margin: 7px auto 0; }
+.ngg-phone-seats-head { flex: none; height: 44px; display: flex; align-items: center; }
+.ngg-phone-seats-head h2 { flex: 1; margin: 0; font: 700 22px var(--n-display); letter-spacing: -.02em; }
+.ngg-phone-close { flex: none; width: 44px; height: 44px; margin-right: -8px; border: 0; border-radius: 10px; background: transparent; color: var(--n-text); display: grid; place-items: center; cursor: pointer; }
+.ngg-rail { position: relative; flex: none; height: 54px; margin: 0 8px 6px; }
+.ngg-rail-line { position: absolute; left: 0; right: 0; top: 8px; height: 3px; box-sizing: border-box; border-radius: 2px; background: var(--n-surface2); border: 1px solid var(--n-line); }
+.ngg-rail-tick { position: absolute; top: 22px; transform: translateX(-50%); font: 500 9px var(--n-mono); color: var(--n-muted); }
+.ngg-rail-mark { position: absolute; top: 2px; width: 14px; height: 14px; margin-left: -7px; box-sizing: border-box; border-radius: 50%; border: 1.4px solid var(--n-ink); box-shadow: 0 1px 2px rgba(28,26,23,.25); }
+.ngg-rail-mark.you { border-width: 2.2px; z-index: 1; }
+.ngg-rail-cap { position: absolute; right: 0; top: 38px; font: 600 9px var(--n-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--n-brand); }
+.ngg-phone-seat-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.ngg-phone-seat { width: 100%; box-sizing: border-box; padding: 9px 11px 10px; display: flex; flex-direction: column; gap: 4px; border-radius: 12px; border: 1px solid var(--n-line); background: var(--n-surface); color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.ngg-phone-seat.you { border: 1.6px solid var(--n-ink); background: var(--n-hlbg); }
+.ngg-phone-seat.deciding { box-shadow: inset 3px 0 0 var(--n-action); }
+.ngg-phone-seat:focus-visible { outline: 2px solid var(--n-brand); outline-offset: 1px; }
+.ngg-phone-seat-top { display: flex; align-items: center; gap: 7px; }
+.ngg-phone-seat-name { flex: 0 1 auto; min-width: 0; font: 600 14px var(--n-face); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ngg-phone-tag { flex: none; padding: 1px 4px; border: 1px solid var(--n-brand); border-radius: 3px; font: 600 8.5px var(--n-mono); font-style: normal; letter-spacing: .14em; text-transform: uppercase; color: var(--n-brand); }
+.ngg-phone-tag.quiet { border-color: var(--n-line); color: var(--n-muted); }
+.ngg-phone-seat-culture { flex: none; margin-left: auto; font: 600 17px var(--n-mono); }
+.ngg-phone-seat-read { font: 500 10.5px var(--n-mono); color: var(--n-muted); }
+.ngg-phone-seat-bottom { display: flex; align-items: center; gap: 6px; min-height: 20px; }
+.ngg-phone-treaty { flex: none; width: 20px; height: 20px; border-radius: 50%; border: 1.2px solid var(--n-ink); display: grid; place-items: center; }
+.ngg-phone-seat-cards { flex: none; font: 500 10.5px var(--n-mono); color: var(--n-muted); }
+.ngg-phone-seat.you .ngg-phone-seat-cards { color: var(--n-text); }
+.ngg-phone-seat-spy { flex: none; margin-left: auto; font: 500 10px var(--n-mono); color: var(--n-muted); }
+.ngg-phone-seat.you .ngg-phone-seat-spy { color: var(--n-brand); }
+.ngg-phone-seats-foot { flex: none; display: flex; gap: 8px; margin-top: 10px; }
+.ngg-phone-seats-foot .ngg-btn { flex: 1; }
+/* The lists the seats sheet opens (Heroes, Treaties) sit above it. */
+.ngg-root.phone > .sheet-backdrop { z-index: 60; }
+.ngg-root.phone .ngg-treaty-pairs li { grid-template-columns: 1fr; justify-items: start; }
+.ngg-root.phone .ngg-treaty-pairs li .ngg-treaty-side:last-child { justify-content: flex-start; }
+
+/* A faction board as a full panel under the top bar, in four tabs. */
+.ngg-phone-faction { position: fixed; left: 0; right: 0; bottom: 0; z-index: 46; width: auto; max-height: none; overflow: hidden; display: flex; flex-direction: column; }
+.ngg-phone-faction-head { flex: none; height: 52px; display: flex; align-items: center; gap: 8px; padding: 0 14px; background: var(--n-surface2); }
+.ngg-phone-faction-head h2 { flex: 1; min-width: 0; margin: 0; font: 700 22px var(--n-display); letter-spacing: -.025em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ngg-phone-faction-culture { flex: none; display: inline-flex; align-items: baseline; gap: 6px; }
+.ngg-phone-faction-culture i { font: 600 9px var(--n-mono); font-style: normal; letter-spacing: .14em; text-transform: uppercase; color: var(--n-muted); }
+.ngg-phone-faction-culture b { font: 600 19px var(--n-mono); }
+.ngg-phone-tabs { flex: none; height: 48px; display: flex; padding: 0 6px; background: var(--n-surface); border-bottom: 1px solid var(--n-line); }
+.ngg-phone-tabs button { flex: 1 1 0; min-width: 0; padding: 0; border: 0; border-bottom: 2.5px solid transparent; background: transparent; font: 500 13px var(--n-face); color: var(--n-muted); cursor: pointer; }
+.ngg-phone-tabs button.on { font-weight: 600; color: var(--n-text); border-bottom-color: var(--n-action); }
+.ngg-phone-faction-body { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.ngg-phone-faction .ngg-faction-board { padding: 12px 14px 20px; gap: 12px; }
+.ngg-phone-faction .ngg-numbers { position: relative; flex-wrap: wrap; gap: 10px 18px; }
+.ngg-phone-faction .ngg-fb-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.ngg-phone-faction .ngg-fb-grid:empty { display: none; }
+.ngg-phone-faction .ngg-action-cards { flex-wrap: wrap; }
+.ngg-phone-faction .ngg-fb-list li, .ngg-phone-faction .ngg-fb-heroes li { min-height: 44px; box-sizing: border-box; }
+.ngg-phone-faction .ngg-fb-card { width: auto; flex: 1 1 140px; }
+.ngg-fb-tree-btn { position: relative; align-self: flex-start; }
+.ngg-phone-faction .ngg-fb-detail-close { min-width: 44px; min-height: 44px; }
+
+/* An out-of-turn decision rises from the bottom, the map in view above it. */
+.ngg-root.phone .ngg-interrupt-layer { place-items: end stretch; padding: 0; }
+.ngg-root.phone .ngg-interrupt { width: 100%; box-sizing: border-box; max-height: 72vh; max-height: 72dvh; padding: 12px; background: var(--n-surface); border-radius: 16px 16px 0 0; box-shadow: 0 -6px 18px rgba(28,26,23,.2); }
+.ngg-root.phone .ngg-interrupt > .ngg-panel { padding: 0; border: 0; box-shadow: none; background: transparent; }
